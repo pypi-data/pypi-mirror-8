@@ -1,0 +1,52 @@
+Metadata-Version: 1.0
+Name: flask_json_resource
+Version: 0.2.5
+Summary: UNKNOWN
+Home-page: UNKNOWN
+Author: Ernst Odolphi
+Author-email: ernst.odolphi@gmail.com
+License: UNKNOWN
+Description: .. image:: https://drone.io/bitbucket.org/eodolphi/flask-json-resource/status.png
+           :target: https://drone.io/bitbucket.org/eodolphi/flask-json-resource/latest
+        
+        
+        
+        Flask JSON Resource
+        ====================
+        
+        Quickly create REST api's using `json-schema`. 
+        
+        
+        Installation
+        ------------
+        
+        pip install flask_json_resource
+        
+        
+        Minimal Example
+        -------------------
+        
+        .. code-block:: python
+        
+            from flask import Flask
+        
+            from flask.ext.pymongo import PyMongo
+            from flask_json_resource.api import API
+        
+            app = Flask('test')
+            app.debug = True
+        
+            db = PyMongo(app)
+            api = API(db)
+            app.register_blueprint(api)
+        
+            @api.register()
+            class TestResource(api.Resource):
+                schema = 'test.json'   
+        
+        
+            class TestResourceCollection(api.CollectionResource):
+                schema = 'test-collection.json'
+                objects = TestResource.objects
+        
+Platform: UNKNOWN
