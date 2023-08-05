@@ -1,0 +1,125 @@
+<tool id="convert" name="Convert">
+  <description>between different sequence data formats</description>
+  <command>
+	mimodd convert 
+ 
+  	#for $i in $mode.input_list
+	    ${i.file1}
+	    #if $str($mode.iformat) in ("fastq_pe", "gz_pe"):
+		${i.file2}
+	    #end if
+	#end for
+	#if $str($mode.header) != "None":  	
+		--header $(mode.header)
+	#end if
+	--output $outputname
+	--iformat $(mode.iformat)
+	--oformat $(mode.oformat)
+  </command>
+  
+  <inputs>
+    <conditional name="mode">
+	<param name="iformat" type="select" label="choose the input file format" help="Your data will have to be in a single file if it comes from single-end sequencing, but will have to be arranged in two files if it comes from paired-end sequencing.">
+	    <option value="fastq">fastq: single-end (one file)</option>
+	    <option value="fastq_pe">fastq: paired-end (two files)</option>
+	    <option value="gz">gzip compressed fastq: single-end (one file)</option>
+	    <option value="gz_pe">gzip compressed fastq: paired-end (two files)</option>
+	    <option value="sam">sam</option>
+	    <option value="bam">bam</option>
+        </param>	
+            <when value="fastq">
+	      <param name="oformat" type="select" label="choose the output file format">
+	        <option value="sam">sam</option>
+	        <option value="bam">bam</option>
+	      </param>
+	    <repeat name="input_list" title="fastq input dataset" default="1" min="1">
+		<param name="file1" format="fastq" type="data" label="inputfile"/>
+	    </repeat>
+        <param name="header" type="data" format="sam" label="Use Header File" help="A SAM file with header information, as generated, for example, by the NGS Run Annotation Tool, that will be used to attach metainformation to the results file."/>	    
+	    </when>
+	    <when value="fastq_pe">
+	      <param name="oformat" type="select" label="choose the output file format">
+	        <option value="sam">sam</option>
+	        <option value="bam">bam</option>
+	      </param>
+	      <repeat name="input_list" title="fastq input datasets" default="1" min="1">
+		  <param format="fastq" name="file1" type="data" label="inputfile 1"/>		
+		  <param format="fastq" name="file2" type="data" label="inputfile 2"/>
+	      </repeat>
+          <param name="header" type="data" format="sam" label="Use Header File" help="A SAM file with header information, as generated, for example, by the NGS Run Annotation Tool, that will be used to attach metainformation to the results file."/>
+	    </when>
+        <when value="gz">
+	      <param name="oformat" type="select" label="choose the output file format">
+	        <option value="sam">sam</option>
+	        <option value="bam">bam</option>
+	      </param>
+	    <repeat name="input_list" title="fastq.gz input dataset" default="1" min="1">
+		<param name="file1" format="data" type="data" label="inputfile"/>
+	    </repeat>
+        <param name="header" type="data" format="sam" label="Use Header File" help="A SAM file with header information, as generated, for example, by the NGS Run Annotation Tool, that will be used to attach metainformation to the results file."/>
+	    </when>
+	    <when value="gz_pe">
+	      <param name="oformat" type="select" label="choose the output file format">
+	        <option value="sam">sam</option>
+	        <option value="bam">bam</option>
+	      </param>
+	      <repeat name="input_list" title="fastq.gz input datasets" default="1" min="1">
+		<param format="data" name="file1" type="data" label="inputfile 1"/>		
+		<param format="data" name="file2" type="data" label="inputfile 2"/>
+	    </repeat>
+        <param name="header" type="data" format="sam" label="Use Header File" help="A SAM file with header information, as generated, for example, by the NGS Run Annotation Tool, that will be used to attach metainformation to the results file."/>
+	    </when>
+	    <when value="sam">
+	      <param name="oformat" type="select" label="choose the output file format">
+	        <option value="bam">bam</option>
+	      </param>
+	      <repeat name="input_list" title="sam input dataset" default="1" min="1" max="1">
+		<param name="file1" format="sam" type="data" label="inputfile"/>
+	    </repeat>
+	    <param name="header" type="hidden" value="None"/>
+	    </when>
+	    <when value="bam">
+	      <param name="oformat" type="select" label="choose the output file format">
+	        <option value="sam">sam</option>
+	      </param>
+	      <repeat name="input_list" title="bam input dataset" default="1" min="1" max="1">
+		<param name="file1" format="bam" type="data" label="inputfile"/>
+	    </repeat>
+	    <param name="header" type="hidden" value="None"/>
+	    </when>
+    </conditional>
+  </inputs>
+  
+  <outputs>
+    <data name="outputname" format="bam" label="Converted reads from MiModd ${tool.name} on ${on_string}">
+	<change_format>
+	    <when input="mode.oformat" value="sam" format="sam" />
+	</change_format>
+    </data>
+  </outputs>
+
+<help>
+.. class:: infomark
+
+   **What it does**
+
+The tool converts between different file formats used for storing next-generation sequencing data.
+
+As input file types, it can handle uncompressed or gzipped fastq, SAM or BAM format, which it can convert to SAM or BAM format.
+
+**Notes:**
+
+1) In its standard configuration Galaxy will decompress any .gz files during their upload, effectively preventing the use of gzipped fastq files.
+
+2) The tool can convert fastq files representing data from paired-end sequencing runs to appropriate SAM/BAM format provided that the mate information is split over two fastq files in corresponding order.
+
+   **TIP:** If your paired-end data is arranged differently, you may look into the *FASTQ splitter* and *FASTQ de-interlacer* tools to see if they convert your files to the right format.
+
+3) Specifying a SAM header file to use in the conversion is highly recommended as this will add sequencing run metadata to the results file, which is the main purpose of storing unaligned NGS data in SAM/BAM format.
+
+   See the help on the *NGS Run Annotation* tool for information on how to generate a new header file.
+
+</help>
+
+</tool>
+
