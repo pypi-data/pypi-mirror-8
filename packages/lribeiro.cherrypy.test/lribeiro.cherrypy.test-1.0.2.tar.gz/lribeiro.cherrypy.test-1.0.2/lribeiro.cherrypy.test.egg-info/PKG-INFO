@@ -1,0 +1,137 @@
+Metadata-Version: 1.1
+Name: lribeiro.cherrypy.test
+Version: 1.0.2
+Summary: Test utilities for CherryPy
+Home-page: http://bitbucket.org/livioribeiro/cherrypy-test
+Author: Livio Ribeiro
+Author-email: livioribeiro@outlook.com
+License: BSD License
+Description: ===================
+        cherrypy.authorizer
+        ===================
+        
+        Test utilities for cherrypy. Can be run under py.test, nosetests or unittest.
+        
+        Based on `code provided by Sylvain Hellegouarch <https://bitbucket.org/Lawouach/cherrypy-recipes/src/d140e6da973aa271e6b68a8bc187e53615674c5e/testing/unit/serverless/?at=default>`_
+        
+        The response returned by the methods on the class ``lribeiro.cherrypy.test.CPTestCase`` is added two properties:
+        ``status_code`` and ``text``, providing an easier way to retrieve the response body as a string and the status code as
+        an integer
+        
+        The class ``lribeiro.cherrypy.test.CPTestCase`` provides facilities to setup serverless testing and has helper methods
+        to perform requests.
+        
+        You need to provide a ``root`` class attribute when using ``CPTestCase`` that will be the root of your test application.
+        
+        You can also provide a ``preserve_cookies`` class attribute to control whether the cookies must be resent with every
+        request. This is useful when testing authentication. The default value is ``True``.
+        
+        ======== ==============
+        method   description
+        ======== ==============
+        get()    GET request
+        post()   POST request
+        put()    PUT request
+        delete() DELETE request
+        head()   HEAD request
+        patch()  PATCH request
+        ======== ==============
+        
+        These methods call the ``request()`` method with the specified http method set passing any additional parameter.
+        
+        The ``request()`` method accepts the following parameters (none of them is required - defaults in parenthesis):
+        
+        ============= ======================================================================
+        parameter     description
+        ============= ======================================================================
+        path          path to request ('/')
+        method        method to request ('GET')
+        app_path      path of the application to make requests against ('')
+        scheme        http or https ('http')
+        proto         http version ('HTTP/1.1')
+        data          dict contaning data to post on request body (None)
+        headers       dict contaning request headers to be sent (None)
+        cookies       dict contaning cookies to be sent (None)
+        auto_redirect whether to follow redirect responses (False)
+        \*\*kwargs      data to be sent in querystring or request body, in case of POST or PUT
+        ============= ======================================================================
+        
+        In addition to the request methods, the are assertion methods:
+        
+        =================== ======================================================================================================================
+        method              description
+        =================== ======================================================================================================================
+        assert_status       assert a specific https status. Constants for http status can be found in ``lribeiro.cherrypy.test.httpstatus`` module
+        assert_ok           shortcut to ``assert_status(httpstatus.OK)``
+        assert_not_found    shortcut to ``assert_status(httpstatus.NOT_FOUND)``
+        assert_error        shortcut to ``assert_status(httpstatus.INTERNAL_SERVER_ERROR)``
+        assert_redirect     assert the the response is a redirect
+        assert_redirect_to  assert the the response is a redirect and verifies the Location of the redirect
+        assert_not_redirect assert that a response is not a redirect
+        assert_contains     assert that the response body contains a string
+        assert_not_contains assert that the response body does not contain a string
+        assert_body         assert that the response body is equals to a string
+        assert_header       assert that the a response header has a specific value
+        assert_has_header   assert that the response has a header
+        assert_cookie       assert that the a response cookie has a specific value
+        assert_has_cookie   assert that the response has a cookie
+        assert_path         assert that the request path_info is the same as the one given
+        =================== ======================================================================================================================
+        
+        Developed under Python3.4 and tested against Python2.7, Python3.4 and pypy.
+        
+        Example:
+        --------
+        
+        .. sourcecode:: python
+        
+            import cherrypy
+        
+            from lribeiro.cherrypy.test import CPTestCase
+        
+        
+            class Root:
+                @cherrypy.expose
+                def index(self):
+                    return 'index'
+        
+                @cherrypy.expose
+                def post(self, name):
+                    return 'name = ' + name
+        
+                @cherrypy.expose
+                def redir(self, to)
+                    raise cherrypy.HTTPRedirect(to)
+        
+        
+            class TestTests(CPTestCase):
+                root = Root()
+        
+                def test_index(self):
+                    self.get('/')
+                    self.assert_ok()
+                    self.assert_not_redirect()
+        
+                def test_post(self):
+                    self.post('/post', name='Lorem Ipsum')
+                    self.assert_contains('Lorem Ipsum')
+        
+                def test_redir(self):
+                    self.get('/redir', to='/some/page')
+                    self.assert_redirect('/some/page')
+Keywords: cherrypy,test,unittest,py.test,nosetests
+Platform: UNKNOWN
+Classifier: Development Status :: 4 - Beta
+Classifier: Environment :: Web Environment
+Classifier: Framework :: CherryPy
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 2
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: Implementation :: PyPy
+Classifier: Topic :: Internet :: WWW/HTTP
+Classifier: Topic :: Internet :: WWW/HTTP :: Dynamic Content
+Classifier: Topic :: Internet :: WWW/HTTP :: Session
