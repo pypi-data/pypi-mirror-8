@@ -1,0 +1,97 @@
+CHANGES
+=======
+
+0.5
+---
+
+* coordination: remove destroy() from the lock protocol
+* IPC: fix a potential race condition at init
+* Fix IPC driver on OS X
+* Switch to oslo.utils
+* Blacklist retrying 1.3.0
+* Use futures to make parts of the memcached driver async
+* Have examples run in the py27 environment and make them work
+
+0.4
+---
+
+* Standardize the async result subclasses
+* Fix the comment which was borrowed from the IPC driver
+* Be more tolerant of unicode exceptions
+* Standardize on the same lock acquire method definition
+* Standardize on hiding the lock implementation
+* On lock removal validate that they key was actually deleted
+* Use a thread safe deque instead of a queue
+* Change inline docs about class fake storage variable
+* LOG a warning if the heartbeat can not be validated
+* Add doc8 to the py27 test running
+* Use the more reliable sysv_ipc instead of posix_ipc+lockutils
+* Only start zookeeper/memcached when not already running
+* Let zake act as a in-memory fully functional driver
+* Switch to a custom NotImplemented error
+* Ensure lock list isn't mutated while iterating
+* Move Zake driver code to separated Python module
+* Work toward Python 3.4 support and testing
+* Unlock the kazoo version
+* Bump up zake to be using the newer 0.1 or greater
+* Fix zake driver with latest release
+* memcached: switch leader election implementation to a lock
+* Add the generation of the documentation in tox.ini
+* Add coverage report
+
+0.3
+---
+
+* Switch to URL for loading backends
+* Import network_utils from Oslo
+* coordination: add IPC driver
+* coordination: raise NotImplementedError as default
+* Add documentation
+* Upgrade hacking requirement
+* memcached: use retrying rather than sleeping
+* Use retrying instead of our custom code
+* Update requirements file matching global requ
+
+0.2
+---
+
+* memcached: implement leader election
+* Fix a race condition in one of the test
+
+0.1
+---
+
+* memcached: add locking
+* coordination: implement lock mechanism in ZK
+* coordination, zookeeper: add get_leader()
+* coordination, zookeeper: implement leader election
+* coordination: remove wrong comment in tests
+* memcached: add support for leave events
+* memcached: implement {un,}watch_join_group()
+* coordination: raise GroupNotCreated when watching uncreated group
+* coordination, zookeeper: add {un,}watch_leave_group
+* coordination, zookeeper: add watch_join_group
+* tests: skip test if function is not implemented
+* coordination: add hooks system
+* Add memcached driver
+* zookeeper: use bytes as input/output type
+* tests: test client disconnection
+* coordination: add heartbeat method
+* Add pbr generated and testr files to gitignore
+* coordination: enhance MemberAlreadyExist exception
+* coordination: enhance GroupNotCreated exception
+* coordination: enhance MemberNotJoined
+* coordination: enhance GroupAlreadyExist exception
+* tests: test capabilities on non existent group/member
+* tests: add a test for group already existing
+* tests: fix variable name
+* Fix the default prototype for join_group
+* Adds basic tests which deals with exceptions
+* Fixes TypeError in _leave_group_handler
+* Remove _wrap_call_kazoo
+* Add asynchronous API
+* Delete models.py and clean get_members()
+* Add a fake ZooKeeper driver
+* Allow passing in a handler
+* First commit of Tooz
+* Added .gitreview
