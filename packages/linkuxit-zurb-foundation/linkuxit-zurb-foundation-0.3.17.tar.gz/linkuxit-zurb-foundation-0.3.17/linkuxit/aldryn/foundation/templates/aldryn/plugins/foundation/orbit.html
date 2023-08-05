@@ -1,0 +1,18 @@
+<ul class="example-orbit" data-orbit>
+{% for item in instance.items.all %}
+    <li>
+    {% if item.image %}
+      <img src="{{ item.image.url }}"/>
+      {% if item.content %}
+      <div class="orbit-caption">
+        {{ item.content|safe }}
+      </div>
+      {% endif %}
+    {% else %}
+      <div>
+        {{ item.content|safe }}
+      </div>
+    {% endif %}
+  </li>
+{% endfor %}
+</ul>
