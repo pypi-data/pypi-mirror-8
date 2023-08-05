@@ -1,0 +1,30 @@
+<tal:sections tal:define="nav view/portal_tabs;
+                          selected_tab python:view.selected_portal_tab"
+     tal:condition="nav"
+     i18n:domain="plone">
+
+    <h5 class="hiddenStructure" i18n:translate="heading_sections">Sections</h5>
+    
+   <a id="trigger-overlay"><img src="++resource++plonetheme.bootstrapModern.css/menu.svg"></a>
+
+    <div class="menu overlay-hugeinc">
+        <button type="button" class="overlay-close"></button>
+        <div class="menu-content">
+            <ul>
+                <tal:tabs tal:repeat="tab nav">
+                    <li tal:define="tid tab/id"
+                        tal:attributes="id string:portaltab-${tid};
+                                        class python:selected_tab==tid and 'active' or ''">
+                        <a href=""
+                            tal:content="tab/name"
+                            tal:attributes="href tab/url;
+                                            title item/description|nothing">
+                            Tab Name
+                        </a>
+                                    
+                    </li>
+                </tal:tabs>
+            </ul>
+        </div>
+    </div>
+</tal:sections>
