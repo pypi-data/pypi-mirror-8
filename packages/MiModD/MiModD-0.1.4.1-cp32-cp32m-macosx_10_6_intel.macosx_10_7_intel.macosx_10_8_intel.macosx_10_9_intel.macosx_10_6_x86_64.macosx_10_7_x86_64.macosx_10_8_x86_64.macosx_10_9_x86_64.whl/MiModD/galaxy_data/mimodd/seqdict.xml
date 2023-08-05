@@ -1,0 +1,26 @@
+<tool id="CloudMap Config" name="Generate a species configuration file">
+  <description>for use with CloudMap.</description>
+  <command>
+    mimodd cm_seqdict $ifile -o $outputfile
+  </command>
+
+  <inputs>
+    <param name="ifile" type="data" format="vcf" label="vcf input file" />
+  </inputs>
+
+  <outputs>
+    <data name="outputfile" format="tabular" label="Sequence Dictionary for CloudMap from ${on_string}"/>
+  </outputs>
+
+  <help>
+.. class:: infomark
+
+   **What it does**
+
+The purpose of this tool is solely to provide compatibility with the external **CloudMap** *Variant Discovery Mapping* and *Hawaiian Variant Mapping* tools.
+
+From a VCF file, the tool extracts the chromosome names and sizes and reports them in the **CloudMap** *species configuration file* format.
+Such a file is required as input to the **CloudMap** mapping tools, if you are working with a species other than the natively supported ones (i.e., other than C.elegans or A. thaliana for the current version of CloudMap).
+   
+  </help>
+</tool>
