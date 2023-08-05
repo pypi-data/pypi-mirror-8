@@ -1,0 +1,76 @@
+#! /usr/bin/env python
+# -*- python -*-
+
+####################################################################################################
+# 
+# PyDvi - A Python Library to Process DVI Stream
+# Copyright (C) 2014 Fabrice Salvaire
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# 
+####################################################################################################
+
+####################################################################################################
+
+import argparse
+
+####################################################################################################
+
+import PyDviGui.Logging.Logging as Logging
+logger = Logging.setup_logging()
+
+####################################################################################################
+
+from PyDviGui.DviGlViewer import Application
+
+####################################################################################################
+#
+# Options
+#
+
+parser = argparse.ArgumentParser(description='DVI Viewer.')
+
+parser.add_argument('dvi_file', metavar='DVI_File',
+                    help='DVI File')
+
+parser.add_argument('--profile',
+                    action='store_true', default=False,
+                    help='profile the application')
+
+args = parser.parse_args()
+
+####################################################################################################
+
+profile = None
+if args.profile:
+    import cProfile, pstats, StringIO
+    profile = cProfile.Profile()
+    profile.enable()
+
+application = Application(args)
+application.exec_()
+
+if args.profile:
+    profile.disable()
+    string_io = StringIO.StringIO()
+    sort_by = 'cumulative'
+    ps = pstats.Stats(profile, stream=string_io).sort_stats(sort_by)
+    ps.print_stats()
+    print string_io.getvalue()
+
+####################################################################################################
+#
+# End
+#
+####################################################################################################
