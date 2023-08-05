@@ -1,0 +1,52 @@
+ui.global = {
+    loadIcon: 'ui-load-icon',
+    jqueryEvents: [
+        'click',
+        'mouseup',
+        'mousemove',
+        'mousedown',
+        'mouseenter',
+        'mouseleave',
+        'mousewheel',
+//        'change',
+        'focus',
+        'blur',
+        'keyup',
+        'keypress',
+        'scroll',
+        'load',
+        'dblclick'
+    ],
+    jqueryMethods: [
+        'attr',
+        'offset',
+        'animate',
+        'stop',
+        'append',
+        'before',
+        'empty',
+        'css',
+        'find',
+        'click',
+        'dblclick',
+        'addClass',
+        'removeClass',
+        'hasClass',
+        'outerWidth',
+        'outerHeight',
+        'val',
+        'blur',
+        'focus',
+        'scrollLeft',
+        'scrollTop'
+    ],
+    palettes: [
+        { text: 'Основная', colors: ['4572A7','AA4643','89A54E','80699B', '3D96AE','DB843D','92A8CD','A47D7C','B5CA92'] },
+        { text: 'Схема №1', colors: ['6bd946', 'd92929', 'eaf046', '40cde6']  },
+        { text: 'Схема №2', colors: ['FF0000', '3914af', 'ffd300', '00cc00']  },
+        { text: 'Схема №3', colors: ['00bb00', 'eac200', '3412a1', 'ea0000']  },
+        { text: 'Схема №4', colors: ['181ba3', 'eaae00', 'eaea00', 'ea6600']  },
+        { text: 'Схема №5', colors: ['eaae00', '181ba3', '68089c', '009085']  },
+        { text: 'Оттенки серого', colors: ['f2f2f2', 'e6e6e6', 'd9d9d9', 'cccccc','bfbfbf','b3b3b3','a6a6a6','999999','8c8c8c','808080','737373','666666','595959','4d4d4d','404040','333333','262626','1a1a1a','0d0d0d','000000']  }
+    ]
+};

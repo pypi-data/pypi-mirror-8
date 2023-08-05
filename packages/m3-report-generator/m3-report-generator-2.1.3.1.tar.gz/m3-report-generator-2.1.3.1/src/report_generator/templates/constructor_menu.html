@@ -1,0 +1,38 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>ui</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link href="report_static/web/lehaUI/style/app.css" rel="stylesheet" type="text/css" />
+
+    <script type="text/javascript" src="report_static/web/lehaUI/scripts/jquery.min.js"></script>
+    <script type="text/javascript" src="report_static/web/lehaUI/scripts/jquery.inherit.js"></script>
+    <script type="text/javascript" src="report_static/underscore.js"></script>
+
+    <script type="text/javascript" src="report_static/web/lehaUI/scripts/ui.js"></script>
+    <script type="text/javascript" src="report_static/web/lehaUI/scripts/global.js"></script>
+    <script type="text/javascript" src="report_static/web/lehaUI/scripts/Base.js"></script>
+    <script type="text/javascript" src="report_static/web/lehaUI/scripts/EventsManager.js"></script>
+    <script type="text/javascript" src="report_static/web/lehaUI/scripts/Element.js"></script>
+    <script type="text/javascript" src="report_static/web/lehaUI/scripts/ControlView.js"></script>
+    <script type="text/javascript" src="report_static/web/lehaUI/scripts/Control.js"></script>
+    <script type="text/javascript" src="report_static/web/lehaUI/scripts/Iframe.js"></script>
+    <script type="text/javascript" src="report_static/web/lehaUI/scripts/MainMenu.js"></script>
+
+    <script type="text/javascript" src="report_static/web/lehaUI/scripts/leha_app.js"></script>
+
+</head>
+<body>
+    <div class="main-frame" id="frames-layout"></div>
+    <div class="bottom-toolbar ui-unselectable" id="bottom-toolbar">
+        <div class="bottom-toolbar-menu-layout" id="bottom-toolbar-menu"></div>
+        <div class="tray">
+            {% if user.is_anonymous %}
+            <div class="user-info">Анонимный пользователь</div>
+            {% else %}
+            <div class="user-info">{{ user.username }}</div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>
