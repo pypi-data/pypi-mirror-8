@@ -1,0 +1,59 @@
+Metadata-Version: 1.0
+Name: django-markdown2
+Version: 0.2.0
+Summary: This is a simple app, which supplies a single template tag for markdown markup.
+Home-page: http://github.com/svetlyak40wt/django-markdown2/
+Author: Alexander Artemenko
+Author-email: svetlyak.40wt@gmail.com
+License: New BSD License
+Description: <h2>django-markdown2</h2>
+        
+        <p><a href="http://allmychanges.com/p/python/django-markdown2/?utm_source=badge"><img src="http://allmychanges.com/p/python/django-markdown2/badge/" alt="changelog" /></a></p>
+        
+        <p>This is a simple app, which supplies a single template tag for
+        markdown markup.</p>
+        
+        <h1>Dependencies</h1>
+        
+        <p>django-markdown2 depends on python-markdown2, which can be found
+        at http://code.google.com/p/python-markdown2.</p>
+        
+        <h1>Installation and usage</h1>
+        
+        <ul>
+        <li>Place <code>django_markdown2</code> somewhere in your <code>PYTHONPATH</code>.</li>
+        <li>Add <code>django_markdown2</code> to you <code>INSTALLED_APPS</code>.</li>
+        <li><p>In any template do:</p>
+        
+        <pre><code>{% load md2 %}
+        {{ variable|markdown }}
+        </code></pre></li>
+        <li><p>Or specify additional extensions:</p>
+        
+        <pre><code>{% load md2 %}
+        {{ variable|markdown:"safe, code-friendly, code-color" }}
+        </code></pre></li>
+        <li><p>Also, if you use my recent markdown2-with-blackjack from http://pypi.aartemenko.com,
+        then you can pass additional options to code-color extension:</p>
+        
+        <pre><code>{% load md2 %}
+        {{ variable|markdown:"safe, code-friendly, code-color: noclasses|linenos" }}
+        </code></pre>
+        
+        <p>Options from this example switch off css classes and turn on line numbers.</p></li>
+        </ul>
+        
+        <h1>Contribution</h1>
+        
+        <p>Code for this application available at:
+        <a href="http://github.com/svetlyak40wt/django-markdown2">http://github.com/svetlyak40wt/django-markdown2</a></p>
+        
+Keywords: django apps utils
+Platform: UNKNOWN
+Classifier: Development Status :: 3 - Alpha
+Classifier: Environment :: Plugins
+Classifier: Framework :: Django
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Programming Language :: Python
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
