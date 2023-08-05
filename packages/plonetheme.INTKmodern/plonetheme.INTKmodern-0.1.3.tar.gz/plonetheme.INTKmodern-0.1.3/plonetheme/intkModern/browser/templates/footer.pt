@@ -1,0 +1,20 @@
+<div metal:define-macro="portal_footer"
+     i18n:domain="plone"
+     id="portal-footer">
+     
+    <div class="footerStaticContent">
+     
+    </div>
+
+    <div id="FooterPortletManager">
+        <tal:block replace="structure provider:plonetheme.intkModern.footerPortletManager" />
+    </div>
+    
+    <div class="row"> 
+                <a class="managePortletsFallback"
+                    tal:define="portal context/@@plone_portal_state/portal;"
+                    tal:attributes="href string:${portal/absolute_url}/@@manage-portal-footer">
+                    Manage portlets
+               </a>
+     </div>
+</div>
