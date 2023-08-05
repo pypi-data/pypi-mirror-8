@@ -1,0 +1,21 @@
+#!/bin/bash
+set -e
+
+if [ -n "${HORIZON_VENV_DIR:-}" ] ; then
+    cp /etc/horizon/local_settings.py $HORIZON_VENV_DIR/lib/python2.7/site-packages/openstack_dashboard/local/local_settings.py
+
+    # TODO(shadower) workaround for:
+    # https://bugs.launchpad.net/os-apply-config/+bug/1246266
+    chmod 600 /etc/horizon/.secret_key_store
+    chown horizon:horizon /etc/horizon/.secret_key_store
+
+    # Collect static artifacts. The following steps are required to be run here
+    # rather than in install.d due to requiring the local_settings.py config
+    # file.
+    source $HORIZON_VENV_DIR/bin/activate
+    DJANGO_SETTINGS_MODULE=openstack_dashboard.settings django-admin.py collectstatic --noinput
+    DJANGO_SETTINGS_MODULE=openstack_dashboard.settings django-admin.py compress
+fi
+
+os-svc-enable -n apache2
+os-svc-restart -n apache2
