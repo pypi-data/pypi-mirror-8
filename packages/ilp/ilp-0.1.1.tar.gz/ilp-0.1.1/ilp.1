@@ -1,0 +1,204 @@
+'\" t
+.\"     Title: ilp
+.\"    Author: slowpoke <mail+git@slowpoke.io>
+.\" Generator: DocBook XSL Stylesheets v1.78.0 <http://docbook.sf.net/>
+.\"      Date: 09/20/2014
+.\"    Manual: \ \&
+.\"    Source: \ \&
+.\"  Language: English
+.\"
+.TH "ILP" "1" "09/20/2014" "\ \&" "\ \&"
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+.SH "NAME"
+ilp \- a tag\-based file indexer
+.SH "SYNOPSIS"
+.sp
+ilp <subcommand> [<args>]
+.sp
+ilp \-i
+.SH "DESCRIPTION"
+.sp
+ilp is a command\-line utility which indexes files, and organizes them with tags\&. It will not touch the files on disk, but instead keep track of them in a database, much like the mlocate utility found on many UNIX or UNIX\-like system\&. To uniquely identify a file, ilp stores it as a hash of its contents\&.
+.SH "OPTIONS"
+.PP
+<subcommand>
+.RS 4
+All functionality of ilp is implemented in subcommands, similar to git or other VCS\&. See
+\fISUBCOMMANDS\fR
+for an overview, or use the command "help"\&.
+.RE
+.PP
+\-i
+.RS 4
+Start an interactive shell, where you can issue subcommands directly\&.
+.RE
+.SH "SUBCOMMANDS"
+.sp
+Much like a VCS such as git, ilp does all the work with various subcommands\&. You can either issue them as an argument to the command line utility, or start an interactive shell with \fI\-i\fR and issue them directly\&.
+.PP
+ilp index [\-r] <path> [<path>\&...]
+.RS 4
+Add one or more files to the index\&. The
+\fI\-r\fR
+switch turns on recursive indexing, in which case <path> can be either a file or directory, and will add all files below a given directory to the index\&.
+.RE
+.PP
+ilp forget [\-r] <path> [<path>\&...]
+.RS 4
+Counterpart to the
+\fBindex\fR
+subcommand\&. Removes files from the index\&. Correspondingly,
+\fI\-r\fR
+turns on recursive removing\&.
+.RE
+.PP
+ilp tag [\-r] <path> <tag> [<tag>\&...]
+.RS 4
+Tag a file with one or more tags\&. Similar to
+\fBindex\fR
+and
+\fBforget\fR,
+\fI\-r\fR
+will apply the tags recursively to all files below a given directory\&.
+.RE
+.PP
+ilp untag [\-r] <path> <tag> [<tag>\&...]
+.RS 4
+Counterpart to tag\&. Remove tags from a file\&.
+\fI\-r\fR
+works the same way\&.
+.RE
+.PP
+ilp deltag <tag> [<tag>\&...]
+.RS 4
+Delete tags from the database\&. Note that tags are automatically created when first used, so this command has no counterpart\&.
+.RE
+.PP
+ilp list <what>
+.RS 4
+List items on the index\&. <what> can be
+\fIfiles\fR
+or
+\fItags\fR\&.
+.RE
+.PP
+ilp info [\-t] <what>
+.RS 4
+Get info on files or tags\&. Since filenames and tags can\(cqt be meaningfully differentiated,
+\fI\-t\fR
+(\fI\-\-tag\fR) needs to be passed if information on a tag is wanted\&.
+.RE
+.PP
+ilp search <query>
+.RS 4
+Search files on the index\&. See
+\fISEARCH QUERIES\fR
+for how a query works\&.
+.RE
+.PP
+ilp clear [\-y]
+.RS 4
+Purge the database\&. This won\(cqt do anything unless
+\fI\-y\fR
+(\fI\-\-yes\fR) is passed\&.
+.RE
+.SH "SEARCH QUERIES"
+.sp
+ilp uses a simple DSL for search queries, which is based on basic set operations\&. It requires a bit of understanding about how tagging in ilp works\&. If you just want a quick start (it might be all you need, it\(cqs rather intuitive already), see \fIEXAMPLE QUERIES\fR\&.
+.sp
+Basically, every tag is regarded as a set of all files it is tagging\&. That might sound counterintuitive at first (because you would probably expect the relation to be the other way round), but makes searching through tagged files incredibly easy, yet powerful \- because every operation on a set results in a new set, on which more operations can be applied\&. Think of it in terms of Venn diagrams\&.
+.sp
+For example, if you want to have all files which are tagged both "foo" and "bar", you\(cqd simply do a logical and on the two sets, and the resulting set is your wanted result\&.
+.sp
+This works analogously (and intuitively!) with logical or and not\&. Even exclusive or (xor) works, and is quite useful, too \- you can use it to find all files which are either tagged "foo" or "bar", but not both\&.
+.sp
+Here\(cqs a simple overview of the language in Pseudo\-BNFL:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+<query>    := [<operator>] <tag> [<query>]
+<operator> := "or" | "and" | "not" | "xor"
+.fi
+.if n \{\
+.RE
+.\}
+.SS "EXAMPLE QUERIES"
+.sp
+A simple search query might look like
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+foo and bar
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+or
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+foo not bar
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+Something more complex could be
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+foo xor bar not baz spam
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+Notice that if you just write multiple tags, the last given operator is always implied\&. The query could have been written explicitly as
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+foo xor bar not baz not spam
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+If no operator is given at all, "or" is implied\&. That means search for "foo bar" is the same as searching for "foo or bar" (or even "or foo or bar")\&.
+.SH "TRIVIA"
+.sp
+If you have wondered what ilp stands for, its an acronym for Index Librorum Prohibitorum \- the infamous (and since 1966 defunct) list of books prohibited by the Vatican\&. It\(cqs really just the first thing that came to mind in relation to indexing files, and "ilp" sounded catchy and is short to type\&. Besides, Latin names make everything sound more awesome\&.
+.SH "AUTHOR"
+.PP
+\fBslowpoke\fR <\&mail+git@slowpoke\&.io\&>
+.RS 4
+Author.
+.RE
