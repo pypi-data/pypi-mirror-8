@@ -1,0 +1,87 @@
+Metadata-Version: 2.0
+Name: page-objects
+Version: 1.0.0
+Summary: Page Objects for Python
+Home-page: http://githum.com/eeaston/page-objects
+Author: Edward Easton
+Author-email: eeaston@gmail.com
+License: MIT
+Platform: UNKNOWN
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Intended Audience :: Developers
+Classifier: Natural Language :: English
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 2.6
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.3
+Classifier: Programming Language :: Python :: 3.4
+Classifier: Topic :: Internet :: WWW/HTTP :: Browsers
+Classifier: Topic :: Software Development :: Testing
+Requires-Dist: selenium
+
+Page Objects for Python
+=======================
+
+Page Objects are a testing pattern for websites. Page Objects model a page on
+your site and provide accessors and methods for interacting with this page,
+both to reduce boilerplate and provide a single place for element locators.
+
+This project is an implementation of this pattern for Python using Selenium
+webdriver.
+
+[![Build Status](https://travis-ci.org/eeaston/page-objects.svg?branch=master)](https://travis-ci.org/eeaston/page-objects)
+
+
+
+Documentation
+-------------
+
+https://page-objects.readthedocs.org
+
+
+Quick Example
+-------------
+
+    >>> from page_objects import PageObject, page_element
+    >>> from selenium import webdriver
+    >>>
+    >>> class LoginPage(PageObject):
+            username = page_element(id_='username')
+            password = page_element(name='password')
+            login = page_element(css='input[type="submit"]')
+
+    >>> driver = webdriver.PhantomJS()
+    >>> driver.get("http://example.com")
+    >>> page = LoginPage(driver)
+    >>> page.username = 'secret'
+    >>> page.password = 'squirrel'
+    >>> assert page.username.text == 'secret'
+    >>> page.login.click()
+
+
+Installation
+------------
+
+    $ pip install page_objects
+
+
+Project History
+---------------
+
+This was originally part of the pkglib project at http://github.com/ahlmss/pkglib,
+it has been forked to retain history.
+
+
+.. :changelog:
+
+Release History
+---------------
+
+1.0.0 (2014-09-29)
+++++++++++++++++++
+
+- Initial export from http://github.com/ahlmss/pkglib
+
+
