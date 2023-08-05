@@ -1,0 +1,46 @@
+[buildout]
+extends = versions.cfg
+
+package-name = {{{ package.namespace }}}.{{{ package.name }}}
+package-extras = [test]
+package-min-coverage = 80
+
+eggs +=
+    {{{ package.namespace }}}.{{{ package.name }}}
+    Pillow
+    ipdb
+
+parts +=
+    scripts
+    createcoverage
+    coverage-sh
+    rebuild_i18n-sh
+
+# network speedup
+socket-timeout = 3
+allow-hosts =
+    *.python.org
+    docutils.sourceforge.net
+    prdownloads.sourceforge.net
+    effbot.org
+
+# =============================
+# Generate all scripts for eggs
+# =============================
+[scripts]
+recipe = z3c.recipe.scripts
+dependent-scripts = true
+interpreter = zopepy
+eggs = ${buildout:eggs}
+
+
+[code-analysis]
+directory = src/{{{ package.namespace }}}
+flake8-max-complexity = 12
+
+[rebuild_i18n-sh]
+recipe = collective.recipe.template
+url = https://raw.github.com/collective/buildout.plonetest/master/templates/rebuild_i18n.sh.in
+output = ${buildout:directory}/bin/rebuild_i18n.sh
+mode = 755
+
