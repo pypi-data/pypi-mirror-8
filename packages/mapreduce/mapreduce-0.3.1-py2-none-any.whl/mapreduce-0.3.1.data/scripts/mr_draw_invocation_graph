@@ -1,0 +1,42 @@
+#!python
+
+import sys
+import os.path
+dev_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
+sys.path.insert(0, dev_path)
+
+import argparse
+
+import mr.config.log
+import mr.trace
+
+_OUTPUT_FILEPATH_TEMPLATE = 'request-%(request_id)s.dot'
+
+description = "Graph the invocation-graph for a request"
+
+parser = argparse.ArgumentParser(description=description)
+
+parser.add_argument('workflow_name', help='Workflow name')
+parser.add_argument('request_id', help='Request ID')
+
+args = parser.parse_args()
+
+workflow = mr.models.kv.workflow.get(args.workflow_name)
+request = mr.models.kv.request.get(workflow, args.request_id)
+
+def main():
+    ig = mr.trace.InvocationGraph(request)
+
+    dot = ig.draw_graph()
+    dot_source = ig.get_source(dot)
+
+    replacements = {
+        'request_id': request.request_id,
+    }
+
+    filepath = _OUTPUT_FILEPATH_TEMPLATE % replacements
+    with open(filepath, 'w') as f:
+        f.write(dot_source)
+
+if __name__ == '__main__':
+    main()
