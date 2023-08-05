@@ -1,0 +1,10 @@
+[alerta.plugins]
+logstash = alerta.plugins.logstash:LogStashOutput
+sns = alerta.plugins.sns:SnsTopicPublisher
+normalise = alerta.plugins.normalise:Normalise
+amqp = alerta.plugins.amqp:FanoutPublisher
+reject = alerta.plugins.reject:RejectPolicy
+
+[console_scripts]
+alertad = alerta.app:main
+
