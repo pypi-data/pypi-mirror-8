@@ -1,0 +1,30 @@
+{% extends 'infrastructure/base.html' %}
+{% load i18n %}
+{% load url from future %}
+{% block title %}{% trans 'Nodes' %}{% endblock %}
+
+{% block page_header %}
+  {% include 'horizon/common/_items_count_domain_page_header.html' with title=_('Nodes') items_count=nodes_count %}
+{% endblock page_header %}
+
+{% block main %}
+<div class="row">
+  <div class="col-xs-12">
+    <div class="actions pull-right">
+      <a href="{% url 'horizon:infrastructure:nodes:register' %}"
+         class="btn btn-primary ajax-modal">
+        <span class="fa fa-plus"></span>
+        {% trans 'Register Nodes' %}
+      </a>
+      {% if ironic_enabled %}
+        <a href="{% url 'horizon:infrastructure:nodes:auto-discover-csv' %}"
+           class="btn btn-primary ajax-modal">
+          <span class="fa fa-upload"></span>
+          {% trans 'Upload Nodes' %}
+        </a>
+      {% endif %}
+    </div>
+    {{ tab_group.render }}
+  </div>
+</div>
+{% endblock %}
