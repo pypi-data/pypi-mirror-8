@@ -1,0 +1,88 @@
+Metadata-Version: 1.0
+Name: CellMethy
+Version: 1.1.27
+Summary: Identifying focal full methylation of cell subpopulation and inferring fraction
+Home-page: https://github.com/pypa/CellMethyproject
+Author: Fang Wang
+Author-email: wangfang@ems.hrbmu.edu.cn
+License: Harbin Medical University, Python Software Foundation License
+Description: CellMethy_v1
+        
+        DNA methylation patterns within a cell population from individual somatic tissues are highly heterogeneous and polymorphic. We developed CellMethy method to quantify fraction of focal full methylation of cell subpopulation (3FMcs) and identify fully methylated regions of cell subpopulation (CellMethy) based on single base resolution DNA methylation data. 
+        This script is used for infering fraction of focal full methylation cell subpopulation.
+                
+        
+        ***************
+        Easy to start:
+        ***************
+        
+        Inputfile: File sepearated by "\t" after bismark processed including read id, strand, chromosome, position of CpGc and methylation state (Z or z).
+        
+        The result would be placed into input folder:  CellMethy.out.
+        
+        If your fastq mapping is done with bismark and extracted methylation state, use following command:
+                
+                ::
+                
+                     python FMcs.py -f inputfile -o outputfile
+        
+        Options:
+        ^^^^^^^^
+        
+                -f: The file name of input file after bismark processed, include five columns: read ID, strand, chromosome, position of CpG and methylation states Z (methylated) or z (unmethylated) separated by '\t'.
+            
+                -c: Lowest coverage cutoff in each bin, default is 10.
+                
+                -b: number of CpGs in each bin, default is 5.
+            
+                -o: The file name of output file showing full methylation of cell subpopulation, include five columns: chromosome, start, end, 3FMcs, and CpGs number in the region separated by "\t".
+                
+        examples:
+        """"""""" 
+                
+                ::
+                         
+                     cd ./ CellMethy-*.*.*/ CellMethy/bin 
+                     python ./CellMethy.py -f ./data/data_file -o myoutput 
+        
+            
+        How to get Input file
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+        If you have fastq data, you can mapping with bismark tools.
+        
+        examples:
+        """""""""
+                
+                ::
+                        
+                     bismark ./referenceGenome --bowtie2 test.fastq -o test.sam   
+                     bismark_methylation_extractor -s --comprehensive test.sam
+          
+          
+        The output file named "CpG_context_test.txt" is inputfile of  CellMethy.
+        The format of  CellMethy inputfile  include read id, strand, chromosome, position of CpGc and methylation state (Z or z) separated by '\t'.
+        
+                
+                ::
+                        
+                    Read1	+	chr21	9827508	Z
+                    Read1	-	chr21	9827503	z
+                    Read1	-	chr21	9827484	z
+                    Read2	+	chr21	9827434	Z
+                    Read2	+	chr21	9827454	Z
+                    Read2	-	chr21	9827483	z
+          
+          
+        
+Keywords: CellMethy setuptools development
+Platform: UNKNOWN
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Science/Research
+Classifier: Topic :: Software Development :: Build Tools
+Classifier: License :: OSI Approved :: Python Software Foundation License
+Classifier: Operating System :: MacOS :: MacOS X
+Classifier: Operating System :: POSIX :: Linux
+Classifier: Operating System :: Unix
+Classifier: Operating System :: POSIX
+Classifier: Programming Language :: Python :: 2.6
+Classifier: Programming Language :: Python :: 2.7
