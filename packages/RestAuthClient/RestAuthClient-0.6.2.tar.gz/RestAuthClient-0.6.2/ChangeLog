@@ -1,0 +1,94 @@
+RestAuthClient 0.6.2 (09 September 2014)
+
+  General:
+  * This project is now hosted on github:
+    https://github.com/RestAuth/RestAuthClient
+  * RestAuthClient now requires Python 2.7 or later.
+
+  Breaking changes:
+  * The classes representing users and groups have been moved for consistency:
+    * restauth_user.User is now user.RestAuthUser
+	* group.Group is now group.RestAuthGroup
+  * Factory methods get(), get_all(), create() and create_test() are now
+	classmethods, so e.g. group.get_all now becomes RestAuthGroup.get_all.
+  * User and group no longer have a common base class, this allows us to
+    import Users/Groups in the common module.
+
+  New features:
+  * Methods that return a list of entities now support the optional "flat"
+    parameter to only return a list of names instead of objects.
+  * RestAuthConnection now accepts the source_address and timeout parameters,
+    in Python 3, it also accepts an SSLContext.
+  * Path elements in HTTP requests are now quotet separately and without any
+    safe characters. This means that entity names with '/' are encoded
+	correctly.
+  * Various speed improvements.
+
+  Bugfixes:
+  * Do not decode HTTP responses, as this brakes binary protocols (e.g. BSON)
+  * Do not use mutable default arguments, this is dangerous. See:
+	http://pythonconquerstheuniverse.wordpress.com/2012/02/15/mutable-default-arguments/
+  
+  Testing:
+  * The test cases now use the content handler specified by the MIME
+    environment variable.
+  * Enable branch coverage and reach a test-coverage of 100%.
+  * Group tests now have users created via setUpModule, speeds up group tests
+    300%.
+  * setup.py test now exits with status 1 if testcases fail.
+
+
+RestAuthClient 0.6.1 (01 April 2013)
+
+  * Add --part option to setup.py to only test part of the test-suite.
+  * Add a small benchmark script to test performance of RestAuth services.
+  * Fix intersphinx documentation.
+  * Cleanup of import statements.
+  * Use cleaner isinstance() instead of ...__class__ == <class>
+  * Switch to distribute
+  * add install_requires to setup.py
+
+RestAuthClient 0.6.0 (15 September 2012)
+
+  This release adds support for version 0.6 of the RestAuth protocol. This
+  brings the following enhancements:
+  * Support for HTTP status code 403 FORBIDDEN
+  * Support for setting multiple user properties in a single HTTP call.
+
+  General:
+  * The whole code is now pep8 clean
+
+RestAuthClient 0.5.1 (13 November 2011)
+
+  General:
+  * remove false statement that this library depends on python-mimeparse
+  * Adapt to changes in newest RestAuthCommon version
+  * RestAuthConnection.set_content_handler also accepts unicode
+  
+  build-related:
+  * 'clean' target now removes more generated files
+  * handle version in a more centralized way
+  * The 'debian' branch now includes a ready-to-use debian package.
+  * The new command 'prepare_debian_changelog' updates debian/changelog to the
+    newest version
+  
+  test functions:
+  * restauth_user.create_test, User.create_property_test and group.create_test
+    now behave exactly like their non-test counterparts. The only difference
+    is that user and group creation test methods do not return an instance of
+    their respective classes.
+  * create_property_test now also throws PreconditionFailed
+  * Added documentation to the test methods
+  
+  Python3:
+  * Enable SSL certificate verification in python 3.2 or later
+  
+  Tests:
+  * Add restauth-common git-checkout to path, if its found in the same
+    directory as this directory.
+  * Improve test coverage
+  * Switch to coverage 3.5
+
+RestAuthClient 0.5.0 (29 August 2011)
+
+  * Initial version based on version 0.5 of the RestAuth protocol.
