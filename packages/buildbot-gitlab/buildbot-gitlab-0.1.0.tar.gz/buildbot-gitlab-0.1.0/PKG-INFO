@@ -1,0 +1,82 @@
+Metadata-Version: 1.1
+Name: buildbot-gitlab
+Version: 0.1.0
+Summary: Enhances a BuildBot installation to nicely integrate with GitLab
+Home-page: https://dev.vcatechnology.com/gitlab/tool-chain/buildbot-gitlab
+Author: Matt Clarkson
+Author-email: matt.clarkson@vcatechnology.com
+License: UNKNOWN
+Description: ===============
+        Buildbot GitLab
+        ===============
+        
+        
+        
+        
+        
+        
+        The Buildbot GitLab plugin provides an easy to install and configure enhancement for Buildbot.
+        
+        Installation
+        ============
+        
+        You can download and install the latest version of this software from the Python package index (PyPI) as follows:
+        
+        ::
+        
+            pip install --upgrade buildbot-gitlab
+        
+        
+        Usage
+        =====
+        
+        Buildbot Gitlab uses a RESTful API to manage multiple projects. The project name and containing folder used in Gitlab
+        is stored within a .json file, which is then parsed during the BuildMaster startup in order to generate builders for
+        each project.
+        
+        
+        TO DO: More info to follow...
+        
+        Tests
+        =====
+        
+        Included with the API are unit tests which can be run as part of the Buildbot test procedure.
+        The tests can be run via the following command:
+        
+        ::
+        
+            PYTHONPATH=. trial buildbot.test
+        
+        Which should be executed from within the buildbot directory.
+        
+        Additionally rather than running the entire Buildbot test suite, the tests specific to Buildbot Gitlab can be run with
+        the following commands
+        
+        ::
+        
+            PYTHONPATH=. trial buildbot.test.unit.test_gitlab_api
+        
+            PYTHONPATH=. trial buildbot.test.unit.test_gitlab_resources
+        
+        The tests can also be run using Pythons Unit testing framework (PyUnit) instead of twisted trial with the following command:
+        
+        ::
+        
+            PYTHONPATH=. python -m unittest -v buildbot.test.unit.test_gitlab_api
+        
+            PYTHONPATH=. python -m unittest -v buildbot.test.unit.test_gitlab_resources
+        
+        Note that the gitlab_resources tests requires buildbot & twisted packages to be present, as these provide the functionality
+        for fake web requests used by the resource tests. The API tests function independently of other packages.
+Keywords: continuous-integration,buildbot,gitlab
+Platform: UNKNOWN
+Classifier: Development Status :: 2 - Pre-Alpha
+Classifier: Environment :: Plugins
+Classifier: Environment :: Web Environment
+Classifier: Intended Audience :: System Administrators
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Operating System :: MacOS :: MacOS X
+Classifier: Operating System :: Microsoft :: Windows
+Classifier: Operating System :: POSIX
+Classifier: Programming Language :: Python
+Classifier: Topic :: Software Development :: Build Tools
