@@ -1,0 +1,187 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>API Documentation &mdash; mailman-api 0.2.4 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.2.4',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="mailman-api 0.2.4 documentation" href="index.html" />
+    <link rel="next" title="Licensing Information" href="license.html" />
+    <link rel="prev" title="Quickstart" href="quickstart.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="license.html" title="Licensing Information"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="quickstart.html" title="Quickstart"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">mailman-api 0.2.4 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="api-documentation">
+<h1>API Documentation<a class="headerlink" href="#api-documentation" title="Permalink to this headline">¶</a></h1>
+<p>Requests can be made to any of the URI&#8217;s below, strictly using the HTTP methods indicated.</p>
+<p>The body of all responses contains valid JSON objects. Unless otherwise noted, successful requests get as response a 200 (OK) status code for response, and true in the response body. Failed requests will get responses with some HTTP error code in the 400s, and a string describing the problem in the response body.</p>
+<p>Supported methods:</p>
+<span class="target" id="module-mailmanapi.api"></span><dl class="function">
+<dt id="mailmanapi.api.list_lists">
+<tt class="descclassname">mailmanapi.api.</tt><tt class="descname">list_lists</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/mailmanapi/api.html#list_lists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mailmanapi.api.list_lists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Lists existing mailing lists on the server.</p>
+<p><strong>Method</strong>: GET</p>
+<p><strong>URI</strong>: /</p>
+<p>Returns a list of the mailing lists that exist on this server.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mailmanapi.api.members">
+<tt class="descclassname">mailmanapi.api.</tt><tt class="descname">members</tt><big>(</big><em>listname</em><big>)</big><a class="reference internal" href="_modules/mailmanapi/api.html#members"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mailmanapi.api.members" title="Permalink to this definition">¶</a></dt>
+<dd><p>Lists subscribers for the <cite>listname</cite> list.</p>
+<p><strong>Method</strong>: GET</p>
+<p><strong>URI</strong>: /&lt;listname&gt;</p>
+<p>Returns an array of email addresses.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mailmanapi.api.sendmail">
+<tt class="descclassname">mailmanapi.api.</tt><tt class="descname">sendmail</tt><big>(</big><em>listname</em><big>)</big><a class="reference internal" href="_modules/mailmanapi/api.html#sendmail"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mailmanapi.api.sendmail" title="Permalink to this definition">¶</a></dt>
+<dd><p>Posts an email to the mailing list.</p>
+<p><strong>Method</strong>: POST</p>
+<p><strong>URI</strong>: /&lt;listname&gt;/sendmail</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><cite>name_from</cite>: name of the poster</li>
+<li><cite>email_from</cite>: email address of the poster</li>
+<li><cite>subject</cite>: the subject of the message</li>
+<li><cite>body</cite>: the body of the message.</li>
+<li><cite>in_reply_to</cite> (optional): Message-ID of the message that is being
+replied to, if any.</li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="mailmanapi.api.subscribe">
+<tt class="descclassname">mailmanapi.api.</tt><tt class="descname">subscribe</tt><big>(</big><em>listname</em><big>)</big><a class="reference internal" href="_modules/mailmanapi/api.html#subscribe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mailmanapi.api.subscribe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds a new subscriber to the list called <cite>&lt;listname&gt;</cite></p>
+<p><strong>Method</strong>: PUT</p>
+<p><strong>URI</strong>: /&lt;listname&gt;</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><cite>address</cite>: email address that is to be subscribed to the list.</li>
+<li><cite>fullname</cite>: full name of the person being subscribed to the list.</li>
+<li><cite>digest</cite>: if this equals <cite>true</cite>, the new subscriber will receive
+digests instead of every mail sent to the list.</li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="mailmanapi.api.unsubscribe">
+<tt class="descclassname">mailmanapi.api.</tt><tt class="descname">unsubscribe</tt><big>(</big><em>listname</em><big>)</big><a class="reference internal" href="_modules/mailmanapi/api.html#unsubscribe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mailmanapi.api.unsubscribe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unsubsribe an email address from the mailing list.</p>
+<p><strong>Method</strong>: DELETE</p>
+<p><strong>URI</strong>: /&lt;listname&gt;</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><cite>address</cite>: email address that is to be unsubscribed from the list</li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="quickstart.html"
+                        title="previous chapter">Quickstart</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="license.html"
+                        title="next chapter">Licensing Information</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/api.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="license.html" title="Licensing Information"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="quickstart.html" title="Quickstart"
+             >previous</a> |</li>
+        <li><a href="index.html">mailman-api 0.2.4 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Sergio Oliveira Campos.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,277 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>mailmanapi.api &mdash; mailman-api 0.2.4 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.2.4',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="mailman-api 0.2.4 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">mailman-api 0.2.4 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for mailmanapi.api</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">uuid</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">from</span> <span class="nn">bottle</span> <span class="kn">import</span> <span class="n">route</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">template</span><span class="p">,</span> <span class="n">default_app</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">Mailman</span> <span class="kn">import</span> <span class="n">Utils</span><span class="p">,</span> <span class="n">Errors</span><span class="p">,</span> <span class="n">Post</span><span class="p">,</span> <span class="n">mm_cfg</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&#39;Could not import Mailman module&#39;</span><span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">.members</span> <span class="kn">import</span> <span class="n">Member</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">parse_boolean</span><span class="p">,</span> <span class="n">jsonify</span><span class="p">,</span> <span class="n">get_mailinglist</span><span class="p">,</span> <span class="n">get_timestamp</span>
+
+
+<span class="n">CWD</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">__file__</span><span class="p">))</span>
+<span class="n">EMAIL_TEMPLATE</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">CWD</span><span class="p">,</span> <span class="s">&#39;templates&#39;</span><span class="p">,</span> <span class="s">&#39;message.tpl&#39;</span><span class="p">)</span>
+
+
+<span class="nd">@route</span><span class="p">(</span><span class="s">&#39;/&#39;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s">&#39;GET&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">list_lists</span><span class="p">():</span>
+<div class="viewcode-block" id="list_lists"><a class="viewcode-back" href="../../api.html#mailmanapi.api.list_lists">[docs]</a>    <span class="sd">&quot;&quot;&quot;Lists existing mailing lists on the server.</span>
+
+<span class="sd">    **Method**: GET</span>
+
+<span class="sd">    **URI**: /</span>
+
+<span class="sd">    Returns a list of the mailing lists that exist on this server.&quot;&quot;&quot;</span>
+
+    <span class="n">all_lists</span> <span class="o">=</span> <span class="n">Utils</span><span class="o">.</span><span class="n">list_names</span><span class="p">()</span>
+    <span class="n">lists</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="n">include_description</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;description&#39;</span><span class="p">)</span>
+
+    <span class="n">address</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;address&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">listname</span> <span class="ow">in</span> <span class="n">all_lists</span><span class="p">:</span>
+        <span class="n">mlist</span> <span class="o">=</span> <span class="n">get_mailinglist</span><span class="p">(</span><span class="n">listname</span><span class="p">,</span> <span class="n">lock</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+        <span class="n">members</span> <span class="o">=</span> <span class="n">mlist</span><span class="o">.</span><span class="n">getMembers</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">address</span> <span class="ow">or</span> <span class="n">address</span> <span class="ow">in</span> <span class="n">members</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">include_description</span><span class="p">:</span>
+                <span class="n">lists</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">listname</span><span class="p">,</span> <span class="n">mlist</span><span class="o">.</span><span class="n">description</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&#39;latin1&#39;</span><span class="p">)))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">lists</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">listname</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">lists</span><span class="p">)</span>
+
+
+<span class="nd">@route</span><span class="p">(</span><span class="s">&#39;/&lt;listname&gt;&#39;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s">&#39;PUT&#39;</span><span class="p">)</span></div>
+<span class="k">def</span> <span class="nf">subscribe</span><span class="p">(</span><span class="n">listname</span><span class="p">):</span>
+<div class="viewcode-block" id="subscribe"><a class="viewcode-back" href="../../api.html#mailmanapi.api.subscribe">[docs]</a>    <span class="sd">&quot;&quot;&quot;Adds a new subscriber to the list called `&lt;listname&gt;`</span>
+
+<span class="sd">    **Method**: PUT</span>
+
+<span class="sd">    **URI**: /&lt;listname&gt;</span>
+
+<span class="sd">    **Parameters**:</span>
+
+<span class="sd">      * `address`: email address that is to be subscribed to the list.</span>
+<span class="sd">      * `fullname`: full name of the person being subscribed to the list.</span>
+<span class="sd">      * `digest`: if this equals `true`, the new subscriber will receive</span>
+<span class="sd">        digests instead of every mail sent to the list.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">address</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">forms</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;address&#39;</span><span class="p">)</span>
+    <span class="n">fullname</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">forms</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;fullname&#39;</span><span class="p">)</span>
+    <span class="n">digest</span> <span class="o">=</span> <span class="n">parse_boolean</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">forms</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;digest&#39;</span><span class="p">))</span>
+
+    <span class="n">mlist</span> <span class="o">=</span> <span class="n">get_mailinglist</span><span class="p">(</span><span class="n">listname</span><span class="p">)</span>
+    <span class="n">userdesc</span> <span class="o">=</span> <span class="n">Member</span><span class="p">(</span><span class="n">fullname</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">digest</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">mlist</span><span class="o">.</span><span class="n">ApprovedAddMember</span><span class="p">(</span><span class="n">userdesc</span><span class="p">,</span> <span class="n">ack</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">admin_notif</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">Errors</span><span class="o">.</span><span class="n">MMAlreadyAMember</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="s">&quot;Address already a member.&quot;</span><span class="p">,</span> <span class="mi">409</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">Errors</span><span class="o">.</span><span class="n">MembershipIsBanned</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="s">&quot;Banned address.&quot;</span><span class="p">,</span> <span class="mi">403</span><span class="p">)</span>
+    <span class="k">except</span> <span class="p">(</span><span class="n">Errors</span><span class="o">.</span><span class="n">MMBadEmailError</span><span class="p">,</span> <span class="n">Errors</span><span class="o">.</span><span class="n">MMHostileAddress</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="s">&quot;Invalid address.&quot;</span><span class="p">,</span> <span class="mi">400</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">mlist</span><span class="o">.</span><span class="n">Save</span><span class="p">()</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">mlist</span><span class="o">.</span><span class="n">Unlock</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+
+
+<span class="nd">@route</span><span class="p">(</span><span class="s">&#39;/&lt;listname&gt;&#39;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s">&#39;DELETE&#39;</span><span class="p">)</span></div>
+<span class="k">def</span> <span class="nf">unsubscribe</span><span class="p">(</span><span class="n">listname</span><span class="p">):</span>
+<div class="viewcode-block" id="unsubscribe"><a class="viewcode-back" href="../../api.html#mailmanapi.api.unsubscribe">[docs]</a>    <span class="sd">&quot;&quot;&quot;Unsubsribe an email address from the mailing list.</span>
+
+<span class="sd">    **Method**: DELETE</span>
+
+<span class="sd">    **URI**: /&lt;listname&gt;</span>
+
+<span class="sd">    **Parameters**:</span>
+
+<span class="sd">      * `address`: email address that is to be unsubscribed from the list</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">address</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">forms</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;address&#39;</span><span class="p">)</span>
+    <span class="n">mlist</span> <span class="o">=</span> <span class="n">get_mailinglist</span><span class="p">(</span><span class="n">listname</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">mlist</span><span class="o">.</span><span class="n">ApprovedDeleteMember</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">admin_notif</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">userack</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="n">mlist</span><span class="o">.</span><span class="n">Save</span><span class="p">()</span>
+    <span class="k">except</span> <span class="n">Errors</span><span class="o">.</span><span class="n">NotAMemberError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="s">&quot;Not a member.&quot;</span><span class="p">,</span> <span class="mi">404</span><span class="p">)</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">mlist</span><span class="o">.</span><span class="n">Unlock</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+
+
+<span class="nd">@route</span><span class="p">(</span><span class="s">&#39;/&lt;listname&gt;&#39;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s">&#39;GET&#39;</span><span class="p">)</span></div>
+<span class="k">def</span> <span class="nf">members</span><span class="p">(</span><span class="n">listname</span><span class="p">):</span>
+<div class="viewcode-block" id="members"><a class="viewcode-back" href="../../api.html#mailmanapi.api.members">[docs]</a>    <span class="sd">&quot;&quot;&quot;Lists subscribers for the `listname` list.</span>
+
+<span class="sd">    **Method**: GET</span>
+
+<span class="sd">    **URI**: /&lt;listname&gt;</span>
+
+<span class="sd">    Returns an array of email addresses.&quot;&quot;&quot;</span>
+
+    <span class="n">mlist</span> <span class="o">=</span> <span class="n">get_mailinglist</span><span class="p">(</span><span class="n">listname</span><span class="p">,</span> <span class="n">lock</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">mlist</span><span class="o">.</span><span class="n">getMembers</span><span class="p">())</span>
+
+
+<span class="nd">@route</span><span class="p">(</span><span class="s">&#39;/&lt;listname&gt;/sendmail&#39;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s">&#39;POST&#39;</span><span class="p">)</span></div>
+<span class="k">def</span> <span class="nf">sendmail</span><span class="p">(</span><span class="n">listname</span><span class="p">):</span>
+<div class="viewcode-block" id="sendmail"><a class="viewcode-back" href="../../api.html#mailmanapi.api.sendmail">[docs]</a>    <span class="sd">&quot;&quot;&quot;Posts an email to the mailing list.</span>
+
+<span class="sd">    **Method**: POST</span>
+
+<span class="sd">    **URI**: /&lt;listname&gt;/sendmail</span>
+
+<span class="sd">    **Parameters**:</span>
+
+<span class="sd">      * `name_from`: name of the poster</span>
+<span class="sd">      * `email_from`: email address of the poster</span>
+<span class="sd">      * `subject`: the subject of the message</span>
+<span class="sd">      * `body`: the body of the message.</span>
+<span class="sd">      * `in_reply_to` (optional): Message-ID of the message that is being</span>
+<span class="sd">        replied to, if any.&quot;&quot;&quot;</span>
+
+    <span class="n">mlist</span> <span class="o">=</span> <span class="n">get_mailinglist</span><span class="p">(</span><span class="n">listname</span><span class="p">,</span> <span class="n">lock</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+    <span class="n">context</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">context</span><span class="p">[</span><span class="s">&#39;email_to&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">mlist</span><span class="o">.</span><span class="n">GetListEmail</span><span class="p">()</span>
+    <span class="n">context</span><span class="p">[</span><span class="s">&#39;message_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">uuid</span><span class="o">.</span><span class="n">uuid1</span><span class="p">()</span>
+    <span class="n">context</span><span class="p">[</span><span class="s">&#39;ip_from&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;REMOTE_ADDR&#39;</span><span class="p">)</span>
+    <span class="n">context</span><span class="p">[</span><span class="s">&#39;timestamp&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_timestamp</span><span class="p">()</span>
+
+    <span class="n">context</span><span class="p">[</span><span class="s">&#39;name_from&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">forms</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;name_from&#39;</span><span class="p">)</span>
+    <span class="n">context</span><span class="p">[</span><span class="s">&#39;email_from&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">forms</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;email_from&#39;</span><span class="p">)</span>
+    <span class="n">context</span><span class="p">[</span><span class="s">&#39;subject&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">forms</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;subject&#39;</span><span class="p">)</span>
+    <span class="n">context</span><span class="p">[</span><span class="s">&#39;body&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">forms</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;body&#39;</span><span class="p">)</span>
+
+    <span class="n">in_reply_to</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">forms</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;in_reply_to&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">in_reply_to</span><span class="p">:</span>
+        <span class="n">context</span><span class="p">[</span><span class="s">&#39;in_reply_to&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">in_reply_to</span>
+
+    <span class="k">if</span> <span class="bp">None</span> <span class="ow">in</span> <span class="n">context</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+        <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="s">&#39;Missing information. `email_from`, `subject` and &#39;</span>
+                       <span class="s">&#39;`body` are mandatory&#39;</span><span class="p">,</span> <span class="mi">400</span><span class="p">)</span>
+
+    <span class="n">email</span> <span class="o">=</span> <span class="n">template</span><span class="p">(</span><span class="n">EMAIL_TEMPLATE</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span>
+    <span class="n">Post</span><span class="o">.</span><span class="n">inject</span><span class="p">(</span><span class="n">listname</span><span class="p">,</span> <span class="n">email</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&#39;utf8&#39;</span><span class="p">),</span> <span class="n">qdir</span><span class="o">=</span><span class="n">mm_cfg</span><span class="o">.</span><span class="n">INQUEUE_DIR</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">get_application</span><span class="p">(</span><span class="n">allowed_ips</span><span class="p">):</span></div>
+    <span class="n">bottle_app</span> <span class="o">=</span> <span class="n">default_app</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">application</span><span class="p">(</span><span class="n">environ</span><span class="p">,</span> <span class="n">start_response</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">environ</span><span class="p">[</span><span class="s">&#39;REMOTE_ADDR&#39;</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">allowed_ips</span><span class="p">:</span>
+            <span class="n">status</span> <span class="o">=</span> <span class="s">&#39;403 FORBIDDEN&#39;</span>
+            <span class="n">headers</span> <span class="o">=</span> <span class="p">[(</span><span class="s">&#39;Content-type&#39;</span><span class="p">,</span> <span class="s">&#39;text/plain&#39;</span><span class="p">)]</span>
+            <span class="n">start_response</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="n">headers</span><span class="p">)</span>
+            <span class="k">return</span> <span class="s">&#39;FORBIDDEN&#39;</span>
+
+        <span class="k">return</span> <span class="n">bottle_app</span><span class="p">(</span><span class="n">environ</span><span class="p">,</span> <span class="n">start_response</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">application</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">mailman-api 0.2.4 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Sergio Oliveira Campos.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>
