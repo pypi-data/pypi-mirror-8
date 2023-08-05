@@ -1,0 +1,67 @@
+Metadata-Version: 1.1
+Name: riker
+Version: 0.1
+Summary: Deploy any application to AWS
+Home-page: https://github.com/jschementi/riker
+Author: Jimmy Schementi
+Author-email: jimmy@schementi.com
+License: UNKNOWN
+Description: =====
+        Riker
+        =====
+        
+        ::
+        
+          Heroku-like deployments with AWS
+        
+          Usage:
+            riker deploy [--app <app-name>] [--env <env-name>] [--scale] [--static --domain <domain-name>] [--force]
+            riker create-new-ami [--app <app-name>] [--env <env-name>]
+            riker deploy-ami [--app <app-name>] [--env <env-name>]
+            riker update-config [--app <app-name>] [--env <env-name>]
+            riker info [--app <app-name>] [--env <env-name>]
+            riker ssh --instance-id <instance-id>
+            riker dokku --instance-id <instance-id> <cmd>...
+            riker open [--app <app-name>] [--env <env-name>]
+            riker url [--app <app-name>] [--env <env-name>]
+            riker config
+            riker (-h | --help)
+            riker --version
+        
+          Options:
+            -a <app>, --app <app>           Name of app.
+            -e <env>, --env <env>           Environment for app.
+            -s, --static                    Deploy to S3.
+            -d <domain>, --domain <domain>  Domain for app.
+            --instance-id <instance-id>     EC2 Instance ID.
+            --scale                         Enable scalable deployments.
+            -f, --force                     Force deployment.
+            -h --help                       Show this screen.
+            --version                       Show version.
+        
+        
+        Advanced
+        --------
+        
+        Update config of a single instance:
+        
+        ::
+        
+          python -c "from riker import api; api.env.key_filename = api.get_pem_filename(api.instance_key_pair_name); api.execute(api.update_config, 'myapp', 'myenv', hosts=['ec2-123-456-789-012.compute-1.amazonaws.com'])"
+        
+Keywords: aws deploy paas scale
+Platform: UNKNOWN
+Classifier: Development Status :: 4 - Beta
+Classifier: Environment :: Console
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: Information Technology
+Classifier: Intended Audience :: System Administrators
+Classifier: License :: OSI Approved :: GNU General Public License v2 (GPLv2)
+Classifier: Natural Language :: English
+Classifier: Operating System :: POSIX :: Linux
+Classifier: Operating System :: MacOS :: MacOS X
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Topic :: System :: Installation/Setup
+Classifier: Topic :: System :: Software Distribution
+Classifier: Topic :: System :: Systems Administration
+Classifier: Topic :: Utilities
