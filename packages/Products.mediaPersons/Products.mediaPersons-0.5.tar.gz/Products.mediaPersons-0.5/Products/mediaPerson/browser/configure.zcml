@@ -1,0 +1,19 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    i18n_domain="Products.mediaPerson">
+
+  <include package="plone.app.contentmenu" />
+
+  <!-- -*- extra stuff goes here -*- -->
+  <!-- Viewlets -->
+    <browser:viewlet
+      name="Products.mediaPerson.socialButtonsViewlet"
+      manager="plone.app.layout.viewlets.interfaces.IAboveContentBody"
+      layer=".interfaces.IThemeSpecific"
+      class=".views.SocialButtonsView"
+      template="templates/social_buttons.pt"
+      permission="zope2.View"
+    />
+
+</configure>
