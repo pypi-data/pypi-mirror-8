@@ -1,0 +1,45 @@
+{% from "macros.html" import form_group, prepend_append, print_label with context %}
+
+{% call form_group(field, attrs, 'MultiCheckbox') %}
+    <fieldset>
+        <legend>
+            {% if widget.show_toggler %}
+                {% call print_label(field, widget.caption, description, tooltip, attrs=Attrs(class='checkbox', required=attrs['required'])) %}
+                    <input data-tag="toggler" id="{{ field.fullname }}" type="checkbox"/>
+                {% endcall %}
+            {% else %}
+                {{ print_label(field, widget.caption, description, tooltip, attrs=Attrs(class='checkbox', required=attrs['required'])) }}
+            {% endif %}
+        </legend>
+
+        {% for i, data in enumerate(zip_longest(field.choices(), field.widget.options())) %}
+            {% set value, option = data %}
+            {% if option is none %}
+                {% if widget.get_option %}
+                    {% set option = widget.get_option(value) %}
+                {% else %}
+                    {% set option = field.format_value(value) %}
+                {% endif %}
+            {% endif %}
+            {% set optattrs = Attrs(attrs,
+                type = 'checkbox',
+                value = field.format_value(value),
+                checked = field.is_chosen(value),
+                name = field.fullname ~ '-' ~ (i + 1),
+                id = field.fullname ~ '-' ~ field.format_value(value)
+            ) %}
+            {% if isinstance(option, tuple) %}
+                {% set option, _optattrs = option %}
+                {% do optattrs.update(_optattrs) %}
+            {% endif %}
+
+            <div class="controls">
+                {% call print_label(field, option, attrs=Attrs(class='checkbox', for=optattrs['id'], required=False)) %}
+                    <input {{ optattrs }}/>
+                {% endcall %}
+            </div>
+        {% endfor %}
+    </fieldset>
+
+    {{ field.alerts() }}
+{% endcall %}
