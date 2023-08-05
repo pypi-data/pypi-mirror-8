@@ -1,0 +1,24 @@
+[buildout]
+extends = versions.cfg
+
+show-picked-versions = true
+allow-picked-versions = true
+
+package-name = {{{ package.namespace }}}.{{{ package.namespace2 }}}.{{{ package.name }}}
+package-extras = [test]
+
+eggs +=
+    {{{ package.namespace }}}.{{{ package.namespace2 }}}.{{{ package.name }}}
+    Pillow
+
+# network speedup
+socket-timeout = 3
+allow-hosts =
+    *.python.org
+    docutils.sourceforge.net
+    prdownloads.sourceforge.net
+    effbot.org
+
+[instance1]
+debug-mode = on
+verbose-security = on
