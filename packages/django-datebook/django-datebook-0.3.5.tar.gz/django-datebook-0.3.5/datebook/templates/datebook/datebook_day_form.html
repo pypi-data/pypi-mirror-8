@@ -1,0 +1,16 @@
+{% extends "datebook/base.html" %}
+{% load autobreadcrumb crispy_forms_tags %}
+
+{% block head_base_js %}{{ block.super }}
+<script type="text/javascript">
+//<![CDATA[
+    $(document).ready(function() {
+        init_form("form");
+    });
+//]]>
+</script>
+{% endblock %}
+
+{% block datebook_content %}
+{% crispy form %}
+{% endblock %}

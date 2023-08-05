@@ -1,0 +1,131 @@
+{% extends "datebook/base.html" %}
+{% load i18n %}
+
+{% block head_base_js %}{{ block.super }}
+<script type="text/javascript">
+//<![CDATA[
+$(document).ready(function($) {
+    /*
+     * Switch calendar to mosaic/flat view
+     */
+    $('#datebook-switch-to-mosaic').click(function(e) {
+        $('.row.datebook').addClass('large-row-fluid');
+        $('#datebook-switch-to-flat').addClass('secondary');
+        $(this).removeClass('secondary');
+        $('.datebook-month').addClass('calendar');
+        return false;
+    });
+    $('#datebook-switch-to-flat').click(function(e) {
+        $('.row.datebook').removeClass('large-row-fluid');
+        $('#datebook-switch-to-mosaic').addClass('secondary');
+        $(this).removeClass('secondary');
+        $('.datebook-month').removeClass('calendar');
+        return false;
+    });
+    
+    /*
+     * Navigation within reveal modal for next/previous day
+     */
+    $("body").on( "click", "a.modal-navigation-day", function(e) {
+        var $this = $(this),
+            url = $this.attr('href'),
+            from_id = $this.attr('data-from-id'),
+            target_id = $this.attr('data-target-id');
+        
+        $.get( url, function(data) {
+            $('#revealDayModal > .inner').replaceWith(data);
+        //})
+        //.fail(function() {
+        //    console.log( "error" );
+        });
+        
+        return false;
+    });
+});
+//]]>
+</script>
+{% endblock %}
+
+{% block datebook_container_css_classes %} large-row-fluid{% endblock %}
+
+{% block datebook_content %}
+<div class="clearfix">
+    <ul class="button-group round right datebook-view-mode">
+        <li><a href="#" class="button tiny" id="datebook-switch-to-mosaic" title="Calendar view"><i class="icon-calendar"></i></a></li>
+        <li><a href="#" class="button tiny secondary" id="datebook-switch-to-flat" title="Flat view"><i class="icon-list-ul"></i></a></li>
+    </ul>
+</div>
+
+<div class="datebook-month calendar">
+    <div class="head">
+        {% spaceless %}
+            <span class="weekno"></span>
+            {% for classname, name in datebook_calendar.weekheader %}
+            <span class="{% cycle 'mon' 'tue' 'wed' 'thu' 'fri' 'sat' 'sun' %}">{% trans name %}</span>
+            {% endfor %}
+        {% endspaceless %}
+    </div>
+    
+    {% spaceless %}
+    {% for week in datebook_calendar.month %}
+    <div class="week">
+        <div class="item weekno">
+            <span class="label radius">Week&nbsp;{{ forloop.counter }}</span>
+        </div>
+        {% for day in week %}
+            {% cycle 'mon' 'tue' 'wed' 'thu' 'fri' 'sat' 'sun' as day_name silent %}
+            <div class="item {{ day_name }}{% if day.entry %} has-entry{% if day.entry.vacation %} vacation{% endif %}{% endif %}{% if day.is_current %} current{% endif %}{% if day.noday %} noday{% endif %}"
+            {% if not day.noday %}
+             data-date="{{ day.date.day }}"
+             id="{{ day_name }}-{{ day.date.day }}"{% endif %}
+             >
+                {% if not day.noday %}
+                    <h3>{{ day.date|date:"l d F" }}</h3>
+                    <div class="container">
+                        {% if day.entry %}
+                            {% if day.entry.vacation %}
+                                <p class="vacation-label">Vacation</p>
+                            {% else %}
+                                {% comment %}<p class="working-hour">
+                                    <i class="icon-clock"></i> {{ day.entry.get_working_hours }} 
+                                    <span> <i class="icon-timer"></i> {{ day.entry.get_elapsed_time }}</span>
+                                </p>{% endcomment %}
+                                <ul class="inline-list time-infos">
+                                    <li><span class="label round secondary"><i class="icon-clock"></i> {{ day.entry.get_working_hours }}</span></li>
+                                    <li><span class="label round secondary"><i class="icon-timer"></i> {{ day.entry.get_elapsed_time }}</li>
+                                </ul>
+                                {% if day.entry.content %}
+                                    <div class="content">{{ day.entry.content|linebreaks }}</div>
+                                {% else %}
+                                    <p class="empty">Empty content</p>
+                                {% endif %}
+                            {% endif %}
+                        {% else %}
+                        <p class="empty">There is no entry yet, <a href="{% url 'datebook-author-day-add' author=author year=datebook.period.year month=datebook.period.month day=day.date.day %}">add one</a></p>
+                        {% endif %}
+                    </div>
+                    <div class="menu">
+                        {% if day.entry %}
+                            <a title="{% trans 'Read' %}" class="read action" href="{% url 'datebook-author-day' author=author year=datebook.period.year month=datebook.period.month day=day.date.day %}" data-reveal-id="revealDayModal" data-reveal-ajax="true">
+                                <i class="icon-eye"></i>
+                            </a> 
+                            <a title="{% trans 'Edit' %}" class="edit action" href="{% url 'datebook-author-day-edit' author=author year=datebook.period.year month=datebook.period.month day=day.date.day %}">
+                                <i class="icon-pencil"></i>
+                            </a>
+                        {% else %}
+                            <a title="{% trans 'Add' %}" class="add action" href="{% url 'datebook-author-day-add' author=author year=datebook.period.year month=datebook.period.month day=day.date.day %}">
+                                <i class="icon-add-circle"></i>
+                            </a> 
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+    {% endfor %}
+    {% endspaceless %}
+    
+</div>
+{% endblock %}
+
+{% block foot_more_js %}<div id="revealDayModal" class="reveal-modal medium" data-reveal="true"></div>{% endblock %}
