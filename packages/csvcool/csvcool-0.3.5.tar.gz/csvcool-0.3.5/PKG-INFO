@@ -1,0 +1,51 @@
+Metadata-Version: 1.1
+Name: csvcool
+Version: 0.3.5
+Summary: Cool way to deal with 'headed' CSV
+Home-page: http://bitbucket.org/leliel12/csvcool
+Author: JBC
+Author-email: jbc dot develop at gmail dot com
+License: GPL3
+Description: Cool way to deal with 'headed' CSV
+        
+        Rules of the parser
+            1 - First row is a list of column names.
+            2 - All rows have the same numbers of columns.
+            3 - Empty column names are ignored.
+            4 - Columns without name are ignored.
+        
+        Example:
+        
+            +-------+-------+----+-------+----+
+            | name0 | name1 |    | name3 |    |
+            +-------+-------+----+-------+----+
+            | v0    |       | v2 | v3    | v4 |
+            +-------+-------+----+-------+----+
+        
+        Equivalent:
+        
+            +-------+-------+-------+
+            | name0 | name1 | name3 |
+            +-------+-------+-------+
+            | v0    |       | v2    |
+            +-------+-------+-------+
+        
+        Use:
+        
+            >>> import csvcool
+            >>> cool = csvcool.read(open("path/to/csv"))
+            >>> cool[0]["name0"]
+            v0
+            >>> cool[0]["name0"] = 1
+            >>> cool[0]["name0"]
+            1
+            >>> csvcool.write(cool, open("path/to/csv", "w"))
+        
+        
+        
+Keywords: csv
+Platform: UNKNOWN
+Classifier: Development Status :: 4 - Beta
+Classifier: Topic :: Utilities
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 2
