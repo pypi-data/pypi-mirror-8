@@ -1,0 +1,19 @@
+<!doctype html>
+<html>
+<head>
+<script type="text/javascript">
+var mtime = "{{ mtime }}";
+var source = new EventSource("{{ url_for('updates', mtime=mtime) }}");
+source.onmessage = function(event) {
+	if (event.data > mtime) {
+		window.location.reload(true);
+	}
+};
+</script>
+<link rel="stylesheet" href="/static/pygments.css" type="text/css" />
+</head>
+<body>
+	<title>{{ title }}</title>
+	{{ html }}
+</body>
+</html>
