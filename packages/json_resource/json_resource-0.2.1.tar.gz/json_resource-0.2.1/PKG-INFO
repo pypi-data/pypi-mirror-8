@@ -1,0 +1,281 @@
+Metadata-Version: 1.0
+Name: json_resource
+Version: 0.2.1
+Summary: UNKNOWN
+Home-page: UNKNOWN
+Author: Ernst Odolphi
+Author-email: ernst.odolphi@gmail.com
+License: UNKNOWN
+Description: .. image:: https://drone.io/bitbucket.org/eodolphi/json-resource/status.png
+           :target: https://drone.io/bitbucket.org/eodolphi/json-resource/latest
+        
+        
+        
+        JSON Resource
+        =============
+        
+        JSON resources are `dict`, and `list` types. They behave
+        like oridnary python dicts and lists, but have extra functionality from several
+        json standards.
+        
+        Installation
+        ------------
+        
+        pip install json_resource
+        
+        
+        Basic Usage
+        ----------
+        
+        >>> from json_resource import Resource
+        >>> from json_patch import Patch
+        >>> from json_hyper_schema import Schema
+        
+        >>> schema = Schema({
+            'id': 'test',
+            'properties': {
+                'test': {'type': 'string'},
+                'list': {
+                    'required': True,
+                    'items': {
+                      'type': 'number'
+                   }
+            },
+            'links': [{'rel': self': 'hreff': '/resources/{test}'}, 
+                      {'rel': 'collection', 'href': '/resources'}]
+        })
+        
+        
+        >>> resource = Resource({'test': 'bla', 'list': [3,4,5]}, schema=schema)
+        
+        Validation
+        ---------------
+        
+        Resources with an associated schema can be validated
+        
+        >>> resource.validate()
+        True
+        
+        
+        JSON-pointer
+        --------------
+        
+        Resources suppert indexing by json-pointer
+        
+        >>> from json_pointer import Pointer
+        >>> pointer = Pointer('/list/1')
+        >>> resource[pointer]
+        4 
+        
+        JSON-patch
+        ----------
+        
+        Resources can be modified using json-patch
+        
+        >>> from json_patch import Patch
+        >>> patch = [{'op': 'add': 'path': '/list/4', 'value': 6}]
+        >>> resource.patch(patch)
+        >>> resource['list']
+        [3,4,5,6]
+        
+        Sub-resources
+        --------------
+        
+        
+        When possible indexing returns another resource:
+        
+        >>> resource['list'].schema
+        Schema('required': True, 'items': {'type': 'number'})
+        
+        >>> resource['list'][Pointer('/0')]
+        3
+        
+        JSON Reference
+        ---------------
+        
+        When a resources hyper-schema contains a `self` link, the resources url can be
+        retrieved:
+        
+        >>> resource.url
+        '/resources/bla'
+        
+        It is also possible to retrieve url's for other relations
+        >>> resource.rel('collection')
+        '/resources/'
+        
+        
+        Inheritance # TODO
+        ------------
+        
+        It is possible to sub-class resources by ID. When loading a resource, the 
+        subclass is automatically selected:
+        
+        
+        >>> class FooResource(Resource):
+                id = 'example'
+                def foo():
+                    print 'foo'
+        
+        
+        >>> schema = Schema({
+            'id': 'parent',
+            'properties': {
+                'sub-resource': {
+                    'id': 'example',
+                    'properties': {
+                        'test': {'type': 'string'},
+                    }
+                }
+            }
+        })
+        
+        
+        >>> resource = Resource({'sub-resource': {'test': 'bla'}}}, schema=schema)
+        >>> resource.foo()
+        foo
+        >>> resource.__class__
+        __main__.FooResource
+        
+        
+        Automatically load schemas
+        ---------------------------
+        
+        Schemas can also be loaded automatically from a `schemas` directory.
+        
+        >>> Resource.register_schema_dir('/schemas')
+        >>> resource = Resource({'test': 'bla'}, schema='test')
+        >>> resource.schema
+        {'id': 'test', 'properties': {'example': {'type': 'string'}}}
+        
+        If a resource class has a schema-id associated, it will automatically be loaded
+        
+        >>> resource = FooResource({'test': 'example'})
+        >>> resource.schema
+        {'id': 'example', 'test': 'example'}
+        
+        Stored Resources
+        ----------------
+        
+        Resource can be persisted:
+        
+        >>> from json_resource.mongo import MongoResource
+        >>> class StoredExample(MongoResource):
+            id='stored-example'
+            db = MongoClient()['example']
+        
+        
+        >>> StoredExample.schema
+        {
+            'id': 'stored-example', 
+            'properties': {
+               'name': {'type': 'string', 'required': true},
+               'votes': {'type': 'integer', default=0}
+            }},
+            'links': [{'rel': 'self', 'href': '/stored-examples/{name}'}]
+        }
+        
+        >>> resource = StoredExample({'name': 'test', 'votes': 3})
+        >>> resource.save()
+        
+        >>> StoredExample({'name': 'test'}).load()
+        {'name': 'test', 'votes': 3}
+        
+        Resource can be deleted
+        
+        >>> resource.delete()
+        >>> StoredExample({'name': 'test'}).load()
+        ResourceDoesNotExist: '/stored-example/test'
+        
+        It is possible to force an insert or an update
+        
+        >>> data = {'name': 'bla'}
+        >>> StoredExample(data).insert()
+        >>> StoredExample(data).insert()
+        ResourceExists: '/stored-example/bla'
+        >>> data = {'name': 'bli'}
+        >>> StoredExample(data).save(upsert=False)
+        ResourceDoesNotExist: 'stored-example/bli'
+        
+        You can check if a resource exists
+        
+        >>> example = StoredExample({'name': 'bli'})
+        >>> example.exists
+        False
+        >>> example.save()
+        >>> example.exists
+        True
+        
+        QuerySet
+        ------------
+        
+        It is possible to query a stored resource by using a resource's queryset:
+        
+        >>> for resource in StoredExample.objects:
+                print resource.url
+        '/stored-example/1'
+        '/stored-example/2'
+        '/stored-example/3'
+        
+        >>> for resource in StoredExample.objects.sort(('id', -1)):
+                print resource.url
+        '/stored-example/3'
+        '/stored-example/2'
+        '/stored-example/1'
+        
+        >>> for resource in StoredExample.objects.filter({'id': 1}):
+                print resource.url
+        '/stored-example/1'
+        
+        #TODO
+        It is also possible to perform mass inserts / deletes using the queryset
+        
+        >>> StoredExample.object.insert([
+                {'id': 1}, {'id': 2}, {'id': 3}
+            ])
+        
+        >>> StoredExample.objects.delete()
+        >>> len(StoredExample.objects)
+        
+        
+        Collection Resources
+        --------------------
+        
+        Collection resources represent collections of resources:
+        
+        >>> class ExampleCollection(CollectionResource):
+                queryset = StoredExample.objects
+        
+        >>> ExampleCollection.schema
+        Schema({
+            'id': 'stored-example-collection',
+            'properties': {
+                'paging': {
+                    'properties': {
+                        'page': {'type': 'integer', default: 0},
+                        'size': {'type': 'integer'},
+                        'found': {'type': 'integer'}
+                    },
+                },
+                'items': {'type': 'array', 'items': {$ref': 'stored-example'}}
+            }
+        })
+        >>> collection = ExampleCollection()
+        >>> collection.url
+        '/stored-example'
+        >>> collection
+        Collection([{'name': 'bla'}, {'name': 'bli'}, {'name': 'bloe'}])
+        
+        >>> for i in collection: print i.url
+        '/stored-example/bla'
+        '/stored-example/bli'
+        '/stored-example/bloe'
+        
+        Collection can be indexed and filtered
+        
+        >>> collection[1]
+        StoredExample({'name': 'bli'})
+        
+        >>> collection[0:2]
+        [StoredExample({'name': 'bla'}), StoredExample({'name': 'bli'})])
+        
+Platform: UNKNOWN
