@@ -1,0 +1,21 @@
+metadata:
+   author: James Horey
+   version: 0.2.0
+   description: The Apache Hadoop software library is a framework that allows for the distributed processing of large data sets across clusters of computers using simple programming models. It is designed to scale up from single servers to thousands of machines, each offering local computation and storage. Rather than rely on hardware to deliver high-availability, the library itself is designed to detect and handle failures at the application layer, so delivering a highly-available service on top of a cluster of computers, each of which may be prone to failures. 
+   icon: hadoop.png
+   tags: [infrastructure,big data,hadoop]
+   url: http://hadoop.apache.org/
+params:
+   resolver: ferry.docker.resolve.DefaultResolver
+questions:
+   - question: Number of instances for hadoop
+     param: "{instances}"
+backend:
+   - storage:
+        personality: "hadoop"
+        instances: "{instances}"
+        layers:
+           - "hive"
+connectors:
+   - personality: "ferry/hadoop-client"
+     ports: ["19888:19888","8088:8088","50070:50070"]
