@@ -1,0 +1,123 @@
+{% extends "standalone.html" %}
+{% block title %}Escher{% endblock %}
+{% block head %}
+  <script src="{{d3}}"></script>
+
+  <link rel="stylesheet" href="{{boot_css}}"/>
+  <link rel="stylesheet" href="{{index_css}}"/>
+
+  <!-- This font cannot be downloaded. -->
+  <script src="//use.edgefonts.net/tulpen-one.js"></script>
+{% endblock %}
+{% block content %}
+  <main>
+    <div class="container">
+      <header class="row">
+	<div class="col-sm-12">
+	  <img src="{{logo}}" id="logo">
+	  <div id="title-box">
+	    <h1 id="title">ESCHER</h1>
+	  </div>
+	</div>
+      </header>
+      <div class="row">	
+	<div class="col-sm-12">
+	  <h3>Filter by organism</h3>
+	  <select id="organisms" class="form-control">
+	    <option value="all">All</option>
+	  </select>
+	</div>
+      </div>
+      <div class="row">
+	<div class="col-sm-5">
+	  <h3>Map</h3>
+	  <select id="maps" class="form-control">
+	    <option value="none">None</option>
+	  </select>
+	</div>
+	<div class="col-sm-4">
+	  <h3>Model (Optional)</h3>
+	  <select id="models" class="form-control">
+	    <option value="none">None</option>
+	  </select>
+	</div>
+	<div class="col-sm-3">
+	  <h3>Tool</h3>
+	  <select id="tools" class="form-control">
+	    <option class="tool" value="viewer">Viewer</option>
+	    <option class="tool" value="builder">Builder</option>
+	    {% if not web_version %}
+	      <option class="tool" value="local_viewer">Viewer (Offline)</option>
+	      <option class="tool" value="local_builder">Builder (Offline)</option>
+	    {% endif %}
+	  </select>
+	</div>
+      </div>
+      <div class="row">
+	<div class="col-sm-6">
+	  <h3>Options</h3>
+	    <div style="width: 100%"><input type="checkbox" id="scroll"> Scroll to zoom (instead scroll to pan)</div>
+	    <div style="width: 100%"><input type="checkbox" id="never_ask"> Never ask before reloading</div>
+	</div>
+	<div class="col-sm-6">
+	  <button type="button" id="submit" class="btn btn-default column-button">
+	    Load map
+	  </button>
+	</div>
+      </div>
+      <!-- FAQ  -->
+      <div id="faq" class="row">
+	<hr/>
+	<div class="col-sm-12">
+	  <h2>FAQ</h2>
+	  <ol>
+	    <li><h4>What is Escher?</h4>
+	      <p>Escher is a web-based tool for building, viewing, and sharing
+	      visualizations of metabolic pathways. These 'pathway maps' are a
+	      great way to contextualize data about metabolism. More information
+	      and documentation can be found on <a href="{{github}}">Github</a>.
+	      </p>
+	    </li>
+	    <li><h4>Are there more maps available? Can I contribute maps?</h4>
+	      <p>Many maps for organisms in the <a href="http://bigg.ucsd.edu/">BIGG</a> database
+		will be uploaded to Escher before the v1.0 release. I will also
+		be providing details on how to submit maps <i>via</i> Github.</p>
+	    </li>
+	    <li><h4>How do I cite Escher?</h4>
+	      <p>Escher has not yet been published in a peer-reviewed journal,
+		but, in the meantime, you can cite the code by DOI:
+		<a href="http://dx.doi.org/10.5281/zenodo.11712"><img
+		src="https://zenodo.org/badge/6078/zakandrewking/escher.png"><a>.</p>
+	    </li>
+	    <li><h4>I have more questions. Who do I ask?</h4>
+	      <p>You can follow <a href="https://twitter.com/zakandrewking">@zakandrewking</a>
+		for Escher updates, and ask for help on Stack Overflow with the
+		<a href="http://stackoverflow.com/questions/tagged/escher">Escher</a> tag. If
+		you find bugs or would like to contribute to the project, feel
+		free to submit an issue and or a pull request on <a href="{{github}}">Github</a>.</p> 
+	    </li>
+	  </ol>
+	</div>
+      </div>
+    </div>
+    <div id="push"></div>
+  </main>
+  <footer>
+    <div class="container">
+      <p class="more">
+	Learn more about <a href="{{github}}">Escher</a>
+      </p>
+      <p class="version">
+	Version {{version}}
+      </p>
+    </div>
+  </footer>
+
+  <script>var data={{data}};</script>
+  <script src="{{index_js}}"></script>
+  {% if web_version %}
+    <script src="{{index_gh_pages_js}}"></script>
+  {% else %}
+    <script>setup()</script>
+  {% endif %}
+{% endblock %}
