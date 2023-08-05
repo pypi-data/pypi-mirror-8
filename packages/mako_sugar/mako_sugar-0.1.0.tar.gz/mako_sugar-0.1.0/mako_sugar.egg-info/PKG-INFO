@@ -1,0 +1,35 @@
+Metadata-Version: 1.1
+Name: mako-sugar
+Version: 0.1.0
+Summary: Syntax sugar for Python Mako templates
+Home-page: https://github.com/marcpare/mako-sugar
+Author: Marc Paré
+Author-email: marc@smallredtile.com
+License: MIT
+Download-URL: https://github.com/marcpare/mako-sugar/tarball/0.1.0
+Description: Mako Sugar
+        ===
+        
+        A preprocessor that adds some syntactic sugar to Mako templates.
+        
+        Write:
+        
+            % call foo():
+                hi
+            % endcall
+                
+        instead of:
+        
+            <%call expr="foo()">
+                hi
+            </%call>
+            
+        Install with:
+        
+                from mako_sugar import sugar
+                
+                # Any one of these options...
+                t = Template(..., preprocessor=sugar())
+                t = Template(..., preprocess=sugar(exclude=['def', 'call', 'import']))
+                TemplateLookup(preprocessor=sugar())
+Platform: UNKNOWN
