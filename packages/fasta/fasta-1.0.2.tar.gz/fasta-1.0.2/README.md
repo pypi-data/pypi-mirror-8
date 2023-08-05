@@ -1,0 +1,1 @@
+The fasta python package enables you to deal with biological sequence files easily.
