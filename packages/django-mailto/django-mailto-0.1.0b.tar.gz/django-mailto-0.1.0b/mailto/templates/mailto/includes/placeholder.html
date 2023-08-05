@@ -1,0 +1,7 @@
+{% if user.is_superuser %}
+<div id="placeholder-{{ placeholder_id }}" contenteditable="true">
+    {{ placeholder|default:'&nbsp;' }}
+</div>
+{% else %}
+{{ placeholder }}
+{% endif %}

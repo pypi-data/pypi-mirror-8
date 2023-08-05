@@ -1,0 +1,24 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>{% block head_title %}{{ subject }}{% endblock %}</title>
+
+        {% if user.is_superuser %}
+        <link rel="stylesheet" href="{% static 'mailto/css/mail_editable.css' %}" />
+        {% endif %}
+
+        {% block extra_head %}{% endblock %}
+
+    </head>
+    <body {% block extra_body_attrs %}{% endblock %}>
+        {% block body %}{% endblock %}
+
+        {% if user.is_superuser %}
+        <script type="text/javascript" src="{% static 'mailto/js/lib/ckeditor/ckeditor.js' %}"></script>
+        {% endif %}
+
+        {% block extra_body %}{% endblock %}
+    </body>
+</html>
