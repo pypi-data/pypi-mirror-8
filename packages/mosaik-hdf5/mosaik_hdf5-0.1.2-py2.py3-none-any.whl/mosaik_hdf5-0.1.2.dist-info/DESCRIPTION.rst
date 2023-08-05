@@ -1,0 +1,49 @@
+mosaik-hdf5
+===========
+
+Store mosaik simulation data in an HDF5 database.
+
+
+Installation
+------------
+
+*mosaik-hdf5* uses the `h5py`__ module. If you get an error during installation
+that `hdf5.h` is missing, install the HDF5 headers (e.g., ``sudo apt-get
+install libhdf5-dev`` or ``brew install hdf5``) or use a binary package (e.g.,
+for `Windows`__)
+
+::
+
+    $ pip install mosaik-hdf5
+
+__ http://www.h5py.org/
+__ http://www.lfd.uci.edu/~gohlke/pythonlibs/#h5py
+
+
+Changelog
+=========
+
+0.1.2 – 2014-09-22
+------------------
+
+- [CHANGE] Updated to mosaik-api 2.0.
+
+
+0.1.1 – 2014-07-31
+------------------
+
+- [FIX] Fixed a regression in 0.1.
+
+
+0.1 – 2014-07-31
+----------------
+
+- Initial release
+
+
+Authors
+=======
+
+The mosaik HDF5 storage backend was created by Stefan Scherfke.
+
+
