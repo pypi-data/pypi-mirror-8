@@ -1,0 +1,59 @@
+Metadata-Version: 1.1
+Name: django-event-procedures
+Version: 0.1.3
+Summary: An event driven code execution system backed by Django
+Home-page: http://www.github.com/MindClickGlobal/django-event-procedures
+Author: Bryan Clement
+Author-email: bclement01@gmail.com
+License: GNU
+Description: django-event-procedures
+        =======================
+        
+        An event driven code execution system backed by django
+        
+        
+        Getting started:
+        ===============
+        
+        run:
+            pip install django-event-procedures
+        
+        in settings:
+            In INSTALLED_APPS add 'event_procedures' as such:
+                INSTALLED_APPS = (
+                    ...
+                    'event_procedures',
+                    ...
+                )
+        
+            define SIGNAL_MODULES as a list of modules containing the signals you want
+            For example, if you want want django.core.signals it would look something like
+                SIGNAL_MODULES = [
+                    ...
+                    'django.core',
+                    ...
+                ]
+        
+            Register the event registration middleware in your middleware:
+                MIDDLEWARE_CLASSES = (
+                    ...
+                    'event_procedures.middleware.EventRegistration',
+                    ...
+                )
+        
+Platform: UNKNOWN
+Classifier: Development Status :: 3 - Alpha
+Classifier: Environment :: Web Environment
+Classifier: Framework :: Django
+Classifier: Intended Audience :: Developers
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 2.6
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.3
+Classifier: Topic :: Internet :: WWW/HTTP
+Classifier: Topic :: Internet :: WWW/HTTP :: Dynamic Content
+Classifier: Topic :: Internet :: WWW/HTTP :: WSGI
+Classifier: Topic :: Software Development :: Libraries :: Application Frameworks
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
