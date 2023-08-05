@@ -1,0 +1,182 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+from uuid import uuid4
+import phial
+import shutil
+import glob
+import sys
+import os
+
+
+if sys.version_info[0] < 3:
+   def  bytes(a, b):
+      return a
+
+
+def     create_empty_init(pathname, empty=False):
+   with open(pathname, 'wb+') as f:
+      if empty is True:
+         f.write(bytes('', 'UTF-8'))
+      else:
+         f.write(bytes('''# -*- coding: utf-8 -*-
+
+
+__all__ = []
+''', 'UTF-8'))
+
+
+if __name__ == "__main__":
+   # Check current directory is empty
+   if len(glob.glob('*')) > 0:
+      print('[Phial-Init][ERRO] This directory is not empty!')
+      sys.exit(1)
+
+   # Check sys.argv
+   if len(sys.argv) < 2:
+      print('[Phial-Init][ERRO] Use ./phial-init project_name')
+      sys.exit(1)
+
+   # Clean project name
+   proj_name = sys.argv[1].lower().replace(' ', '_')
+
+   # Create directories
+   print('[Phial-Init][INFO] Create Phial directories')
+   for d in ['celery', 'controllers', 'forms', 'models', 'phial/management', 'phial/jinja/extension', 'phial/jinja/filter', 'phial/jinja/function']:
+      os.makedirs(os.path.join(proj_name, d))
+      create_empty_init(os.path.join(proj_name, os.path.join(d, '__init__.py')), empty=False)
+   for d in ['assets/static', 'assets/templates', 'assets/translations']:
+      os.makedirs(d)
+
+   # Create empty __init__.py file
+   for d in ['phial/jinja/', '']:
+      create_empty_init(os.path.join(proj_name, os.path.join(d, '__init__.py')), empty=True)
+
+   # Copy Phial Assets
+   print('[Phial-Init][INFO] Copy default assets')
+   src = phial.__path__[0]
+   shutil.copytree(os.path.join(src, 'assets/static/phial'), './assets/static/phial')
+   shutil.copytree(os.path.join(src, 'assets/templates/phial'), './assets/templates/phial')
+
+   # Write empty routes.py file
+   print('[Phial-Init][INFO] Write default routes.py')
+   with open(os.path.join(proj_name, 'routes.py'), 'wb+') as f:
+      f.write(bytes('''# -*- coding: utf-8 -*-
+
+
+routes = [
+    # (URL, VIEW_or_FUNCTION, ALLOWED_METHODS, DIC_DEFAULT_VAL)
+    # ('/hello', HelloWorld.as_view('hello_world'), ['GET'], {'goto': 'login'}),
+    # ('/hello', HelloWorld.as_view('hello_world'), ['GET']),
+]
+
+errors = [
+    # (ERROR_CODE, VIEW_or_FUNCTION)
+]
+''', 'UTF-8'))
+
+   # Write default settings.py
+   print('[Phial-Init][INFO] Write default settings.py')
+   with open(os.path.join(proj_name, 'settings.py'), 'wb+') as f:
+      f.write(bytes("""# -*- coding: utf-8 -*-
+from os import path
+
+
+# Administrator
+ADMINS = [
+    # ('John Doe', 'abc@domain.com'),
+]
+
+
+# Flask configuration
+SECRET_KEY                  = '""" + str(uuid4()) + """'
+FLASK_DEBUG                 = True  # Default: False
+FLASK_USE_RELOADER          = True  # Default: False
+FLASK_THREADED_DEBUG_SERVER = False
+FLASK_LISTEN_ADDRESS        = '0.0.0.0'
+FLASK_LISTEN_PORT           = 8080
+FLASK_TEMPLATES_DIR         = path.normpath(path.join(path.dirname(path.abspath(__file__)), '../assets/templates/'))
+FLASK_STATIC_DIR            = path.normpath(path.join(path.dirname(path.abspath(__file__)), '../assets/static/'))
+FLASK_TRANSLATION_DIR       = path.normpath(path.join(path.dirname(path.abspath(__file__)), '../assets/translations/'))
+FLASK_TRANSLATION_LNG       = ['en', 'fr']
+FLASK_REQUEST_CALLBACK      = [
+    # ('before', 'my_project.callback.remove_space.funct_remove_space'),
+    # ('after', 'my_project.callback.remove_link.funct_remove_link'),
+]
+
+
+# Mail configuration
+MAIL_SMTP            = 'smtp.mandrillapp.com'
+MAIL_SMTP_PORT       = 587
+MAIL_USERNAME        = ''
+MAIL_PASSWORD        = ''
+MAIL_SENDER_NAME     = ''
+MAIL_SENDER_EMAIL    = ''
+MAIL_REPLYTO_EMAIL   = ''
+MAIL_SUBJECT_PREPEND = '[Phial]'
+
+
+# Session handler
+#FLASK_SESSION_HANDLER     = 'phial.flask_tools.session.FlaskSessionsRedisInterface'
+#FLASK_SESSION_HANDLER_CFG = {'host':'127.0.0.1', 'port':6379, 'db':0}
+
+
+# Database
+#DATABASE_CONN_STRING   = 'mysql://username:password@127.0.0.1/my_db'  # MySQL
+#DATABASE_CONN_STRING   = 'sqlite3:///tmp/my_db.db'  # SQLite3
+
+
+# Celery
+#CELERY_BROKER_URL     = 'redis://127.0.0.1:6379/2'
+#CELERY_RESULT_BACKEND = 'redis://127.0.0.1:6379/2'
+#CELERY_ACCEPT_CONTENT = ['pickle', 'json', 'msgpack', 'yaml']
+
+
+# Logging
+LOGGING_FILE_FILENAME = '/tmp/phial.log'
+LOGGING_FILE_MAXSIZE  = 1048576  # Bytes
+LOGGING_FILE_NBROTATE = 5
+LOGGING_FILE_TEMPLATE = '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'
+LOGGING_MAIL_TITLE    = '[Phial][Error] Error on your project'
+LOGGING_MAIL_TEMPLATE = '''
+Message type:       %(levelname)s
+Location:           %(pathname)s:%(lineno)d
+Module:             %(module)s
+Function:           %(funcName)s
+Time:               %(asctime)s
+
+Message:
+
+%(message)s
+'''
+""", 'UTF-8'))
+
+   # Write phial-ctl.py
+   print('[Phial-Init][INFO] Write phial-ctl.py')
+   with open('phial-ctl.py', 'wb+') as f:
+      f.write(bytes('''#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+from phial import Phial
+
+
+# Phial
+hdl_phial = Phial('%s')
+hdl_phial.initApp()
+
+# Flask/Celery entry point
+app = hdl_phial.flaskapp
+celery = hdl_phial.celery
+
+if __name__ == "__main__":
+    hdl_phial.startApp()
+''' % proj_name, 'UTF-8'))
+
+   # Write babel.cfg
+   with open('babel.cfg', 'wb+') as f:
+      f.write(bytes('''[python: **.py]
+[jinja2: **.html]
+babel_style = False
+extensions  = jinja2.ext.autoescape,jinja2.ext.with_,jinja2.ext.i18n,jinja2.ext.do
+[jinja2: **.txt]
+babel_style = False
+extensions  = jinja2.ext.autoescape,jinja2.ext.with_,jinja2.ext.i18n,jinja2.ext.do
+''', 'UTF-8'))
