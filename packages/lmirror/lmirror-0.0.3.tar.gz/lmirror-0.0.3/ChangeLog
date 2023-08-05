@@ -1,0 +1,91 @@
+CHANGES
+=======
+
+0.0.3
+-----
+
+* Migrate to git and pbr
+* * I/O errors while checking a local file will now cause the file to be replaced. (Robert Collins)
+* * Setting LMIRROR_PDB in the environment will enable just-in-time pdb to debug problems. (Robert Collins)
+* * Verbose mirroring is now clearer about the fact local files with the right content are simply skipped over. (Robert Collins)
+* Fix test suite
+* Doc tweaks
+* Use lstat not stat to determine inotify server inclusion
+* Optimise around python logging - do not call into logging when we reasonably expect no output
+* Add dry-run facility
+* And fix the underlying exposed bug
+* Fix a typo (no tests)
+* Fix typo
+* Support --parallel test runs
+* Finish incomplete tuple -> Content object refactoring for directories
+* Fix thinko in _gather_deleted_dir
+* Changes in directories that haven't been modified are now picked up again. (Robert Collins, lp:593610)
+* Created make install target so that our debian/rules file can be smaller
+* Fixed test.xml target in Makefile
+* Created clean make target to remove files which we don't want on source package build
+* Handle race condition with inotify server being queried before the initial scan completes
+* ``lmirror serve`` can now perform inotify monitoring of sets, avoiding full disk scans on each change creation, at the cost of a full scan at server startup
+* Fix typo in DESIGN.txt
+* * ``content.conf`` can now run an external program to control filtering. See the manual for details
+* Define an external process helper protocol for filtering
+* Create a combiner for filter objects
+* * ``l_mirror.journals.DiskUpdater`` can now callback to user code per-file
+* * Content falling precisely on the end of a buffer would hang the client - fixed
+* Actually include all the docs and supoprt files in the setuptools distribution
+* python-testscenarios is needed too
+* python-testresources is needed too
+* Open 0.0.3 for development
+
+0.0.2
+-----
+
+* Release 0.0.2
+* Handle 0 byte files properly
+* Permit initialisation from a served set
+* Add HTTP server facility
+* Force the use of urllib for HTTP
+* Fix test suite; handling of testing mtime cases was misphrased
+* Update manual - mtime is propogated
+* utime support wasn't quite right - fix it
+* New journals will now include the mtime of files (but not directories, as directory mtime setting and reading is not portable). This change changes the disk format of journals, so 0.0.2 or newer is needed to read these journals
+* Refactor journals to use an object rather than tuples for path details
+* Open 0.0.2
+
+0.0.1
+-----
+
+* Release 0.0.1
+* Add gpg signing support
+* lmirror init will not longer overwrite existing mirror sets
+* .lmirror/sets/<name>/content.conf is now parsed to get include/exclude rules
+* Disk scanning no longer picks up other set configurationd data
+* Start discussing a model for categorising data
+* Add a --empty option to init
+* Implement something useful for -v for finish-change and mirror
+* Implement -v -> more verbose, for all commands
+* More chatter that is reasonable to have on by default
+* Tweak logging to be vaguely pretty and log when creating a mirror set
+* Add UI.output_log and configure up ~/.cache/lmirror/log for logging from the CLI UI
+* Add logging support module for making it easy to work with logging in l_mirror
+* Parsing PATH arguments which are not local no longer causes a traceback. Robert Collins, #542413
+* Fingers crossed, handle deletes of dirs correctly
+* typo on last patch
+* Handle already deleted things
+* Do not unlink directories - rmdir them
+* Are docs ever finished?
+* Teach mirror to accept network URLs
+* Implement mirror command. Prototype testin-time
+* A receive function that crudely syncs
+* Early, simple, TransportReplay facility
+* Note more fiction in MANUAL.txt that may remain fiction for a while
+* Note some fiction in MANUAL.txt that may remain fiction for a while
+* Do not write journals when there are no changes to propogate
+* Fix finish-change for incremental journal entries
+* Add start-change command to notify receivers a change is being made to the mirrored content
+* The never ending battle of documentation
+* Fixed command lookup for commands with hypens
+* Added finish-change command
+* Journal docs
+* Added lmirror init command which creates a simple mirror set and makes an initial journal
+* Add .testr.conf, lmirror script with core (help and commands) support
+* Initial project layout

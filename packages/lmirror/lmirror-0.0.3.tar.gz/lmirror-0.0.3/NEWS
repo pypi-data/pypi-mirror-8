@@ -1,0 +1,105 @@
+===============
+lmirror changes
+===============
+
+NEXT (in development)
+=====================
+
+Bug fixes
++++++++++
+
+* Content falling precisely on the end of a buffer would hang the client -
+  fixed.
+
+* Changes in directories that haven't been modified are now picked up again.
+  (Robert Collins, lp:593610)
+
+* I/O errors while checking a local file will now cause the file to be replaced.
+  (Robert Collins)
+
+* Setting LMIRROR_PDB in the environment will enable just-in-time pdb to debug
+  problems. (Robert Collins)
+
+* Verbose mirroring is now clearer about the fact local files with the right
+  content are simply skipped over. (Robert Collins)
+
+Changes
++++++++
+
+* ``content.conf`` can now run an external program to control filtering. See
+  the manual for details.
+
+* ``finish-change`` now supports a --dry-run (or -n) option which will scan but
+  not write the changes to disk. This is useful for determining what will be
+  recorded.
+
+* ``lmirror serve`` can now perform inotify monitoring of sets, avoiding full
+  disk scans on each change creation, at the cost of a full scan at server
+  startup.
+
+* There are now ``clean`` and ``install`` targets in the Makefile.
+
+API Changes
++++++++++++
+
+* ``l_mirror.journals.DiskUpdater`` can now callback to user code per-file.
+
+0.0.2
+=====
+
+Changes
++++++++
+
+* New journals will now include the mtime of files (but not directories, as
+  directory mtime setting and reading is not portable). This change changes
+  the disk format of journals, so 0.0.2 or newer is needed to read these
+  journals.
+
+* New command ``lmirror serve`` can serve out sets over HTTP (defaults to port
+  8080).
+
+0.0.1
+=====
+
+Changes
++++++++
+
+* Added lmirror script and setup.py to install lmirror.
+
+* Added lmirror init command which creates a simple mirror set and makes an
+  initial journal.
+
+* Added lmirror finish-change command which finishes an open change.
+
+* Fixed command lookup for finish-change so that it can be used.
+
+* Added lmirror start-change command which opens a change, permitting clients
+  to not fail fatally when content is mismatched, but instead take a sensible
+  action (such as pausing, spinning on the metadata, or rolling back quietly).
+
+* Fixed finish-change not to write a journal if there are no changes to
+  propogate.
+
+* Added lmirror mirror command to perform a mirror run.
+
+* Parsing PATH arguments which are not local no longer causes a traceback. 
+  (Robert Collins, #542413)
+
+* CLI UI can now log messages to ~/.cache/lmirror/log, and to the console.
+
+* -v will now increase verbosity for all commands. In particular this causes
+  mirror and finish-change to list all the changes they discover/transmit.
+
+* .lmirror/sets/<name>/content.conf is now parsed to get include/exclude rules.
+
+* lmirror init will not longer overwrite existing mirror sets.
+
+* lmirror can now sign journals, and will check them during transmissions.
+
+API Changes
++++++++++++
+
+* New test helper logging_resource for working with the logging module.
+
+* New module ``l_mirror.logging_support`` containing glue to get logging up and
+  running.
