@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!--
+vim:ft=xml
+-->
+<installer-gui-script minSpecVersion="1">
+    <title>{{ info.pkg_name_pyv_version }}</title>
+    <options customize="never" rootVolumeOnly="true"/>
+    {% for name in info.existing_chatty_names %}
+    <{{ name.split('.')[0] }} mime-type="text/html" file="{{ name }}"/>
+    {% endfor %}
+    <volume-check script="volume_check()"/>
+    <script><![CDATA[
+
+const PY_ORG_VERSION = '{{ info.pyv_m_m }}'
+const PY_ORG_ID = "org.python.Python.PythonFramework-" + PY_ORG_VERSION
+const PY_ORG_BIN = "/Library/Frameworks/Python.framework/Versions/" +
+    PY_ORG_VERSION + "/bin"
+
+function volume_check () {
+    py_org_receipt = my.target.receiptForIdentifier(PY_ORG_ID)
+    if (py_org_receipt == null) {
+        my.result.title = "Missing Python.org Python"
+        my.result.message = "Please install Python version " +
+            PY_ORG_VERSION +
+            " from http://python.org before using this installer."
+        my.result.type = "Fatal"
+        return false
+    }
+    have_py_org_bin = system.files.fileExistsAtPath(
+        my.target.mountpoint + PY_ORG_BIN)
+    if (! have_py_org_bin) {
+        my.result.title = "Missing Python.org Python"
+        my.result.message = "Python.org Python " + PY_ORG_VERSION +
+            " appears to be installed, but path " + PY_ORG_BIN +
+            " does not exist.  You should reinstall Python " +
+            PY_ORG_VERSION +
+            " from http://python.org before using this installer."
+        my.result.type = "Fatal"
+        return false
+    }
+    return true
+}
+
+    ]]></script>
+    <pkg-ref id="wheel-installer">
+        <bundle-version/>
+    </pkg-ref>
+    <choices-outline>
+        <line choice="default">
+            <line choice="wheel-installer"/>
+        </line>
+    </choices-outline>
+    <choice id="default"/>
+    <choice id="wheel-installer" visible="false">
+        <pkg-ref id="wheel-installer"/>
+    </choice>
+    <pkg-ref id="wheel-installer" version="0" onConclusion="none"
+        installKBytes="1">#wheel-installer.pkg</pkg-ref>
+    <product id="{{ info.identifier }}" version="{{ info.pkg_version }}"/>
+</installer-gui-script>
