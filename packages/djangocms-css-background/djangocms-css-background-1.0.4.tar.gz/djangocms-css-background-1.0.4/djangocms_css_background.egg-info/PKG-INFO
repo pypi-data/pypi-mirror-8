@@ -1,0 +1,62 @@
+Metadata-Version: 1.1
+Name: djangocms-css-background
+Version: 1.0.4
+Summary: A django-cms plugin which allow you to edit css background image or color from the edit mode
+Home-page: https://github.com/WnP/djangocms-css-background
+Author: Steeve
+Author-email: mo0ofier@gmail.com
+License: MIT
+Description: CSS Background
+        ==============
+        
+        Description
+        -----------
+        
+        ``djangocms-css-background`` is a
+        `django-cms <https://github.com/divio/django-cms>`__ plugin which allow
+        you to edit css background image or color from the edit mode
+        
+        Depends
+        -------
+        
+        -  `django-cms <https://github.com/divio/django-cms>`__
+        -  `djangocms-placeholder-attr <https://github.com/WnP/cms_placeholder_attr>`__
+        -  `django-filer <https://github.com/stefanfoulis/django-filer>`__
+        
+        Installation
+        ------------
+        
+        -  use pip ``pip install djangocms-css-background``
+        -  Syncronize the models: ``python manage.py syncdb`` (with south or
+           django 1.7 use migrations)
+        -  Put in your INSTALLED\_APPS:
+           ``INSTALLED_APPS += ('djangocms-css-background', )``
+        
+        Usage
+        -----
+        
+        you can define your template like this:
+        
+        .. code:: django
+        
+            {% load placeholder_attr %}
+        
+            <div style="{% placeholder_attr 'My Background Css Placeholder' 'CssBackground' 'css_background' %}">
+              {% placeholder 'My Background Css Placeholder' %}
+            </div>
+        
+        remember to set the same name of a placeholder in the placeholder\_attr
+        name parameter.
+        
+        after that set the provide a ``CSS Background`` plugin for this
+        placeholder, and chose an image, or set rgb or rgba for a colored
+        background
+        
+Platform: UNKNOWN
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Environment :: Web Environment
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 2.7
