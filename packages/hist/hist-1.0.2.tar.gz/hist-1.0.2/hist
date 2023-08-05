@@ -1,0 +1,109 @@
+#!/usr/bin/env python
+__author__ = 'Ron'
+
+import sys
+import os
+import argparse
+from collections import defaultdict
+
+
+def plot_histogram(x_values, y_values, title):
+    import pylab
+
+    x = range(len(x_values))
+    pylab.bar(x, y_values)
+    pylab.xticks(x, x_values, horizontalalignment='center', rotation='vertical')
+    pylab.gca().get_xaxis().tick_bottom()
+    pylab.gca().get_yaxis().tick_left()
+    if title:
+        pylab.title(title)
+    pylab.show()
+
+
+def ioctl_GWINSZ(fd):
+    try:
+        import fcntl, termios, struct, os
+        cr = struct.unpack('hh', fcntl.ioctl(fd, termios.TIOCGWINSZ, '1234'))
+    except:
+        return
+    return cr
+
+
+def get_terminal_size():
+    env = os.environ
+
+    cr = ioctl_GWINSZ(0) or ioctl_GWINSZ(1) or ioctl_GWINSZ(2)
+    if not cr:
+        try:
+            fd = os.open(os.ctermid(), os.O_RDONLY)
+            cr = ioctl_GWINSZ(fd)
+            os.close(fd)
+        except:
+            pass
+    if not cr:
+        cr = (env.get('LINES', 25), env.get('COLUMNS', 80))
+    return int(cr[1]), int(cr[0])
+
+
+def calculate_histogram(fd=sys.stdin, verbose=True, max_buckets=20, screen_width=80):
+    hist = defaultdict(int)
+    for n in fd:
+        try:
+            num = float(n)
+        except:
+            continue
+
+        hist[num] += 1
+
+    hist_keys = sorted(hist.keys())
+    total_keys = len(hist_keys)
+    num_buckets = min(max_buckets, total_keys)
+    total_size = sum(hist.values())
+
+    keys_per_bucket = float(total_keys) / num_buckets
+
+    plot_x = []
+    plot_y = []
+    max_bucket = 0
+
+    for i in xrange(num_buckets):
+        first_value = int(i * keys_per_bucket)
+        last_value = int((i+1) * keys_per_bucket)
+        if last_value == total_keys:
+            last_value += 1
+
+        bucket_values = hist_keys[first_value:last_value]
+
+        min_bucket = bucket_values[0]
+        max_bucket = bucket_values[-1]
+        bucket_sum = sum([hist[x] for x in bucket_values])
+        chars = int(float(bucket_sum) / total_size * (screen_width - 40))
+
+        if verbose:
+            print '[%10d - %10d]: %10d %s' % (min_bucket, max_bucket, bucket_sum, '#' * chars)
+
+        #plot_x.append('(%d - %d)' % (min_bucket, max_bucket))
+        plot_x.append(min_bucket)
+        plot_y.append(bucket_sum)
+
+    plot_x.append(max_bucket)
+    plot_y.append(0)
+
+    if verbose:
+        print 'total: %d' % total_size
+
+    return plot_x, plot_y
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-i', '--input', type=str, help='input file to read from', default='stdin')
+    parser.add_argument('-b', '--buckets', type=int, help='number of buckets', default=20)
+    parser.add_argument('-s', '--screen-width', type=int, help='maximum screen width', default=get_terminal_size()[0])
+    parser.add_argument('-t', '--title', type=str, help='title for plot', default=None)
+    args = parser.parse_args()
+
+    plot_x, plot_y = calculate_histogram(
+        fd=sys.stdin if args.input == 'stdin' else open(args.input),
+        max_buckets=args.buckets,
+        screen_width=args.screen_width)
+    plot_histogram(plot_x, plot_y, args.title)
