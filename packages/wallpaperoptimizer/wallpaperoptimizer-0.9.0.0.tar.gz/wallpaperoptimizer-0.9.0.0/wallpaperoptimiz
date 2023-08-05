@@ -1,0 +1,64 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+""" wallpaperoptimizer start program
+
+wallpaperoptimizer is multi wallpaper changer.
+"""
+
+# <singlerun>
+#	wallpaperoptimiz  ../2560x1920.jpg ../1500x844.jpg -C
+# <background>
+#	wallpaperoptimiz -D -i 5
+# <applet window mode>
+#	wallpaperoptimiz -W
+# <applet>
+#	in GNOME panel
+
+import sys
+import logging
+
+import os
+import os.path
+
+if os.getenv('DISPLAY', None) is None:
+    print "Please set to DISPLAY system environment."
+    sys.exit(2)
+from optparse import OptionValueError
+
+import WallpaperOptimizer
+from WallpaperOptimizer.Options import Options
+from WallpaperOptimizer.StarterFactory import StarterFactory
+
+
+def do_main():
+    try:
+        option = Options()
+    except OptionValueError, msg:
+        logging.error('** OptionValueError: %s. ' % msg)
+        sys.exit(2)
+
+    Verbose = option.getVerbose()
+    if Verbose:
+        loglevel = logging.DEBUG
+    else:
+        loglevel = logging.INFO
+
+    logfile = os.path.join(WallpaperOptimizer.USERENVDIR, 'wallopt.log')
+    logging.basicConfig(
+        level=loglevel,
+        format='%(asctime)s %(levelname)5s %(message)s',
+        filename=logfile,
+        filemode='a')
+    logging.info('Starting ... wallpaperoptimizer.')
+
+    starterfactory = StarterFactory()
+    starter = starterfactory.create(WallpaperOptimizer.WINDOWMANAGER)
+    starter.start(option, logging)
+
+    logging.info('Quit ... wallpaperoptimizer.')
+
+
+if __name__ == "__main__":
+    do_main()
+    sys.exit(0)
