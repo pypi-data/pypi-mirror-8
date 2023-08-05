@@ -1,0 +1,32 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    i18n_domain="pd.plonedemografico">
+
+  <include package="plone.app.contentmenu" />
+
+  <browser:page
+    for="rg.prenotazioni.interfaces.IPrenotazioniFolder"
+    name="prenotazione_add_ro"
+    layer=".interfaces.IPDPlonedemograficoLayer"
+    class=".prenotazione_add_ro.AddForm"
+    permission="zope2.View"
+  />
+
+  <browser:page
+    for="rg.prenotazioni.interfaces.IPrenotazioniFolder"
+    name="tipologies.json"
+    layer=".interfaces.IPDPlonedemograficoLayer"
+    class=".tipologie.View"
+    permission="zope2.View"
+  />
+
+  <browser:page
+    for="rg.prenotazioni.interfaces.IPrenotazioniFolder"
+    name="slots.json"
+    layer=".interfaces.IPDPlonedemograficoLayer"
+    class=".slots.View"
+    permission="zope2.View"
+  />
+
+</configure>
