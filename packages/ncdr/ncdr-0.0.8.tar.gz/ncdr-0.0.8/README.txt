@@ -1,0 +1,29 @@
+=====
+ncdr
+=====
+
+ncdr es una aplicación Django 
+
+
+Comienzo rápido
+---------------
+
+1. Agregar la aplicación ``ncdr` a su archivo de configuración
+   ``settings.py``, en la variable ``INSTALLED_APPS`` asi::
+
+     INSTALLED_APPS = (
+         ...
+         "ncdr",
+     )
+
+2. Incluir la aplicación de encuestas en la URLconf de su proyecto
+   urls.py de este modo::
+
+     (r'^ncdr/', include('ncdr.urls')),
+
+3. Ejecutar el comando  ``python manage.py syncdb`` para crear los
+   modelos de las encuestas.
+
+4. Inicia el servidor y visitar la pagina  http://127.0.0.1:8000/admin/
+   para crear una encuesta (Necesitas habilitar la interfaz administrativa
+   para poder crear encuestas).
