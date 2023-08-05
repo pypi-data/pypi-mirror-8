@@ -1,0 +1,35 @@
+{% load sekizai_tags  proportion %}
+
+
+{% if step == 1%}
+<a href="{%if instance.page_link%}{{instance.page_link.get_absolute_url}} {%else%}#{%endif%}">
+ <img class="ap_img" src="{{instance.photo.url}}"  />	
+</a>
+{%else%}
+
+ <div class="grid_1 borde_w ap_plug 
+ {%if forloop.last%} ap_col_last {%endif%}
+ {%if forloop.last%} ap_col_first{%endif%}" id="m_{{instance.pk}}"  style="background-color: {{instance.color}};">
+ 	
+ 	<div class=" ap_icon">
+ 		<img src="{{instance.icon.url}}" >
+ 	</div>
+	<h3 class="ap_title"> {{instance.title}} </h3>
+
+</div>
+
+{%addtoblock "js" %} <script>
+
+
+$("#m_{{instance.pk}}").hover(
+	function (){
+		
+		$('.cycle-slideshow').cycle('goto', {{forloop.counter0}});
+		if(switch_acordion == true){
+			$('.cycle-slideshow').insertAfter(this); 	
+		}
+		
+	}); 
+	
+ </script> {%endaddtoblock%}
+{%endif%}
