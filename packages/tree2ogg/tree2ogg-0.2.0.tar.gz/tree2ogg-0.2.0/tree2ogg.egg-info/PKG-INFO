@@ -1,0 +1,61 @@
+Metadata-Version: 1.1
+Name: tree2ogg
+Version: 0.2.0
+Summary: A script that allows recursively transcode directories/playlists of FLAC files to Ogg.
+Home-page: https://github.com/guyru/tree2ogg/
+Author: Guy Rutenberg
+Author-email: guyrutenberg@gmail.com
+License: GPLv2+
+Description: ============
+        ``tree2ogg``
+        ============
+        A script that allows recursively transcode directories/playlists of FLAC files
+        to Ogg.
+        
+        When encountering existing files in the target directory, ``tree2ogg`` by
+        default will skip them if the target's modification time is newer than the
+        source. This can be changed by using the ``--force`` and ``--skip`` flags.
+        
+        Installation
+        =============
+        To install ``tree2ogg``, use pip::
+        
+          pip install tree2ogg
+        
+        You can also install the latest development version from github::
+        
+           pip install git+https://github.com/guyru/tree2ogg.git#egg=tree2ogg
+        
+        Synopsis
+        ========
+        ::
+        
+          usage: tree2ogg [-h] [-j JOBS] [--force | --skip] [-v] [--version]
+                          src dst_dir ...
+          
+          Convert a directory tree of FLAC files to Ogg.
+          
+          positional arguments:
+            src                   source directory/playlist
+            dst_dir               destination directory
+            oggenc_args           additional arguments to pass to oggenc
+          
+          optional arguments:
+            -h, --help            show this help message and exit
+            -j JOBS, --jobs JOBS  number of simultaneous encoding process to spawn
+            --force               force overwrite existing files
+            --skip                always skip existing files
+            -v, --verbose         increase output verbosity
+            --version             show program's version number and exit
+        
+        Credits
+        =======
+        * Author: `Guy Rutenberg`_
+        
+        .. _`Guy Rutenberg`: http://www.guyrutenberg.com/
+        
+Platform: UNKNOWN
+Classifier: Environment :: Console
+Classifier: Intended Audience :: End Users/Desktop
+Classifier: License :: OSI Approved :: GNU General Public License v2 or later (GPLv2+)
+Classifier: Development Status :: 4 - Beta
