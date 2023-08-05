@@ -1,0 +1,11 @@
+{% extends 'layout.jinja2.html' %}
+
+{% block title %}Access Denied{% endblock %}
+
+{% block body %}
+  {% if user_is_authenticated() %}
+    Sorry, you aren't allowed to use this page. 
+  {% else %}
+    Sorry, you must sign in to see this page.
+  {% endif %}
+{% endblock %}
