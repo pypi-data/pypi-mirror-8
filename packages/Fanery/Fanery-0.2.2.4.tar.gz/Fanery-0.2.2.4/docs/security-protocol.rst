@@ -1,0 +1,4 @@
+Fanery Security Protocol
+========================
+
+TODO
