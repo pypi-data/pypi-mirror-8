@@ -1,0 +1,33 @@
+Metadata-Version: 1.1
+Name: admin-extra-urls
+Version: 0.1
+Summary: Django mixin to easily add urls to any ModelAdmin
+Home-page: UNKNOWN
+Author: UNKNOWN
+Author-email: UNKNOWN
+License: UNKNOWN
+Description: admin-extra-urls
+        ================
+        
+        this plugable django application that offer one single Mixin ``ExtraUrlMixin``
+        to easily add new url (and related buttons on the screen) to any ModelAdmin.
+        
+        Example::
+        
+            class MyModelModelAdmin(ExtraUrlMixin, admin.ModelAdmin):
+        
+                @link() # /admin/myapp/mymodel/update_all/
+                def update_all(self, request):
+                    ...
+                    ...
+        
+                @action() # /admin/myapp/mymodel/update/10/
+                def update(self, request):
+                    ...
+                    ...
+        
+Platform: linux
+Classifier: Environment :: Web Environment
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Intended Audience :: Developers
