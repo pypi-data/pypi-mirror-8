@@ -1,0 +1,854 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>lexor.core.node &mdash; lexor 0.1.2c0 documentation</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="top" title="lexor 0.1.2c0 documentation" href="../../../index.html"/>
+        <link rel="up" title="lexor" href="../../lexor.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        <a href="../../../index.html" class="fa fa-home"> lexor</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+        
+            <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../lexor.html"> What is lexor?</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../lexor.html#motivation">Motivation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html"> Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../installation.html#pip-or-manual-installation">Pip or Manual Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../installation.html#lexor-languages">Lexor Languages</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../start.html"> Getting Started</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../commands/index.html"> Commands</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../commands/install.html">install</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html"> API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/lexor.html">lexor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/lexor.core.html">lexor.core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/lexor.core.node.html">lexor.core.node</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/lexor.core.elements.html">lexor.core.elements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/lexor.command.html">lexor.command</a></li>
+</ul>
+</li>
+</ul>
+
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../../index.html">lexor</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      
+          <li><a href="../../lexor.html">lexor</a> &raquo;</li>
+      
+    <li>lexor.core.node</li>
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            
+  <h1>Source code for lexor.core.node</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module defines the basic object of the document object model</span>
+<span class="sd">(DOM).</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">cStringIO</span> <span class="kn">import</span> <span class="n">StringIO</span>
+<span class="n">LC</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">[</span><span class="s">&#39;lexor.core&#39;</span><span class="p">]</span>
+<span class="c"># pylint: disable=too-many-public-methods</span>
+<span class="c"># pylint: disable=too-many-instance-attributes</span>
+
+
+<span class="k">def</span> <span class="nf">_write_node_info</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">strf</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;`Node` helper function to write the node information in</span>
+<span class="sd">    __repr__. &quot;&quot;&quot;</span>
+    <span class="n">strf</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;</span><span class="si">%s%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="s">&#39;    &#39;</span><span class="o">*</span><span class="n">node</span><span class="o">.</span><span class="n">level</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">LC</span><span class="o">.</span><span class="n">Element</span><span class="p">):</span>
+        <span class="n">strf</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;[0x</span><span class="si">%x</span><span class="s">]&#39;</span> <span class="o">%</span> <span class="nb">id</span><span class="p">(</span><span class="n">node</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">att</span> <span class="o">=</span> <span class="s">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s">&#39;</span><span class="si">%s</span><span class="s">=&quot;</span><span class="si">%s</span><span class="s">&quot;&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">items</span><span class="p">()])</span>
+        <span class="n">strf</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;[0x</span><span class="si">%x</span><span class="s">&#39;</span> <span class="o">%</span> <span class="nb">id</span><span class="p">(</span><span class="n">node</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">att</span> <span class="o">!=</span> <span class="s">&#39;&#39;</span><span class="p">:</span>
+            <span class="n">strf</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39; </span><span class="si">%s</span><span class="s">]&#39;</span> <span class="o">%</span> <span class="n">att</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">strf</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;]&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s">&#39;#document&#39;</span><span class="p">:</span>
+        <span class="n">strf</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;: (</span><span class="si">%s</span><span class="s">:</span><span class="si">%s</span><span class="s">:</span><span class="si">%s</span><span class="s">)&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">lang</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">style</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">strf</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;:&#39;</span><span class="p">)</span>
+    <span class="n">direction</span> <span class="o">=</span> <span class="s">&#39;r&#39;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">LC</span><span class="o">.</span><span class="n">CharacterData</span><span class="p">):</span>
+        <span class="n">strf</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39; </span><span class="si">%r</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">node</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">node</span><span class="o">.</span><span class="n">child</span><span class="p">:</span>
+        <span class="n">direction</span> <span class="o">=</span> <span class="s">&#39;d&#39;</span>
+    <span class="n">strf</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">direction</span>
+
+
+<span class="k">def</span> <span class="nf">_set_owner_and_level</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">owner</span><span class="p">,</span> <span class="n">level</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Helper method for increase_child_level. &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">owner</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">owner</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">LC</span><span class="o">.</span><span class="n">Element</span><span class="p">)</span> <span class="ow">and</span> <span class="s">&#39;id&#39;</span> <span class="ow">in</span> <span class="n">node</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">del</span> <span class="n">node</span><span class="o">.</span><span class="n">owner</span><span class="o">.</span><span class="n">id_dict</span><span class="p">[</span><span class="n">node</span><span class="p">[</span><span class="s">&#39;id&#39;</span><span class="p">]]</span>
+            <span class="k">except</span> <span class="p">(</span><span class="ne">KeyError</span><span class="p">,</span> <span class="ne">AttributeError</span><span class="p">):</span>
+                <span class="k">pass</span>
+            <span class="k">if</span> <span class="n">owner</span><span class="p">:</span>
+                <span class="n">owner</span><span class="o">.</span><span class="n">id_dict</span><span class="p">[</span><span class="n">node</span><span class="p">[</span><span class="s">&#39;id&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">node</span>
+        <span class="n">node</span><span class="o">.</span><span class="n">owner</span> <span class="o">=</span> <span class="n">owner</span>
+    <span class="n">node</span><span class="o">.</span><span class="n">level</span> <span class="o">=</span> <span class="n">level</span>
+    <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s">&#39;#document&#39;</span><span class="p">:</span>
+        <span class="n">node</span><span class="o">.</span><span class="n">level</span> <span class="o">=</span> <span class="n">level</span> <span class="o">-</span> <span class="mi">1</span>
+
+
+<div class="viewcode-block" id="Node"><a class="viewcode-back" href="../../../api/lexor.core.node.html#lexor.core.node.Node">[docs]</a><span class="k">class</span> <span class="nc">Node</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Primary datatype for the entire Document Object Model. &quot;&quot;&quot;</span>
+    <span class="n">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;name&#39;</span><span class="p">,</span> <span class="s">&#39;owner&#39;</span><span class="p">,</span> <span class="s">&#39;parent&#39;</span><span class="p">,</span> <span class="s">&#39;index&#39;</span><span class="p">,</span>
+                 <span class="s">&#39;prev&#39;</span><span class="p">,</span> <span class="s">&#39;next&#39;</span><span class="p">,</span> <span class="s">&#39;child&#39;</span><span class="p">,</span> <span class="s">&#39;level&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Node.__init__"><a class="viewcode-back" href="../../../api/lexor.core.node.html#lexor.core.node.Node.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initializes all data descriptors to ``None``. Each</span>
+<span class="sd">        descriptor has an associated `READ-ONLY` property. Read the</span>
+<span class="sd">        comment on each property to see what each descriptor</span>
+<span class="sd">        represents. &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">owner</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prev</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">child</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">level</span> <span class="o">=</span> <span class="mi">0</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="Node.node_name"><a class="viewcode-back" href="../../../api/lexor.core.node.html#lexor.core.node.Node.node_name">[docs]</a>    <span class="k">def</span> <span class="nf">node_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        .. admonition:: Read-Only Property</span>
+<span class="sd">            :class: note</span>
+
+<span class="sd">            The name of this node. Its value depends on the node</span>
+<span class="sd">            type. This property is associated with the attribute</span>
+<span class="sd">            ``name``. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="Node.owner_document"><a class="viewcode-back" href="../../../api/lexor.core.node.html#lexor.core.node.Node.owner_document">[docs]</a>    <span class="k">def</span> <span class="nf">owner_document</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        .. admonition:: Read-Only Property</span>
+<span class="sd">            :class: note</span>
+
+<span class="sd">            The :class:`~lexor.core.elements.Document` in which this</span>
+<span class="sd">            node resides. This property is associated with the</span>
+<span class="sd">            attribute ``owner``. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">owner</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="Node.parent_node"><a class="viewcode-back" href="../../../api/lexor.core.node.html#lexor.core.node.Node.parent_node">[docs]</a>    <span class="k">def</span> <span class="nf">parent_node</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        .. admonition:: Read-Only Property</span>
+<span class="sd">            :class: note</span>
+
+<span class="sd">            The parent of this node. If the node has been just</span>
+<span class="sd">            created or removed from a ``Document`` then this property</span>
+<span class="sd">            is ``None``. This property is associated with the</span>
+<span class="sd">            attribute ``parent``. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="Node.node_index"><a class="viewcode-back" href="../../../api/lexor.core.node.html#lexor.core.node.Node.node_index">[docs]</a>    <span class="k">def</span> <span class="nf">node_index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        .. admonition:: Read-Only Property</span>
+<span class="sd">            :class: note</span>
+
+<span class="sd">            The number of preceding siblings.</span>
+
+<span class="sd">            &gt;&gt;&gt; x is x.parent_node[x.node_index]</span>
+<span class="sd">            True</span>
+
+<span class="sd">            This property is associated with the attribute ``index``.</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="Node.node_level"><a class="viewcode-back" href="../../../api/lexor.core.node.html#lexor.core.node.Node.node_level">[docs]</a>    <span class="k">def</span> <span class="nf">node_level</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        .. admonition:: Read-Only Property</span>
+<span class="sd">            :class: note</span>
+<span class="sd">        </span>
+<span class="sd">            The nodes level of containtment in a</span>
+<span class="sd">            :class:`~lexor.core.elements.Document` object.</span>
+
+<span class="sd">            This property is associated with the attribute ``level``.</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">level</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="Node.element_index"><a class="viewcode-back" href="../../../api/lexor.core.node.html#lexor.core.node.Node.element_index">[docs]</a>    <span class="k">def</span> <span class="nf">element_index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        .. admonition:: Read-Only Property</span>
+<span class="sd">            :class: note</span>
+
+<span class="sd">            The number of preceding element siblings.&quot;&quot;&quot;</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">crt</span> <span class="o">=</span> <span class="bp">self</span>
+        <span class="k">while</span> <span class="n">crt</span><span class="o">.</span><span class="n">prev</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">crt</span> <span class="o">=</span> <span class="n">crt</span><span class="o">.</span><span class="n">prev</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">crt</span><span class="p">,</span> <span class="n">LC</span><span class="o">.</span><span class="n">Element</span><span class="p">):</span>
+                <span class="n">index</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">index</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="Node.previous_sibling"><a class="viewcode-back" href="../../../api/lexor.core.node.html#lexor.core.node.Node.previous_sibling">[docs]</a>    <span class="k">def</span> <span class="nf">previous_sibling</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        .. admonition:: Read-Only Property</span>
+<span class="sd">            :class: note</span>
+
+<span class="sd">            The node immediately preceding this node. If this</span>
+<span class="sd">            property is not `None` then</span>
+
+<span class="sd">            &gt;&gt;&gt; x.previous_sibling &lt;==&gt; x.parent_node[x.node_index - 1]</span>
+
+<span class="sd">            This property is associated with the attribute</span>
+<span class="sd">            ``prev``.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">prev</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="Node.next_sibling"><a class="viewcode-back" href="../../../api/lexor.core.node.html#lexor.core.node.Node.next_sibling">[docs]</a>    <span class="k">def</span> <span class="nf">next_sibling</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        .. admonition:: Read-Only Property</span>
+<span class="sd">            :class: note</span>
+
+<span class="sd">            The node immediately following this node. If this</span>
+<span class="sd">            property is not `None` then</span>
+
+<span class="sd">            &gt;&gt;&gt; x.next_sibling &lt;==&gt; x.parent_node[x.node_index + 1]</span>
+
+<span class="sd">            This property is associated with the attribute</span>
+<span class="sd">            ``next``.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">next</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="Node.previous_element"><a class="viewcode-back" href="../../../api/lexor.core.node.html#lexor.core.node.Node.previous_element">[docs]</a>    <span class="k">def</span> <span class="nf">previous_element</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        .. admonition:: Read-Only Property</span>
+<span class="sd">            :class: note</span>
+
+<span class="sd">            The last sibling :class:`~lexor.core.elements.Element`</span>
+<span class="sd">            preceding this node.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">crt</span> <span class="o">=</span> <span class="bp">self</span>
+        <span class="k">while</span> <span class="n">crt</span><span class="o">.</span><span class="n">prev</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">crt</span> <span class="o">=</span> <span class="n">crt</span><span class="o">.</span><span class="n">prev</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">crt</span><span class="p">,</span> <span class="n">LC</span><span class="o">.</span><span class="n">Element</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">crt</span>
+        <span class="k">return</span> <span class="bp">None</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="Node.next_element"><a class="viewcode-back" href="../../../api/lexor.core.node.html#lexor.core.node.Node.next_element">[docs]</a>    <span class="k">def</span> <span class="nf">next_element</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        .. admonition:: Read-Only Property</span>
+<span class="sd">            :class: note</span>
+
+<span class="sd">            The sibling :class:`~lexor.core.elements.Element` after</span>
+<span class="sd">            this node. &quot;&quot;&quot;</span>
+        <span class="n">crt</span> <span class="o">=</span> <span class="bp">self</span>
+        <span class="k">while</span> <span class="n">crt</span><span class="o">.</span><span class="n">next</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">crt</span> <span class="o">=</span> <span class="n">crt</span><span class="o">.</span><span class="n">next</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">crt</span><span class="p">,</span> <span class="n">LC</span><span class="o">.</span><span class="n">Element</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">crt</span>
+        <span class="k">return</span> <span class="bp">None</span>
+</div>
+<div class="viewcode-block" id="Node.remove_children"><a class="viewcode-back" href="../../../api/lexor.core.node.html#lexor.core.node.Node.remove_children">[docs]</a>    <span class="k">def</span> <span class="nf">remove_children</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Remove all the child nodes. &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">child</span><span class="p">:</span>
+            <span class="n">child</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span>
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">child</span><span class="p">[:]</span>
+</div>
+<div class="viewcode-block" id="Node.__repr__"><a class="viewcode-back" href="../../../api/lexor.core.node.html#lexor.core.node.Node.__repr__">[docs]</a>    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;&gt;&gt;&gt; x.__repr__() == repr(x)</span>
+<span class="sd">        True</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">strf</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">()</span>
+        <span class="n">crt</span> <span class="o">=</span> <span class="bp">self</span>
+        <span class="n">direction</span> <span class="o">=</span> <span class="n">_write_node_info</span><span class="p">(</span><span class="n">crt</span><span class="p">,</span> <span class="n">strf</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">direction</span> <span class="ow">is</span> <span class="ow">not</span> <span class="s">&#39;d&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">strf</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span>
+        <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">direction</span> <span class="ow">is</span> <span class="s">&#39;d&#39;</span><span class="p">:</span>
+                <span class="n">crt</span> <span class="o">=</span> <span class="n">crt</span><span class="o">.</span><span class="n">child</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="n">direction</span> <span class="ow">is</span> <span class="s">&#39;r&#39;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">crt</span><span class="o">.</span><span class="n">next</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                    <span class="n">direction</span> <span class="o">=</span> <span class="s">&#39;u&#39;</span>
+                    <span class="k">continue</span>
+                <span class="n">crt</span> <span class="o">=</span> <span class="n">crt</span><span class="o">.</span><span class="n">next</span>
+            <span class="k">elif</span> <span class="n">direction</span> <span class="ow">is</span> <span class="s">&#39;u&#39;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">crt</span><span class="o">.</span><span class="n">parent</span> <span class="ow">is</span> <span class="bp">self</span><span class="p">:</span>
+                    <span class="k">break</span>
+                <span class="k">if</span> <span class="n">crt</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">next</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                    <span class="n">crt</span> <span class="o">=</span> <span class="n">crt</span><span class="o">.</span><span class="n">parent</span>
+                    <span class="k">continue</span>
+                <span class="n">crt</span> <span class="o">=</span> <span class="n">crt</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">next</span>
+            <span class="n">direction</span> <span class="o">=</span> <span class="n">_write_node_info</span><span class="p">(</span><span class="n">crt</span><span class="p">,</span> <span class="n">strf</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">strf</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="Node.__str__"><a class="viewcode-back" href="../../../api/lexor.core.node.html#lexor.core.node.Node.__str__">[docs]</a>    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;&gt;&gt;&gt; x.__str__() == str(x)</span>
+<span class="sd">        True</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">owner</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">style</span> <span class="o">=</span> <span class="s">&#39;default&#39;</span>
+            <span class="n">lang</span> <span class="o">=</span> <span class="s">&#39;xml&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">style</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="o">.</span><span class="n">style</span>
+            <span class="n">lang</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="o">.</span><span class="n">lang</span>
+        <span class="n">writer</span> <span class="o">=</span> <span class="n">LC</span><span class="o">.</span><span class="n">Writer</span><span class="p">(</span><span class="n">lang</span><span class="p">,</span> <span class="n">style</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">owner</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="o">.</span><span class="n">defaults</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">var</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="o">.</span><span class="n">defaults</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+                <span class="n">writer</span><span class="o">.</span><span class="n">defaults</span><span class="p">[</span><span class="n">var</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expandvars</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">val</span><span class="p">))</span>
+        <span class="n">writer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">writer</span><span class="p">)</span>
+        <span class="n">writer</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">val</span>
+</div>
+<div class="viewcode-block" id="Node.insert_before"><a class="viewcode-back" href="../../../api/lexor.core.node.html#lexor.core.node.Node.insert_before">[docs]</a>    <span class="k">def</span> <span class="nf">insert_before</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">new_child</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Inserts `new_child` to the list of children just before</span>
+<span class="sd">        the child specified by `index`. &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">new_child</span><span class="p">,</span> <span class="n">Node</span><span class="p">):</span>
+            <span class="n">new_child</span> <span class="o">=</span> <span class="n">LC</span><span class="o">.</span><span class="n">Text</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">new_child</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">new_child</span><span class="p">,</span> <span class="n">LC</span><span class="o">.</span><span class="n">DocumentFragment</span><span class="p">):</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s">&quot;Use extend_before for LC.DocumentFragment Nodes.&quot;</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">insert_node_before</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">new_child</span><span class="p">)</span>
+        <span class="k">while</span> <span class="n">index</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">child</span><span class="p">):</span>
+            <span class="bp">self</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">index</span>
+            <span class="n">index</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="bp">self</span>
+</div>
+<div class="viewcode-block" id="Node.extend_before"><a class="viewcode-back" href="../../../api/lexor.core.node.html#lexor.core.node.Node.extend_before">[docs]</a>    <span class="k">def</span> <span class="nf">extend_before</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">new_children</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Inserts the contents of an iterable containing nodes just</span>
+<span class="sd">        before the child specified by `index`. The following are</span>
+<span class="sd">        equivalent:</span>
+
+<span class="sd">        &gt;&gt;&gt; while doc: node.parent.insert_before(index, doc[0])</span>
+
+<span class="sd">        &gt;&gt;&gt; node.extend_before(index, doc)</span>
+
+<span class="sd">        The second form, however, has a more efficient reindexing</span>
+<span class="sd">        method. &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">new_children</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="n">LC</span><span class="o">.</span><span class="n">DocumentFragment</span><span class="p">)):</span>
+            <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">new_children</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s">&#39;#document&#39;</span> <span class="ow">and</span> <span class="n">node</span><span class="o">.</span><span class="n">temporary</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="o">.</span><span class="n">meta</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">meta</span><span class="p">)</span>
+                        <span class="n">node</span><span class="o">.</span><span class="n">meta</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+                    <span class="k">while</span> <span class="n">node</span><span class="p">:</span>
+                        <span class="n">index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">insert_node_before</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">node</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">insert_node_before</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">new_children</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s">&#39;#document&#39;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">new_children</span><span class="o">.</span><span class="n">temporary</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="o">.</span><span class="n">meta</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">new_children</span><span class="o">.</span><span class="n">meta</span><span class="p">)</span>
+                    <span class="n">new_children</span><span class="o">.</span><span class="n">meta</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+            <span class="k">while</span> <span class="n">new_children</span><span class="p">:</span>
+                <span class="n">index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">insert_node_before</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">new_children</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">while</span> <span class="n">index</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">child</span><span class="p">):</span>
+            <span class="bp">self</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">index</span>
+            <span class="n">index</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="bp">self</span>
+</div>
+<div class="viewcode-block" id="Node.append_child"><a class="viewcode-back" href="../../../api/lexor.core.node.html#lexor.core.node.Node.append_child">[docs]</a>    <span class="k">def</span> <span class="nf">append_child</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_child</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Adds the node `new_child` to the end of the list of</span>
+<span class="sd">        children of this node. If the node is a</span>
+<span class="sd">        :class:`~lexor.core.elements.DocumentFragment` then it</span>
+<span class="sd">        appends its child nodes. Returns the calling node. &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">new_child</span><span class="p">,</span> <span class="n">Node</span><span class="p">):</span>
+            <span class="n">new_child</span> <span class="o">=</span> <span class="n">LC</span><span class="o">.</span><span class="n">Text</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">new_child</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">new_child</span><span class="p">,</span> <span class="n">LC</span><span class="o">.</span><span class="n">DocumentFragment</span><span class="p">):</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s">&quot;Use extend_children for `DocumentFragment` Nodes.&quot;</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">append_child_node</span><span class="p">(</span><span class="n">new_child</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span>
+</div>
+<div class="viewcode-block" id="Node.extend_children"><a class="viewcode-back" href="../../../api/lexor.core.node.html#lexor.core.node.Node.extend_children">[docs]</a>    <span class="k">def</span> <span class="nf">extend_children</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_children</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Extend the list of children by appending children from an</span>
+<span class="sd">        iterable containing nodes. &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">new_children</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="n">LC</span><span class="o">.</span><span class="n">DocumentFragment</span><span class="p">)):</span>
+            <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">new_children</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s">&#39;#document&#39;</span> <span class="ow">and</span> <span class="n">node</span><span class="o">.</span><span class="n">temporary</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="o">.</span><span class="n">meta</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">meta</span><span class="p">)</span>
+                        <span class="n">node</span><span class="o">.</span><span class="n">meta</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+                    <span class="k">while</span> <span class="n">node</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">append_child_node</span><span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">append_child_node</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">new_children</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s">&#39;#document&#39;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">new_children</span><span class="o">.</span><span class="n">temporary</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="o">.</span><span class="n">meta</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">new_children</span><span class="o">.</span><span class="n">meta</span><span class="p">)</span>
+                    <span class="n">new_children</span><span class="o">.</span><span class="n">meta</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+            <span class="k">while</span> <span class="n">new_children</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">append_child_node</span><span class="p">(</span><span class="n">new_children</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">return</span> <span class="bp">self</span>
+</div>
+<div class="viewcode-block" id="Node.append_after"><a class="viewcode-back" href="../../../api/lexor.core.node.html#lexor.core.node.Node.append_after">[docs]</a>    <span class="k">def</span> <span class="nf">append_after</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_child</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Place `new_child` after the node. &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">+</span><span class="mi">1</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">append_child</span><span class="p">(</span><span class="n">new_child</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">insert_before</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">new_child</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Node.append_nodes_after"><a class="viewcode-back" href="../../../api/lexor.core.node.html#lexor.core.node.Node.append_nodes_after">[docs]</a>    <span class="k">def</span> <span class="nf">append_nodes_after</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_children</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Place `new_children` after the node. &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">+</span><span class="mi">1</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">extend_children</span><span class="p">(</span><span class="n">new_children</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">extend_before</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">new_children</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Node.prepend_before"><a class="viewcode-back" href="../../../api/lexor.core.node.html#lexor.core.node.Node.prepend_before">[docs]</a>    <span class="k">def</span> <span class="nf">prepend_before</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_child</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Place `new_child` before the node. &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">insert_before</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">new_child</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Node.prepend_nodes_before"><a class="viewcode-back" href="../../../api/lexor.core.node.html#lexor.core.node.Node.prepend_nodes_before">[docs]</a>    <span class="k">def</span> <span class="nf">prepend_nodes_before</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_children</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Place `new_children` before the node. &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">extend_before</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">new_children</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Node.normalize"><a class="viewcode-back" href="../../../api/lexor.core.node.html#lexor.core.node.Node.normalize">[docs]</a>    <span class="k">def</span> <span class="nf">normalize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Removes empty :class:`~lexor.core.elements.Text` nodes,</span>
+<span class="sd">        and joins adjacent :class:`~lexor.core.elements.Text`</span>
+<span class="sd">        nodes.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">child</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span>
+        <span class="n">crt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">child</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">while</span> <span class="n">crt</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">crt</span><span class="p">,</span> <span class="n">LC</span><span class="o">.</span><span class="n">Text</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">crt</span><span class="o">.</span><span class="n">data</span> <span class="o">==</span> <span class="s">&#39;&#39;</span><span class="p">:</span>
+                    <span class="n">nextnode</span> <span class="o">=</span> <span class="n">crt</span><span class="o">.</span><span class="n">next</span>
+                    <span class="k">del</span> <span class="n">crt</span><span class="o">.</span><span class="n">parent</span><span class="p">[</span><span class="n">crt</span><span class="o">.</span><span class="n">index</span><span class="p">]</span>
+                    <span class="n">crt</span> <span class="o">=</span> <span class="n">nextnode</span>
+                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">crt</span><span class="o">.</span><span class="n">next</span><span class="p">,</span> <span class="n">LC</span><span class="o">.</span><span class="n">Text</span><span class="p">):</span>
+                    <span class="n">marked_node</span> <span class="o">=</span> <span class="n">crt</span><span class="o">.</span><span class="n">next</span>
+                    <span class="n">start</span> <span class="o">=</span> <span class="n">marked_node</span><span class="o">.</span><span class="n">index</span>
+                    <span class="k">while</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">marked_node</span><span class="p">,</span> <span class="n">LC</span><span class="o">.</span><span class="n">Text</span><span class="p">):</span>
+                        <span class="n">crt</span><span class="o">.</span><span class="n">data</span> <span class="o">+=</span> <span class="n">marked_node</span><span class="o">.</span><span class="n">data</span>
+                        <span class="n">end</span> <span class="o">=</span> <span class="n">marked_node</span><span class="o">.</span><span class="n">index</span>
+                        <span class="n">marked_node</span> <span class="o">=</span> <span class="n">marked_node</span><span class="o">.</span><span class="n">next</span>
+                    <span class="n">crt</span> <span class="o">=</span> <span class="n">marked_node</span>
+                    <span class="k">del</span> <span class="bp">self</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">crt</span> <span class="o">=</span> <span class="n">crt</span><span class="o">.</span><span class="n">next</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">crt</span> <span class="o">=</span> <span class="n">crt</span><span class="o">.</span><span class="n">next</span>
+        <span class="k">return</span> <span class="bp">self</span>
+</div>
+<div class="viewcode-block" id="Node.__len__"><a class="viewcode-back" href="../../../api/lexor.core.node.html#lexor.core.node.Node.__len__">[docs]</a>    <span class="k">def</span> <span class="nf">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the number of child nodes.</span>
+
+<span class="sd">        &gt;&gt;&gt; x.__len__() == len(x)</span>
+<span class="sd">        True</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">child</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">0</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">child</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Node.__getitem__"><a class="viewcode-back" href="../../../api/lexor.core.node.html#lexor.core.node.Node.__getitem__">[docs]</a>    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the `i`-th child of this node.</span>
+
+<span class="sd">        &gt;&gt;&gt; x.__getitem__(i) &lt;==&gt; x[i]</span>
+<span class="sd">        &gt;&gt;&gt; x.__getitem__(slice(i, j)) &lt;==&gt; x[i:j]</span>
+<span class="sd">        &gt;&gt;&gt; x.__getitem__(slice(i, j, dt)) &lt;==&gt; x[i:j:dt]</span>
+
+<span class="sd">        When using a slice, the ``__getitem__`` function will return</span>
+<span class="sd">        a list with references to the requested nodes. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">child</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+</div>
+    <span class="k">def</span> <span class="nf">_get_indices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;PRIVATE-METHOD: Returns a slice and the range of indices</span>
+<span class="sd">        to be replaced. `i` is assumed to be a slice or an int. &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">i</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">child</span><span class="p">)</span>
+                <span class="n">i</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">i</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">i</span><span class="p">,</span> <span class="nb">xrange</span><span class="p">(</span><span class="o">*</span><span class="n">i</span><span class="o">.</span><span class="n">indices</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">child</span><span class="p">)))</span>
+
+<div class="viewcode-block" id="Node.__delitem__"><a class="viewcode-back" href="../../../api/lexor.core.node.html#lexor.core.node.Node.__delitem__">[docs]</a>    <span class="k">def</span> <span class="nf">__delitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Delete child nodes.</span>
+
+<span class="sd">        &gt;&gt;&gt; x.__delitem__(index) &lt;==&gt; del x[index]</span>
+<span class="sd">        &gt;&gt;&gt; x.__delitem__(slice(i, j)) &lt;==&gt; del x[i:j]</span>
+<span class="sd">        &gt;&gt;&gt; x.__delitem__(slice(i, j, dt)) &lt;==&gt; del x[i:j:dt]</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">index</span><span class="p">,</span> <span class="n">indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_indices</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">index</span><span class="o">.</span><span class="n">step</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="n">index</span><span class="o">.</span><span class="n">step</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">indices</span> <span class="o">=</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="n">indices</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">child</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">child</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">index</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">child</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">set_prev</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">child</span><span class="p">[</span><span class="n">index</span> <span class="o">-</span> <span class="mi">1</span><span class="p">])</span>
+                <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">child</span><span class="p">[</span><span class="n">index</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">child</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">child</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">prev</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">child</span><span class="p">)):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">child</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">i</span>
+</div>
+<div class="viewcode-block" id="Node.__setitem__"><a class="viewcode-back" href="../../../api/lexor.core.node.html#lexor.core.node.Node.__setitem__">[docs]</a>    <span class="k">def</span> <span class="nf">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Replace child nodes.</span>
+
+<span class="sd">        &gt;&gt;&gt; x.__setitem__(index) = node &lt;==&gt; x[index] = node</span>
+<span class="sd">        &gt;&gt;&gt; x.__setitem__(slice(i, j)) = dfrag &lt;==&gt; x[i:j] = dfrag</span>
+<span class="sd">        &gt;&gt;&gt; x.__setitem__(slice(i, j, dt)) = dfrag &lt;==&gt; x[i:j:dt] = dfrag</span>
+
+<span class="sd">        When using slices the nodes to be assigned to the indices</span>
+<span class="sd">        need to be contained in a</span>
+<span class="sd">        :class:`~lexor.core.elements.DocumentFragment` node. This</span>
+<span class="sd">        function does not support insertion as the regular slice for</span>
+<span class="sd">        list does. To insert use a node use :meth:`insert_before` or</span>
+<span class="sd">        :meth:`append_after`.&quot;&quot;&quot;</span>
+        <span class="n">indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_indices</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">Node</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s">&quot;items must be Nodes&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">node</span> <span class="ow">is</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s">&quot;A node cannot have itself as a child.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">LC</span><span class="o">.</span><span class="n">DocumentFragment</span><span class="p">):</span>
+            <span class="c"># Better take a look at this, DocFrag needs more development</span>
+            <span class="n">nodes</span> <span class="o">=</span> <span class="n">LC</span><span class="o">.</span><span class="n">DocumentFragment</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">nodes</span> <span class="o">=</span> <span class="n">node</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">nodes</span><span class="p">):</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s">&quot;attempt to assign sequence of size </span><span class="si">%d</span><span class="s"> to extended&quot;</span> \
+                  <span class="s">&quot;slice of size </span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">nodes</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">))</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">nodes</span><span class="p">)):</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="n">indices</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">node</span> <span class="o">=</span> <span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">parent</span> <span class="ow">is</span> <span class="bp">self</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Node is already the child at index </span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span>
+                                 <span class="n">node</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">parent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="k">del</span> <span class="n">node</span><span class="o">.</span><span class="n">parent</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">index</span><span class="p">]</span>
+            <span class="c"># Disconnect the current Node</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">child</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span>
+            <span class="c"># Assign and connect the new Node</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">child</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">node</span>
+            <span class="n">node</span><span class="o">.</span><span class="n">set_parent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">node</span><span class="o">.</span><span class="n">set_next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">child</span><span class="p">[</span><span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span>
+            <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+                <span class="k">pass</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">node</span><span class="o">.</span><span class="n">set_prev</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">child</span><span class="p">[</span><span class="n">index</span> <span class="o">-</span> <span class="mi">1</span><span class="p">])</span>
+            <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+                <span class="k">pass</span>
+        <span class="k">return</span> <span class="n">node</span>
+</div>
+<div class="viewcode-block" id="Node.get_nodes_by_name"><a class="viewcode-back" href="../../../api/lexor.core.node.html#lexor.core.node.Node.get_nodes_by_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_nodes_by_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return a ``list`` of child nodes that have the given</span>
+<span class="sd">        `name`. &quot;&quot;&quot;</span>
+        <span class="n">nodes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">child</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">nodes</span>
+        <span class="n">crt</span> <span class="o">=</span> <span class="bp">self</span>
+        <span class="n">direction</span> <span class="o">=</span> <span class="s">&#39;d&#39;</span>
+        <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">direction</span> <span class="ow">is</span> <span class="s">&#39;d&#39;</span><span class="p">:</span>
+                <span class="n">crt</span> <span class="o">=</span> <span class="n">crt</span><span class="o">.</span><span class="n">child</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="n">direction</span> <span class="ow">is</span> <span class="s">&#39;r&#39;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">crt</span><span class="o">.</span><span class="n">next</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                    <span class="n">direction</span> <span class="o">=</span> <span class="s">&#39;u&#39;</span>
+                    <span class="k">continue</span>
+                <span class="n">crt</span> <span class="o">=</span> <span class="n">crt</span><span class="o">.</span><span class="n">next</span>
+            <span class="k">elif</span> <span class="n">direction</span> <span class="ow">is</span> <span class="s">&#39;u&#39;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">crt</span><span class="o">.</span><span class="n">parent</span> <span class="ow">is</span> <span class="bp">self</span><span class="p">:</span>
+                    <span class="k">break</span>
+                <span class="k">if</span> <span class="n">crt</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">next</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                    <span class="n">crt</span> <span class="o">=</span> <span class="n">crt</span><span class="o">.</span><span class="n">parent</span>
+                    <span class="k">continue</span>
+                <span class="n">crt</span> <span class="o">=</span> <span class="n">crt</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">next</span>
+            <span class="k">if</span> <span class="n">crt</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">name</span><span class="p">:</span>
+                <span class="n">nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">crt</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">crt</span><span class="o">.</span><span class="n">child</span><span class="p">:</span>
+                <span class="n">direction</span> <span class="o">=</span> <span class="s">&#39;d&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">direction</span> <span class="o">=</span> <span class="s">&#39;r&#39;</span>
+        <span class="k">return</span> <span class="n">nodes</span>
+</div>
+<div class="viewcode-block" id="Node.set_parent"><a class="viewcode-back" href="../../../api/lexor.core.node.html#lexor.core.node.Node.set_parent">[docs]</a>    <span class="k">def</span> <span class="nf">set_parent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        .. admonition:: Helper Method</span>
+<span class="sd">            :class: caution</span>
+
+<span class="sd">            Modifies the parent node and takes care of the child node</span>
+<span class="sd">            levels. &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="n">parent</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">index</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&#39;#document&#39;</span><span class="p">,</span> <span class="s">&#39;#document-fragment&#39;</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">level</span> <span class="o">=</span> <span class="n">parent</span><span class="o">.</span><span class="n">level</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">level</span> <span class="o">=</span> <span class="n">parent</span><span class="o">.</span><span class="n">level</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">owner</span> <span class="o">=</span> <span class="n">parent</span><span class="o">.</span><span class="n">owner</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">owner</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">LC</span><span class="o">.</span><span class="n">Element</span><span class="p">)</span> <span class="ow">and</span> <span class="s">&#39;id&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="o">.</span><span class="n">id_dict</span><span class="p">[</span><span class="bp">self</span><span class="p">[</span><span class="s">&#39;id&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="bp">self</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">increase_child_level</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="Node.disconnect"><a class="viewcode-back" href="../../../api/lexor.core.node.html#lexor.core.node.Node.disconnect">[docs]</a>    <span class="k">def</span> <span class="nf">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        .. admonition:: Helper Method</span>
+<span class="sd">            :class: caution</span>
+
+<span class="sd">            Reset its attributes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">owner</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">LC</span><span class="o">.</span><span class="n">Element</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="o">.</span><span class="n">id_dict</span><span class="p">[</span><span class="bp">self</span><span class="p">[</span><span class="s">&#39;id&#39;</span><span class="p">]]</span>
+            <span class="k">except</span> <span class="p">(</span><span class="ne">KeyError</span><span class="p">,</span> <span class="ne">AttributeError</span><span class="p">):</span>
+                <span class="k">pass</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">owner</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prev</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&#39;#document&#39;</span><span class="p">,</span> <span class="s">&#39;#document-fragment&#39;</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">level</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">level</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">increase_child_level</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="Node.set_prev"><a class="viewcode-back" href="../../../api/lexor.core.node.html#lexor.core.node.Node.set_prev">[docs]</a>    <span class="k">def</span> <span class="nf">set_prev</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        .. admonition:: Helper Method</span>
+<span class="sd">            :class: caution</span>
+
+<span class="sd">            Sets the ``prev`` attribute.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prev</span> <span class="o">=</span> <span class="n">node</span>
+        <span class="n">node</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="bp">self</span>
+</div>
+<div class="viewcode-block" id="Node.set_next"><a class="viewcode-back" href="../../../api/lexor.core.node.html#lexor.core.node.Node.set_next">[docs]</a>    <span class="k">def</span> <span class="nf">set_next</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        .. admonition:: Helper Method</span>
+<span class="sd">            :class: caution</span>
+
+<span class="sd">            Sets the ``next`` attribute.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">node</span>
+        <span class="n">node</span><span class="o">.</span><span class="n">prev</span> <span class="o">=</span> <span class="bp">self</span>
+</div>
+<div class="viewcode-block" id="Node.increase_child_level"><a class="viewcode-back" href="../../../api/lexor.core.node.html#lexor.core.node.Node.increase_child_level">[docs]</a>    <span class="k">def</span> <span class="nf">increase_child_level</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        .. admonition:: Helper Method</span>
+<span class="sd">            :class: caution</span>
+
+<span class="sd">            Sets the level of the child nodes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">child</span><span class="p">:</span>
+            <span class="n">crt</span> <span class="o">=</span> <span class="bp">self</span>
+            <span class="n">direction</span> <span class="o">=</span> <span class="s">&#39;d&#39;</span>
+            <span class="n">level</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">level</span>
+            <span class="n">owner</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">owner</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">direction</span> <span class="ow">is</span> <span class="s">&#39;d&#39;</span><span class="p">:</span>
+                <span class="n">level</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">crt</span> <span class="o">=</span> <span class="n">crt</span><span class="o">.</span><span class="n">child</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="n">direction</span> <span class="ow">is</span> <span class="s">&#39;r&#39;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">crt</span><span class="o">.</span><span class="n">next</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                    <span class="n">direction</span> <span class="o">=</span> <span class="s">&#39;u&#39;</span>
+                    <span class="k">continue</span>
+                <span class="n">crt</span> <span class="o">=</span> <span class="n">crt</span><span class="o">.</span><span class="n">next</span>
+            <span class="k">elif</span> <span class="n">direction</span> <span class="ow">is</span> <span class="s">&#39;u&#39;</span><span class="p">:</span>
+                <span class="n">level</span> <span class="o">-=</span> <span class="mi">1</span>
+                <span class="k">if</span> <span class="n">crt</span><span class="o">.</span><span class="n">parent</span> <span class="ow">is</span> <span class="bp">self</span><span class="p">:</span>
+                    <span class="k">break</span>
+                <span class="k">if</span> <span class="n">crt</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">next</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                    <span class="n">crt</span> <span class="o">=</span> <span class="n">crt</span><span class="o">.</span><span class="n">parent</span>
+                    <span class="k">continue</span>
+                <span class="n">crt</span> <span class="o">=</span> <span class="n">crt</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">next</span>
+            <span class="n">_set_owner_and_level</span><span class="p">(</span><span class="n">crt</span><span class="p">,</span> <span class="n">owner</span><span class="p">,</span> <span class="n">level</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">crt</span><span class="o">.</span><span class="n">child</span><span class="p">:</span>
+                <span class="n">direction</span> <span class="o">=</span> <span class="s">&#39;d&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">direction</span> <span class="o">=</span> <span class="s">&#39;r&#39;</span>
+</div>
+<div class="viewcode-block" id="Node.append_child_node"><a class="viewcode-back" href="../../../api/lexor.core.node.html#lexor.core.node.Node.append_child_node">[docs]</a>    <span class="k">def</span> <span class="nf">append_child_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_child</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        .. admonition:: Helper Method</span>
+<span class="sd">            :class: caution</span>
+
+<span class="sd">            Use this method to insert a node at a the end of the</span>
+<span class="sd">            child list. See :meth:`append_child` and</span>
+<span class="sd">            :meth:`extend_children` to see this method in</span>
+<span class="sd">            action.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">new_child</span><span class="o">.</span><span class="n">parent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">del</span> <span class="n">new_child</span><span class="o">.</span><span class="n">parent</span><span class="p">[</span><span class="n">new_child</span><span class="o">.</span><span class="n">index</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">child</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_child</span><span class="p">)</span>
+        <span class="n">new_child</span><span class="o">.</span><span class="n">set_parent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">child</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">new_child</span><span class="o">.</span><span class="n">set_prev</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">child</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span>
+        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+            <span class="k">pass</span>
+</div>
+<div class="viewcode-block" id="Node.insert_node_before"><a class="viewcode-back" href="../../../api/lexor.core.node.html#lexor.core.node.Node.insert_node_before">[docs]</a>    <span class="k">def</span> <span class="nf">insert_node_before</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">new_child</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        .. admonition:: Helper Method</span>
+<span class="sd">            :class: caution</span>
+
+<span class="sd">            Insert a `new_child` at a given `index`. See</span>
+<span class="sd">            :meth:`insert_before` and :meth:`extend_before` to see</span>
+<span class="sd">            this method in action.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">new_child</span><span class="o">.</span><span class="n">parent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">del</span> <span class="n">new_child</span><span class="o">.</span><span class="n">parent</span><span class="p">[</span><span class="n">new_child</span><span class="o">.</span><span class="n">index</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">child</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">new_child</span><span class="p">)</span>
+        <span class="n">new_child</span><span class="o">.</span><span class="n">set_parent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">index</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">new_child</span><span class="o">.</span><span class="n">set_prev</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">child</span><span class="p">[</span><span class="n">index</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">new_child</span><span class="o">.</span><span class="n">set_next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">child</span><span class="p">[</span><span class="n">index</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="bp">self</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">index</span>
+        <span class="n">index</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">index</span></div></div>
+</pre></div>
+
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2014, Manuel Lopez.
+    </p>
+  </div>
+
+  <a href="https://github.com/snide/sphinx_rtd_theme">Sphinx theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'0.1.2c0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+      <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

@@ -1,0 +1,409 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>lexor &mdash; lexor 0.1.2c0 documentation</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="top" title="lexor 0.1.2c0 documentation" href="../index.html"/>
+        <link rel="up" title="Module code" href="index.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        <a href="../index.html" class="fa fa-home"> lexor</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+        
+            <ul>
+<li class="toctree-l1"><a class="reference internal" href="../lexor.html"> What is lexor?</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../lexor.html#motivation">Motivation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html"> Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../installation.html#pip-or-manual-installation">Pip or Manual Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../installation.html#lexor-languages">Lexor Languages</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../start.html"> Getting Started</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../commands/index.html"> Commands</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../commands/install.html">install</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/index.html"> API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api/lexor.html">lexor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/lexor.core.html">lexor.core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/lexor.core.node.html">lexor.core.node</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/lexor.core.elements.html">lexor.core.elements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/lexor.command.html">lexor.command</a></li>
+</ul>
+</li>
+</ul>
+
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">lexor</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="index.html">Module code</a> &raquo;</li>
+      
+    <li>lexor</li>
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            
+  <h1>Source code for lexor</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">To use lexor as a module you should explore in detail the packages</span>
+<span class="sd">provided with lexor. These packages contain many other functions and</span>
+<span class="sd">information which can help you convert your document in the way you</span>
+<span class="sd">desire.</span>
+
+
+<span class="sd">:`core &lt;lexor.core&gt;`_: </span>
+<span class="sd">    The core of lexor defines basic objects such as ``Document`` and</span>
+<span class="sd">    provides the main objects that define the functions provided in</span>
+<span class="sd">    this module.</span>
+
+
+<span class="sd">:`command &lt;lexor.command&gt;`_:</span>
+<span class="sd">    This module is in charge of providing all the available commands</span>
+<span class="sd">    to lexor.</span>
+
+<span class="sd">----------------------------------------------------------------------</span>
+
+<span class="sd">In this module we can find useful functions to quickly parse, convert</span>
+<span class="sd">and write files without first creating any of the main lexor objects.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">os.path</span> <span class="kn">as</span> <span class="nn">pth</span>
+<span class="kn">from</span> <span class="nn">sys</span> <span class="kn">import</span> <span class="n">stdout</span>
+<span class="kn">from</span> <span class="nn">os.path</span> <span class="kn">import</span> <span class="n">realpath</span><span class="p">,</span> <span class="n">basename</span><span class="p">,</span> <span class="n">splitext</span>
+<span class="kn">from</span> <span class="nn">lexor.__version__</span> <span class="kn">import</span> <span class="n">get_version</span>
+<span class="kn">from</span> <span class="nn">lexor.command</span> <span class="kn">import</span> <span class="n">error</span>
+<span class="kn">from</span> <span class="nn">lexor.command.lang</span> <span class="kn">import</span> <span class="n">load_aux</span>
+<span class="kn">from</span> <span class="nn">lexor</span> <span class="kn">import</span> <span class="n">core</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s">&#39;lexor&#39;</span><span class="p">,</span>
+    <span class="s">&#39;parse&#39;</span><span class="p">,</span>
+    <span class="s">&#39;read&#39;</span><span class="p">,</span>
+    <span class="s">&#39;convert&#39;</span><span class="p">,</span>
+    <span class="s">&#39;write&#39;</span><span class="p">,</span>
+    <span class="s">&#39;init&#39;</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">_read_text</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">search</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Attempt to read a file and return its contents. &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">open</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="s">&#39;r&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">IOError</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">search</span> <span class="ow">is</span> <span class="bp">False</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">None</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">lexorinputs</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s">&#39;LEXORINPUTS&#39;</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">None</span>
+    <span class="k">for</span> <span class="n">directory</span> <span class="ow">in</span> <span class="n">lexorinputs</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;:&#39;</span><span class="p">):</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s">/</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">src</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s">&#39;r&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">IOError</span><span class="p">:</span>
+            <span class="k">pass</span>
+    <span class="k">return</span> <span class="bp">None</span>
+
+
+<div class="viewcode-block" id="lexor"><a class="viewcode-back" href="../api/lexor.html#lexor.lexor">[docs]</a><span class="k">def</span> <span class="nf">lexor</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">search</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="o">**</span><span class="n">keywords</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Utility function to parse and convert a file or string</span>
+<span class="sd">    specified by `src`. If `search` is ``True`` then it will</span>
+<span class="sd">    attemp to search for `src` in the paths specified by the</span>
+<span class="sd">    enviromental variable ``$LEXORINPUTS``. The following are all the</span>
+<span class="sd">    valid keywords and its defaults that this function accepts:</span>
+
+<span class="sd">    - parser_style: ``&#39;_&#39;``</span>
+<span class="sd">    - parser_lang: ``None``</span>
+<span class="sd">    - parser_defaults: ``None``,</span>
+<span class="sd">    - convert_style: ``&#39;_&#39;``,</span>
+<span class="sd">    - convert_from: ``None``,</span>
+<span class="sd">    - convert_to: ``&#39;html&#39;``,</span>
+<span class="sd">    - convert_defaults: ``None``,</span>
+<span class="sd">    - convert: ``&#39;true&#39;``</span>
+
+<span class="sd">    Returns the converted ``Document`` object and the log</span>
+<span class="sd">    ``Document`` containing possible warning or error messages.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">info</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">&#39;parser_style&#39;</span><span class="p">:</span> <span class="s">&#39;_&#39;</span><span class="p">,</span>
+        <span class="s">&#39;parser_lang&#39;</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span>
+        <span class="s">&#39;parser_defaults&#39;</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span>
+        <span class="s">&#39;convert_style&#39;</span><span class="p">:</span> <span class="s">&#39;_&#39;</span><span class="p">,</span>
+        <span class="s">&#39;convert_from&#39;</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span>
+        <span class="s">&#39;convert_to&#39;</span><span class="p">:</span> <span class="s">&#39;html&#39;</span><span class="p">,</span>
+        <span class="s">&#39;convert_defaults&#39;</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span>
+        <span class="s">&#39;convert&#39;</span><span class="p">:</span> <span class="s">&#39;true&#39;</span>
+    <span class="p">}</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keywords</span><span class="p">:</span>
+        <span class="n">info</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">keywords</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="n">_read_text</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">search</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">text</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s">r&#39;^(\.|/)(.*/)?(?:$|(.+?)(?:(\.[^.]*$)|$))&#39;</span><span class="p">,</span> <span class="n">src</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="s">&#39;file `</span><span class="si">%s</span><span class="s">` not found&#39;</span> <span class="o">%</span> <span class="n">src</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="n">src</span>
+            <span class="k">if</span> <span class="n">info</span><span class="p">[</span><span class="s">&#39;parser_lang&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">info</span><span class="p">[</span><span class="s">&#39;parser_lang&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;lexor&#39;</span>
+            <span class="n">src</span> <span class="o">=</span> <span class="s">&#39;string@0x</span><span class="si">%x</span><span class="s">&#39;</span> <span class="o">%</span> <span class="nb">id</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">info</span><span class="p">[</span><span class="s">&#39;parser_lang&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">pth</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">pth</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">pth</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">info</span><span class="p">[</span><span class="s">&#39;parser_lang&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">name</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">:]</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">core</span><span class="o">.</span><span class="n">Parser</span><span class="p">(</span><span class="n">info</span><span class="p">[</span><span class="s">&#39;parser_lang&#39;</span><span class="p">],</span>
+                         <span class="n">info</span><span class="p">[</span><span class="s">&#39;parser_style&#39;</span><span class="p">],</span>
+                         <span class="n">info</span><span class="p">[</span><span class="s">&#39;parser_defaults&#39;</span><span class="p">])</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">src</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">info</span><span class="p">[</span><span class="s">&#39;convert&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;true&#39;</span> <span class="ow">and</span> <span class="n">info</span><span class="p">[</span><span class="s">&#39;convert_to&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">info</span><span class="p">[</span><span class="s">&#39;convert_from&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">info</span><span class="p">[</span><span class="s">&#39;convert_from&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">info</span><span class="p">[</span><span class="s">&#39;parser_lang&#39;</span><span class="p">]</span>
+        <span class="n">converter</span> <span class="o">=</span> <span class="n">core</span><span class="o">.</span><span class="n">Converter</span><span class="p">(</span><span class="n">info</span><span class="p">[</span><span class="s">&#39;convert_from&#39;</span><span class="p">],</span>
+                                   <span class="n">info</span><span class="p">[</span><span class="s">&#39;convert_to&#39;</span><span class="p">],</span>
+                                   <span class="n">info</span><span class="p">[</span><span class="s">&#39;convert_style&#39;</span><span class="p">],</span>
+                                   <span class="n">info</span><span class="p">[</span><span class="s">&#39;convert_defaults&#39;</span><span class="p">])</span>
+
+        <span class="n">converter</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">parser</span><span class="o">.</span><span class="n">doc</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">parser</span><span class="o">.</span><span class="n">log</span><span class="p">:</span>
+            <span class="n">converter</span><span class="o">.</span><span class="n">update_log</span><span class="p">(</span><span class="n">parser</span><span class="o">.</span><span class="n">log</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
+        <span class="n">cdoc</span> <span class="o">=</span> <span class="n">converter</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+        <span class="n">clog</span> <span class="o">=</span> <span class="n">converter</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">cdoc</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">doc</span>
+        <span class="n">clog</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">log</span>
+    <span class="k">return</span> <span class="n">cdoc</span><span class="p">,</span> <span class="n">clog</span>
+
+</div>
+<div class="viewcode-block" id="parse"><a class="viewcode-back" href="../api/lexor.html#lexor.parse">[docs]</a><span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="s">&#39;xml&#39;</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s">&#39;default&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Parse the `text` in the language specified by `lang` and</span>
+<span class="sd">    return its ``Document`` form and a ``Document`` log containing</span>
+<span class="sd">    the errors encountered during parsing. &quot;&quot;&quot;</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">core</span><span class="o">.</span><span class="n">Parser</span><span class="p">(</span><span class="n">lang</span><span class="p">,</span> <span class="n">style</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">parser</span><span class="o">.</span><span class="n">document</span><span class="p">,</span> <span class="n">parser</span><span class="o">.</span><span class="n">log</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="read"><a class="viewcode-back" href="../api/lexor.html#lexor.read">[docs]</a><span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s">&quot;default&quot;</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Read and parse a file. If `lang` is not specified then the</span>
+<span class="sd">    language is assummed from the `filename` extension. Returns the</span>
+<span class="sd">    ``Document`` form and a ``Document`` log containing the errors</span>
+<span class="sd">    encountered during parsing. &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">lang</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">realpath</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">basename</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">splitext</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">lang</span> <span class="o">=</span> <span class="n">name</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">:]</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">tmpf</span><span class="p">:</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">tmpf</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">core</span><span class="o">.</span><span class="n">Parser</span><span class="p">(</span><span class="n">lang</span><span class="p">,</span> <span class="n">style</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">parser</span><span class="o">.</span><span class="n">document</span><span class="p">,</span> <span class="n">parser</span><span class="o">.</span><span class="n">log</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="convert"><a class="viewcode-back" href="../api/lexor.html#lexor.convert">[docs]</a><span class="k">def</span> <span class="nf">convert</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s">&quot;default&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Convert the ``Document`` `doc` to another language in a given</span>
+<span class="sd">    style. If the `lang` is not specified then the `doc` is</span>
+<span class="sd">    tranformed to the same language as the ``Document`` using the</span>
+<span class="sd">    default style. &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">lang</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">lang</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">owner</span><span class="o">.</span><span class="n">lang</span>
+    <span class="n">converter</span> <span class="o">=</span> <span class="n">core</span><span class="o">.</span><span class="n">Converter</span><span class="p">(</span><span class="n">doc</span><span class="o">.</span><span class="n">owner</span><span class="o">.</span><span class="n">lang</span><span class="p">,</span> <span class="n">lang</span><span class="p">,</span> <span class="n">style</span><span class="p">)</span>
+    <span class="n">converter</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">converter</span><span class="o">.</span><span class="n">document</span><span class="p">,</span> <span class="n">converter</span><span class="o">.</span><span class="n">log</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="write"><a class="viewcode-back" href="../api/lexor.html#lexor.write">[docs]</a><span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s">&#39;w&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Write `doc` to a file. To write to the standard output use the</span>
+<span class="sd">    default parameters, otherwise provide `filename`. If `filename`</span>
+<span class="sd">    is provided you have the option of especifying the mode: ``&#39;w&#39;``</span>
+<span class="sd">    or ``&#39;a&#39;``.</span>
+
+<span class="sd">    You may also provide a file you may have opened yourself in place</span>
+<span class="sd">    of filename so that the writer writes to that file, in this case</span>
+<span class="sd">    the `mode` is ignored.</span>
+
+<span class="sd">    The valid `options` depends on the language the document</span>
+<span class="sd">    specifies. See the ``DEFAULT`` values a particular writer style</span>
+<span class="sd">    has to obtain the valid options. &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">doc</span><span class="o">.</span><span class="n">owner</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">style</span> <span class="o">=</span> <span class="s">&#39;default&#39;</span>
+        <span class="n">lang</span> <span class="o">=</span> <span class="s">&#39;xml&#39;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">style</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">owner</span><span class="o">.</span><span class="n">style</span>
+        <span class="n">lang</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">owner</span><span class="o">.</span><span class="n">lang</span>
+    <span class="n">writer</span> <span class="o">=</span> <span class="n">core</span><span class="o">.</span><span class="n">Writer</span><span class="p">(</span><span class="n">lang</span><span class="p">,</span> <span class="n">style</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">doc</span><span class="o">.</span><span class="n">owner</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">doc</span><span class="o">.</span><span class="n">owner</span><span class="o">.</span><span class="n">defaults</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">var</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">doc</span><span class="o">.</span><span class="n">owner</span><span class="o">.</span><span class="n">defaults</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+            <span class="n">writer</span><span class="o">.</span><span class="n">defaults</span><span class="p">[</span><span class="n">var</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expandvars</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">val</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">var</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">options</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+        <span class="n">writer</span><span class="o">.</span><span class="n">defaults</span><span class="p">[</span><span class="n">var</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expandvars</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">val</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">filename</span><span class="p">:</span>
+        <span class="n">writer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">writer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">stdout</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="init"><a class="viewcode-back" href="../api/lexor.html#lexor.init">[docs]</a><span class="k">def</span> <span class="nf">init</span><span class="p">(</span><span class="o">**</span><span class="n">keywords</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Every lexor style needs to call the ``init`` function. These</span>
+<span class="sd">    are the valid keywords to initialize a style:</span>
+
+<span class="sd">    - version: ``(major, minor, micro, alpha/beta/rc/final, #)``</span>
+<span class="sd">    - lang</span>
+<span class="sd">    - [to_lang]</span>
+<span class="sd">    - type</span>
+<span class="sd">    - description</span>
+<span class="sd">    - author</span>
+<span class="sd">    - author_email</span>
+<span class="sd">    - [url]</span>
+<span class="sd">    - license</span>
+<span class="sd">    - path: Must be set to ``__file__``.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">valid_keys</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;version&#39;</span><span class="p">,</span> <span class="s">&#39;lang&#39;</span><span class="p">,</span> <span class="s">&#39;to_lang&#39;</span><span class="p">,</span> <span class="s">&#39;type&#39;</span><span class="p">,</span> <span class="s">&#39;description&#39;</span><span class="p">,</span>
+                  <span class="s">&#39;author&#39;</span><span class="p">,</span> <span class="s">&#39;author_email&#39;</span><span class="p">,</span> <span class="s">&#39;url&#39;</span><span class="p">,</span> <span class="s">&#39;path&#39;</span><span class="p">,</span> <span class="s">&#39;license&#39;</span><span class="p">]</span>
+    <span class="n">info</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">valid_keys</span><span class="p">:</span>
+        <span class="n">info</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keywords</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">valid_keys</span><span class="p">:</span>
+            <span class="n">error</span><span class="p">(</span><span class="s">&quot;ERROR: Valid keys for lexor.init are </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">valid_keys</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">info</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">keywords</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+    <span class="n">info</span><span class="p">[</span><span class="s">&#39;style&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">splitext</span><span class="p">(</span><span class="n">basename</span><span class="p">(</span><span class="n">info</span><span class="p">[</span><span class="s">&#39;path&#39;</span><span class="p">]))[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">info</span><span class="p">[</span><span class="s">&#39;style&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">info</span><span class="p">[</span><span class="s">&#39;style&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;-&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">info</span><span class="p">[</span><span class="s">&#39;ver&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_version</span><span class="p">(</span><span class="n">info</span><span class="p">[</span><span class="s">&#39;version&#39;</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">info</span></div>
+</pre></div>
+
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2014, Manuel Lopez.
+    </p>
+  </div>
+
+  <a href="https://github.com/snide/sphinx_rtd_theme">Sphinx theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.1.2c0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

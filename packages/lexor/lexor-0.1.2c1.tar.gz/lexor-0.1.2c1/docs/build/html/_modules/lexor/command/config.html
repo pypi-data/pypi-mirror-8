@@ -1,0 +1,393 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>lexor.command.config &mdash; lexor 0.1.2c0 documentation</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="top" title="lexor 0.1.2c0 documentation" href="../../../index.html"/>
+        <link rel="up" title="lexor.command" href="../command.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        <a href="../../../index.html" class="fa fa-home"> lexor</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+        
+            <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../lexor.html"> What is lexor?</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../lexor.html#motivation">Motivation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html"> Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../installation.html#pip-or-manual-installation">Pip or Manual Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../installation.html#lexor-languages">Lexor Languages</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../start.html"> Getting Started</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../commands/index.html"> Commands</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../commands/install.html">install</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html"> API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/lexor.html">lexor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/lexor.core.html">lexor.core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/lexor.core.node.html">lexor.core.node</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/lexor.core.elements.html">lexor.core.elements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/lexor.command.html">lexor.command</a></li>
+</ul>
+</li>
+</ul>
+
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../../index.html">lexor</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      
+          <li><a href="../../lexor.html">lexor</a> &raquo;</li>
+      
+          <li><a href="../command.html">lexor.command</a> &raquo;</li>
+      
+    <li>lexor.command.config</li>
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            
+  <h1>Source code for lexor.command.config</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;Config</span>
+
+<span class="sd">This module is in charge of providing all the necessary settings to</span>
+<span class="sd">the rest of the modules in lexor.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">textwrap</span>
+<span class="kn">import</span> <span class="nn">configparser</span>
+<span class="kn">from</span> <span class="nn">lexor.command</span> <span class="kn">import</span> <span class="n">error</span><span class="p">,</span> <span class="n">import_mod</span>
+
+
+<span class="n">DESC</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;View and edit a configuration file for lexor.</span>
+
+<span class="s">Some actions performed by lexor can be overwritten by using</span>
+<span class="s">configuration files.</span>
+
+<span class="s">To see the values that the configuration file can overwrite use the</span>
+<span class="s">`defaults` command. This will print a list of the keys and values</span>
+<span class="s">lexor uses for the given command.</span>
+
+<span class="s">&quot;&quot;&quot;</span>
+
+<span class="n">CONFIG</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">&#39;path&#39;</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span>  <span class="c"># read only</span>
+    <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span>  <span class="c"># read only</span>
+    <span class="s">&#39;cfg_path&#39;</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span>  <span class="c"># COMMAND LINE USE ONLY</span>
+    <span class="s">&#39;cfg_user&#39;</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span>  <span class="c"># COMMAND LINE USE ONLY</span>
+    <span class="s">&#39;arg&#39;</span><span class="p">:</span> <span class="bp">None</span>  <span class="c"># COMMAND LINE USE ONLY</span>
+<span class="p">}</span>
+
+
+<div class="viewcode-block" id="var_completer"><a class="viewcode-back" href="../../../api/lexor.command.html#lexor.command.config.var_completer">[docs]</a><span class="k">def</span> <span class="nf">var_completer</span><span class="p">(</span><span class="o">**</span><span class="n">_</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;var completer. &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">[</span><span class="s">&#39;SEC.KEY&#39;</span><span class="p">]</span>
+
+</div>
+<div class="viewcode-block" id="value_completer"><a class="viewcode-back" href="../../../api/lexor.command.html#lexor.command.config.value_completer">[docs]</a><span class="k">def</span> <span class="nf">value_completer</span><span class="p">(</span><span class="o">**</span><span class="n">_</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;value completer. &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">[</span><span class="s">&#39;VALUE&#39;</span><span class="p">]</span>
+
+</div>
+<div class="viewcode-block" id="ConfigDispAction"><a class="viewcode-back" href="../../../api/lexor.command.html#lexor.command.config.ConfigDispAction">[docs]</a><span class="k">class</span> <span class="nc">ConfigDispAction</span><span class="p">(</span><span class="n">argparse</span><span class="o">.</span><span class="n">Action</span><span class="p">):</span>  <span class="c"># pylint: disable=R0903</span>
+    <span class="sd">&quot;&quot;&quot;Derived argparse Action class to use when displaying the</span>
+<span class="sd">    configuration file and location.&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parser</span><span class="p">,</span> <span class="n">namespace</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">option_string</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">global</span> <span class="n">CONFIG</span>
+        <span class="n">CONFIG</span><span class="p">[</span><span class="s">&#39;cfg_user&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">namespace</span><span class="o">.</span><span class="n">cfg_user</span>
+        <span class="n">CONFIG</span><span class="p">[</span><span class="s">&#39;cfg_path&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">namespace</span><span class="o">.</span><span class="n">cfg_path</span>
+        <span class="n">cfg_file</span> <span class="o">=</span> <span class="n">read_config</span><span class="p">()</span>
+        <span class="n">fname</span> <span class="o">=</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s">/</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">CONFIG</span><span class="p">[</span><span class="s">&#39;path&#39;</span><span class="p">],</span> <span class="n">CONFIG</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">])</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&#39;lexor configuration file: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">fname</span><span class="p">)</span>
+        <span class="n">cfg_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">)</span>
+        <span class="nb">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="add_parser"><a class="viewcode-back" href="../../../api/lexor.command.html#lexor.command.config.add_parser">[docs]</a><span class="k">def</span> <span class="nf">add_parser</span><span class="p">(</span><span class="n">subp</span><span class="p">,</span> <span class="n">fclass</span><span class="p">):</span>
+    <span class="s">&quot;Add a parser to the main subparser. &quot;</span>
+    <span class="n">tmpp</span> <span class="o">=</span> <span class="n">subp</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span><span class="s">&#39;config&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s">&#39;configure lexor&#39;</span><span class="p">,</span>
+                           <span class="n">formatter_class</span><span class="o">=</span><span class="n">fclass</span><span class="p">,</span>
+                           <span class="n">description</span><span class="o">=</span><span class="n">textwrap</span><span class="o">.</span><span class="n">dedent</span><span class="p">(</span><span class="n">DESC</span><span class="p">))</span>
+    <span class="n">tmpp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&#39;var&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+                      <span class="n">help</span><span class="o">=</span><span class="s">&#39;Must be in the form of sec.key&#39;</span>
+                      <span class="p">)</span><span class="o">.</span><span class="n">completer</span> <span class="o">=</span> <span class="n">var_completer</span>
+    <span class="n">tmpp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&#39;value&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="s">&#39;?&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                      <span class="n">help</span><span class="o">=</span><span class="s">&#39;var value&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">completer</span> <span class="o">=</span> <span class="n">value_completer</span>
+    <span class="n">tmpp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&#39;-v&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&#39;store_true&#39;</span><span class="p">,</span>
+                      <span class="n">help</span><span class="o">=</span><span class="s">&#39;print config file location&#39;</span><span class="p">)</span>
+    <span class="n">tmpp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&#39;--display&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="n">ConfigDispAction</span><span class="p">,</span>
+                      <span class="n">nargs</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                      <span class="n">help</span><span class="o">=</span><span class="s">&#39;print config file and exit&#39;</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="read_config"><a class="viewcode-back" href="../../../api/lexor.command.html#lexor.command.config.read_config">[docs]</a><span class="k">def</span> <span class="nf">read_config</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Read a configuration file.&quot;&quot;&quot;</span>
+    <span class="n">cfg_file</span> <span class="o">=</span> <span class="n">configparser</span><span class="o">.</span><span class="n">ConfigParser</span><span class="p">(</span><span class="n">allow_no_value</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s">&#39;lexor.config&#39;</span>
+    <span class="k">if</span> <span class="n">CONFIG</span><span class="p">[</span><span class="s">&#39;cfg_user&#39;</span><span class="p">]:</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s">&#39;HOME&#39;</span><span class="p">]</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="s">&#39;.lexor.config&#39;</span>
+    <span class="k">elif</span> <span class="n">CONFIG</span><span class="p">[</span><span class="s">&#39;cfg_path&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="s">&#39;.&#39;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+            <span class="k">if</span> <span class="s">&#39;LEXOR_CONFIG_PATH&#39;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">:</span>
+                <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s">&#39;LEXOR_CONFIG_PATH&#39;</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s">&#39;HOME&#39;</span><span class="p">]</span>
+                <span class="n">name</span> <span class="o">=</span> <span class="s">&#39;.lexor.config&#39;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">CONFIG</span><span class="p">[</span><span class="s">&#39;cfg_path&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s">&#39;</span><span class="si">%s</span><span class="s">/</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">name</span><span class="p">)):</span>
+            <span class="n">error</span><span class="p">(</span><span class="s">&quot;ERROR: </span><span class="si">%s</span><span class="s">/</span><span class="si">%s</span><span class="s"> does not exist.</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">name</span><span class="p">))</span>
+    <span class="n">cfg_file</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s">&#39;</span><span class="si">%s</span><span class="s">/</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">name</span><span class="p">))</span>
+    <span class="n">CONFIG</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">name</span>
+    <span class="n">CONFIG</span><span class="p">[</span><span class="s">&#39;path&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">path</span>
+    <span class="k">return</span> <span class="n">cfg_file</span>
+
+</div>
+<div class="viewcode-block" id="write_config"><a class="viewcode-back" href="../../../api/lexor.command.html#lexor.command.config.write_config">[docs]</a><span class="k">def</span> <span class="nf">write_config</span><span class="p">(</span><span class="n">cfg_file</span><span class="p">):</span>
+    <span class="s">&quot;Write the configuration file. &quot;</span>
+    <span class="n">fname</span> <span class="o">=</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s">/</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">CONFIG</span><span class="p">[</span><span class="s">&#39;path&#39;</span><span class="p">],</span> <span class="n">CONFIG</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">])</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">tmp</span><span class="p">:</span>
+        <span class="n">cfg_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">tmp</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="run"><a class="viewcode-back" href="../../../api/lexor.command.html#lexor.command.config.run">[docs]</a><span class="k">def</span> <span class="nf">run</span><span class="p">():</span>
+    <span class="s">&quot;Run command. &quot;</span>
+    <span class="n">arg</span> <span class="o">=</span> <span class="n">CONFIG</span><span class="p">[</span><span class="s">&#39;arg&#39;</span><span class="p">]</span>
+    <span class="n">cfg_file</span> <span class="o">=</span> <span class="n">read_config</span><span class="p">()</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">command</span><span class="p">,</span> <span class="n">var</span> <span class="o">=</span> <span class="n">arg</span><span class="o">.</span><span class="n">var</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;.&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="n">error</span><span class="p">(</span><span class="s">&quot;ERROR: &#39;</span><span class="si">%s</span><span class="s">&#39; is not of the form sec.key</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">arg</span><span class="o">.</span><span class="n">var</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">arg</span><span class="o">.</span><span class="n">v</span><span class="p">:</span>
+        <span class="n">fname</span> <span class="o">=</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s">/</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">CONFIG</span><span class="p">[</span><span class="s">&#39;path&#39;</span><span class="p">],</span> <span class="n">CONFIG</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">])</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&#39;lexor configuration file: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">fname</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">arg</span><span class="o">.</span><span class="n">value</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">print</span> <span class="n">cfg_file</span><span class="p">[</span><span class="n">command</span><span class="p">][</span><span class="n">var</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">return</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">cfg_file</span><span class="p">[</span><span class="n">command</span><span class="p">][</span><span class="n">var</span><span class="p">]</span> <span class="o">=</span> <span class="n">arg</span><span class="o">.</span><span class="n">value</span>
+    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+        <span class="n">cfg_file</span><span class="o">.</span><span class="n">add_section</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+        <span class="n">cfg_file</span><span class="p">[</span><span class="n">command</span><span class="p">][</span><span class="n">var</span><span class="p">]</span> <span class="o">=</span> <span class="n">arg</span><span class="o">.</span><span class="n">value</span>
+    <span class="n">write_config</span><span class="p">(</span><span class="n">cfg_file</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="update_single"><a class="viewcode-back" href="../../../api/lexor.command.html#lexor.command.config.update_single">[docs]</a><span class="k">def</span> <span class="nf">update_single</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">defaults</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="s">&quot;Helper function for get_cfg.&quot;</span>
+    <span class="k">if</span> <span class="n">defaults</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">var</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">defaults</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+            <span class="n">cfg</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="n">var</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expandvars</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">val</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">mod</span> <span class="o">=</span> <span class="n">import_mod</span><span class="p">(</span><span class="s">&#39;lexor.command.</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="s">&quot;DEFAULTS&quot;</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">var</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">mod</span><span class="o">.</span><span class="n">DEFAULTS</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+                    <span class="n">cfg</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="n">var</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expandvars</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+</div>
+<span class="k">def</span> <span class="nf">_update_from_file</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">cfg_file</span><span class="p">):</span>
+    <span class="s">&quot;Helper function for get_cfg.&quot;</span>
+    <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">cfg_file</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">var</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">cfg_file</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+            <span class="n">cfg</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="n">var</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expandvars</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_update_from_arg</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">argdict</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+    <span class="s">&quot;Helper function for get_cfg.&quot;</span>
+    <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">cfg</span><span class="p">[</span><span class="n">key</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">argdict</span> <span class="ow">and</span> <span class="n">argdict</span><span class="p">[</span><span class="n">var</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">cfg</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="n">var</span><span class="p">]</span> <span class="o">=</span> <span class="n">argdict</span><span class="p">[</span><span class="n">var</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="get_cfg"><a class="viewcode-back" href="../../../api/lexor.command.html#lexor.command.config.get_cfg">[docs]</a><span class="k">def</span> <span class="nf">get_cfg</span><span class="p">(</span><span class="n">names</span><span class="p">,</span> <span class="n">defaults</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="s">&quot;Obtain settings from the configuration file.&quot;</span>
+    <span class="n">cfg</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">&#39;lexor&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s">&#39;path&#39;</span><span class="p">:</span> <span class="s">&#39;&#39;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="n">cfg_file</span> <span class="o">=</span> <span class="n">read_config</span><span class="p">()</span>
+    <span class="k">if</span> <span class="s">&#39;lexor&#39;</span> <span class="ow">in</span> <span class="n">cfg_file</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">var</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">cfg_file</span><span class="p">[</span><span class="s">&#39;lexor&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+            <span class="n">cfg</span><span class="p">[</span><span class="s">&#39;lexor&#39;</span><span class="p">][</span><span class="n">var</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expandvars</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+    <span class="n">cfg</span><span class="p">[</span><span class="s">&#39;lexor&#39;</span><span class="p">][</span><span class="s">&#39;root&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">CONFIG</span><span class="p">[</span><span class="s">&#39;path&#39;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">names</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span><span class="p">:</span>
+            <span class="n">cfg</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+            <span class="n">update_single</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+            <span class="n">_update_from_file</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">cfg_file</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">names</span> <span class="o">!=</span> <span class="s">&#39;lexor&#39;</span><span class="p">:</span>
+            <span class="n">cfg</span><span class="p">[</span><span class="n">names</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+            <span class="n">update_single</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">names</span><span class="p">,</span> <span class="n">defaults</span><span class="p">)</span>
+            <span class="n">_update_from_file</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">names</span><span class="p">,</span> <span class="n">cfg_file</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">CONFIG</span><span class="p">[</span><span class="s">&#39;arg&#39;</span><span class="p">]:</span>
+        <span class="n">argdict</span> <span class="o">=</span> <span class="nb">vars</span><span class="p">(</span><span class="n">CONFIG</span><span class="p">[</span><span class="s">&#39;arg&#39;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">argdict</span><span class="p">[</span><span class="s">&#39;parser_name&#39;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">cfg</span><span class="p">:</span>
+            <span class="n">_update_from_arg</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">argdict</span><span class="p">,</span> <span class="n">argdict</span><span class="p">[</span><span class="s">&#39;parser_name&#39;</span><span class="p">])</span>
+        <span class="n">_update_from_arg</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">argdict</span><span class="p">,</span> <span class="s">&#39;lexor&#39;</span><span class="p">)</span>
+        <span class="n">CONFIG</span><span class="p">[</span><span class="s">&#39;arg&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="k">return</span> <span class="n">cfg</span>
+
+</div>
+<div class="viewcode-block" id="set_style_cfg"><a class="viewcode-back" href="../../../api/lexor.command.html#lexor.command.config.set_style_cfg">[docs]</a><span class="k">def</span> <span class="nf">set_style_cfg</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">defaults</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Given an obj, this can be a Parser, Converter or Writer. It</span>
+<span class="sd">    sets the attribute defaults to the specified defaults in the</span>
+<span class="sd">    configuration file or by the user by overwriting values in the</span>
+<span class="sd">    parameter defaults.&quot;&quot;&quot;</span>
+    <span class="n">obj</span><span class="o">.</span><span class="n">defaults</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">style_module</span><span class="p">,</span> <span class="s">&#39;DEFAULTS&#39;</span><span class="p">):</span>
+        <span class="n">mod_defaults</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">style_module</span><span class="o">.</span><span class="n">DEFAULTS</span>
+        <span class="k">for</span> <span class="n">var</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">mod_defaults</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">defaults</span><span class="p">[</span><span class="n">var</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expandvars</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">val</span><span class="p">))</span>
+    <span class="n">cfg_file</span> <span class="o">=</span> <span class="n">read_config</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">cfg_file</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">var</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">cfg_file</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">defaults</span><span class="p">[</span><span class="n">var</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expandvars</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">defaults</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">var</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">defaults</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">defaults</span><span class="p">[</span><span class="n">var</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span></div>
+</pre></div>
+
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2014, Manuel Lopez.
+    </p>
+  </div>
+
+  <a href="https://github.com/snide/sphinx_rtd_theme">Sphinx theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'0.1.2c0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+      <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

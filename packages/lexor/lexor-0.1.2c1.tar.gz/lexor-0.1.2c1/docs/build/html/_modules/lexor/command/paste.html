@@ -1,0 +1,308 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>lexor.command.paste &mdash; lexor 0.1.2c0 documentation</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="top" title="lexor 0.1.2c0 documentation" href="../../../index.html"/>
+        <link rel="up" title="lexor.command" href="../command.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        <a href="../../../index.html" class="fa fa-home"> lexor</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+        
+            <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../lexor.html"> What is lexor?</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../lexor.html#motivation">Motivation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html"> Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../installation.html#pip-or-manual-installation">Pip or Manual Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../installation.html#lexor-languages">Lexor Languages</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../start.html"> Getting Started</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../commands/index.html"> Commands</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../commands/install.html">install</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html"> API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/lexor.html">lexor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/lexor.core.html">lexor.core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/lexor.core.node.html">lexor.core.node</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/lexor.core.elements.html">lexor.core.elements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/lexor.command.html">lexor.command</a></li>
+</ul>
+</li>
+</ul>
+
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../../index.html">lexor</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      
+          <li><a href="../../lexor.html">lexor</a> &raquo;</li>
+      
+          <li><a href="../command.html">lexor.command</a> &raquo;</li>
+      
+    <li>lexor.command.paste</li>
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            
+  <h1>Source code for lexor.command.paste</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;Paste</span>
+
+<span class="sd">Routine to append paste templates.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c">#pylint: disable=W0142</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">textwrap</span>
+<span class="kn">from</span> <span class="nn">lexor.command</span> <span class="kn">import</span> <span class="n">error</span>
+<span class="kn">from</span> <span class="nn">lexor.command</span> <span class="kn">import</span> <span class="n">config</span>
+
+<span class="n">DESC</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;</span>
+<span class="s">Paste a template to create a new style.</span>
+
+<span class="s">&quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="style_completer"><a class="viewcode-back" href="../../../api/lexor.command.html#lexor.command.paste.style_completer">[docs]</a><span class="k">def</span> <span class="nf">style_completer</span><span class="p">(</span><span class="o">**</span><span class="n">_</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return the meta var. &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">[</span><span class="s">&#39;STYLE&#39;</span><span class="p">]</span>
+
+</div>
+<div class="viewcode-block" id="lang_completer"><a class="viewcode-back" href="../../../api/lexor.command.html#lexor.command.paste.lang_completer">[docs]</a><span class="k">def</span> <span class="nf">lang_completer</span><span class="p">(</span><span class="o">**</span><span class="n">_</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return the meta var. &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">[</span><span class="s">&#39;LANG&#39;</span><span class="p">]</span>
+
+</div>
+<div class="viewcode-block" id="add_parser"><a class="viewcode-back" href="../../../api/lexor.command.html#lexor.command.paste.add_parser">[docs]</a><span class="k">def</span> <span class="nf">add_parser</span><span class="p">(</span><span class="n">subp</span><span class="p">,</span> <span class="n">fclass</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Add a parser to the main subparser. &quot;&quot;&quot;</span>
+    <span class="n">types</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;parser&#39;</span><span class="p">,</span> <span class="s">&#39;writer&#39;</span><span class="p">,</span> <span class="s">&#39;converter&#39;</span><span class="p">,</span>
+             <span class="s">&#39;node-parser&#39;</span><span class="p">,</span> <span class="s">&#39;node-writer&#39;</span><span class="p">,</span> <span class="s">&#39;node-converter&#39;</span><span class="p">]</span>
+    <span class="n">tmpp</span> <span class="o">=</span> <span class="n">subp</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span><span class="s">&#39;paste&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s">&#39;paste a template&#39;</span><span class="p">,</span>
+                           <span class="n">formatter_class</span><span class="o">=</span><span class="n">fclass</span><span class="p">,</span>
+                           <span class="n">description</span><span class="o">=</span><span class="n">textwrap</span><span class="o">.</span><span class="n">dedent</span><span class="p">(</span><span class="n">DESC</span><span class="p">))</span>
+    <span class="n">tmpp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&#39;lang&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+                      <span class="n">help</span><span class="o">=</span><span class="s">&#39;language name&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">completer</span> <span class="o">=</span> <span class="n">lang_completer</span>
+    <span class="n">tmpp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&#39;type&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s">&#39;type&#39;</span><span class="p">,</span> <span class="n">choices</span><span class="o">=</span><span class="n">types</span><span class="p">,</span>
+                      <span class="n">help</span><span class="o">=</span><span class="s">&#39;file type: &#39;</span> <span class="o">+</span> <span class="s">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">types</span><span class="p">))</span>
+    <span class="n">tmpp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&#39;style&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+                      <span class="n">help</span><span class="o">=</span><span class="s">&#39;style name&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">completer</span> <span class="o">=</span> <span class="n">style_completer</span>
+    <span class="n">tmpp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&#39;optional&#39;</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="s">&#39;*&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                      <span class="n">help</span><span class="o">=</span><span class="s">&quot;[to language] [auxilary filename]&quot;</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="make_style"><a class="viewcode-back" href="../../../api/lexor.command.html#lexor.command.paste.make_style">[docs]</a><span class="k">def</span> <span class="nf">make_style</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">type_</span><span class="p">,</span> <span class="n">fmt</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Creates a new style file. &quot;&quot;&quot;</span>
+    <span class="n">template</span> <span class="o">=</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s">/../core/templates/</span><span class="si">%s</span><span class="s">-style.txt&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">type_</span><span class="p">)</span>
+    <span class="n">content</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">template</span><span class="p">,</span> <span class="s">&#39;r&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="n">sfile</span> <span class="o">=</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s">.py&#39;</span> <span class="o">%</span> <span class="n">fmt</span><span class="p">[</span><span class="s">&#39;style&#39;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">sfile</span><span class="p">):</span>
+        <span class="k">print</span> <span class="s">&#39;Opening: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">sfile</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">&#39;Creating style: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">sfile</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">sfile</span><span class="p">,</span> <span class="s">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">wfile</span><span class="p">:</span>
+            <span class="n">wfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">content</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="n">fmt</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">sfile</span>
+
+</div>
+<div class="viewcode-block" id="make_auxilary"><a class="viewcode-back" href="../../../api/lexor.command.html#lexor.command.paste.make_auxilary">[docs]</a><span class="k">def</span> <span class="nf">make_auxilary</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">type_</span><span class="p">,</span> <span class="n">fmt</span><span class="p">,</span> <span class="n">aux_type</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Creates a new node parser module. &quot;&quot;&quot;</span>
+    <span class="n">tmp</span> <span class="o">=</span> <span class="s">&#39;&#39;</span> <span class="k">if</span> <span class="n">aux_type</span> <span class="o">==</span> <span class="s">&#39;&#39;</span> <span class="k">else</span> <span class="s">&#39;-test&#39;</span>
+    <span class="n">template</span> <span class="o">=</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s">/../core/templates/</span><span class="si">%s%s</span><span class="s">.txt&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">type_</span><span class="p">,</span> <span class="n">tmp</span><span class="p">)</span>
+    <span class="n">content</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">template</span><span class="p">,</span> <span class="s">&#39;r&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="n">tmp</span> <span class="o">=</span> <span class="s">&#39;&#39;</span> <span class="k">if</span> <span class="n">aux_type</span> <span class="o">==</span> <span class="s">&#39;&#39;</span> <span class="k">else</span> <span class="s">&#39;test_&#39;</span>
+    <span class="n">npfile</span> <span class="o">=</span> <span class="s">&#39;</span><span class="si">%s%s</span><span class="s">.py&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="n">fmt</span><span class="p">[</span><span class="s">&#39;np&#39;</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">npfile</span><span class="p">):</span>
+        <span class="k">print</span> <span class="s">&#39;Opening: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">npfile</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">&#39;Creating node processor: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">npfile</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">npfile</span><span class="p">,</span> <span class="s">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">wfile</span><span class="p">:</span>
+            <span class="n">wfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">content</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="n">fmt</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">npfile</span>
+
+</div>
+<span class="k">def</span> <span class="nf">_get_option</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Exit if array index is not accessible.&quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">array</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+        <span class="n">error</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="run"><a class="viewcode-back" href="../../../api/lexor.command.html#lexor.command.paste.run">[docs]</a><span class="k">def</span> <span class="nf">run</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Run the command. &quot;&quot;&quot;</span>
+    <span class="n">arg</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">CONFIG</span><span class="p">[</span><span class="s">&#39;arg&#39;</span><span class="p">]</span>
+    <span class="n">cfg</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get_cfg</span><span class="p">(</span><span class="s">&#39;edit&#39;</span><span class="p">)</span>
+    <span class="n">editor</span> <span class="o">=</span> <span class="n">cfg</span><span class="p">[</span><span class="s">&#39;edit&#39;</span><span class="p">][</span><span class="s">&#39;editor&#39;</span><span class="p">]</span>
+
+    <span class="n">base</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">__file__</span><span class="p">)</span>
+    <span class="n">lang</span> <span class="o">=</span> <span class="n">arg</span><span class="o">.</span><span class="n">lang</span>
+    <span class="n">style</span> <span class="o">=</span> <span class="n">arg</span><span class="o">.</span><span class="n">style</span>
+    <span class="n">type_</span> <span class="o">=</span> <span class="n">arg</span><span class="o">.</span><span class="n">type</span>
+
+    <span class="k">if</span> <span class="s">&#39;converter&#39;</span> <span class="ow">in</span> <span class="n">type_</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s">&quot;ERROR: converter needs to_lang.</span><span class="se">\n</span><span class="s">&quot;</span>
+        <span class="n">tolang</span> <span class="o">=</span> <span class="n">_get_option</span><span class="p">(</span><span class="n">arg</span><span class="o">.</span><span class="n">optional</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">tolang</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+
+    <span class="n">fmt</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">&#39;LANG&#39;</span><span class="p">:</span> <span class="n">lang</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span>
+        <span class="s">&#39;STYLE&#39;</span><span class="p">:</span> <span class="n">style</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span>
+        <span class="s">&#39;TOLANG&#39;</span><span class="p">:</span> <span class="n">tolang</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span>
+        <span class="s">&#39;lang&#39;</span><span class="p">:</span> <span class="n">lang</span><span class="p">,</span>
+        <span class="s">&#39;style&#39;</span><span class="p">:</span> <span class="n">style</span><span class="p">,</span>
+        <span class="s">&#39;tolang&#39;</span><span class="p">:</span> <span class="n">tolang</span>
+    <span class="p">}</span>
+
+    <span class="k">if</span> <span class="s">&#39;node&#39;</span> <span class="ow">in</span> <span class="n">type_</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s">&quot;ERROR: provide name of auxilary file.</span><span class="se">\n</span><span class="s">&quot;</span>
+        <span class="k">if</span> <span class="s">&#39;converter&#39;</span> <span class="ow">in</span> <span class="n">type_</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">_get_option</span><span class="p">(</span><span class="n">arg</span><span class="o">.</span><span class="n">optional</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">_get_option</span><span class="p">(</span><span class="n">arg</span><span class="o">.</span><span class="n">optional</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span>
+        <span class="n">fmt</span><span class="p">[</span><span class="s">&#39;NP&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">name</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+        <span class="n">fmt</span><span class="p">[</span><span class="s">&#39;np&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="n">npfile</span> <span class="o">=</span> <span class="n">make_auxilary</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">type_</span><span class="p">,</span> <span class="n">fmt</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s">&#39;</span><span class="si">%s</span><span class="s"> &quot;</span><span class="si">%s</span><span class="s">&quot; &gt; /dev/null&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">editor</span><span class="p">,</span> <span class="n">npfile</span><span class="p">))</span>
+        <span class="n">npfile</span> <span class="o">=</span> <span class="n">make_auxilary</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">type_</span><span class="p">,</span> <span class="n">fmt</span><span class="p">,</span> <span class="s">&#39;-test&#39;</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s">&#39;</span><span class="si">%s</span><span class="s"> &quot;</span><span class="si">%s</span><span class="s">&quot; &gt; /dev/null&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">editor</span><span class="p">,</span> <span class="n">npfile</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">sfile</span> <span class="o">=</span> <span class="n">make_style</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">type_</span><span class="p">,</span> <span class="n">fmt</span><span class="p">)</span>
+        <span class="n">cmd</span> <span class="o">=</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s"> &quot;</span><span class="si">%s</span><span class="s">&quot; &gt; /dev/null&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">editor</span><span class="p">,</span> <span class="n">sfile</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2014, Manuel Lopez.
+    </p>
+  </div>
+
+  <a href="https://github.com/snide/sphinx_rtd_theme">Sphinx theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'0.1.2c0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+      <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

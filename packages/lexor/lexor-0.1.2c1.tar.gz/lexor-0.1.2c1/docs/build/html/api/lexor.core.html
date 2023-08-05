@@ -1,0 +1,1038 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>lexor.core package &mdash; lexor 0.1.2c0 documentation</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="top" title="lexor 0.1.2c0 documentation" href="../index.html"/>
+        <link rel="up" title="API" href="index.html"/>
+        <link rel="next" title="lexor.core.node module" href="lexor.core.node.html"/>
+        <link rel="prev" title="lexor package" href="lexor.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        <a href="../index.html" class="fa fa-home"> lexor</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+        
+            <ul>
+<li class="toctree-l1"><a class="reference internal" href="../lexor.html"> What is lexor?</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../lexor.html#motivation">Motivation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html"> Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../installation.html#pip-or-manual-installation">Pip or Manual Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../installation.html#lexor-languages">Lexor Languages</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../start.html"> Getting Started</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../commands/index.html"> Commands</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../commands/install.html">install</a></li>
+</ul>
+</li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html"> API</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="lexor.html">lexor</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="">lexor.core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lexor.core.node.html">lexor.core.node</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lexor.core.elements.html">lexor.core.elements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lexor.command.html">lexor.command</a></li>
+</ul>
+</li>
+</ul>
+
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">lexor</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="index.html">API</a> &raquo;</li>
+      
+    <li>lexor.core package</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          <a href="../_sources/api/lexor.core.txt" rel="nofollow"> View page source</a>
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            
+  <div class="section" id="module-lexor.core">
+<span id="lexor-core-package"></span><h1>lexor.core package<a class="headerlink" href="#module-lexor.core" title="Permalink to this headline">¶</a></h1>
+<p>The core of lexor is divided among the modules in this package.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name"><a class="reference external" href="lexor.core.node">node</a>:</th><td class="field-body">Provides the most basic structure to create the document object
+model (DOM).</td>
+</tr>
+<tr class="field-even field"><th class="field-name"><a class="reference external" href="lexor.core.elements">elements</a>:</th><td class="field-body">Here we define the basic structures to handle the information
+provided in files. Make sure to familiarize yourself with all the
+objects in this module to be able to write extensions for the
+<tt class="docutils literal"><span class="pre">Parser</span></tt>, <tt class="docutils literal"><span class="pre">Converter</span></tt> and <tt class="docutils literal"><span class="pre">Writer</span></tt>.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">parser:</th><td class="field-body">The parser module provides the <tt class="docutils literal"><span class="pre">Parser</span></tt> and the abstract class
+<tt class="docutils literal"><span class="pre">NodeParser</span></tt> which helps us write derived objects for future
+languages to parse.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">converter:</th><td class="field-body">The converter module provides the <tt class="docutils literal"><span class="pre">Converter</span></tt> and the abstract
+class <tt class="docutils literal"><span class="pre">NodeConverter</span></tt> which helps us copy a <tt class="docutils literal"><span class="pre">Document</span></tt> we
+want to convert to another language.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">writer:</th><td class="field-body">The writer module provides the <tt class="docutils literal"><span class="pre">Writer</span></tt> and the abstract class
+<tt class="docutils literal"><span class="pre">NodeWriter</span></tt> which once subclassed help us tell the <tt class="docutils literal"><span class="pre">Writer</span></tt>
+how to write a <tt class="docutils literal"><span class="pre">Node</span></tt> to a file object.</td>
+</tr>
+</tbody>
+</table>
+<div class="section" id="module-lexor.core.parser">
+<span id="lexor-core-parser-module"></span><h2>lexor.core.parser module<a class="headerlink" href="#module-lexor.core.parser" title="Permalink to this headline">¶</a></h2>
+<p>Parser Module</p>
+<p>Provides the <cite>Parser</cite> object which defines the basic mechanism for
+parsing character sequences. This involves using objects derived from
+the abstract class <cite>NodeParser</cite>.</p>
+<dl class="class">
+<dt id="lexor.core.parser.NodeParser">
+<em class="property">class </em><tt class="descclassname">lexor.core.parser.</tt><tt class="descname">NodeParser</tt><big>(</big><em>parser</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/parser.html#NodeParser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.parser.NodeParser" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>An object that has two methods: <cite>makeNode</cite> and <cite>close</cite>. The
+first method is required to be overloaded in derived objects.</p>
+<dl class="method">
+<dt id="lexor.core.parser.NodeParser.close">
+<tt class="descname">close</tt><big>(</big><em>_</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/parser.html#NodeParser.close"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.parser.NodeParser.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method needs to be overloaded if the node parser
+returns a <cite>Node</cite> with the <cite>make_node</cite> method.</p>
+<p>This method will not get called if <cite>make_node</cite> returned a
+<cite>Node</cite> inside a <cite>list</cite>. The close function takes as input the
+<cite>Node</cite> object that <cite>make_node</cite> returned and it should decide
+if the node can be closed or not. If it is indeed time to
+close the <cite>Node</cite> then return a list with the position where
+the <cite>Node</cite> is being closed, otherwise return <cite>None</cite>.</p>
+<p>If this method is not overloaded then a <cite>NotImplementedError</cite>
+exception will be raised.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lexor.core.parser.NodeParser.make_node">
+<tt class="descname">make_node</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/lexor/core/parser.html#NodeParser.make_node"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.parser.NodeParser.make_node" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method is required to be overloaded by the derived
+node parser. It returns <cite>None</cite> if the node parser will not be
+able to create a node from the current information in the
+parser. Otherwise it creates a <cite>Node</cite> object and returns it.</p>
+<p>When returning a node you have the option of informing the
+parser if the node is complete or not. For instance, if your
+node parser creates an Element and it does not have any
+children to be parsed then return a list containing only the
+single node. This will tell the parser that the node has been
+closed and it will not call the <cite>close</cite> method of the node
+parser. If the <cite>Node</cite> does not have a child, say
+<cite>ProcessingInstruction</cite>, <cite>RawText</cite>, or <cite>Void</cite> then there is
+no need to wrap the node in a list.</p>
+<p>The <cite>Node</cite> object that this method returns also needs
+to have the property <cite>pos</cite>. This is a list of two integers
+stating the line and column number where the node was
+encountered in the text that is being parsed. This property
+will be removed by the parser once the parser finishes all
+processing with the node.</p>
+<p>If this method is not overloaded as previously stated then
+a <cite>NotImplementedError</cite> exception will be raised.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lexor.core.parser.NodeParser.msg">
+<tt class="descname">msg</tt><big>(</big><em>code</em>, <em>pos</em>, <em>arg=None</em>, <em>uri=None</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/parser.html#NodeParser.msg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.parser.NodeParser.msg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Send a message to the parser.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="lexor.core.parser.Parser">
+<em class="property">class </em><tt class="descclassname">lexor.core.parser.</tt><tt class="descname">Parser</tt><big>(</big><em>lang='xml'</em>, <em>style='default'</em>, <em>defaults=None</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/parser.html#Parser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.parser.Parser" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>To see the languages that it is able to parse see the
+<cite>lexor.lang</cite> module.</p>
+<dl class="attribute">
+<dt id="lexor.core.parser.Parser.caret_position">
+<tt class="descname">caret_position</tt><a class="reference internal" href="../_modules/lexor/core/parser.html#Parser.caret_position"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.parser.Parser.caret_position" title="Permalink to this definition">¶</a></dt>
+<dd><p>The index in the text the parser is processing. You may use
+the attribute access <cite>caret</cite> if performance is an issue.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="lexor.core.parser.Parser.cdata">
+<tt class="descname">cdata</tt><a class="reference internal" href="../_modules/lexor/core/parser.html#Parser.cdata"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.parser.Parser.cdata" title="Permalink to this definition">¶</a></dt>
+<dd><p>The character sequence data that was last processed by the
+<cite>parse</cite> method. You may use the attribute access <cite>text</cite> if
+performance is an issue.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lexor.core.parser.Parser.compute">
+<tt class="descname">compute</tt><big>(</big><em>index</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/parser.html#Parser.compute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.parser.Parser.compute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a position in the text <cite>[line, column]</cite> given an
+index. Note: This does not modify anything in the parser. It
+only gives you the line and column where the caret would be
+given the index. The same applies as in update. Do not use
+compute with an index less than the current position of the
+caret.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lexor.core.parser.Parser.copy_pos">
+<tt class="descname">copy_pos</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/lexor/core/parser.html#Parser.copy_pos"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.parser.Parser.copy_pos" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a copy of the current position.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="lexor.core.parser.Parser.document">
+<tt class="descname">document</tt><a class="reference internal" href="../_modules/lexor/core/parser.html#Parser.document"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.parser.Parser.document" title="Permalink to this definition">¶</a></dt>
+<dd><p>The parsed document. This is a <cite>Document</cite> or
+<cite>FragmentedDocument</cite> created by the <cite>parse</cite> method.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="lexor.core.parser.Parser.language">
+<tt class="descname">language</tt><a class="reference internal" href="../_modules/lexor/core/parser.html#Parser.language"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.parser.Parser.language" title="Permalink to this definition">¶</a></dt>
+<dd><p>The language in which the <cite>Parser</cite> object will parse
+character sequences.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="lexor.core.parser.Parser.lexor_log">
+<tt class="descname">lexor_log</tt><a class="reference internal" href="../_modules/lexor/core/parser.html#Parser.lexor_log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.parser.Parser.lexor_log" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <cite>lexor_log</cite> document. See this document after each
+call to <cite>parse</cite> to see warnings and errors in the text that
+was parsed.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lexor.core.parser.Parser.load_node_parsers">
+<tt class="descname">load_node_parsers</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/lexor/core/parser.html#Parser.load_node_parsers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.parser.Parser.load_node_parsers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads the node parsers. This function is called
+automatically when <cite>parse</cite> is called only if there was a
+change in the settings.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lexor.core.parser.Parser.msg">
+<tt class="descname">msg</tt><big>(</big><em>mod_name</em>, <em>code</em>, <em>pos</em>, <em>arg=None</em>, <em>uri=None</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/parser.html#Parser.msg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.parser.Parser.msg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Provide the name of module issuing the message, the code
+number, the position of caret and optional arguments and uri.
+This information gets stored in the log.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lexor.core.parser.Parser.parse">
+<tt class="descname">parse</tt><big>(</big><em>text</em>, <em>uri=None</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/parser.html#Parser.parse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.parser.Parser.parse" title="Permalink to this definition">¶</a></dt>
+<dd><p>parses the given <cite>text</cite>. To see the results of this method see
+the <cite>document</cite> and <cite>log</cite> property. If no <cite>uri</cite> is given then
+<cite>document</cite> will return a <cite>DocumentFragment</cite> node.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="lexor.core.parser.Parser.parsing_style">
+<tt class="descname">parsing_style</tt><a class="reference internal" href="../_modules/lexor/core/parser.html#Parser.parsing_style"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.parser.Parser.parsing_style" title="Permalink to this definition">¶</a></dt>
+<dd><p>The style in which the <cite>Parser</cite> object will parse the
+character sequences.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="lexor.core.parser.Parser.position">
+<tt class="descname">position</tt><a class="reference internal" href="../_modules/lexor/core/parser.html#Parser.position"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.parser.Parser.position" title="Permalink to this definition">¶</a></dt>
+<dd><p>Position of caret in the text in terms of line and column. i.e.
+returns [line, column]. You may use the attribute access <cite>pos</cite> if
+performance is an issue.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lexor.core.parser.Parser.set">
+<tt class="descname">set</tt><big>(</big><em>lang</em>, <em>style</em>, <em>defaults=None</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/parser.html#Parser.set"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.parser.Parser.set" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the language and style in one call.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lexor.core.parser.Parser.update">
+<tt class="descname">update</tt><big>(</big><em>index</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/parser.html#Parser.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.parser.Parser.update" title="Permalink to this definition">¶</a></dt>
+<dd><p>Changes the position of the <cite>caret</cite> and updates <cite>pos</cite>.
+This function assumes that you are moving forward. Do not
+update to an index which is less than the current position of
+the caret.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="lexor.core.parser.Parser.uri">
+<tt class="descname">uri</tt><a class="reference internal" href="../_modules/lexor/core/parser.html#Parser.uri"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.parser.Parser.uri" title="Permalink to this definition">¶</a></dt>
+<dd><p>The Uniform Resource Identifier. This is the name that was
+given to the text that was last parsed.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-lexor.core.converter">
+<span id="lexor-core-converter-module"></span><h2>lexor.core.converter module<a class="headerlink" href="#module-lexor.core.converter" title="Permalink to this headline">¶</a></h2>
+<p>Converter Module</p>
+<p>Provides the <cite>Converter</cite> object which defines the basic mechanism for
+converting the objects defined in <cite>lexor.core.elements</cite>. This
+involves using objects derived from the abstract class
+<cite>NodeConverter</cite>.</p>
+<dl class="class">
+<dt id="lexor.core.converter.BaseLog">
+<em class="property">class </em><tt class="descclassname">lexor.core.converter.</tt><tt class="descname">BaseLog</tt><big>(</big><em>converter</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/converter.html#BaseLog"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.converter.BaseLog" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>A simple class to provide messages to a converter. You must
+derive an object from this class in the module which will be
+issuing the messages. For instance:</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>class Log(BaseLog):</dt>
+<dd>pass</dd>
+</dl>
+</div></blockquote>
+<p>After that you can create a new object and use it in a module.</p>
+<blockquote>
+<div>log = Log(converter)</div></blockquote>
+<p>where <cite>converter</cite> is a <cite>Converter</cite> provided to the module. Make
+sure that the module contains the objects <cite>MSG</cite> and
+<cite>MSG_EXPLANATION</cite>.</p>
+<dl class="method">
+<dt id="lexor.core.converter.BaseLog.msg">
+<tt class="descname">msg</tt><big>(</big><em>code</em>, <em>arg=None</em>, <em>uri=None</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/converter.html#BaseLog.msg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.converter.BaseLog.msg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Send a message to the converter.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="lexor.core.converter.Converter">
+<em class="property">class </em><tt class="descclassname">lexor.core.converter.</tt><tt class="descname">Converter</tt><big>(</big><em>fromlang='xml'</em>, <em>tolang='xml'</em>, <em>style='default'</em>, <em>defaults=None</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/converter.html#Converter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.converter.Converter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>To see the languages available to the <cite>Converter</cite> see the
+<cite>lexor.lang</cite> module.</p>
+<dl class="method">
+<dt id="lexor.core.converter.Converter.convert">
+<tt class="descname">convert</tt><big>(</big><em>doc</em>, <em>namespace=False</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/converter.html#Converter.convert"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.converter.Converter.convert" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert the <cite>Document</cite> doc.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="lexor.core.converter.Converter.convert_from">
+<tt class="descname">convert_from</tt><a class="reference internal" href="../_modules/lexor/core/converter.html#Converter.convert_from"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.converter.Converter.convert_from" title="Permalink to this definition">¶</a></dt>
+<dd><p>The language from which the converter will convert.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="lexor.core.converter.Converter.convert_to">
+<tt class="descname">convert_to</tt><a class="reference internal" href="../_modules/lexor/core/converter.html#Converter.convert_to"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.converter.Converter.convert_to" title="Permalink to this definition">¶</a></dt>
+<dd><p>The language to which the converter will convert.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="lexor.core.converter.Converter.converting_style">
+<tt class="descname">converting_style</tt><a class="reference internal" href="../_modules/lexor/core/converter.html#Converter.converting_style"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.converter.Converter.converting_style" title="Permalink to this definition">¶</a></dt>
+<dd><p>The converter style.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="lexor.core.converter.Converter.document">
+<tt class="descname">document</tt><a class="reference internal" href="../_modules/lexor/core/converter.html#Converter.document"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.converter.Converter.document" title="Permalink to this definition">¶</a></dt>
+<dd><p>The parsed document. This is a <cite>Document</cite> or
+<cite>FragmentedDocument</cite> created by the <cite>convert</cite> method.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lexor.core.converter.Converter.exec_python">
+<tt class="descname">exec_python</tt><big>(</big><em>node</em>, <em>id_num</em>, <em>parser</em>, <em>error=True</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/converter.html#Converter.exec_python"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.converter.Converter.exec_python" title="Permalink to this definition">¶</a></dt>
+<dd><p>Executes the contents of the processing instruction. You
+must provide an id number identifying the processing
+instruction, the namespace where the execution takes place
+and a parser that will parse the output provided by the
+execution. If <cite>error</cite> is True then any errors generated
+during the execution will be appended to the output of the
+document.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="lexor.core.converter.Converter.lexor_log">
+<tt class="descname">lexor_log</tt><a class="reference internal" href="../_modules/lexor/core/converter.html#Converter.lexor_log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.converter.Converter.lexor_log" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <cite>lexorlog</cite> document. See this document after each
+call to <cite>convert</cite> to see warnings and errors.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lexor.core.converter.Converter.match_info">
+<tt class="descname">match_info</tt><big>(</big><em>fromlang</em>, <em>tolang</em>, <em>style</em>, <em>defaults=None</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/converter.html#Converter.match_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.converter.Converter.match_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check to see if the converter main information matches.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lexor.core.converter.Converter.msg">
+<tt class="descname">msg</tt><big>(</big><em>mod_name</em>, <em>code</em>, <em>node</em>, <em>arg=None</em>, <em>uri=None</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/converter.html#Converter.msg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.converter.Converter.msg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Provide the name of module issuing the message, the code
+number, the node with the error, optional arguments and uri.
+This information gets stored in the log.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lexor.core.converter.Converter.pop">
+<tt class="descname">pop</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/lexor/core/converter.html#Converter.pop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.converter.Converter.pop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove the last document and last log document and return
+them.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="lexor.core.converter.Converter.remove_node">
+<em class="property">static </em><tt class="descname">remove_node</tt><big>(</big><em>node</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/converter.html#Converter.remove_node"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.converter.Converter.remove_node" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes the node from the current document it is in. Returns
+the previous sibling is possible, otherwise it returns an empty
+Text node.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lexor.core.converter.Converter.set">
+<tt class="descname">set</tt><big>(</big><em>fromlang</em>, <em>tolang</em>, <em>style</em>, <em>defaults=None</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/converter.html#Converter.set"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.converter.Converter.set" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the languages and styles in one call.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lexor.core.converter.Converter.update_log">
+<tt class="descname">update_log</tt><big>(</big><em>log</em>, <em>after=True</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/converter.html#Converter.update_log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.converter.Converter.update_log" title="Permalink to this definition">¶</a></dt>
+<dd><p>Append the messages from a log document to the converters
+log. Note that this removes the children from log.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="lexor.core.converter.NodeConverter">
+<em class="property">class </em><tt class="descclassname">lexor.core.converter.</tt><tt class="descname">NodeConverter</tt><big>(</big><em>converter</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/converter.html#NodeConverter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.converter.NodeConverter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>A node converter is an object which determines if the node
+will be copied (default). To avoid copying the node simply
+declare</p>
+<blockquote>
+<div>copy = False</div></blockquote>
+<p>when deriving a node converter. Note that by default, the
+children of the node (if any) will be copied and assigned to the
+parent. To avoid copying the children then set</p>
+<blockquote>
+<div>copy_children = False</div></blockquote>
+<dl class="classmethod">
+<dt id="lexor.core.converter.NodeConverter.end">
+<em class="property">classmethod </em><tt class="descname">end</tt><big>(</big><em>node</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/converter.html#NodeConverter.end"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.converter.NodeConverter.end" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method gets called after all the children have
+been copied. Make sure to return the node or the node
+replacement.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lexor.core.converter.NodeConverter.msg">
+<tt class="descname">msg</tt><big>(</big><em>code</em>, <em>node</em>, <em>arg=None</em>, <em>uri=None</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/converter.html#NodeConverter.msg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.converter.NodeConverter.msg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Send a message to the converter.</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="lexor.core.converter.NodeConverter.start">
+<em class="property">classmethod </em><tt class="descname">start</tt><big>(</big><em>node</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/converter.html#NodeConverter.start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.converter.NodeConverter.start" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method gets called only if <cite>copy</cite> is set to True
+(default). By overloading this method you have access to the
+converter and the node. You can thus set extra variables in
+the converter or modify the node. DO NOT modify any of the
+parents of the node. If there is a need to modify any of
+parents of the node then set a variable in the converter
+to point to the node so that later on in the <cite>convert</cite> function
+it can be modified.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="lexor.core.converter.echo">
+<tt class="descclassname">lexor.core.converter.</tt><tt class="descname">echo</tt><big>(</big><em>node</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/converter.html#echo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.converter.echo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allows the insertion of Nodes generated within python
+embeddings.</p>
+<blockquote>
+<div>&lt;?python
+comment = PI(&#8216;!&#8211;&#8217;, &#8216;This is a comment&#8217;)
+echo(comment)
+?&gt;</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="lexor.core.converter.get_converter_namespace">
+<tt class="descclassname">lexor.core.converter.</tt><tt class="descname">get_converter_namespace</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/lexor/core/converter.html#get_converter_namespace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.converter.get_converter_namespace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Many converters may be defined during the conversion of a
+document. In some cases we may need to save references to objects
+in documents. If this is the case, then call this function to
+obtain the namespace where you can save those references.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="lexor.core.converter.get_current_node">
+<tt class="descclassname">lexor.core.converter.</tt><tt class="descname">get_current_node</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/lexor/core/converter.html#get_current_node"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.converter.get_current_node" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the <cite>Document</cite> node containing the python embeddings
+currently being executed.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="lexor.core.converter.get_lexor_namespace">
+<tt class="descclassname">lexor.core.converter.</tt><tt class="descname">get_lexor_namespace</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/lexor/core/converter.html#get_lexor_namespace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.converter.get_lexor_namespace" title="Permalink to this definition">¶</a></dt>
+<dd><p>The execution of python instructions take place in the
+namespace provided by this function.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="lexor.core.converter.import_module">
+<tt class="descclassname">lexor.core.converter.</tt><tt class="descname">import_module</tt><big>(</big><em>mod_path</em>, <em>mod_name=None</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/converter.html#import_module"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.converter.import_module" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a module from a path. If no name is provided then the
+name of the file loaded will be assigned to the name. When using
+relative paths, it will find the module relative to the file
+executing the python embedding.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="lexor.core.converter.include">
+<tt class="descclassname">lexor.core.converter.</tt><tt class="descname">include</tt><big>(</big><em>input_file</em>, <em>**keywords</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/converter.html#include"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.converter.include" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inserts a file into the current node.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-lexor.core.writer">
+<span id="lexor-core-writer-module"></span><h2>lexor.core.writer module<a class="headerlink" href="#module-lexor.core.writer" title="Permalink to this headline">¶</a></h2>
+<p>Writer Module</p>
+<p>Provides the <cite>Writer</cite> object which defines the basic mechanism for
+writing the objects defined in <cite>lexor.core.elements</cite>. This involves
+using objects derived from the abstract class <cite>NodeWriter</cite>. See
+<cite>lexor.core.dev</cite> for more information on how to write objects derived
+from <cite>NodeWriter</cite> to be able to write <cite>Documents</cite> in the way you
+desire.</p>
+<dl class="class">
+<dt id="lexor.core.writer.DefaultWriter">
+<em class="property">class </em><tt class="descclassname">lexor.core.writer.</tt><tt class="descname">DefaultWriter</tt><big>(</big><em>writer</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/writer.html#DefaultWriter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.writer.DefaultWriter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#lexor.core.writer.NodeWriter" title="lexor.core.writer.NodeWriter"><tt class="xref py py-class docutils literal"><span class="pre">lexor.core.writer.NodeWriter</span></tt></a></p>
+<p>If the language does not define a NodeWriter for __default__
+then the writer will use this default writer.</p>
+<dl class="method">
+<dt id="lexor.core.writer.DefaultWriter.end">
+<tt class="descname">end</tt><big>(</big><em>node</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/writer.html#DefaultWriter.end"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.writer.DefaultWriter.end" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write the end of the node as an xml end tag.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lexor.core.writer.DefaultWriter.start">
+<tt class="descname">start</tt><big>(</big><em>node</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/writer.html#DefaultWriter.start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.writer.DefaultWriter.start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write the start of the node as a xml tag.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="lexor.core.writer.NodeWriter">
+<em class="property">class </em><tt class="descclassname">lexor.core.writer.</tt><tt class="descname">NodeWriter</tt><big>(</big><em>writer</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/writer.html#NodeWriter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.writer.NodeWriter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>A node writer is an object which writes a node in three steps:
+<cite>start</cite>, <cite>data/child</cite>, <cite>end</cite>.</p>
+<dl class="classmethod">
+<dt id="lexor.core.writer.NodeWriter.child">
+<em class="property">classmethod </em><tt class="descname">child</tt><big>(</big><em>_</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/writer.html#NodeWriter.child"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.writer.NodeWriter.child" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method gets called for <cite>Elements</cite> that have children.
+If it gets overwritten then it will not traverse through
+child nodes unless you return something other than None.</p>
+<p>This method by default returns <cite>True</cite> so that the <cite>Writer</cite>
+can traverse through the child nodes.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lexor.core.writer.NodeWriter.data">
+<tt class="descname">data</tt><big>(</big><em>node</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/writer.html#NodeWriter.data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.writer.NodeWriter.data" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method gets called only by <cite>CharacterData</cite> nodes.
+This method should be overloaded to write their attribute
+<cite>data</cite>, otherwise it will write the node&#8217;s data as it is.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lexor.core.writer.NodeWriter.end">
+<tt class="descname">end</tt><big>(</big><em>node</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/writer.html#NodeWriter.end"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.writer.NodeWriter.end" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overload this method to write part of the <cite>Node</cite> object in
+the last encounter with the <cite>Node</cite>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lexor.core.writer.NodeWriter.start">
+<tt class="descname">start</tt><big>(</big><em>node</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/writer.html#NodeWriter.start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.writer.NodeWriter.start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overload this method to write part of the <cite>Node</cite> object in
+the first encounter with the <cite>Node</cite>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lexor.core.writer.NodeWriter.write">
+<tt class="descname">write</tt><big>(</big><em>string</em>, <em>split=False</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/writer.html#NodeWriter.write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.writer.NodeWriter.write" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes the string to a file object. The file object is
+determined by the <cite>Writer</cite> object that initialized this
+object (<cite>self</cite>).</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="lexor.core.writer.Writer">
+<em class="property">class </em><tt class="descclassname">lexor.core.writer.</tt><tt class="descname">Writer</tt><big>(</big><em>lang='xml'</em>, <em>style='default'</em>, <em>defaults=None</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/writer.html#Writer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.writer.Writer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>To see the languages in which a <cite>Writer</cite> object is able to
+write see the <cite>lexor.lang</cite> module.</p>
+<dl class="method">
+<dt id="lexor.core.writer.Writer.close">
+<tt class="descname">close</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/lexor/core/writer.html#Writer.close"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.writer.Writer.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Close the file.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lexor.core.writer.Writer.disable_raw">
+<tt class="descname">disable_raw</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/lexor/core/writer.html#Writer.disable_raw"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.writer.Writer.disable_raw" title="Permalink to this definition">¶</a></dt>
+<dd><p>Turn off raw mode.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lexor.core.writer.Writer.disable_wrap">
+<tt class="descname">disable_wrap</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/lexor/core/writer.html#Writer.disable_wrap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.writer.Writer.disable_wrap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Turn off wrapping.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lexor.core.writer.Writer.enable_raw">
+<tt class="descname">enable_raw</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/lexor/core/writer.html#Writer.enable_raw"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.writer.Writer.enable_raw" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use this to set the writing in raw mode.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lexor.core.writer.Writer.enable_wrap">
+<tt class="descname">enable_wrap</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/lexor/core/writer.html#Writer.enable_wrap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.writer.Writer.enable_wrap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use this to set the writing in wrapping mode.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lexor.core.writer.Writer.endl">
+<tt class="descname">endl</tt><big>(</big><em>force=True</em>, <em>tot=1</em>, <em>tail=False</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/writer.html#Writer.endl"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.writer.Writer.endl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Insert a new line character. By setting <cite>force</cite> to False
+you may omit inserting a new line character if the last
+character printed was already the new line character.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="lexor.core.writer.Writer.filename">
+<tt class="descname">filename</tt><a class="reference internal" href="../_modules/lexor/core/writer.html#Writer.filename"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.writer.Writer.filename" title="Permalink to this definition">¶</a></dt>
+<dd><p>READ-ONLY: The name of the file to which a <cite>Node</cite> object
+was last written to.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lexor.core.writer.Writer.flush_buffer">
+<tt class="descname">flush_buffer</tt><big>(</big><em>tail=True</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/writer.html#Writer.flush_buffer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.writer.Writer.flush_buffer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Empty the contents of the buffer.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lexor.core.writer.Writer.get_node_writer">
+<tt class="descname">get_node_writer</tt><big>(</big><em>name</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/writer.html#Writer.get_node_writer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.writer.Writer.get_node_writer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return one of the NodeWriter objects available to the
+Writer.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="lexor.core.writer.Writer.indent">
+<tt class="descname">indent</tt><a class="reference internal" href="../_modules/lexor/core/writer.html#Writer.indent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.writer.Writer.indent" title="Permalink to this definition">¶</a></dt>
+<dd><p>The indentation at the beginning of each line.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="lexor.core.writer.Writer.language">
+<tt class="descname">language</tt><a class="reference internal" href="../_modules/lexor/core/writer.html#Writer.language"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.writer.Writer.language" title="Permalink to this definition">¶</a></dt>
+<dd><p>The language in which the <cite>Writer</cite> writes <cite>Node</cite> objects.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lexor.core.writer.Writer.last">
+<tt class="descname">last</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/lexor/core/writer.html#Writer.last"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.writer.Writer.last" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the last written string with the contents of the
+buffer.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lexor.core.writer.Writer.normalize_buffer">
+<tt class="descname">normalize_buffer</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/lexor/core/writer.html#Writer.normalize_buffer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.writer.Writer.normalize_buffer" title="Permalink to this definition">¶</a></dt>
+<dd><p>The term normalize means that the length of the buffer
+will be less than or equal to the wrapping width. Anything
+that exceeds the limit will be flushed.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lexor.core.writer.Writer.raw_enabled">
+<tt class="descname">raw_enabled</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/lexor/core/writer.html#Writer.raw_enabled"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.writer.Writer.raw_enabled" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determine if raw mode is enabled or not.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lexor.core.writer.Writer.set">
+<tt class="descname">set</tt><big>(</big><em>lang</em>, <em>style</em>, <em>defaults=None</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/writer.html#Writer.set"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.writer.Writer.set" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the language and style in one call.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="lexor.core.writer.Writer.string_buffer">
+<tt class="descname">string_buffer</tt><a class="reference internal" href="../_modules/lexor/core/writer.html#Writer.string_buffer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.writer.Writer.string_buffer" title="Permalink to this definition">¶</a></dt>
+<dd><p>The current string buffer. This is the string that will
+be printed after its length exceeds the writer&#8217;s width.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lexor.core.writer.Writer.wrap_enabled">
+<tt class="descname">wrap_enabled</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/lexor/core/writer.html#Writer.wrap_enabled"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.writer.Writer.wrap_enabled" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determine if wrap mode is enabled or not.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lexor.core.writer.Writer.write">
+<tt class="descname">write</tt><big>(</big><em>node</em>, <em>filename=None</em>, <em>mode='w'</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/writer.html#Writer.write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.writer.Writer.write" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write node to a file or string. To write to a string use
+the default parameters, otherwise provide a file name. If
+filename is provided you have the option of specifying the
+mode: &#8216;w&#8217; or &#8216;a&#8217;.</p>
+<p>You may also provide a file you may have opened yourself in
+place of filename so that the writer writes to that file.</p>
+<p>Use the __str__ function to retrieve the contents written to
+a string.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lexor.core.writer.Writer.write_str">
+<tt class="descname">write_str</tt><big>(</big><em>string</em>, <em>split=False</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/writer.html#Writer.write_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.writer.Writer.write_str" title="Permalink to this definition">¶</a></dt>
+<dd><p>The write function is meant to be used with Node objects.
+Use this function to write simple strings while the file
+descriptor is open.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="lexor.core.writer.Writer.writing_style">
+<tt class="descname">writing_style</tt><a class="reference internal" href="../_modules/lexor/core/writer.html#Writer.writing_style"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.writer.Writer.writing_style" title="Permalink to this definition">¶</a></dt>
+<dd><p>The style in which the <cite>Writer</cite> writes a <cite>Node</cite> object.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="lexor.core.writer.find_whitespace">
+<tt class="descclassname">lexor.core.writer.</tt><tt class="descname">find_whitespace</tt><big>(</big><em>line</em>, <em>start</em>, <em>lim</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/writer.html#find_whitespace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.writer.find_whitespace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attempts to find the index of the first whitespace before
+lim, if its not found, then it looks ahead.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="lexor.core.writer.replace">
+<tt class="descclassname">lexor.core.writer.</tt><tt class="descname">replace</tt><big>(</big><em>string</em>, <em>*key_val</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/writer.html#replace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.writer.replace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Replacement of strings done in one pass. Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">replace</span><span class="p">(</span><span class="s">&quot;a &lt; b &amp;&amp; b &lt; c&quot;</span><span class="p">,</span> <span class="p">(</span><span class="s">&#39;&lt;&#39;</span><span class="p">,</span> <span class="s">&#39;&amp;lt;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s">&#39;&amp;&#39;</span><span class="p">,</span> <span class="s">&#39;&amp;amp;&#39;</span><span class="p">))</span>
+<span class="go">&#39;a &amp;lt; b &amp;amp;&amp;amp; b &amp;lt; c&#39;</span>
+</pre></div>
+</div>
+<p>Source: &lt;<a class="reference external" href="http://stackoverflow.com/a/15221068/788553">http://stackoverflow.com/a/15221068/788553</a>&gt;</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-lexor.core.selector">
+<span id="lexor-core-selector-module"></span><h2>lexor.core.selector module<a class="headerlink" href="#module-lexor.core.selector" title="Permalink to this headline">¶</a></h2>
+<p>Selector</p>
+<p>This module is trying to simulate jquery selectors. If some code
+looks similar to that of the Sizzle CSS Selector engine it is because
+the ideas were taken from it.</p>
+<p>In short, credit goes to [Sizzle][1] and CSS for the seletor idea.</p>
+<p>[1]: <a class="reference external" href="http://sizzlejs.com/">http://sizzlejs.com/</a></p>
+<dl class="class">
+<dt id="lexor.core.selector.Selector">
+<em class="property">class </em><tt class="descclassname">lexor.core.selector.</tt><tt class="descname">Selector</tt><big>(</big><em>selector</em>, <em>node</em>, <em>results=None</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/selector.html#Selector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.selector.Selector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>JQuery like object.</p>
+<dl class="method">
+<dt id="lexor.core.selector.Selector.after">
+<tt class="descname">after</tt><big>(</big><em>*arg</em>, <em>**keywords</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/selector.html#Selector.after"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.selector.Selector.after" title="Permalink to this definition">¶</a></dt>
+<dd><p>Insert content, specified by the parameter, after each
+element in the set of matched elements.</p>
+<p>: .after(content [,content])</p>
+<p>:: content
+Type: htmlString or Element or Array or jQuery string, Node,
+array of Node, or Selector object to insert after each
+element in the set of matched elements.</p>
+<p>:: content
+Type: htmlString or Element or Array or jQuery One or
+more additional DOM elements, arrays of elements, HTML
+strings, or jQuery objects to insert after each element in
+the set of matched elements.</p>
+<p>: .after(function(node, index))</p>
+<p>:: function(node, index)
+A function that returns a string, DOM element(s), or Selector
+object to insert after each element in the set of matched
+elements. Receives the element in the set and its index
+position in the set as its arguments.</p>
+<p>: .after(..., lang=&#8217;html&#8217;, style=&#8217;default&#8217;, &#8216;defaults&#8217;=None)</p>
+<p>:: lang
+The language in which strings will be parsed in.</p>
+<p>:: style
+The style in which strings will be parsed in.</p>
+<p>:: defaults
+A dictionary with string keywords and values especifying
+options for the particular style.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lexor.core.selector.Selector.append">
+<tt class="descname">append</tt><big>(</big><em>*arg</em>, <em>**keywords</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/selector.html#Selector.append"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.selector.Selector.append" title="Permalink to this definition">¶</a></dt>
+<dd><p>Insert content, specified by the parameter, to the end of
+each element in the set of matched elements.</p>
+<p>Should behave similarly as <a class="reference external" href="https://api.jquery.com/append/">https://api.jquery.com/append/</a>.
+Major difference is in the function. When passing a function
+it should take 2 parameters: node, index. Where node will be
+the current element to which the return value will be
+appended to.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lexor.core.selector.Selector.before">
+<tt class="descname">before</tt><big>(</big><em>*arg</em>, <em>**keywords</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/selector.html#Selector.before"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.selector.Selector.before" title="Permalink to this definition">¶</a></dt>
+<dd><p>Insert content, specified by the parameter, before each
+element in the set of matched elements.</p>
+<p>: .before(content [,content])</p>
+<p>:: content
+Type: htmlString or Element or Array or jQuery string, Node,
+array of Node, or Selector object to insert before each
+element in the set of matched elements.</p>
+<p>:: content
+Type: htmlString or Element or Array or jQuery One or
+more additional DOM elements, arrays of elements, HTML
+strings, or jQuery objects to insert before each element in
+the set of matched elements.</p>
+<p>: .before(function(node, index))</p>
+<p>:: function(node, index)
+A function that returns a string, DOM element(s), or Selector
+object to insert before each element in the set of matched
+elements. Receives the element in the set and its index
+position in the set as its arguments.</p>
+<p>: .before(..., lang=&#8217;html&#8217;, style=&#8217;default&#8217;, &#8216;defaults&#8217;=None)</p>
+<p>:: lang
+The language in which strings will be parsed in.</p>
+<p>:: style
+The style in which strings will be parsed in.</p>
+<p>:: defaults
+A dictionary with string keywords and values especifying
+options for the particular style.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lexor.core.selector.Selector.contents">
+<tt class="descname">contents</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/lexor/core/selector.html#Selector.contents"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.selector.Selector.contents" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the children of each element in the set of matched
+elements, including text and comment nodes.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lexor.core.selector.Selector.find">
+<tt class="descname">find</tt><big>(</big><em>selector</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/selector.html#Selector.find"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.selector.Selector.find" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the descendants of each element in the current set of
+matched elements, filtered by a selector.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lexor.core.selector.Selector.prepend">
+<tt class="descname">prepend</tt><big>(</big><em>*arg</em>, <em>**keywords</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/selector.html#Selector.prepend"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.selector.Selector.prepend" title="Permalink to this definition">¶</a></dt>
+<dd><p>Insert content, specified by the parameter, to the
+beginning of each element in the setof matched elements.</p>
+<p>Should behave similarly as <a class="reference external" href="https://api.jquery.com/append/">https://api.jquery.com/append/</a>.
+Major difference is in the function. When passing a function
+it should take 2 parameters: node, index. Where node will be
+the current element to which the return value will be
+appended to.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="lexor.core.selector.clone_obj">
+<tt class="descclassname">lexor.core.selector.</tt><tt class="descname">clone_obj</tt><big>(</big><em>obj</em>, <em>parser</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/selector.html#clone_obj"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.selector.clone_obj" title="Permalink to this definition">¶</a></dt>
+<dd><p>Utility function to create deep copies of objects used for the
+Selector object. A parser should be given in case the object is a
+string.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="lexor.core.selector.get_date">
+<tt class="descclassname">lexor.core.selector.</tt><tt class="descname">get_date</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/lexor/core/selector.html#get_date"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.selector.get_date" title="Permalink to this definition">¶</a></dt>
+<dd><p>Obtain an integer representation of the date.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="lexor.core.selector.mark_function">
+<tt class="descclassname">lexor.core.selector.</tt><tt class="descname">mark_function</tt><big>(</big><em>fnc</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/selector.html#mark_function"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.selector.mark_function" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mark a function for special use by Sizzle.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="lexor.core.selector.select">
+<tt class="descclassname">lexor.core.selector.</tt><tt class="descname">select</tt><big>(</big><em>selector</em>, <em>context</em>, <em>results</em>, <em>seed</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/selector.html#select"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.selector.select" title="Permalink to this definition">¶</a></dt>
+<dd><p>A low-level selection function that works with Sizzle&#8217;s
+compiled selector functions</p>
+<dl class="docutils">
+<dt>&#64;param {String|Function} selector A selector or a pre-compiled</dt>
+<dd>selector function built with Sizzle.compile</dd>
+</dl>
+<p>&#64;param {Element} context
+&#64;param {Array} [results]
+&#64;param {Array} [seed] A set of elements to match against</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="lexor.core.selector.sizzle">
+<tt class="descclassname">lexor.core.selector.</tt><tt class="descname">sizzle</tt><big>(</big><em>selector</em>, <em>context</em>, <em>results=None</em>, <em>seed=None</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/selector.html#sizzle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.selector.sizzle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function shamelessly borrowed and partially translated to
+python from <a class="reference external" href="http://sizzlejs.com/">http://sizzlejs.com/</a>.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="lexor.core.selector.tokenize">
+<tt class="descclassname">lexor.core.selector.</tt><tt class="descname">tokenize</tt><big>(</big><em>selector</em>, <em>parse_only=False</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/selector.html#tokenize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.selector.tokenize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tokenize...</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="lexor.core.node.html" class="btn btn-neutral float-right" title="lexor.core.node module"/>Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="lexor.html" class="btn btn-neutral" title="lexor package"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2014, Manuel Lopez.
+    </p>
+  </div>
+
+  <a href="https://github.com/snide/sphinx_rtd_theme">Sphinx theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.1.2c0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
