@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xml:lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      metal:use-macro="api.macro('kotti:templates/view/master.pt')"
+      i18n:domain="kotti_quiz">
+
+  <div metal:fill-slot="content" class="content">
+
+    <h1>${context.title}</h1>
+    <p class="description">
+      ${context.description}
+    </p>
+
+    <ol>
+      <li tal:repeat="question questions">
+        ${question.title}
+        <p class="rightanswer" tal:condition="questioncorrect[question.name][0]" i18n:translate="">
+          answer correct
+        </p>
+        <p class="wronganswer" tal:condition="not questioncorrect[question.name][0]" i18n:translate="">
+          wrong answer
+        </p>
+        <p>${questioncorrect[question.name][1][0]}/${questioncorrect[question.name][1][1]}</p>
+      </li>
+    </ol>
+    <span i18n:translate="">Total</span>: ${sumcorrect}/${sumtotal}
+
+  </div>
+</html>
