@@ -1,0 +1,151 @@
+Metadata-Version: 1.1
+Name: dirshare
+Version: 0.8
+Summary: dirshare
+Home-page: http://b.joaoubaldo.com
+Author: Joao Coutinho
+Author-email: me at joaoubaldo.com
+License: UNKNOWN
+Description: dirshare
+        ========
+        
+        Description
+        -----------
+        **dirshare** is a HTTP WSGI Python application to rapidly share images within 
+        a specific root path, leverages thumbnail caching, instantaneous image 
+        resizing, file meta data extraction and zip file creation.
+        
+        The motivation to create this application is that occasionally I must browse a 
+        large collection of photos, WITHOUT a dedicated server software, loading of 
+        full sized images or modifying original files.
+        
+        
+        Requirements
+        ------------
+        - Setuptools (for installing dirshare and its Python dependencies)
+        - (optional) Access to a mongo database server
+        
+        **Note** Pillow library uses system libraries to decode specific type of files.
+        If you get "IOError: decoder XXX not available" while loading some images, 
+        you're probably missing some libraries (ex. libjpeg).
+        
+        Installation
+        ------------
+        From PyPI:
+        > pip install dirshare
+        
+        Or:
+        > python setup.py install
+        
+        
+        
+        Usage
+        -----
+        ```bash
+        Usage: dirshare [options]
+        
+        Options:
+          -h, --help            show this help message and exit
+          -r IMAGES_ROOT, --images-root=IMAGES_ROOT
+                                Root directory to share (default: ".")
+          -s IMAGE_SIZES, --image-sizes=IMAGE_SIZES
+                                Available sizes as a string (default: "128x128 600x600
+                                1000x1000 full")
+          -f RESIZE_FORMAT, --resize-format=RESIZE_FORMAT
+                                Resize encoder to use (default: "PNG")
+          -q RESIZE_QUALITY, --resize-quality=RESIZE_QUALITY
+                                Resize quality value to pass to encoder (default: 90)
+          -d DB_URI, --db-uri=DB_URI
+                                DB uri (default: "mongodb://localhost:27017/dirshare")
+          -p HTTP_PORT, --http-port=HTTP_PORT
+                                HTTP listen port (default: 6543)
+          -b HTTP_IP, --http-ip=HTTP_IP
+                                HTTP bind ip (default: "127.0.0.1")
+        ```
+        
+        Example:
+        ```bash
+          dirshare -r /home/myuser -s "128x128 500x500 full" -d "sqlite://:memory:"
+        ```
+        
+        
+        0.8
+        ---
+        updated: _waitForThumbs timeout set to 50ms
+        updated: default view set to grid
+        new: image count badge added to breadcrumb
+        fixed: $scope.setSize was calling cacheSized instead of setImage
+        updated: when image is de/selected, page is scrolled to correct position
+        new: util function to rotate image from string data
+        updated: all watches removed from controller. Actions are now taken inside setter methods.
+        updated: added readyImage flag to check if selected image is preloaded
+        updated: listDir and image requests are now retried when fail
+        fixed: some buttons now Select are now available even if there are no images in current path
+        new: loading image for listDir request added
+        fixed: loading bar was showing wrong values; image cant be changed while previously is being loaded
+        updated: dont allow path changes when isLoading()
+        new: images service. image cache is now controlled in specific service. (code updated to use it)
+        updated: files_paths is now returned from list dir view.
+        updated: variables renamed to camelCase
+        updated: .basket is now a list of full_path's
+        updated: listdir returns 404 when unknown directory
+        updated: $scope.image is a string again, to obey single-source-of-truth ($scope.images)
+        updated: refreshImage() now loads cache when needed; fixed: nav_path doesnt add empty entry when / is last character; updated: buttonsare hidden when loading or no image in current path
+        updated: metadata is no longer created inside stream_image for performance; logging added
+        updated: metadata is only loaded when image is loaded;
+        updated: when page section is changed, deferred received images are discarded
+        updated: images are now structured in an JS object
+        new: preloading thums with progress bar
+        new: previous and next buttons for easy navigation
+        updated: $scope.image is an object now
+        updated: bool variables to control loading created.
+        updated: keypress event captured to handle left and right keys.
+        updated: split app.js into js files
+        updated: manage panel, nav pills used for directories again
+        new: polling routine
+        update: app.js: path variable doesnt allow '//' anymore (should fix Windows problems)
+        
+        
+        0.7
+        ---
+        - mongodb is no longer mandatory. sqlite interface is available.
+        - new cli, without the need of ini files to start dirshare.
+        - new: data access interface class used for multiple dbs support
+        - new: sqlite data access implementation complete
+        - new: cli is now a module. New cli app with waitress http server, without pastedeploy ini
+        - updated: unit tests cover all data access methods, both mongodb and sqlite
+        - updated: variables renamed. They make more sense
+        - updated: added ensure_index to mongo DA setup()
+        - updated: config now uses db_uri instead of mongo db specific variables (preparation for sqlite integration)
+        - updated: utils.db removed. data access is centralized in IDirshareDataAccess implementations
+        - updated: thumbnails click area is corrected
+        - updated: better image file condition check
+        - updated: view flow is set in a LIFO stack ($scope.view_stack)
+        - updated: When there's no exif info for an image, don't resize image viewer ($scope.isEmptyExif())
+        - updated: selected thumbnails style is only applied in Select Mode.
+        - fixed: mongo da: save_metadata and save_resize were not updating correctly
+        - fixed: correct mimetype is returned in content-type http header for resizes
+        - fixed: correct content-disposition header for resizes
+        - fixed: javascript local function variables are marked local with 'var'
+        - fixed: When image is changed ($watch), $scope.refreshing is toggled until data is retrieved.
+        
+        0.6
+        ---
+        - Major change: The whole application is now a single page, built with AngularJS and Bootstrap framework.
+        - New: ETag header is now used. Performance is significantly improved.
+        - New: Two view modes. Grid: useful for desktops. Scroll: better display for mobile devices.
+        - New: Select mode: Add any image to the basket. At any time, go to the basket to view or export (zip) the whole selection.
+        - New: EXIF information is now read and saved, for each image file.
+        - New: Content-disposition http header is now used for zip and images.
+        - New: unit tests created.
+        
+        0.3
+        ---
+        -  First public release
+        
+Keywords: web pyramid pylons gallery share
+Platform: UNKNOWN
+Classifier: Programming Language :: Python
+Classifier: Framework :: Pyramid
+Classifier: Topic :: Internet :: WWW/HTTP
+Classifier: Topic :: Internet :: WWW/HTTP :: WSGI :: Application
