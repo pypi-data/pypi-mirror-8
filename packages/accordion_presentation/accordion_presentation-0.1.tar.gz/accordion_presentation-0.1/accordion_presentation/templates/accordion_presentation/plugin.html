@@ -1,0 +1,34 @@
+{% load sekizai_tags  proportion %}
+
+
+{% if step == 1%}
+<a href="{%if instance.page_link%}{{instance.page_link.get_absolute_url}} {%else%}#{%endif%}">
+ <img class="ap_img" src="{{instance.photo.url}}"
+ width="{{device_info.width|proportion_resize:60}}px"
+ height="{{device_info.height|proportion_resize:54}}px"
+  />	
+</a>
+{%else%}
+
+ <div class="grid_1 borde_w ap_plug" id="m_{{instance.pk}}"  style="background-color: {{instance.color}};">
+ 	
+ 	<div class="ap_col ap_icon">
+ 		<img src="{{instance.icon.url}}" >
+ 	</div>
+ 	
+ 	<div > 
+ 		<h3 class="ap_title"> {{instance.title}} </h3>
+ 	</div>
+</div>
+
+{%addtoblock "js" %} <script>
+
+
+$("#m_{{instance.pk}}").hover(
+	function (){
+		$('.cycle-slideshow').cycle('goto', {{forloop.counter0}});
+		$('.cycle-slideshow').insertAfter(this); 
+	}); 
+	
+ </script> {%endaddtoblock%}
+{%endif%}

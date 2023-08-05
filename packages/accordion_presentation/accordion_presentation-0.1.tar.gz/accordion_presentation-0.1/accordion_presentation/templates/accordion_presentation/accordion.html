@@ -1,0 +1,62 @@
+{% load i18n static cms_tags menu_tags sekizai_tags  %}
+
+{% if not request.toolbar.edit_mode %}
+	{%addtoblock "js" %} <script src="{% static 'cms/js/libs/jquery.min.js' %}"> </script> {%endaddtoblock%}
+{%endif%}
+
+{%addtoblock "js" %} <script src="{% static 'accordion_presentation/js/jquery.cycle2.min.js' %}"> </script> {%endaddtoblock%}
+
+{%addtoblock "css" %}<link href="{% static 'accordion_presentation/css/accordion_presentation.css' %}" rel="stylesheet">{%endaddtoblock "css"%}
+{%addtoblock "css" %}<link href="{{ STATIC_URL }}accordion_presentation/css/fluid_grid.css" rel="stylesheet">{%endaddtoblock "css"%}
+		
+<div class="ap_content {{accordion.custom_classes}}" >
+	<div class="container container_12">
+		<div class="cycle-slideshow grid_8" 
+		    {#data-cycle-fx="scrollHorz" #}
+		    data-cycle-fx="tileBlind"
+		    data-cycle-timeout=0
+		    data-cycle-auto-height="16:9"
+		    {% if request.toolbar.edit_mode %}
+		    data-cycle-slides="> div"
+		    {%else%}
+		    data-cycle-slides="> a"
+		    {%endif%}
+		    {% if accordion.custom_duration%}
+		    manual-speed={{accordion.custom_duration}}
+		    {%endif%}
+		    >
+			{%with 1 as step %}
+			    {% for plugin in accordion.child_plugin_instances %}
+					{% with forloop as parentloop %}{% render_plugin plugin %}{% endwith %}
+			    {% endfor %} 
+			
+			{% endwith %}
+		</div>
+	
+			{%with 2 as step %}
+			    {% for plugin in accordion.child_plugin_instances %}
+					{% with forloop as parentloop %}{% render_plugin plugin %}{% endwith %}
+			    {% endfor %} 
+			
+			{% endwith %}
+	
+	</div>
+</div>
+
+{%addtoblock "js" %} 
+<script>
+$('.cycle-slideshow' ).on( 'cycle-update-view', function(event, optionHash, slideOptionsHash, currentSlideEl) {
+	$('.ap_plug').css({height: $( '.cycle-slideshow img' ).height()});
+	$('.cycle-slideshow').css({height: $( '.cycle-slideshow img' ).height()});
+});
+
+$( ".cycle-slideshow" ).resize(function() {
+	$(".cycle-slideshow").css({height: $( '.cycle-slideshow img' ).height()});
+	$('.cycle-slideshow').css({height: $( '.cycle-slideshow img' ).height()});
+	
+});
+</script>
+{%endaddtoblock%}
+{%addtoblock "css" %} 
+	<style>body{background: #000000;}</style>
+{%endaddtoblock%}
