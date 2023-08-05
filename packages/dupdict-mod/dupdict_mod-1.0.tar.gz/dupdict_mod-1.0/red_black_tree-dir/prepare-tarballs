@@ -1,0 +1,33 @@
+#!/bin/bash
+
+set -eux
+set -o pipefail
+
+[ `hostname` = server ] || exit 1
+
+url=$(svn info . | egrep '^URL: ' | awk ' { print $2 }')
+
+dir=$HOME/public_html/red-black-tree-mod/releases
+
+mkdir -p "$dir"
+
+case "$url" in
+    */trunk)
+        date=$(date +%Y-%m-%d-%H-%M)
+        export name="red-black-tree-mod-trunk-$date"
+        ;;
+    */tags/*)
+        version=$(echo "$url" | sed 's#^.*/tags/\(.*\)#\1#')
+        export name="red-black-tree-mod-$version"
+        ;;
+    */branches/*)
+        ;;
+esac
+
+find . -name .svn -prune -o -type f -print0 | \
+    tar --null --files-from - --create --file - | \
+    ./mtee \
+        "gzip > $dir/$name.tar.gz" \
+        "bzip2 > $dir/$name.tar.bz2" \
+        "xz > $dir/$name.tar.xz"
+

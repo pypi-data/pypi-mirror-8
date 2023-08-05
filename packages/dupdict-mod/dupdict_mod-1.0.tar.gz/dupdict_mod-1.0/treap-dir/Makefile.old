@@ -1,0 +1,56 @@
+
+python_version=2.7
+
+#install_dir=/usr/local/unladen-2009Q4/lib/python2.6/site-packages
+install_dir=/usr/local/lib/python$(python_version)/dist-packages
+cython=/usr/local/cpython-$(python_version)/bin/cython
+
+go: \
+	pyx_treap.c \
+	py_treap.py
+	./this-pylint py_treap.py
+	./treaptest.py
+	./treapperftest.py
+	./nesttest.py
+
+go2:
+	./demo --decreasing --increasing --random
+
+go3:
+	./compare-to-dict > t.csv
+	to-table -d < t.csv > t.html
+
+py_treap.py: m4_treap.m4
+	m4 -Dpy=1 < m4_treap.m4 > py_treap.py
+
+pyx_treap.pyx: m4_treap.m4
+	m4 -Dpyx=1 < m4_treap.m4 > pyx_treap.pyx
+
+pyx_treap.so: pyx_treap.o
+	gcc -shared pyx_treap.o -o pyx_treap.so
+
+pyx_treap.o: pyx_treap.c
+	gcc -c -fPIC -I /usr/local/cpython-$(python_version)/include/python$(python_version) pyx_treap.c
+
+pyx_treap.c: pyx_treap.pyx
+	$(cython) pyx_treap.pyx
+
+install:
+	python setup.py install
+
+make-install:
+	install -d $(install_dir)
+	install -m 644 treap.py $(install_dir)
+	install -m 644 nest.py $(install_dir)
+
+clean:
+	rm -f *.pyc *.so *.o core py_treap.py MANIFEST
+	rm -rf build dist
+	rm -rf __pycache__
+
+veryclean: clean
+	rm -f *.c pyx_treap.pyx
+
+publish: clean py_treap.py pyx_treap.c
+	python setup.py sdist upload
+

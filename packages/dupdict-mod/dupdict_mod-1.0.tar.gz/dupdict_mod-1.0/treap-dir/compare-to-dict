@@ -1,0 +1,119 @@
+#!/usr/local/pypy-1.9/bin/pypy
+
+## You must be this tall to enjoy this ride #########################################################################################################################
+
+import sys
+import time
+import random
+import treap
+
+# we define our own random function, because the treap module uses the random module, so just using a fixed seed doesn't give consistent results between
+# dictionaries and treaps, because dictionaries don't need random values.  So this test uses its own random function
+def my_random(n):
+    # three largish consecutive primes.  No, I didn't check Knuth for how good these values are - we don't need cryptographic strength randomness this time
+    a = 99999959L
+    b = 99999971L
+    c = 99999989L
+
+    r = n
+    while True:
+        r = (r * a + b) % c
+        yield r
+
+def test(description, dict1, n):
+    create_t0 = time.time()
+    for counter, key, value in zip(xrange(n), my_random(n), my_random(n)):
+        #print counter, key, value
+        dict1[key] = value
+    create_t1 = time.time()
+
+#    retrieve_t0 = time.time()
+#    for counter, key in zip(xrange(n), my_random(n)):
+#        if key in dict1:
+#            dummy = dict1[key]
+#    retrieve_t1 = time.time()
+
+    sort_t0 = time.time()
+    keys = list(dict1.keys())
+    if description == 'dictionary':
+        keys.sort()
+    sort_t1 = time.time()
+
+    return dict1, create_t1 - create_t0, sort_t1 - sort_t0
+
+def main():
+    full_compare_top = 24
+
+#    print 'legend:'
+#    print '   cre: create (low is good)'
+#    print '   trp: treap'
+#    print '   {}: dictionary'
+#    print '   quo: quotient: dictionary time over treap time (low is good for dictionary, high is good for treap)'
+#    print '   rtr: retrieve (low is good)'
+#    print '   srt: srt (low is good)'
+#
+    print \
+        'exponent|' + \
+        'number of elements|' + \
+        'dict create (low is good)|' + \
+        'treap create (low is good)|' + \
+        'creation quotient (low is good for dictionaries, high is good for treaps)|' + \
+        'dict sort (low is good)|' + \
+        'treap sort (low is good)|' + \
+        'sort quotient (low is good for dictionaries, high is good for treaps)'
+
+    for exponent in xrange(0, full_compare_top):
+        num_elements = pow(2, exponent)
+
+        dictionary_result_collection, dictionary_create_duration, dictionary_sort_duration = \
+            test('dictionary', {}, num_elements)
+        if exponent > full_compare_top:
+            del dictionary_result_collection
+        treap_result_collection, treap_create_duration, treap_sort_duration                     = \
+            test('treap', treap.treap(), num_elements)
+        if exponent > full_compare_top:
+            del treap_result_collection
+        else:
+            #print exponent
+            #print 'dictionary_result_collection:', dictionary_result_collection
+            dict_result = list(dictionary_result_collection.items())
+            dict_result.sort()
+            #print 'dict_result:', dict_result
+            #print 'treap_result_collecion\n', treap_result_collection
+            treap_result = list(treap_result_collection.items())
+            treap_result.sort()
+            #print 'treap_result:', treap_result
+            # we really want zip_longest here.  On well, check the length
+            if len(dict_result) != len(treap_result):
+                sys.stderr.write('%s: lengths do not match: %d and %d\n' % (sys.argv[0], len(dict_result), len(treap_result)))
+                sys.exit(1)
+            paired_up = zip(dict_result, treap_result)
+            for (d, t) in paired_up:
+                #print d, t
+                dict_key, dict_value = d
+                treap_key, treap_value = t
+                if dict_key != treap_key or dict_value != treap_value:
+                    print '((%d, %d), (%d, %d))' % (dict_key, dict_value, treap_key, treap_value)
+                    sys.stderr.write('%s: Hmmm, bad comparison\n' % sys.argv[0])
+                    sys.exit(1)
+        # avoid division by 0
+        try:
+            create_quotient = '%4.2f' % (dictionary_create_duration / treap_create_duration)
+        except ZeroDivisionError:
+            create_quotient = '%4s' % 'Inf' 
+        try:
+            sort_quotient = '%4.2f' % (dictionary_sort_duration / treap_sort_duration)
+        except ZeroDivisionError:
+            sort_quotient = '%4s' % 'Inf'
+        print '%d|%d|%.4f|%.4f|%s|%.4f|%.4f|%s' % \
+            ( \
+                exponent,
+                num_elements, \
+                dictionary_create_duration, treap_create_duration, create_quotient, \
+                dictionary_sort_duration, treap_sort_duration, sort_quotient, \
+            )
+        sys.stdout.flush()
+#                dictionary_retrieve_duration, treap_retrieve_duration, retrieve_quotient, \
+
+main()
+
