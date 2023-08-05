@@ -1,0 +1,27 @@
+Metadata-Version: 1.1
+Name: nsenter
+Version: 0.1.2
+Summary: Enter kernel namespaces from Python
+Home-page: https://github.com/zalando/python-nsenter
+Author: Henning Jacobs
+Author-email: henning.jacobs@zalando.de
+License: UNKNOWN
+Description: =======
+        NSEnter
+        =======
+        
+        Requires Python 3.4.
+        
+        Install::
+        
+            python3 setup.py install
+        
+        Example usage::
+        
+            docker run -d --name=redis -t redis
+            sudo nsenter --all --target=`docker inspect --format '{{ .State.Pid }}' redis` /bin/bash
+        
+        
+Platform: UNKNOWN
+Classifier: Development Status :: 4 - Beta
+Classifier: Programming Language :: Python
