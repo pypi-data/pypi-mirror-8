@@ -1,0 +1,308 @@
+- install raspbian
+
+  > on another machine
+    wget http://downloads.raspberrypi.org/raspbian_latest
+    unzip raspbian_latest
+    dd bs=4M if=2014-01-07-wheezy-raspbian.img of=/dev/sdb
+
+=> from here on, on raspbian
+
+- configuration:
+  # (should run automatically, otherwise start with ``sudo raspi-config``)
+  - expand filesystem
+  - change user password
+    # password in secpass
+  - boot to desktop as user pi
+  - enable camera
+  - advanced options:
+    - hostname => door
+    - enable ssh
+    - audio: force 3.5mm jack
+
+  > reboot & launch 'wifi config'
+    - runningAuNaturel, etc.
+  > raspi-config
+    - boot to console
+
+- configure environment
+
+  # as root
+  apt-get update
+  apt-get install emacs23-nox
+
+  cat <<EOF >> ~/.bashrc
+alias rm='rm -i'
+alias cp='cp -i'
+alias mv='mv -i'
+alias nw='emacs -nw'
+alias ll='ls \$LS_OPTIONS -alF'
+alias pg='ps auxw | grep'
+export PS1='\[\e[1;7;30m\]\t\[\e[0m\] \h:\W \[\e[1;31m\]\u #\[\e[0m\] '
+EOF
+  cat <<EOF >> /home/pi/.bashrc
+alias rm='rm -i'
+alias cp='cp -i'
+alias mv='mv -i'
+alias nw='emacs -nw'
+alias ll='ls \$LS_OPTIONS -alF'
+alias pg='ps auxw | grep'
+EOF
+
+  rmdir /local
+  ln -s /media/raspi-local /local
+
+  > edit /etc/ssh/sshd_config
+    - PermitRootLogin no
+
+  mkdir -p /home/pi/.ssh
+  cat <<EOF >> /home/pi/.ssh/authorized_keys
+ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAsVPofDviPUTEGv/ZcpxlMjjV8tavulaT3kUj2NrAIWhm7rFoMtMSHx7SjXPUUXk+v8h9nx92ikjdvNp1Z9MqlWmAZ9pW4+mntqNM14/VWjq8im6jWycLav7zakuNcwiIe4ZRs/bnmeE90htt9HEdGBSKRubJitkbwuHW8oWdENxR4NyCGDWBvS2nniKDQiq4+Pv8sUGtpqgef2jqMv+rOWPwkQtFKyM1OQ7d9DqA9tta/DwP57/lCtz6yJ4G+luTMiq2Ag7qMBKEQfcGPNZ0xrb1H/mi8nHANLvBMyTUc+YBov3EaXcR/wXTDsAu+KCyrmaij2n0YubNs7V7f8gH8Q== grabner-20100125
+EOF
+  chown -R pi:pi /home/pi/.ssh
+  chmod -R go-rwx /home/pi/.ssh
+
+- get TFT screen working:
+
+  # from https://learn.adafruit.com/adafruit-pitft-28-inch-resistive-touchscreen-display-raspberry-pi/software-installation
+  # as root
+  mkdir ~/src ; cd ~/src
+  wget http://adafruit-download.s3.amazonaws.com/libraspberrypi-bin-adafruit.deb
+  wget http://adafruit-download.s3.amazonaws.com/libraspberrypi-dev-adafruit.deb
+  wget http://adafruit-download.s3.amazonaws.com/libraspberrypi-doc-adafruit.deb
+  wget http://adafruit-download.s3.amazonaws.com/libraspberrypi0-adafruit.deb
+  wget http://adafruit-download.s3.amazonaws.com/raspberrypi-bootloader-adafruit-112613.deb
+  wget http://adafruit-download.s3.amazonaws.com/xinput-calibrator_0.7.5-1_armhf.deb
+  dpkg -i -B *.deb
+  # 99-fbturbo.conf causes problems with the TFT...
+  mv /usr/share/X11/xorg.conf.d/99-fbturbo.conf ~/99-fbturbo.conf.DIST
+  echo spi-bcm2708 >> /etc/modules
+  echo fbtft_device >> /etc/modules
+  echo "options fbtft_device name=adafruitts frequency=32000000" > /etc/modprobe.d/adafruit.conf
+  echo "export FRAMEBUFFER=/dev/fb1" >> /etc/profile.d/framebuffer.sh
+  mkdir -p /etc/udev/rules.d
+  cat <<EOF > /etc/udev/rules.d/95-stmpe.rules
+SUBSYSTEM=="input", ATTRS{name}=="stmpe-ts", ENV{DEVNAME}=="*event*", SYMLINK+="input/touchscreen"
+EOF
+  # reload the stmpe-ts module
+  rmmod stmpe_ts
+  modprobe stmpe_ts
+  # calibrate the touchscreen
+  apt-get install evtest tslib libts-bin
+  # test...
+  evtest /dev/input/touchscreen
+  # calibrate...
+  TSLIB_FBDEVICE=/dev/fb1 TSLIB_TSDEVICE=/dev/input/touchscreen ts_calibrate
+  # test...
+  TSLIB_FBDEVICE=/dev/fb1 TSLIB_TSDEVICE=/dev/input/touchscreen ts_test
+  # calibrate the X configuration (on device)
+  mv /etc/X11/xorg.conf.d/99-calibration.conf ~/99-calibration.conf.DIST
+  FRAMEBUFFER=/dev/fb1 startx &
+  DISPLAY=:0.0 xinput_calibrator
+  > this will prompt you to create "/etc/X11/xorg.conf.d/99-calibration.conf"
+  # **** NOTE**** : don't use this! use the output from xinput_calibrator
+    cat <<EOF > /etc/X11/xorg.conf.d/99-calibration.conf
+Section "InputClass"
+        Identifier      "calibration"
+        MatchProduct    "stmpe-ts"
+        Option          "Calibration"   "208 3792 186 3767"
+EndSection
+EOF
+  # configure lightdm to use the touchscreen
+cat <<EOF > /etc/X11/xorg.conf.d/00-device.conf
+Section "Device" 
+        Identifier "adafruit"   
+        driver "fbdev"
+        Option "fbdev" "/dev/fb1"
+        Option "ShadowFB" "off"
+EndSection
+EOF
+  dpkg-reconfigure console-setup
+    => UTF-8
+    => Guess optimal character set
+    => Terminus
+    => 6x12 (framebuffer only)
+  sed -i.DIST 's/rootwait/rootwait fbcon=map:10 fbcon=font:VGA6x12/' /boot/cmdline.txt
+  reboot
+
+- get camera working
+
+  apt-get install python-pip
+  pip install picamera==0.8
+
+  > test with adafruit's pi-camera software
+    mkdir -p /local/adafruit/adafruit-pi-cam
+    cd /local/adafruit/adafruit-pi-cam
+    wget https://github.com/adafruit/adafruit-pi-cam/archive/master.zip
+    unzip master.zip
+    cd adafruit-pi-cam-master
+    sudo python cam.py
+
+
+- get VNC working
+
+  > as root:
+    apt-get install tightvncserver
+
+  vncserver :1
+  # password in secpass
+
+  > on remote client:
+    > add to /etc/hosts
+      192.168.1.18 door
+    xtightvncviewer door:1
+    -or-
+    ssh pi@door
+
+  # add to auto-start
+  mkdir ~/.config/autostart
+  cat <<EOF > ~/.config/autostart/tightvnc.desktop
+[Desktop Entry]
+Type=Application
+Name=TightVNC
+Exec=vncserver :1
+StartupNotify=false
+EOF
+
+- TFT backlight control
+
+  # from: https://learn.adafruit.com/adafruit-pitft-28-inch-resistive-touchscreen-display-raspberry-pi/extras
+  echo 252 > /sys/class/gpio/export
+  echo out > /sys/class/gpio/gpio252/direction
+  # turn on:
+  echo 1 > /sys/class/gpio/gpio252/value
+  # turn off:
+  echo 1 > /sys/class/gpio/gpio252/value
+
+- disable openbox/lxde screen blanking
+
+  sed -i.orig 's/X/X -s 0 dpms/' /etc/X11/xinit/xserverrc
+  sed -i.orig 's/@xscreensaver/#@xscreensaver/' /etc/xdg/lxsession/LXDE/autostart
+  echo "@xset s off" >> /etc/xdg/lxsession/LXDE/autostart
+  echo "@xset -dpms" >> /etc/xdg/lxsession/LXDE/autostart
+  echo "@xset s noblank" >> /etc/xdg/lxsession/LXDE/autostart
+
+- audio/video...
+
+  apt-get install mplayer fbi mpg321
+  # test
+    mplayer -vo fbdev2:/dev/fb1 -x 240 -y 320 -framedrop bigbuckbunny320p.mp4
+    mplayer -x 240 -y 320 -framedrop bigbuckbunny320p.mp4
+    mpg321 hyena.mp3
+
+# - raspi-door & wxpython...
+
+#   as root:
+
+#     apt-get install \
+#       python-dev python-rpi.gpio \
+#       libgtk2.0-dev python-gtk2 python-virtualenv libqt4-opengl-dev \
+#       libgstreamer-plugins-base0.10-dev libgstreamer0.10-dev swig libsdl1.2-dev
+
+#     maybe others:
+
+#       libtiff-dev
+#       libjpeg-dev
+#       libgconf2-dev
+      
+#       libglapi-mesa
+#       libosmesa6
+#       libglu1-mesa-dev
+#       libglu1-mesa
+#       mesa-common-dev
+      
+#       libwebkit-dev
+#       freeglut3
+#       freeglut3-dev
+
+#       dpkg-dev
+#       build-essential
+#       checkinstall
+
+
+#   cd /local/raspi-door
+#   virtualenv --prompt '(raspi-door) ' .virtualenv
+#   . .virtualenv/bin/activate
+
+#   mkdir src ; cd src
+#   wget http://downloads.sourceforge.net/project/wxpython/wxPython/3.0.0.0/wxPython-src-3.0.0.0.tar.bz2
+#   tar xvjf wxPython-src-3.0.0.0.tar.bz2
+#   cd wxPython-src-3.0.0.0/wxPython
+#   python build-wxpython.py --install --installdir=$VIRTUAL_ENV
+
+
+- create dev environment
+
+  cd /local/raspi-door
+  virtualenv --prompt '(raspi-door) ' .virtualenv
+  . .virtualenv/bin/activate
+
+  # install dependencies
+  ./setup.py develop
+
+
+- pygame (in dev mode)
+
+  ## > in non-dev mode, use `apt-get install python-pygame`...
+
+  # + ffmpeg (pre ubuntu 14.04)
+  apt-get install python-dev python-numpy \
+    libsdl-image1.2-dev libsdl-mixer1.2-dev libsdl-ttf2.0-dev libsmpeg-dev \
+    libsdl1.2-dev  libportmidi-dev libswscale-dev libavformat-dev libavcodec-dev
+
+  # from http://askubuntu.com/questions/203630/easy-install-pygame-not-working-due-to-linux-videodev-h-no-such-file-or-direct
+  apt-get install libv4l-dev
+  ln -s ../libv4l1-videodev.h /usr/include/linux/videodev.h
+
+  pip install pygame
+
+  ## > or, if that doesn't work, from source:...
+
+  wget http://pygame.org/ftp/pygame-1.9.1release.tar.gz
+  cd pygame-1.9.1release
+  python setup.py build install
+
+  pip install pgu==0.18 --allow-external pgu --allow-unverified pgu
+
+
+- nfc/rfid
+
+  # follow instructions from:
+  #   https://learn.adafruit.com/adafruit-nfc-rfid-on-raspberry-pi/freeing-uart-on-the-pi
+
+  sed -i 's/ console=ttyAMA0,115200 kgdboc=ttyAMA0,115200//' /boot/cmdline.txt
+  sed -i 's@T0:23:respawn:/sbin/getty -L ttyAMA0@#T0:23:respawn:/sbin/getty -L ttyAMA0@' /etc/inittab
+
+  mkdir -p /home/pi/src/libnfc
+  cd /home/pi/src/libnfc
+  wget http://dl.bintray.com/nfc-tools/sources/libnfc-1.7.1.tar.bz2
+
+  > as root:
+    mkdir -p /etc/nfc/devices.d
+    cd /home/pi/src/libnfc/libnfc-1.7.1
+    cp contrib/libnfc/pn532_uart_on_rpi.conf.sample /etc/nfc/devices.d/pn532_uart_on_rpi.conf
+    echo "allow_intrusive_scan = true" >> /etc/nfc/devices.d/pn532_uart_on_rpi.conf
+
+  ./configure --with-drivers=pn532_uart --sysconfdir=/etc --prefix=/usr
+  sudo make clean
+  sudo make install all
+
+
+- TODO:
+  * make rpi-data mount to /local without any actions
+  * change VNC port to default?
+  * control backlight... enable power button...
+    https://learn.adafruit.com/adafruit-pitft-28-inch-resistive-touchscreen-display-raspberry-pi/extras
+
+- RASPI-DOOR install...
+
+  sudo apt-get install python-virtualenv
+  sudo ln -s ../libv4l1-videodev.h /usr/include/linux/videodev.h
+
+  virtualenv --prompt '(raspi-door) ' /media/raspi-local/raspi-door.virtualenv
+  . /media/raspi-local/raspi-door.virtualenv/bin/activate
+
+  # install pre-requisites that have problems with pip...
+  # TODO: figure out why this is necessary...
+  easy_install pygame==1.9.1release pgu==0.18
+
+
