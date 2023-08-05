@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <style>
+    body {
+        font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+        font-size: 14px;
+        line-height: 1.42857;
+        color: #333;
+    }
+    div.upload_form_container {
+        margin-top:50px;
+        margin-right: auto;
+        margin-left: auto;
+        padding-left: 15px;
+        padding-right: 15px;
+        width: 1170px;
+    }
+    </style>
+</head>
+
+<body>
+    {% if messages %}
+    <ul>
+        {% for message in messages %}
+        <li>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    <div class="upload_form_container">
+        <form enctype="multipart/form-data" action="" method="post">{%csrf_token%}
+            {{ form.as_p }}
+            <input type="submit" value="Upload" />
+        </form>
+    </div>
+</body>
+
+</html>
