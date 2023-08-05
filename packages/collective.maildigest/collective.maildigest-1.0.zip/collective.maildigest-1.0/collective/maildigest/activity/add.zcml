@@ -1,0 +1,17 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    i18n_domain="collective.maildigest">
+
+    <subscriber
+      for="Products.CMFCore.interfaces.IContentish
+           zope.lifecycleevent.interfaces.IObjectCreatedEvent"
+      handler=".add.store_activity"
+      />
+
+    <subscriber
+      for="Products.CMFCore.interfaces.IContentish
+           zope.lifecycleevent.interfaces.IObjectCopiedEvent"
+      handler=".add.store_activity"
+      />
+
+</configure>
