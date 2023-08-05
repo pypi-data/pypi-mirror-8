@@ -1,0 +1,23 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"
+  metal:use-macro="here/main_template/macros/master"
+  i18n:domain="eea">
+
+<body>
+
+<div metal:fill-slot="content" >
+  <h1 i18n:translate="">
+    Download "<tal:title i18n:name="title" tal:replace="context/title_or_id" />" as PDF
+  </h1>
+
+  <form tal:attributes="action string:${context/absolute_url}/${view/__name__}" method="post">
+    <div class="field eea-pdf-email">
+      <input type="email" name="email" id="email" placeholder="Enter your email address where to send the PDF when ready" i18n:attributes="placeholder"/>
+      <input class="context" type="submit" name="form.button.download" value="Send" i18n:attributes="value">
+      <span class="formHelp" i18n:translate="">* The email is only used for the purpose of sending the PDF. We do not store it for any other use.</span>
+      <textarea name="body" id="body"></textarea>
+    </div>
+  </form>
+</div>
+
+</body>
+</html>
