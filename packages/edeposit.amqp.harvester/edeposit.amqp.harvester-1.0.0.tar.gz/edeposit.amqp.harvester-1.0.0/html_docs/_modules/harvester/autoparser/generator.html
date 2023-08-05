@@ -1,0 +1,504 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>harvester.autoparser.generator &mdash; edeposit.amqp.harvester 1.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="edeposit.amqp.harvester 1.0.0 documentation" href="../../../index.html" />
+    <link rel="up" title="harvester" href="../../harvester.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">edeposit.amqp.harvester 1.0.0 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../harvester.html" accesskey="U">harvester</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for harvester.autoparser.generator</h1><div class="highlight"><pre>
+<span class="c">#! /usr/bin/env python</span>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#</span>
+<span class="c"># Interpreter version: python 2.7</span>
+<span class="c">#</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module contains number of template generators, which generates all the</span>
+<span class="sd">python code for the parser.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c"># Imports =====================================================================</span>
+<span class="kn">import</span> <span class="nn">inspect</span>
+
+<span class="kn">import</span> <span class="nn">utils</span>
+<span class="kn">import</span> <span class="nn">conf_reader</span>
+<span class="kn">import</span> <span class="nn">path_patterns</span>
+
+
+<span class="c"># Variables ===================================================================</span>
+<span class="n">IND</span> <span class="o">=</span> <span class="s">&quot;    &quot;</span>  <span class="c">#: Indentation.</span>
+
+
+<span class="c"># Functions &amp; objects =========================================================</span>
+<div class="viewcode-block" id="_index_idiom"><a class="viewcode-back" href="../../../api/harvester.autoparser.generator.html#harvester.autoparser.generator._index_idiom">[docs]</a><span class="k">def</span> <span class="nf">_index_idiom</span><span class="p">(</span><span class="n">el_name</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">alt</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate string where `el_name` is indexed by `index` if there are enough</span>
+<span class="sd">    items or `alt` is returned.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        el_name (str): Name of the `container` which is indexed.</span>
+<span class="sd">        index (int): Index of the item you want to obtain from container.</span>
+<span class="sd">        alt (whatever, default None): Alternative value.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: Python code.</span>
+
+<span class="sd">    Live example::</span>
+<span class="sd">        &gt;&gt;&gt; import generator as g</span>
+<span class="sd">        &gt;&gt;&gt; print g._index_idiom(&quot;xex&quot;, 0)</span>
+<span class="sd">            # pick element from list</span>
+<span class="sd">            xex = xex[0] if xex else None</span>
+<span class="sd">        &gt;&gt;&gt; print g._index_idiom(&quot;xex&quot;, 1, &quot;something&quot;)</span>
+<span class="sd">        # pick element from list</span>
+<span class="sd">        xex = xex[1] if len(xex) - 1 &gt;= 1 else &#39;something&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">el_index</span> <span class="o">=</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s">[</span><span class="si">%d</span><span class="s">]&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">el_name</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">index</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">cond</span> <span class="o">=</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">el_name</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">cond</span> <span class="o">=</span> <span class="s">&quot;len(</span><span class="si">%s</span><span class="s">) - 1 &gt;= </span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">el_name</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span>
+
+    <span class="n">output</span> <span class="o">=</span> <span class="n">IND</span> <span class="o">+</span> <span class="s">&quot;# pick element from list</span><span class="se">\n</span><span class="s">&quot;</span>
+
+    <span class="k">return</span> <span class="n">output</span> <span class="o">+</span> <span class="n">IND</span> <span class="o">+</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s"> = </span><span class="si">%s</span><span class="s"> if </span><span class="si">%s</span><span class="s"> else </span><span class="si">%s</span><span class="se">\n\n</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span>
+        <span class="n">el_name</span><span class="p">,</span>
+        <span class="n">el_index</span><span class="p">,</span>
+        <span class="n">cond</span><span class="p">,</span>
+        <span class="nb">repr</span><span class="p">(</span><span class="n">alt</span><span class="p">)</span>
+    <span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="_required_idiom"><a class="viewcode-back" href="../../../api/harvester.autoparser.generator.html#harvester.autoparser.generator._required_idiom">[docs]</a><span class="k">def</span> <span class="nf">_required_idiom</span><span class="p">(</span><span class="n">tag_name</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">notfoundmsg</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate code, which make sure that `tag_name` has enoug items.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        tag_name (str): Name of the container.</span>
+<span class="sd">        index (int): Index of the item you want to obtain from container.</span>
+<span class="sd">        notfoundmsg (str): Raise :class:`.UserWarning` with debug data and</span>
+<span class="sd">                           following message.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: Python code.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">cond</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">index</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">cond</span> <span class="o">=</span> <span class="s">&quot; or len(el) - 1 &lt; </span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">index</span>
+
+    <span class="n">tag_name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">tag_name</span><span class="p">)</span>
+
+    <span class="n">output</span> <span class="o">=</span> <span class="n">IND</span> <span class="o">+</span> <span class="s">&quot;if not el</span><span class="si">%s</span><span class="s">:</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">cond</span>
+    <span class="n">output</span> <span class="o">+=</span> <span class="n">IND</span> <span class="o">+</span> <span class="n">IND</span> <span class="o">+</span> <span class="s">&quot;raise UserWarning(</span><span class="se">\n</span><span class="s">&quot;</span>
+    <span class="n">output</span> <span class="o">+=</span> <span class="n">IND</span> <span class="o">+</span> <span class="n">IND</span> <span class="o">+</span> <span class="n">IND</span> <span class="o">+</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s"> +</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">%</span> <span class="nb">repr</span><span class="p">(</span><span class="n">notfoundmsg</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">+</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)</span>
+    <span class="n">output</span> <span class="o">+=</span> <span class="n">IND</span> <span class="o">+</span> <span class="n">IND</span> <span class="o">+</span> <span class="n">IND</span> <span class="o">+</span> <span class="nb">repr</span><span class="p">(</span><span class="s">&quot;Tag name: &quot;</span> <span class="o">+</span> <span class="n">tag_name</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot; + &#39;</span><span class="se">\\</span><span class="s">n&#39; +</span><span class="se">\n</span><span class="s">&quot;</span>
+    <span class="n">output</span> <span class="o">+=</span> <span class="n">IND</span> <span class="o">+</span> <span class="n">IND</span> <span class="o">+</span> <span class="n">IND</span> <span class="o">+</span> <span class="s">&quot;&#39;El:&#39; + str(el) + &#39;</span><span class="se">\\</span><span class="s">n&#39; +</span><span class="se">\n</span><span class="s">&quot;</span>
+    <span class="n">output</span> <span class="o">+=</span> <span class="n">IND</span> <span class="o">+</span> <span class="n">IND</span> <span class="o">+</span> <span class="n">IND</span> <span class="o">+</span> <span class="s">&quot;&#39;Dom:&#39; + str(dom)</span><span class="se">\n</span><span class="s">&quot;</span>
+    <span class="n">output</span> <span class="o">+=</span> <span class="n">IND</span> <span class="o">+</span> <span class="n">IND</span> <span class="o">+</span> <span class="s">&quot;)</span><span class="se">\n\n</span><span class="s">&quot;</span>
+
+    <span class="k">return</span> <span class="n">output</span> <span class="o">+</span> <span class="n">IND</span> <span class="o">+</span> <span class="s">&quot;el = el[</span><span class="si">%d</span><span class="s">]</span><span class="se">\n\n</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">index</span>
+
+
+<span class="c"># parser template generators ##################################################</span></div>
+<div class="viewcode-block" id="_find_template"><a class="viewcode-back" href="../../../api/harvester.autoparser.generator.html#harvester.autoparser.generator._find_template">[docs]</a><span class="k">def</span> <span class="nf">_find_template</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">notfoundmsg</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate ``.find()`` call for HTMLElement.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        parameters (list): List of parameters for ``.find()``.</span>
+<span class="sd">        index (int): Index of the item you want to get from ``.find()`` call.</span>
+<span class="sd">        required (bool, default False): Use :func:`_required_idiom` to returned</span>
+<span class="sd">                 data.</span>
+<span class="sd">        notfoundmsg (str, default None): Message which will be used for</span>
+<span class="sd">                    :func:`_required_idiom` if the item is not found.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: Python code.</span>
+
+<span class="sd">    Live example::</span>
+<span class="sd">        &gt;&gt;&gt; print g._find_template([&quot;&lt;xex&gt;&quot;], 3)</span>
+<span class="sd">            el = dom.find(&#39;&lt;xex&gt;&#39;)</span>
+<span class="sd">            # pick element from list</span>
+<span class="sd">            el = el[3] if len(el) - 1 &gt;= 3 else None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">IND</span> <span class="o">+</span> <span class="s">&quot;el = dom.find(</span><span class="si">%s</span><span class="s">)</span><span class="se">\n\n</span><span class="s">&quot;</span> <span class="o">%</span> <span class="nb">repr</span><span class="p">(</span><span class="n">parameters</span><span class="p">)[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">required</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">output</span> <span class="o">+</span> <span class="n">_required_idiom</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">index</span><span class="p">,</span> <span class="n">notfoundmsg</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">output</span> <span class="o">+</span> <span class="n">_index_idiom</span><span class="p">(</span><span class="s">&quot;el&quot;</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="_wfind_template"><a class="viewcode-back" href="../../../api/harvester.autoparser.generator.html#harvester.autoparser.generator._wfind_template">[docs]</a><span class="k">def</span> <span class="nf">_wfind_template</span><span class="p">(</span><span class="n">use_dom</span><span class="p">,</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+                                                <span class="n">notfoundmsg</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate ``.wfind()`` call for HTMLElement.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        use_dom (bool): Use ``dom`` as tag name. If ``False``, ``el`` is used.</span>
+<span class="sd">        parameters (list): List of parameters for ``.wfind()``.</span>
+<span class="sd">        index (int): Index of the item you want to get from ``.wfind()`` call.</span>
+<span class="sd">        required (bool, default False): Use :func:`_required_idiom` to returned</span>
+<span class="sd">                 data.</span>
+<span class="sd">        notfoundmsg (str, default None): Message which will be used for</span>
+<span class="sd">                    :func:`_required_idiom` if the item is not found.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: Python code.</span>
+
+<span class="sd">    Live example::</span>
+<span class="sd">        &gt;&gt;&gt; print g._wfind_template(True, [&quot;&lt;xex&gt;&quot;], 3)</span>
+<span class="sd">            el = dom.wfind(&#39;&lt;xex&gt;&#39;).childs</span>
+<span class="sd">            # pick element from list</span>
+<span class="sd">            el = el[3] if len(el) - 1 &gt;= 3 else None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">tag_name</span> <span class="o">=</span> <span class="s">&quot;dom&quot;</span> <span class="k">if</span> <span class="n">use_dom</span> <span class="k">else</span> <span class="s">&quot;el&quot;</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">IND</span> <span class="o">+</span> <span class="s">&quot;el = </span><span class="si">%s</span><span class="s">.wfind(</span><span class="si">%s</span><span class="s">).childs</span><span class="se">\n\n</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span>
+        <span class="n">tag_name</span><span class="p">,</span>
+        <span class="nb">repr</span><span class="p">(</span><span class="n">parameters</span><span class="p">)[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">required</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">output</span> <span class="o">+</span> <span class="n">_required_idiom</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">index</span><span class="p">,</span> <span class="n">notfoundmsg</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">output</span> <span class="o">+</span> <span class="n">_index_idiom</span><span class="p">(</span><span class="s">&quot;el&quot;</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="_match_template"><a class="viewcode-back" href="../../../api/harvester.autoparser.generator.html#harvester.autoparser.generator._match_template">[docs]</a><span class="k">def</span> <span class="nf">_match_template</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">notfoundmsg</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate ``.match()`` call for HTMLElement.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        parameters (list): List of parameters for ``.match()``.</span>
+<span class="sd">        index (int): Index of the item you want to get from ``.match()`` call.</span>
+<span class="sd">        required (bool, default False): Use :func:`_required_idiom` to returned</span>
+<span class="sd">                 data.</span>
+<span class="sd">        notfoundmsg (str, default None): Message which will be used for</span>
+<span class="sd">                    :func:`_required_idiom` if the item is not found.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: Python code.</span>
+
+<span class="sd">    Live example::</span>
+<span class="sd">        &gt;&gt;&gt; print g._match_template([&quot;&lt;xex&gt;&quot;], 3)</span>
+<span class="sd">            el = dom.match(&#39;&lt;xex&gt;&#39;)</span>
+<span class="sd">            # pick element from list</span>
+<span class="sd">            el = el[3] if len(el) - 1 &gt;= 3 else None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">IND</span> <span class="o">+</span> <span class="s">&quot;el = dom.match(</span><span class="si">%s</span><span class="s">)</span><span class="se">\n\n</span><span class="s">&quot;</span> <span class="o">%</span> <span class="nb">repr</span><span class="p">(</span><span class="n">parameters</span><span class="p">)[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="c">#TODO: reduce None parameters</span>
+
+    <span class="k">if</span> <span class="n">required</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">output</span> <span class="o">+</span> <span class="n">_required_idiom</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">index</span><span class="p">,</span> <span class="n">notfoundmsg</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">output</span> <span class="o">+</span> <span class="n">_index_idiom</span><span class="p">(</span><span class="s">&quot;el&quot;</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="_neigh_template"><a class="viewcode-back" href="../../../api/harvester.autoparser.generator.html#harvester.autoparser.generator._neigh_template">[docs]</a><span class="k">def</span> <span class="nf">_neigh_template</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">left</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+                                                  <span class="n">notfoundmsg</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate neighbour matching call for HTMLElement, which returns only</span>
+<span class="sd">    elements with required neighbours.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        parameters (list): List of parameters for ``.match()``.</span>
+<span class="sd">        index (int): Index of the item you want to get from ``.match()`` call.</span>
+<span class="sd">        left (bool, default True): Look for neigbour in the left side of el.</span>
+<span class="sd">        required (bool, default False): Use :func:`_required_idiom` to returned</span>
+<span class="sd">                 data.</span>
+<span class="sd">        notfoundmsg (str, default None): Message which will be used for</span>
+<span class="sd">                    :func:`_required_idiom` if the item is not found.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: Python code.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">fn_string</span> <span class="o">=</span> <span class="s">&quot;has_neigh(</span><span class="si">%s</span><span class="s">, left=</span><span class="si">%s</span><span class="s">)&quot;</span> <span class="o">%</span> <span class="p">(</span>
+        <span class="nb">repr</span><span class="p">(</span><span class="n">parameters</span><span class="o">.</span><span class="n">fn_params</span><span class="p">)[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+        <span class="nb">repr</span><span class="p">(</span><span class="n">left</span><span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="n">output</span> <span class="o">=</span> <span class="n">IND</span> <span class="o">+</span> <span class="s">&quot;el = dom.find(</span><span class="se">\n</span><span class="s">&quot;</span>
+    <span class="n">output</span> <span class="o">+=</span> <span class="n">IND</span> <span class="o">+</span> <span class="n">IND</span> <span class="o">+</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s">,</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">%</span> <span class="nb">repr</span><span class="p">(</span><span class="n">parameters</span><span class="o">.</span><span class="n">tag_name</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">parameters</span><span class="o">.</span><span class="n">params</span><span class="p">:</span>
+        <span class="n">output</span> <span class="o">+=</span> <span class="n">IND</span> <span class="o">+</span> <span class="n">IND</span> <span class="o">+</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s">,</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">%</span> <span class="nb">repr</span><span class="p">(</span><span class="n">parameters</span><span class="o">.</span><span class="n">params</span><span class="p">)</span>
+
+    <span class="n">output</span> <span class="o">+=</span> <span class="n">IND</span> <span class="o">+</span> <span class="n">IND</span> <span class="o">+</span> <span class="s">&quot;fn=</span><span class="si">%s</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">fn_string</span>
+    <span class="n">output</span> <span class="o">+=</span> <span class="n">IND</span> <span class="o">+</span> <span class="s">&quot;)</span><span class="se">\n\n</span><span class="s">&quot;</span>
+
+    <span class="k">if</span> <span class="n">required</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">output</span> <span class="o">+</span> <span class="n">_required_idiom</span><span class="p">(</span>
+            <span class="n">parameters</span><span class="o">.</span><span class="n">fn_params</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="n">index</span><span class="p">,</span>
+            <span class="n">notfoundmsg</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">output</span> <span class="o">+</span> <span class="n">_index_idiom</span><span class="p">(</span><span class="s">&quot;el&quot;</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span>
+
+<span class="c"># /parser template generators #################################################</span>
+
+</div>
+<div class="viewcode-block" id="_get_parser_name"><a class="viewcode-back" href="../../../api/harvester.autoparser.generator.html#harvester.autoparser.generator._get_parser_name">[docs]</a><span class="k">def</span> <span class="nf">_get_parser_name</span><span class="p">(</span><span class="n">var_name</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parser name composer.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        var_name (str): Name of the variable.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: Parser function name.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="s">&quot;get_</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">var_name</span>
+
+</div>
+<div class="viewcode-block" id="_generate_parser"><a class="viewcode-back" href="../../../api/harvester.autoparser.generator.html#harvester.autoparser.generator._generate_parser">[docs]</a><span class="k">def</span> <span class="nf">_generate_parser</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">notfoundmsg</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate parser named `name` for given `path`.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        name (str): Basename for the parsing function (see</span>
+<span class="sd">                    :func:`_get_parser_name` for details).</span>
+<span class="sd">        path (obj): :class:`.PathCall` or :class:`.Chained` instance.</span>
+<span class="sd">        required (bool, default False): Use :func:`_required_idiom` to returned</span>
+<span class="sd">                 data.</span>
+<span class="sd">        notfoundmsg (str, default None): Message which will be used for</span>
+<span class="sd">                    :func:`_required_idiom` if the item is not found.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: Python code for parsing `path`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="s">&quot;def </span><span class="si">%s</span><span class="s">(dom):</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">_get_parser_name</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+
+    <span class="n">dom</span> <span class="o">=</span> <span class="bp">True</span>  <span class="c"># used specifically in _wfind_template</span>
+    <span class="n">parser_table</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">&quot;find&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">path</span><span class="p">:</span>
+            <span class="n">_find_template</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">params</span><span class="p">,</span> <span class="n">path</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">required</span><span class="p">,</span> <span class="n">notfoundmsg</span><span class="p">),</span>
+        <span class="s">&quot;wfind&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">path</span><span class="p">:</span>
+            <span class="n">_wfind_template</span><span class="p">(</span>
+                <span class="n">dom</span><span class="p">,</span>
+                <span class="n">path</span><span class="o">.</span><span class="n">params</span><span class="p">,</span>
+                <span class="n">path</span><span class="o">.</span><span class="n">index</span><span class="p">,</span>
+                <span class="n">required</span><span class="p">,</span>
+                <span class="n">notfoundmsg</span>
+            <span class="p">),</span>
+        <span class="s">&quot;match&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">path</span><span class="p">:</span>
+            <span class="n">_match_template</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">params</span><span class="p">,</span> <span class="n">path</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">required</span><span class="p">,</span> <span class="n">notfoundmsg</span><span class="p">),</span>
+        <span class="s">&quot;left_neighbour_tag&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">path</span><span class="p">:</span>
+            <span class="n">_neigh_template</span><span class="p">(</span>
+                <span class="n">path</span><span class="o">.</span><span class="n">params</span><span class="p">,</span>
+                <span class="n">path</span><span class="o">.</span><span class="n">index</span><span class="p">,</span>
+                <span class="bp">True</span><span class="p">,</span>
+                <span class="n">required</span><span class="p">,</span>
+                <span class="n">notfoundmsg</span>
+            <span class="p">),</span>
+        <span class="s">&quot;right_neighbour_tag&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">path</span><span class="p">:</span>
+            <span class="n">_neigh_template</span><span class="p">(</span>
+                <span class="n">path</span><span class="o">.</span><span class="n">params</span><span class="p">,</span>
+                <span class="n">path</span><span class="o">.</span><span class="n">index</span><span class="p">,</span>
+                <span class="bp">False</span><span class="p">,</span>
+                <span class="n">required</span><span class="p">,</span>
+                <span class="n">notfoundmsg</span>
+            <span class="p">),</span>
+    <span class="p">}</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">path_patterns</span><span class="o">.</span><span class="n">PathCall</span><span class="p">):</span>
+        <span class="n">output</span> <span class="o">+=</span> <span class="n">parser_table</span><span class="p">[</span><span class="n">path</span><span class="o">.</span><span class="n">call_type</span><span class="p">](</span><span class="n">path</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">path_patterns</span><span class="o">.</span><span class="n">Chained</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">path</span><span class="o">.</span><span class="n">chain</span><span class="p">:</span>
+            <span class="n">output</span> <span class="o">+=</span> <span class="n">parser_table</span><span class="p">[</span><span class="n">path</span><span class="o">.</span><span class="n">call_type</span><span class="p">](</span><span class="n">path</span><span class="p">)</span>
+            <span class="n">dom</span> <span class="o">=</span> <span class="bp">False</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">UserWarning</span><span class="p">(</span>
+            <span class="s">&quot;Unknown type of path parameters! (</span><span class="si">%s</span><span class="s">)&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="n">output</span> <span class="o">+=</span> <span class="n">IND</span> <span class="o">+</span> <span class="s">&quot;return el</span><span class="se">\n</span><span class="s">&quot;</span>
+    <span class="n">output</span> <span class="o">+=</span> <span class="s">&quot;</span><span class="se">\n\n</span><span class="s">&quot;</span>
+
+    <span class="k">return</span> <span class="n">output</span>
+
+</div>
+<div class="viewcode-block" id="_unittest_template"><a class="viewcode-back" href="../../../api/harvester.autoparser.generator.html#harvester.autoparser.generator._unittest_template">[docs]</a><span class="k">def</span> <span class="nf">_unittest_template</span><span class="p">(</span><span class="n">config</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate unittests for all of the generated code.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        config (dict): Original configuration dictionary. See</span>
+<span class="sd">               :mod:`~harvester.autoparser.conf_reader` for details.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: Python code.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="s">&quot;def test_parsers():</span><span class="se">\n</span><span class="s">&quot;</span>
+
+    <span class="n">links</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="s">&quot;link&quot;</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="s">&quot;vars&quot;</span><span class="p">]),</span> <span class="n">config</span><span class="p">))</span>
+
+    <span class="k">for</span> <span class="n">link</span> <span class="ow">in</span> <span class="n">links</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="n">output</span> <span class="o">+=</span> <span class="n">IND</span> <span class="o">+</span> <span class="s">&quot;# Test parsers against </span><span class="si">%s</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">link</span>
+        <span class="n">output</span> <span class="o">+=</span> <span class="n">IND</span> <span class="o">+</span> <span class="s">&quot;html = handle_encodnig(</span><span class="se">\n</span><span class="s">&quot;</span>
+        <span class="n">output</span> <span class="o">+=</span> <span class="n">IND</span> <span class="o">+</span> <span class="n">IND</span> <span class="o">+</span> <span class="s">&quot;_get_source(</span><span class="si">%s</span><span class="s">)</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">%</span> <span class="nb">repr</span><span class="p">(</span><span class="n">link</span><span class="p">)</span>
+        <span class="n">output</span> <span class="o">+=</span> <span class="n">IND</span> <span class="o">+</span> <span class="s">&quot;)</span><span class="se">\n</span><span class="s">&quot;</span>
+        <span class="n">output</span> <span class="o">+=</span> <span class="n">IND</span> <span class="o">+</span> <span class="s">&quot;dom = dhtmlparser.parseString(html)</span><span class="se">\n</span><span class="s">&quot;</span>
+        <span class="n">output</span> <span class="o">+=</span> <span class="n">IND</span> <span class="o">+</span> <span class="s">&quot;dhtmlparser.makeDoubleLinked(dom)</span><span class="se">\n\n</span><span class="s">&quot;</span>
+
+        <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">links</span><span class="p">[</span><span class="n">link</span><span class="p">]:</span>
+            <span class="n">content</span> <span class="o">=</span> <span class="n">links</span><span class="p">[</span><span class="n">link</span><span class="p">][</span><span class="n">var</span><span class="p">][</span><span class="s">&quot;data&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+            <span class="n">output</span> <span class="o">+=</span> <span class="n">IND</span> <span class="o">+</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s"> = </span><span class="si">%s</span><span class="s">(dom)</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">_get_parser_name</span><span class="p">(</span><span class="n">var</span><span class="p">))</span>
+
+            <span class="k">if</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span> <span class="ow">in</span> <span class="n">content</span><span class="p">:</span>
+                <span class="n">output</span> <span class="o">+=</span> <span class="n">IND</span>
+                <span class="n">output</span> <span class="o">+=</span> <span class="s">&quot;assert </span><span class="si">%s</span><span class="s">.getContent().strip().split() == </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span>
+                    <span class="n">var</span><span class="p">,</span>
+                    <span class="nb">repr</span><span class="p">(</span><span class="n">content</span><span class="o">.</span><span class="n">split</span><span class="p">())</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">output</span> <span class="o">+=</span> <span class="n">IND</span> <span class="o">+</span> <span class="s">&quot;assert </span><span class="si">%s</span><span class="s">.getContent().strip() == </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span>
+                    <span class="n">var</span><span class="p">,</span>
+                    <span class="nb">repr</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
+                <span class="p">)</span>
+
+            <span class="n">output</span> <span class="o">+=</span> <span class="s">&quot;</span><span class="se">\n\n</span><span class="s">&quot;</span>
+
+    <span class="k">return</span> <span class="n">output</span> <span class="o">+</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span>
+
+</div>
+<div class="viewcode-block" id="generate_parsers"><a class="viewcode-back" href="../../../api/harvester.autoparser.generator.html#harvester.autoparser.generator.generate_parsers">[docs]</a><span class="k">def</span> <span class="nf">generate_parsers</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">paths</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate parser for all `paths`.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        config (dict): Original configuration dictionary used to get matches</span>
+<span class="sd">                       for unittests. See</span>
+<span class="sd">                       :mod:`~harvester.autoparser.conf_reader` for details.</span>
+<span class="sd">        paths (dict): Output from :func:`.select_best_paths`.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: Python code containing all parsers for `paths`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;#! /usr/bin/env python</span>
+<span class="s"># -*- coding: utf-8 -*-</span>
+<span class="s">#</span>
+<span class="s"># Interpreter version: python 2.7</span>
+<span class="s">#</span>
+<span class="s"># HTML parser generated by Autoparser</span>
+<span class="s"># (https://github.com/edeposit/edeposit.amqp.harvester)</span>
+<span class="s">#</span>
+<span class="s">import os</span>
+<span class="s">import os.path</span>
+
+<span class="s">import httpkie</span>
+<span class="s">import dhtmlparser</span>
+
+
+<span class="s"># Utilities</span>
+<span class="s">&quot;&quot;&quot;</span>
+    <span class="c"># add source of neighbour picking functions from utils.py</span>
+    <span class="n">output</span> <span class="o">+=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getsource</span><span class="p">(</span><span class="n">conf_reader</span><span class="o">.</span><span class="n">_get_source</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;</span><span class="se">\n\n</span><span class="s">&quot;</span>
+    <span class="n">output</span> <span class="o">+=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getsource</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">_get_encoding</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;</span><span class="se">\n\n</span><span class="s">&quot;</span>
+    <span class="n">output</span> <span class="o">+=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getsource</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">handle_encodnig</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;</span><span class="se">\n\n</span><span class="s">&quot;</span>
+    <span class="n">output</span> <span class="o">+=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getsource</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">is_equal_tag</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;</span><span class="se">\n\n</span><span class="s">&quot;</span>
+    <span class="n">output</span> <span class="o">+=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getsource</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">has_neigh</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;</span><span class="se">\n\n</span><span class="s">&quot;</span>
+    <span class="n">output</span> <span class="o">+=</span> <span class="s">&quot;# Generated parsers</span><span class="se">\n</span><span class="s">&quot;</span>
+
+    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">paths</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">path</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c"># pick path with highest priority</span>
+
+        <span class="n">required</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s">&quot;vars&quot;</span><span class="p">][</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;required&quot;</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
+        <span class="n">notfoundmsg</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s">&quot;vars&quot;</span><span class="p">][</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;notfoundmsg&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">)</span>
+
+        <span class="n">output</span> <span class="o">+=</span> <span class="n">_generate_parser</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">required</span><span class="p">,</span> <span class="n">notfoundmsg</span><span class="p">)</span>
+
+    <span class="n">output</span> <span class="o">+=</span> <span class="s">&quot;# Unittest</span><span class="se">\n</span><span class="s">&quot;</span>
+    <span class="n">output</span> <span class="o">+=</span> <span class="n">_unittest_template</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+
+    <span class="n">output</span> <span class="o">+=</span> <span class="s">&quot;# Run tests of the parser</span><span class="se">\n</span><span class="s">&quot;</span>
+    <span class="n">output</span> <span class="o">+=</span> <span class="s">&quot;if __name__ == &#39;__main__&#39;:</span><span class="se">\n</span><span class="s">&quot;</span>
+    <span class="n">output</span> <span class="o">+=</span> <span class="n">IND</span> <span class="o">+</span> <span class="s">&quot;test_parsers()&quot;</span>
+
+    <span class="k">return</span> <span class="n">output</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">edeposit.amqp.harvester 1.0.0 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../harvester.html" >harvester</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014 E-deposit team.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

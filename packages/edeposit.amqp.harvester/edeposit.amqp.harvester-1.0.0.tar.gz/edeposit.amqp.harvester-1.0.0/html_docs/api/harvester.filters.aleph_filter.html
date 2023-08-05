@@ -1,0 +1,195 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Aleph filter &mdash; edeposit.amqp.harvester 1.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="edeposit.amqp.harvester 1.0.0 documentation" href="../index.html" />
+    <link rel="next" title="Duplication filter" href="harvester.filters.dup_filter.html" />
+    <link rel="prev" title="harvester.scrappers.utils module" href="harvester.scrappers.utils.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="harvester.filters.dup_filter.html" title="Duplication filter"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="harvester.scrappers.utils.html" title="harvester.scrappers.utils module"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">edeposit.amqp.harvester 1.0.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-harvester.filters.aleph_filter">
+<span id="aleph-filter"></span><h1>Aleph filter<a class="headerlink" href="#module-harvester.filters.aleph_filter" title="Permalink to this headline">¶</a></h1>
+<p>This module is used to skip Publications, which are already in Aleph.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The module is using fuzzy lookup, see <a class="reference internal" href="#harvester.filters.aleph_filter.name_to_vector" title="harvester.filters.aleph_filter.name_to_vector"><tt class="xref py py-func docutils literal"><span class="pre">name_to_vector()</span></tt></a> and
+<a class="reference internal" href="#harvester.filters.aleph_filter.compare_names" title="harvester.filters.aleph_filter.compare_names"><tt class="xref py py-func docutils literal"><span class="pre">compare_names()</span></tt></a>.</p>
+</div>
+<dl class="function">
+<dt id="harvester.filters.aleph_filter.name_to_vector">
+<tt class="descclassname">harvester.filters.aleph_filter.</tt><tt class="descname">name_to_vector</tt><big>(</big><em>name</em><big>)</big><a class="reference internal" href="../_modules/harvester/filters/aleph_filter.html#name_to_vector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#harvester.filters.aleph_filter.name_to_vector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert <cite>name</cite> to the ASCII vector.</p>
+<p class="rubric">Example</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">name_to_vector</span><span class="p">(</span><span class="s">&quot;ing. Franta Putšálek&quot;</span><span class="p">)</span>
+<span class="go">[&#39;putsalek&#39;, &#39;franta&#39;, &#39;ing&#39;]</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>name</strong> (<em>str</em>) &#8211;
+Name which will be vectorized.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><em>list</em> &#8211;
+Vector created from name.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="harvester.filters.aleph_filter.compare_names">
+<tt class="descclassname">harvester.filters.aleph_filter.</tt><tt class="descname">compare_names</tt><big>(</big><em>first</em>, <em>second</em><big>)</big><a class="reference internal" href="../_modules/harvester/filters/aleph_filter.html#compare_names"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#harvester.filters.aleph_filter.compare_names" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compare two names in complicated, but more error prone way.</p>
+<p>Algorithm is using vector comparison.</p>
+<p class="rubric">Example</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">compare_names</span><span class="p">(</span><span class="s">&quot;Franta Putšálek&quot;</span><span class="p">,</span> <span class="s">&quot;ing. Franta Putšálek&quot;</span><span class="p">)</span>
+<span class="go">100.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">compare_names</span><span class="p">(</span><span class="s">&quot;F. Putšálek&quot;</span><span class="p">,</span> <span class="s">&quot;ing. Franta Putšálek&quot;</span><span class="p">)</span>
+<span class="go">50.0</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>first</strong> (<em>str</em>) &#8211;
+Fisst name as string.</li>
+<li><strong>second</strong> (<em>str</em>) &#8211;
+Second name as string.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><em>float</em> &#8211;
+Percentage of the similarity.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="harvester.filters.aleph_filter.filter_publication">
+<tt class="descclassname">harvester.filters.aleph_filter.</tt><tt class="descname">filter_publication</tt><big>(</big><em>publication</em>, <em>cmp_authors=True</em><big>)</big><a class="reference internal" href="../_modules/harvester/filters/aleph_filter.html#filter_publication"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#harvester.filters.aleph_filter.filter_publication" title="Permalink to this definition">¶</a></dt>
+<dd><p>Filter publications based at data from Aleph.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>publication</strong> (<em>obj</em>) &#8211;
+<a class="reference internal" href="harvester.structures.html#harvester.structures.Publication" title="harvester.structures.Publication"><tt class="xref py py-class docutils literal"><span class="pre">Publication</span></tt></a> instance.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><em>obj/None</em> &#8211;
+None if the publication was found in Aleph or <cite>publication</cite>                   if not.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="harvester.scrappers.utils.html"
+                        title="previous chapter">harvester.scrappers.utils module</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="harvester.filters.dup_filter.html"
+                        title="next chapter">Duplication filter</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/api/harvester.filters.aleph_filter.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="harvester.filters.dup_filter.html" title="Duplication filter"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="harvester.scrappers.utils.html" title="harvester.scrappers.utils module"
+             >previous</a> |</li>
+        <li><a href="../index.html">edeposit.amqp.harvester 1.0.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014 E-deposit team.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

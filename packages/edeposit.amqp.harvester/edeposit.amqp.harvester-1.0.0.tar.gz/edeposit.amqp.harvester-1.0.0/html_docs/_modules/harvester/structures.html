@@ -1,0 +1,329 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>harvester.structures &mdash; edeposit.amqp.harvester 1.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="edeposit.amqp.harvester 1.0.0 documentation" href="../../index.html" />
+    <link rel="up" title="harvester" href="../harvester.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">edeposit.amqp.harvester 1.0.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../harvester.html" accesskey="U">harvester</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for harvester.structures</h1><div class="highlight"><pre>
+<span class="c">#! /usr/bin/env python</span>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#</span>
+<span class="c"># Interpreter version: python 2.7</span>
+<span class="c">#</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module contains all structures used in AMQP communication.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c"># Imports =====================================================================</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
+
+
+<span class="c"># Functions &amp; objects =========================================================</span>
+<div class="viewcode-block" id="Author"><a class="viewcode-back" href="../../api/harvester.structures.html#harvester.structures.Author">[docs]</a><span class="k">class</span> <span class="nc">Author</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Author name representation.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        name (str): String containing author&#39;s name.</span>
+<span class="sd">        URL (str): URL to author&#39;s profile.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">URL</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">URL</span> <span class="o">=</span> <span class="n">URL</span>
+
+<div class="viewcode-block" id="Author.to_namedtuple"><a class="viewcode-back" href="../../api/harvester.structures.html#harvester.structures.Author.to_namedtuple">[docs]</a>    <span class="k">def</span> <span class="nf">to_namedtuple</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert class to namedtuple.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            This method is neccessary for AMQP communication.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            namedtuple: Representation of the class as simple structure.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">keys</span> <span class="o">=</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="ow">not</span> <span class="n">x</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&quot;_&quot;</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">__dict__</span><span class="p">)</span>
+        <span class="n">opt_nt</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span> <span class="n">keys</span><span class="p">)</span>
+        <span class="n">filtered_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__dict__</span><span class="p">[</span><span class="n">x</span><span class="p">]),</span> <span class="n">keys</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">opt_nt</span><span class="p">(</span><span class="o">**</span><span class="n">filtered_dict</span><span class="p">)</span>
+</div>
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+
+</div>
+<div class="viewcode-block" id="Optionals"><a class="viewcode-back" href="../../api/harvester.structures.html#harvester.structures.Optionals">[docs]</a><span class="k">class</span> <span class="nc">Optionals</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Structure for holding optional informations about given publication.</span>
+
+<span class="sd">    Note:</span>
+<span class="sd">        This structure is usually used as container inside</span>
+<span class="sd">        :attr:`Publication.optionals`.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        sub_title (str, default None):  Subtitle of the book.</span>
+<span class="sd">        format (str, default None): Format of the book - A5 for example.</span>
+<span class="sd">        pub_date (str, default None): Date when the book was published.</span>
+<span class="sd">        pub_place (str, default None): Name of the city, where the book was</span>
+<span class="sd">                                       published.</span>
+<span class="sd">        ISBN (str, default None): ISBN of the book.</span>
+<span class="sd">        description (str, default None): Description of the book, which may</span>
+<span class="sd">                    contain HTML tags and elements!</span>
+<span class="sd">        pages (str, default None): Number of pages.</span>
+<span class="sd">        EAN (str, default None): EAN of the book.</span>
+<span class="sd">        language (str, default None): Language of the book.</span>
+<span class="sd">        edition (str, default None): Edition in which the book was published.</span>
+<span class="sd">        URL (str, default None): URL to the eshop with the book.</span>
+<span class="sd">        binding (str, default None): Binding of the book (`brožovaná` for</span>
+<span class="sd">                                     example).</span>
+<span class="sd">        is_ebook (bool, default False): If True, metadata belongs to ebook.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sub_title</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">format</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pub_date</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pub_place</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ISBN</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pages</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">EAN</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">language</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">edition</span> <span class="o">=</span> <span class="bp">None</span>  <span class="c"># vydání</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">URL</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">binding</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_ebook</span> <span class="o">=</span> <span class="bp">False</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_any_set</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_all_set</span> <span class="o">=</span> <span class="bp">True</span>
+
+    <span class="k">def</span> <span class="nf">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="k">if</span> <span class="s">&quot;_all_set&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__dict__</span> <span class="ow">and</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__dict__</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s">&quot;</span><span class="si">%s</span><span class="s"> has no attribute </span><span class="si">%s</span><span class="s">!&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&quot;_&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">val</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__dict__</span><span class="p">[</span><span class="s">&quot;_any_set&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__dict__</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
+
+<div class="viewcode-block" id="Optionals.to_namedtuple"><a class="viewcode-back" href="../../api/harvester.structures.html#harvester.structures.Optionals.to_namedtuple">[docs]</a>    <span class="k">def</span> <span class="nf">to_namedtuple</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert class to namedtuple.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            This method is neccessary for AMQP communication.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            namedtuple: Representation of the class as simple structure.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">keys</span> <span class="o">=</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="ow">not</span> <span class="n">x</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&quot;_&quot;</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">__dict__</span><span class="p">)</span>
+        <span class="n">opt_nt</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span> <span class="n">keys</span><span class="p">)</span>
+        <span class="n">filtered_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__dict__</span><span class="p">[</span><span class="n">x</span><span class="p">]),</span> <span class="n">keys</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">opt_nt</span><span class="p">(</span><span class="o">**</span><span class="n">filtered_dict</span><span class="p">)</span>
+
+</div></div>
+<div class="viewcode-block" id="Publication"><a class="viewcode-back" href="../../api/harvester.structures.html#harvester.structures.Publication">[docs]</a><span class="k">class</span> <span class="nc">Publication</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class contains only required minimal subset of informations about</span>
+<span class="sd">    `publication`.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        title (str): Title of the book.</span>
+<span class="sd">        price (str): Price as string with currency.</span>
+<span class="sd">        publisher (str): Publishers name as string.</span>
+<span class="sd">        authors (list): List of :class:`Author` objects. May be blank.</span>
+<span class="sd">        optionals (obj): Reference to :class:`Optionals` object with optional</span>
+<span class="sd">                         informations.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">authors</span><span class="p">,</span> <span class="n">price</span><span class="p">,</span> <span class="n">publisher</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="n">title</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">price</span> <span class="o">=</span> <span class="n">price</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">publisher</span> <span class="o">=</span> <span class="n">publisher</span>
+
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">authors</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">unicode</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">authors</span> <span class="o">=</span> <span class="p">[</span><span class="n">Author</span><span class="p">(</span><span class="n">authors</span><span class="p">)]</span>
+        <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">authors</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="nb">set</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">authors</span> <span class="o">=</span> <span class="p">[</span><span class="n">authors</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">authors</span> <span class="o">=</span> <span class="n">authors</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">optionals</span> <span class="o">=</span> <span class="n">Optionals</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_all_set</span> <span class="o">=</span> <span class="bp">True</span>
+
+<div class="viewcode-block" id="Publication.to_namedtuple"><a class="viewcode-back" href="../../api/harvester.structures.html#harvester.structures.Publication.to_namedtuple">[docs]</a>    <span class="k">def</span> <span class="nf">to_namedtuple</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert class and all subclasses (:class:`Author`, :class:`Optionals`)</span>
+<span class="sd">        to namedtuple.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            This method is neccessary for AMQP communication.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            namedtuple: Representation of the class as simple structure.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">keys</span> <span class="o">=</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="ow">not</span> <span class="n">x</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&quot;_&quot;</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">__dict__</span><span class="p">)</span>
+        <span class="n">opt_nt</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span> <span class="n">keys</span><span class="p">)</span>
+
+        <span class="n">filt_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__dict__</span><span class="p">[</span><span class="n">x</span><span class="p">]),</span> <span class="n">keys</span><span class="p">))</span>
+
+        <span class="c"># convert Author objects to namedtuple</span>
+        <span class="n">authors</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">author</span> <span class="ow">in</span> <span class="n">filt_dict</span><span class="p">[</span><span class="s">&quot;authors&quot;</span><span class="p">]:</span>
+            <span class="n">authors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">author</span><span class="o">.</span><span class="n">to_namedtuple</span><span class="p">())</span>
+
+        <span class="n">filt_dict</span><span class="p">[</span><span class="s">&quot;authors&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">authors</span>
+
+        <span class="c"># convert optionals to namedtuple if set, or to None if not</span>
+        <span class="k">if</span> <span class="n">filt_dict</span><span class="p">[</span><span class="s">&quot;optionals&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">_any_set</span><span class="p">:</span>
+            <span class="n">filt_dict</span><span class="p">[</span><span class="s">&quot;optionals&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">filt_dict</span><span class="p">[</span><span class="s">&quot;optionals&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_namedtuple</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">filt_dict</span><span class="p">[</span><span class="s">&quot;optionals&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="k">return</span> <span class="n">opt_nt</span><span class="p">(</span><span class="o">**</span><span class="n">filt_dict</span><span class="p">)</span>
+</div>
+    <span class="k">def</span> <span class="nf">_get_hash</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create hash of the class.</span>
+
+<span class="sd">        Hash should be unique for given ebook, so ISBN is main component of the</span>
+<span class="sd">        hash if provided.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: Hash.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">optionals</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">optionals</span><span class="o">.</span><span class="n">ISBN</span><span class="p">:</span>
+            <span class="n">isbn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">optionals</span><span class="o">.</span><span class="n">ISBN</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot;-&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">isbn</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">10</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s">&quot;97880&quot;</span> <span class="o">+</span> <span class="n">isbn</span>
+
+            <span class="k">return</span> <span class="n">isbn</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">optionals</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">optionals</span><span class="o">.</span><span class="n">EAN</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">optionals</span><span class="o">.</span><span class="n">EAN</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">title</span> <span class="o">+</span> <span class="s">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">authors</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="k">if</span> <span class="s">&quot;_all_set&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__dict__</span> <span class="ow">and</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__dict__</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s">&quot;</span><span class="si">%s</span><span class="s"> has no attribute </span><span class="si">%s</span><span class="s">!&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__dict__</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
+
+    <span class="k">def</span> <span class="nf">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">hash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_hash</span><span class="p">())</span>
+
+    <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">other</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">False</span>
+
+        <span class="n">keys</span> <span class="o">=</span> <span class="nb">filter</span><span class="p">(</span>
+            <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="ow">not</span> <span class="n">x</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&quot;_&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">x</span> <span class="o">!=</span> <span class="s">&quot;optionals&quot;</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__dict__</span>
+        <span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+                <span class="k">return</span> <span class="bp">False</span>
+
+        <span class="k">return</span> <span class="bp">True</span>
+
+</div>
+<div class="viewcode-block" id="Publications"><a class="viewcode-back" href="../../api/harvester.structures.html#harvester.structures.Publications">[docs]</a><span class="k">class</span> <span class="nc">Publications</span><span class="p">(</span><span class="n">namedtuple</span><span class="p">(</span><span class="s">&quot;Publication&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s">&quot;publications&quot;</span><span class="p">])):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    AMQP communication structured used to hold the transfered informations.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        publications (list): List of :class:`Publication` namedtuples.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">edeposit.amqp.harvester 1.0.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../harvester.html" >harvester</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014 E-deposit team.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

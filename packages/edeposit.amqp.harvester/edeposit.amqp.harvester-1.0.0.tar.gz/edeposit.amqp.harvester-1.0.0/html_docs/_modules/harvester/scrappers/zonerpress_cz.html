@@ -1,0 +1,362 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>harvester.scrappers.zonerpress_cz &mdash; edeposit.amqp.harvester 1.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="edeposit.amqp.harvester 1.0.0 documentation" href="../../../index.html" />
+    <link rel="up" title="harvester" href="../../harvester.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">edeposit.amqp.harvester 1.0.0 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../harvester.html" accesskey="U">harvester</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for harvester.scrappers.zonerpress_cz</h1><div class="highlight"><pre>
+<span class="c">#! /usr/bin/env python</span>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#</span>
+<span class="c"># Interpreter version: python 2.7</span>
+<span class="c">#</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Module for parsing informations from `zonerpress.cz`.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c"># Imports =====================================================================</span>
+<span class="kn">import</span> <span class="nn">httpkie</span>
+<span class="kn">import</span> <span class="nn">dhtmlparser</span>
+
+<span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">utils</span>
+<span class="kn">from</span> <span class="nn">..__init__</span> <span class="kn">import</span> <span class="n">Publication</span><span class="p">,</span> <span class="n">Author</span>
+
+<span class="kn">import</span> <span class="nn">zonerpress_api</span> <span class="kn">as</span> <span class="nn">zapi</span>
+
+
+<span class="c"># Variables ===================================================================</span>
+<span class="n">BASE_URL</span> <span class="o">=</span> <span class="s">&quot;http://www.zonerpress.cz&quot;</span>
+<span class="n">BOOKS_URL</span> <span class="o">=</span> <span class="n">BASE_URL</span> <span class="o">+</span> <span class="s">&quot;/knihy/?pageindex=&quot;</span>
+<span class="n">EBOOKS_URL</span> <span class="o">=</span> <span class="n">BASE_URL</span> <span class="o">+</span> <span class="s">&quot;/elektronicke-knihy/?pageindex=&quot;</span>
+<span class="n">OTHER_PUBLISHERS_URL</span> <span class="o">=</span> <span class="n">BASE_URL</span> <span class="o">+</span> <span class="s">&quot;/knihy-jinych-vydavatelu/?pageindex=&quot;</span>
+<span class="n">LINKS</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">BOOKS_URL</span><span class="p">,</span>
+    <span class="n">EBOOKS_URL</span><span class="p">,</span>
+    <span class="n">OTHER_PUBLISHERS_URL</span>
+<span class="p">]</span>
+
+<span class="n">DOWNER</span> <span class="o">=</span> <span class="n">httpkie</span><span class="o">.</span><span class="n">Downloader</span><span class="p">()</span>
+
+
+<span class="c"># Functions &amp; objects =========================================================</span>
+<div class="viewcode-block" id="_get_max_page"><a class="viewcode-back" href="../../../api/harvester.scrappers.zonerpress_cz.html#harvester.scrappers.zonerpress_cz._get_max_page">[docs]</a><span class="k">def</span> <span class="nf">_get_max_page</span><span class="p">(</span><span class="n">dom</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Try to guess how much pages are in book listing.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        dom (obj): HTMLElement container of the page with book list.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        int: Number of pages for given category.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">div</span> <span class="o">=</span> <span class="n">dom</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&quot;div&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s">&quot;class&quot;</span><span class="p">:</span> <span class="s">&quot;razeniKnihListovani&quot;</span><span class="p">})</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">div</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">1</span>
+
+    <span class="c"># isolate only page numbers from links</span>
+    <span class="n">links</span> <span class="o">=</span> <span class="n">div</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&quot;a&quot;</span><span class="p">)</span>
+    <span class="n">max_page</span> <span class="o">=</span> <span class="nb">filter</span><span class="p">(</span>
+        <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="s">&quot;href&quot;</span> <span class="ow">in</span> <span class="n">x</span><span class="o">.</span><span class="n">params</span> <span class="ow">and</span> <span class="s">&quot;pageindex=&quot;</span> <span class="ow">in</span> <span class="n">x</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s">&quot;href&quot;</span><span class="p">],</span>
+        <span class="n">links</span>
+    <span class="p">)</span>
+    <span class="n">max_page</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span>
+        <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s">&quot;href&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;pageindex=&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+        <span class="n">max_page</span>
+    <span class="p">)</span>
+    <span class="n">max_page</span> <span class="o">=</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">isdigit</span><span class="p">(),</span> <span class="n">max_page</span><span class="p">)</span>
+    <span class="n">max_page</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">max_page</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">max_page</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">1</span>
+
+    <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="n">max_page</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="_parse_book_links"><a class="viewcode-back" href="../../../api/harvester.scrappers.zonerpress_cz.html#harvester.scrappers.zonerpress_cz._parse_book_links">[docs]</a><span class="k">def</span> <span class="nf">_parse_book_links</span><span class="p">(</span><span class="n">dom</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parse links to the details about publications from page with book list.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        dom (obj): HTMLElement container of the page with book list.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        list: List of strings / absolute links to book details.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">links</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">picker</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;class&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&quot;boxProKnihy&quot;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="n">dom</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="n">fn</span><span class="o">=</span><span class="n">picker</span><span class="p">):</span>
+        <span class="n">book_ref</span> <span class="o">=</span> <span class="n">el</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&quot;a&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">book_ref</span> <span class="ow">or</span> <span class="s">&quot;href&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">book_ref</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">params</span><span class="p">:</span>
+            <span class="k">continue</span>
+
+        <span class="n">links</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">book_ref</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s">&quot;href&quot;</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">links</span>
+
+</div>
+<div class="viewcode-block" id="get_book_links"><a class="viewcode-back" href="../../../api/harvester.scrappers.zonerpress_cz.html#harvester.scrappers.zonerpress_cz.get_book_links">[docs]</a><span class="k">def</span> <span class="nf">get_book_links</span><span class="p">(</span><span class="n">links</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Go thru `links` to categories and return list to all publications in all</span>
+<span class="sd">    given categories.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        links (list): List of strings (absolute links to categories).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        list: List of strings / absolute links to book details.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">book_links</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">link</span> <span class="ow">in</span> <span class="n">links</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">DOWNER</span><span class="o">.</span><span class="n">download</span><span class="p">(</span><span class="n">link</span> <span class="o">+</span> <span class="s">&quot;1&quot;</span><span class="p">)</span>
+        <span class="n">dom</span> <span class="o">=</span> <span class="n">dhtmlparser</span><span class="o">.</span><span class="n">parseString</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="n">book_links</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">_parse_book_links</span><span class="p">(</span><span class="n">dom</span><span class="p">))</span>
+
+        <span class="n">max_page</span> <span class="o">=</span> <span class="n">_get_max_page</span><span class="p">(</span><span class="n">dom</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">max_page</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">continue</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_page</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">DOWNER</span><span class="o">.</span><span class="n">download</span><span class="p">(</span><span class="n">link</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">))</span>
+
+            <span class="n">book_links</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+                <span class="n">_parse_book_links</span><span class="p">(</span>
+                    <span class="n">dhtmlparser</span><span class="o">.</span><span class="n">parseString</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">book_links</span>
+
+</div>
+<div class="viewcode-block" id="_strip_content"><a class="viewcode-back" href="../../../api/harvester.scrappers.zonerpress_cz.html#harvester.scrappers.zonerpress_cz._strip_content">[docs]</a><span class="k">def</span> <span class="nf">_strip_content</span><span class="p">(</span><span class="n">el</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Call ``.getContent()`` method of the `el` and strip whitespaces. Return</span>
+<span class="sd">    ``None`` if content is ``-``.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        el (obj): HTMLElement instance.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str/None: Clean string.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">content</span> <span class="o">=</span> <span class="n">el</span><span class="o">.</span><span class="n">getContent</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">content</span> <span class="o">==</span> <span class="s">&quot;-&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">None</span>
+
+    <span class="k">return</span> <span class="n">content</span>
+
+</div>
+<div class="viewcode-block" id="_parse_authors"><a class="viewcode-back" href="../../../api/harvester.scrappers.zonerpress_cz.html#harvester.scrappers.zonerpress_cz._parse_authors">[docs]</a><span class="k">def</span> <span class="nf">_parse_authors</span><span class="p">(</span><span class="n">authors</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parse informations about authors of the book.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        dom (obj): HTMLElement containing slice of the page with details.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        list: List of :class:`.Author` objects. Blank if no author \</span>
+<span class="sd">              found.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">link</span> <span class="o">=</span> <span class="n">authors</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&quot;a&quot;</span><span class="p">)</span>
+    <span class="n">link</span> <span class="o">=</span> <span class="n">link</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;href&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">link</span> <span class="k">else</span> <span class="bp">None</span>
+
+    <span class="n">author_list</span> <span class="o">=</span> <span class="n">_strip_content</span><span class="p">(</span><span class="n">authors</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="s">&quot;(&quot;</span> <span class="ow">in</span> <span class="n">author_list</span><span class="p">:</span>
+        <span class="n">author_list</span> <span class="o">=</span> <span class="n">author_list</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;(&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">author_list</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+        <span class="k">return</span> <span class="p">[]</span>
+
+    <span class="k">return</span> <span class="nb">map</span><span class="p">(</span>
+        <span class="k">lambda</span> <span class="n">author</span><span class="p">:</span> <span class="n">Author</span><span class="p">(</span><span class="n">author</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="n">link</span><span class="p">),</span>
+        <span class="n">author_list</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;,&quot;</span><span class="p">)</span>
+    <span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="_process_book"><a class="viewcode-back" href="../../../api/harvester.scrappers.zonerpress_cz.html#harvester.scrappers.zonerpress_cz._process_book">[docs]</a><span class="k">def</span> <span class="nf">_process_book</span><span class="p">(</span><span class="n">link</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Download and parse available informations about book from the publishers</span>
+<span class="sd">    webpages.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        link (str): URL of the book at the publishers webpages.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        obj: :class:`.Publication` instance with book details.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c"># download and parse book info</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">DOWNER</span><span class="o">.</span><span class="n">download</span><span class="p">(</span><span class="n">link</span><span class="p">)</span>
+    <span class="n">dom</span> <span class="o">=</span> <span class="n">dhtmlparser</span><span class="o">.</span><span class="n">parseString</span><span class="p">(</span>
+        <span class="n">utils</span><span class="o">.</span><span class="n">handle_encodnig</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">dhtmlparser</span><span class="o">.</span><span class="n">makeDoubleLinked</span><span class="p">(</span><span class="n">dom</span><span class="p">)</span>
+
+    <span class="c"># some books are without price in expected elements, this will try to get</span>
+    <span class="c"># it from elsewhere</span>
+    <span class="n">price</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">price</span> <span class="o">=</span> <span class="n">_strip_content</span><span class="p">(</span><span class="n">zapi</span><span class="o">.</span><span class="n">get_price</span><span class="p">(</span><span class="n">dom</span><span class="p">))</span>
+    <span class="k">except</span> <span class="ne">UserWarning</span><span class="p">:</span>
+        <span class="n">price</span> <span class="o">=</span> <span class="n">dom</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&quot;p&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s">&quot;class&quot;</span><span class="p">:</span> <span class="s">&quot;vaseCena&quot;</span><span class="p">})</span>
+
+        <span class="k">if</span> <span class="n">price</span><span class="p">:</span>
+            <span class="n">price</span> <span class="o">=</span> <span class="n">price</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">getContent</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot;&amp;nbsp;&quot;</span><span class="p">,</span> <span class="s">&quot; &quot;</span><span class="p">)</span>
+            <span class="n">price</span> <span class="o">=</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">isdigit</span><span class="p">(),</span> <span class="n">price</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+
+            <span class="k">if</span> <span class="n">price</span><span class="p">:</span>
+                <span class="n">price</span> <span class="o">=</span> <span class="n">price</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s">&quot;kč&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">price</span> <span class="o">=</span> <span class="s">&quot;-1&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">price</span> <span class="o">=</span> <span class="s">&quot;-1&quot;</span>
+
+    <span class="c"># required informations</span>
+    <span class="n">pub</span> <span class="o">=</span> <span class="n">Publication</span><span class="p">(</span>
+        <span class="n">title</span><span class="o">=</span><span class="n">_strip_content</span><span class="p">(</span><span class="n">zapi</span><span class="o">.</span><span class="n">get_title</span><span class="p">(</span><span class="n">dom</span><span class="p">)),</span>
+        <span class="n">authors</span><span class="o">=</span><span class="n">_parse_authors</span><span class="p">(</span><span class="n">zapi</span><span class="o">.</span><span class="n">get_author</span><span class="p">(</span><span class="n">dom</span><span class="p">)),</span>
+        <span class="n">price</span><span class="o">=</span><span class="n">price</span><span class="p">,</span>
+        <span class="n">publisher</span><span class="o">=</span><span class="n">_strip_content</span><span class="p">(</span><span class="n">zapi</span><span class="o">.</span><span class="n">get_publisher</span><span class="p">(</span><span class="n">dom</span><span class="p">))</span>
+    <span class="p">)</span>
+
+    <span class="c"># optional informations</span>
+    <span class="n">pub</span><span class="o">.</span><span class="n">optionals</span><span class="o">.</span><span class="n">URL</span> <span class="o">=</span> <span class="n">link</span>
+    <span class="n">pub</span><span class="o">.</span><span class="n">optionals</span><span class="o">.</span><span class="n">pages</span> <span class="o">=</span> <span class="n">_strip_content</span><span class="p">(</span><span class="n">zapi</span><span class="o">.</span><span class="n">get_pages</span><span class="p">(</span><span class="n">dom</span><span class="p">))</span>
+    <span class="n">pub</span><span class="o">.</span><span class="n">optionals</span><span class="o">.</span><span class="n">pub_date</span> <span class="o">=</span> <span class="n">_strip_content</span><span class="p">(</span><span class="n">zapi</span><span class="o">.</span><span class="n">get_pub_date</span><span class="p">(</span><span class="n">dom</span><span class="p">))</span>
+    <span class="n">pub</span><span class="o">.</span><span class="n">optionals</span><span class="o">.</span><span class="n">ISBN</span> <span class="o">=</span> <span class="n">_strip_content</span><span class="p">(</span><span class="n">zapi</span><span class="o">.</span><span class="n">get_ISBN</span><span class="p">(</span><span class="n">dom</span><span class="p">))</span>
+    <span class="n">pub</span><span class="o">.</span><span class="n">optionals</span><span class="o">.</span><span class="n">binding</span> <span class="o">=</span> <span class="n">_strip_content</span><span class="p">(</span><span class="n">zapi</span><span class="o">.</span><span class="n">get_binding</span><span class="p">(</span><span class="n">dom</span><span class="p">))</span>
+
+    <span class="c"># post checks</span>
+    <span class="k">if</span> <span class="n">pub</span><span class="o">.</span><span class="n">title</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&quot;E-kniha:&quot;</span><span class="p">):</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="n">pub</span><span class="o">.</span><span class="n">title</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot;E-kniha:&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">optionals</span><span class="o">.</span><span class="n">is_ebook</span> <span class="o">=</span> <span class="bp">True</span>
+
+    <span class="k">if</span> <span class="n">pub</span><span class="o">.</span><span class="n">optionals</span><span class="o">.</span><span class="n">ISBN</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s">&quot; &quot;</span> <span class="ow">in</span> <span class="n">pub</span><span class="o">.</span><span class="n">optionals</span><span class="o">.</span><span class="n">ISBN</span><span class="p">:</span>
+            <span class="n">pub</span><span class="o">.</span><span class="n">optionals</span><span class="o">.</span><span class="n">ISBN</span> <span class="o">=</span> <span class="n">pub</span><span class="o">.</span><span class="n">optionals</span><span class="o">.</span><span class="n">ISBN</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot; &quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="s">&quot;(&quot;</span> <span class="ow">in</span> <span class="n">pub</span><span class="o">.</span><span class="n">optionals</span><span class="o">.</span><span class="n">ISBN</span><span class="p">:</span>
+            <span class="n">pub</span><span class="o">.</span><span class="n">optionals</span><span class="o">.</span><span class="n">ISBN</span> <span class="o">=</span> <span class="n">pub</span><span class="o">.</span><span class="n">optionals</span><span class="o">.</span><span class="n">ISBN</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;(&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">pub</span>
+
+</div>
+<div class="viewcode-block" id="get_publications"><a class="viewcode-back" href="../../../api/harvester.scrappers.zonerpress_cz.html#harvester.scrappers.zonerpress_cz.get_publications">[docs]</a><span class="k">def</span> <span class="nf">get_publications</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get list of publication offered by ben.cz.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        list: List of :class:`structures.Publication` objects.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">books</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">link</span> <span class="ow">in</span> <span class="n">get_book_links</span><span class="p">(</span><span class="n">LINKS</span><span class="p">):</span>
+        <span class="n">books</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">_process_book</span><span class="p">(</span><span class="n">link</span><span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">books</span>
+
+</div>
+<div class="viewcode-block" id="self_test"><a class="viewcode-back" href="../../../api/harvester.scrappers.zonerpress_cz.html#harvester.scrappers.zonerpress_cz.self_test">[docs]</a><span class="k">def</span> <span class="nf">self_test</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Perform basic selftest.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        True: When everything is ok.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        AssertionError: When there is some problem.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">zapi</span><span class="o">.</span><span class="n">test_parsers</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">self_test_idiom</span><span class="p">(</span><span class="n">get_publications</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">edeposit.amqp.harvester 1.0.0 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../harvester.html" >harvester</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014 E-deposit team.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

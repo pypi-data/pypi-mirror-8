@@ -1,0 +1,180 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Duplication filter &mdash; edeposit.amqp.harvester 1.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="edeposit.amqp.harvester 1.0.0 documentation" href="../index.html" />
+    <link rel="next" title="settings" href="harvester.settings.html" />
+    <link rel="prev" title="Aleph filter" href="harvester.filters.aleph_filter.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="harvester.settings.html" title="settings"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="harvester.filters.aleph_filter.html" title="Aleph filter"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">edeposit.amqp.harvester 1.0.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-harvester.filters.dup_filter">
+<span id="duplication-filter"></span><h1>Duplication filter<a class="headerlink" href="#module-harvester.filters.dup_filter" title="Permalink to this headline">¶</a></h1>
+<p>This submodule is used to skip already parsed data.</p>
+<p>Each <cite>publication</cite> parameter of the <a class="reference external" href="http://docs.python.org/2.7/library/functions.html#filter" title="(in Python v2.7)"><tt class="xref py py-func docutils literal"><span class="pre">filter()</span></tt></a> is cached and if it is
+called with same parameter again, None is retuned.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Cache is using simple JSON serialization, so some form of cache persistency
+is granted. For path to the serialized data, look at
+<a class="reference internal" href="harvester.settings.html#harvester.settings.DUP_FILTER_FILE" title="harvester.settings.DUP_FILTER_FILE"><tt class="xref py py-attr docutils literal"><span class="pre">DUP_FILTER_FILE</span></tt></a>.</p>
+</div>
+<dl class="function">
+<dt id="harvester.filters.dup_filter.save_cache">
+<tt class="descclassname">harvester.filters.dup_filter.</tt><tt class="descname">save_cache</tt><big>(</big><em>cache</em><big>)</big><a class="reference internal" href="../_modules/harvester/filters/dup_filter.html#save_cache"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#harvester.filters.dup_filter.save_cache" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save cahce to the disk.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>cache</strong> (<em>set</em>) &#8211;
+Set with cached data.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="harvester.filters.dup_filter.load_cache">
+<tt class="descclassname">harvester.filters.dup_filter.</tt><tt class="descname">load_cache</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/harvester/filters/dup_filter.html#load_cache"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#harvester.filters.dup_filter.load_cache" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load cache from the disk.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><em>set</em> &#8211;
+Deserialized data from disk.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="harvester.filters.dup_filter.filter_publication">
+<tt class="descclassname">harvester.filters.dup_filter.</tt><tt class="descname">filter_publication</tt><big>(</big><em>publication</em>, <em>cache=None</em><big>)</big><a class="reference internal" href="../_modules/harvester/filters/dup_filter.html#filter_publication"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#harvester.filters.dup_filter.filter_publication" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deduplication function, which compares <cite>publication</cite> with samples stored in
+<cite>cache</cite>. If the match NOT is found, <cite>publication</cite> is returned, else None.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>publication</strong> (<em>obj</em>) &#8211;
+<a class="reference internal" href="harvester.structures.html#harvester.structures.Publication" title="harvester.structures.Publication"><tt class="xref py py-class docutils literal"><span class="pre">Publication</span></tt></a> instance.</li>
+<li><strong>cache</strong> (<em>obj</em>) &#8211;
+Cache which is used for lookups.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><em>obj/None</em> &#8211;
+Depends whether the object is found in cache or not.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="harvester.filters.aleph_filter.html"
+                        title="previous chapter">Aleph filter</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="harvester.settings.html"
+                        title="next chapter">settings</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/api/harvester.filters.dup_filter.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="harvester.settings.html" title="settings"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="harvester.filters.aleph_filter.html" title="Aleph filter"
+             >previous</a> |</li>
+        <li><a href="../index.html">edeposit.amqp.harvester 1.0.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014 E-deposit team.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

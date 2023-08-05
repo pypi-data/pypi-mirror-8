@@ -1,0 +1,394 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>harvester.scrappers.cpress_cz &mdash; edeposit.amqp.harvester 1.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="edeposit.amqp.harvester 1.0.0 documentation" href="../../../index.html" />
+    <link rel="up" title="harvester" href="../../harvester.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">edeposit.amqp.harvester 1.0.0 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../harvester.html" accesskey="U">harvester</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for harvester.scrappers.cpress_cz</h1><div class="highlight"><pre>
+<span class="c">#! /usr/bin/env python</span>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#</span>
+<span class="c"># Interpreter version: python 2.7</span>
+<span class="c">#</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module is used to download metadata informations from `cpress.cz`.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c"># Imports =====================================================================</span>
+<span class="kn">import</span> <span class="nn">httpkie</span>
+<span class="kn">import</span> <span class="nn">dhtmlparser</span>
+
+<span class="kn">from</span> <span class="nn">utils</span> <span class="kn">import</span> <span class="n">handle_encodnig</span><span class="p">,</span> <span class="n">get_first_content</span><span class="p">,</span> <span class="n">normalize_url</span><span class="p">,</span> <span class="n">has_param</span>
+<span class="kn">from</span> <span class="nn">utils</span> <span class="kn">import</span> <span class="n">must_contain</span><span class="p">,</span> <span class="n">self_test_idiom</span>
+
+<span class="kn">from</span> <span class="nn">..structures</span> <span class="kn">import</span> <span class="n">Author</span>
+<span class="kn">from</span> <span class="nn">..structures</span> <span class="kn">import</span> <span class="n">Publication</span>
+
+
+<span class="c"># Variables ===================================================================</span>
+<span class="n">BASE_URL</span> <span class="o">=</span> <span class="s">&quot;http://www.cpress.cz/&quot;</span>
+<span class="n">URL</span> <span class="o">=</span> <span class="n">BASE_URL</span> <span class="o">+</span> <span class="s">&quot;/novinky/&quot;</span>
+<span class="n">DOWNER</span> <span class="o">=</span> <span class="n">httpkie</span><span class="o">.</span><span class="n">Downloader</span><span class="p">()</span>
+
+
+<span class="c"># Functions &amp; objects =========================================================</span>
+<div class="viewcode-block" id="_parse_alt_title"><a class="viewcode-back" href="../../../api/harvester.scrappers.cpress_cz.html#harvester.scrappers.cpress_cz._parse_alt_title">[docs]</a><span class="k">def</span> <span class="nf">_parse_alt_title</span><span class="p">(</span><span class="n">html_chunk</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parse title from alternative location if not found where it should be.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        html_chunk (obj): HTMLElement containing slice of the page with details.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: Book&#39;s title.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">title</span> <span class="o">=</span> <span class="n">html_chunk</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&quot;img&quot;</span><span class="p">,</span> <span class="n">fn</span><span class="o">=</span><span class="n">has_param</span><span class="p">(</span><span class="s">&quot;alt&quot;</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">title</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">UserWarning</span><span class="p">(</span><span class="s">&quot;Can&#39;t find alternative title source!&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">title</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s">&quot;alt&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+</div>
+<div class="viewcode-block" id="_parse_alt_url"><a class="viewcode-back" href="../../../api/harvester.scrappers.cpress_cz.html#harvester.scrappers.cpress_cz._parse_alt_url">[docs]</a><span class="k">def</span> <span class="nf">_parse_alt_url</span><span class="p">(</span><span class="n">html_chunk</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parse URL from alternative location if not found where it should be.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        html_chunk (obj): HTMLElement containing slice of the page with details.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: Book&#39;s URL.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">url_list</span> <span class="o">=</span> <span class="n">html_chunk</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&quot;a&quot;</span><span class="p">,</span> <span class="n">fn</span><span class="o">=</span><span class="n">has_param</span><span class="p">(</span><span class="s">&quot;href&quot;</span><span class="p">))</span>
+    <span class="n">url_list</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s">&quot;href&quot;</span><span class="p">],</span> <span class="n">url_list</span><span class="p">)</span>
+    <span class="n">url_list</span> <span class="o">=</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="ow">not</span> <span class="n">x</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&quot;autori/&quot;</span><span class="p">),</span> <span class="n">url_list</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">url_list</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">None</span>
+
+    <span class="k">return</span> <span class="n">normalize_url</span><span class="p">(</span><span class="n">BASE_URL</span><span class="p">,</span> <span class="n">url_list</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+</div>
+<div class="viewcode-block" id="_parse_title_url"><a class="viewcode-back" href="../../../api/harvester.scrappers.cpress_cz.html#harvester.scrappers.cpress_cz._parse_title_url">[docs]</a><span class="k">def</span> <span class="nf">_parse_title_url</span><span class="p">(</span><span class="n">html_chunk</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parse title/name of the book and URL of the book.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        html_chunk (obj): HTMLElement containing slice of the page with details.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        tuple: (title, url), both as strings.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">title_tags</span> <span class="o">=</span> <span class="n">html_chunk</span><span class="o">.</span><span class="n">match</span><span class="p">(</span>
+        <span class="p">[</span><span class="s">&quot;div&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s">&quot;class&quot;</span><span class="p">:</span> <span class="s">&quot;polozka_nazev&quot;</span><span class="p">}],</span>
+        <span class="p">[</span><span class="s">&quot;a&quot;</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="n">has_param</span><span class="p">(</span><span class="s">&quot;href&quot;</span><span class="p">)]</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">title_tags</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_parse_alt_title</span><span class="p">(</span><span class="n">html_chunk</span><span class="p">),</span> <span class="n">_parse_alt_url</span><span class="p">(</span><span class="n">html_chunk</span><span class="p">)</span>
+
+    <span class="n">title</span> <span class="o">=</span> <span class="n">title_tags</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="n">url</span> <span class="o">=</span> <span class="n">normalize_url</span><span class="p">(</span><span class="n">BASE_URL</span><span class="p">,</span> <span class="n">title</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s">&quot;href&quot;</span><span class="p">])</span>
+    <span class="n">title</span> <span class="o">=</span> <span class="n">title</span><span class="o">.</span><span class="n">getContent</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">title</span><span class="p">:</span>
+        <span class="n">title</span> <span class="o">=</span> <span class="n">_parse_alt_title</span><span class="p">(</span><span class="n">html_chunk</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">title</span><span class="p">,</span> <span class="n">url</span>
+
+</div>
+<div class="viewcode-block" id="_parse_authors"><a class="viewcode-back" href="../../../api/harvester.scrappers.cpress_cz.html#harvester.scrappers.cpress_cz._parse_authors">[docs]</a><span class="k">def</span> <span class="nf">_parse_authors</span><span class="p">(</span><span class="n">html_chunk</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parse authors of the book.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        html_chunk (obj): HTMLElement containing slice of the page with details.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        list: List of :class:`structures.Author` objects. Blank if no author \</span>
+<span class="sd">              found.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">authors_tags</span> <span class="o">=</span> <span class="n">html_chunk</span><span class="o">.</span><span class="n">match</span><span class="p">(</span>
+        <span class="p">[</span><span class="s">&quot;div&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s">&quot;class&quot;</span><span class="p">:</span> <span class="s">&quot;polozka_autor&quot;</span><span class="p">}],</span>
+        <span class="s">&quot;a&quot;</span>
+    <span class="p">)</span>
+
+    <span class="n">authors</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">author_tag</span> <span class="ow">in</span> <span class="n">authors_tags</span><span class="p">:</span>
+        <span class="c"># get name</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">author_tag</span><span class="o">.</span><span class="n">getContent</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+        <span class="c"># skip tags without name</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">name</span><span class="p">:</span>
+            <span class="k">continue</span>
+
+        <span class="c"># get url - if not found, set it to None</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="n">author_tag</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;href&quot;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">url</span><span class="p">:</span>
+            <span class="n">url</span> <span class="o">=</span> <span class="n">normalize_url</span><span class="p">(</span><span class="n">BASE_URL</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span>
+
+        <span class="n">authors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">Author</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">authors</span>
+
+</div>
+<div class="viewcode-block" id="_parse_price"><a class="viewcode-back" href="../../../api/harvester.scrappers.cpress_cz.html#harvester.scrappers.cpress_cz._parse_price">[docs]</a><span class="k">def</span> <span class="nf">_parse_price</span><span class="p">(</span><span class="n">html_chunk</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parse price of the book.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        html_chunk (obj): HTMLElement containing slice of the page with details.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str/None: Price as string with currency or None if not found.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">price</span> <span class="o">=</span> <span class="n">html_chunk</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&quot;span&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s">&quot;class&quot;</span><span class="p">:</span> <span class="s">&quot;cena&quot;</span><span class="p">})</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">price</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">UserWarning</span><span class="p">(</span><span class="s">&quot;Price not found!&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">get_first_content</span><span class="p">(</span><span class="n">price</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="_parse_from_table"><a class="viewcode-back" href="../../../api/harvester.scrappers.cpress_cz.html#harvester.scrappers.cpress_cz._parse_from_table">[docs]</a><span class="k">def</span> <span class="nf">_parse_from_table</span><span class="p">(</span><span class="n">html_chunk</span><span class="p">,</span> <span class="n">what</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Go thru table data in `html_chunk` and try to locate content of the</span>
+<span class="sd">    neighbor cell of the cell containing `what`.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: Table data or None.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ean_tag</span> <span class="o">=</span> <span class="n">html_chunk</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&quot;tr&quot;</span><span class="p">,</span> <span class="n">fn</span><span class="o">=</span><span class="n">must_contain</span><span class="p">(</span><span class="s">&quot;th&quot;</span><span class="p">,</span> <span class="n">what</span><span class="p">,</span> <span class="s">&quot;td&quot;</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">ean_tag</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">None</span>
+
+    <span class="k">return</span> <span class="n">get_first_content</span><span class="p">(</span><span class="n">ean_tag</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&quot;td&quot;</span><span class="p">))</span>
+
+</div>
+<div class="viewcode-block" id="_parse_ean"><a class="viewcode-back" href="../../../api/harvester.scrappers.cpress_cz.html#harvester.scrappers.cpress_cz._parse_ean">[docs]</a><span class="k">def</span> <span class="nf">_parse_ean</span><span class="p">(</span><span class="n">html_chunk</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parse EAN.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        html_chunk (obj): HTMLElement containing slice of the page with details.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str/None: EAN as string or None if not found.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">_parse_from_table</span><span class="p">(</span><span class="n">html_chunk</span><span class="p">,</span> <span class="s">&quot;EAN:&quot;</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="_parse_date"><a class="viewcode-back" href="../../../api/harvester.scrappers.cpress_cz.html#harvester.scrappers.cpress_cz._parse_date">[docs]</a><span class="k">def</span> <span class="nf">_parse_date</span><span class="p">(</span><span class="n">html_chunk</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parse date.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        html_chunk (obj): HTMLElement containing slice of the page with details.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str/None: date as string or None if not found.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">_parse_from_table</span><span class="p">(</span><span class="n">html_chunk</span><span class="p">,</span> <span class="s">&quot;Datum vydání:&quot;</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="_parse_format"><a class="viewcode-back" href="../../../api/harvester.scrappers.cpress_cz.html#harvester.scrappers.cpress_cz._parse_format">[docs]</a><span class="k">def</span> <span class="nf">_parse_format</span><span class="p">(</span><span class="n">html_chunk</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parse format.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        html_chunk (obj): HTMLElement containing slice of the page with details.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str/None: Format as string or None if not found.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">_parse_from_table</span><span class="p">(</span><span class="n">html_chunk</span><span class="p">,</span> <span class="s">&quot;Formát:&quot;</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="_parse_description"><a class="viewcode-back" href="../../../api/harvester.scrappers.cpress_cz.html#harvester.scrappers.cpress_cz._parse_description">[docs]</a><span class="k">def</span> <span class="nf">_parse_description</span><span class="p">(</span><span class="n">html_chunk</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parse description of the book.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        html_chunk (obj): HTMLElement containing slice of the page with details.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str/None: Description as string or None if not found.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">description_tag</span> <span class="o">=</span> <span class="n">html_chunk</span><span class="o">.</span><span class="n">match</span><span class="p">(</span>
+        <span class="p">[</span><span class="s">&quot;div&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s">&quot;class&quot;</span><span class="p">:</span> <span class="s">&quot;kniha_detail_text&quot;</span><span class="p">}],</span>
+        <span class="s">&quot;p&quot;</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">description_tag</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">None</span>
+
+    <span class="n">description</span> <span class="o">=</span> <span class="n">get_first_content</span><span class="p">(</span><span class="n">description_tag</span><span class="p">)</span>
+    <span class="n">description</span> <span class="o">=</span> <span class="n">description</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot;&lt;br /&gt;&quot;</span><span class="p">,</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)</span>
+    <span class="n">description</span> <span class="o">=</span> <span class="n">description</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot;&lt;br/&gt;&quot;</span><span class="p">,</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">dhtmlparser</span><span class="o">.</span><span class="n">removeTags</span><span class="p">(</span><span class="n">description</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+</div>
+<div class="viewcode-block" id="_process_book"><a class="viewcode-back" href="../../../api/harvester.scrappers.cpress_cz.html#harvester.scrappers.cpress_cz._process_book">[docs]</a><span class="k">def</span> <span class="nf">_process_book</span><span class="p">(</span><span class="n">html_chunk</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parse available informations about book from the book details page.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        html_chunk (obj): HTMLElement containing slice of the page with details.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        obj: :class:`structures.Publication` instance with book details.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">title</span><span class="p">,</span> <span class="n">book_url</span> <span class="o">=</span> <span class="n">_parse_title_url</span><span class="p">(</span><span class="n">html_chunk</span><span class="p">)</span>
+
+    <span class="c"># download page with details</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">DOWNER</span><span class="o">.</span><span class="n">download</span><span class="p">(</span><span class="n">book_url</span><span class="p">)</span>
+    <span class="n">dom</span> <span class="o">=</span> <span class="n">dhtmlparser</span><span class="o">.</span><span class="n">parseString</span><span class="p">(</span>
+        <span class="n">handle_encodnig</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">details</span> <span class="o">=</span> <span class="n">dom</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&quot;div&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s">&quot;id&quot;</span><span class="p">:</span> <span class="s">&quot;kniha_detail&quot;</span><span class="p">})[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="c"># required parameters</span>
+    <span class="n">pub</span> <span class="o">=</span> <span class="n">Publication</span><span class="p">(</span>
+        <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span>
+        <span class="n">authors</span><span class="o">=</span><span class="n">_parse_authors</span><span class="p">(</span><span class="n">html_chunk</span><span class="p">),</span>
+        <span class="n">price</span><span class="o">=</span><span class="n">_parse_price</span><span class="p">(</span><span class="n">details</span><span class="p">),</span>
+        <span class="n">publisher</span><span class="o">=</span><span class="s">&quot;CPress&quot;</span>
+    <span class="p">)</span>
+
+    <span class="c"># optional parameters</span>
+    <span class="n">pub</span><span class="o">.</span><span class="n">optionals</span><span class="o">.</span><span class="n">URL</span> <span class="o">=</span> <span class="n">book_url</span>
+    <span class="n">pub</span><span class="o">.</span><span class="n">optionals</span><span class="o">.</span><span class="n">EAN</span> <span class="o">=</span> <span class="n">_parse_ean</span><span class="p">(</span><span class="n">details</span><span class="p">)</span>
+    <span class="n">pub</span><span class="o">.</span><span class="n">optionals</span><span class="o">.</span><span class="n">format</span> <span class="o">=</span> <span class="n">_parse_format</span><span class="p">(</span><span class="n">details</span><span class="p">)</span>
+    <span class="n">pub</span><span class="o">.</span><span class="n">optionals</span><span class="o">.</span><span class="n">pub_date</span> <span class="o">=</span> <span class="n">_parse_date</span><span class="p">(</span><span class="n">details</span><span class="p">)</span>
+    <span class="n">pub</span><span class="o">.</span><span class="n">optionals</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="n">_parse_description</span><span class="p">(</span><span class="n">details</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">pub</span>
+
+</div>
+<div class="viewcode-block" id="get_publications"><a class="viewcode-back" href="../../../api/harvester.scrappers.cpress_cz.html#harvester.scrappers.cpress_cz.get_publications">[docs]</a><span class="k">def</span> <span class="nf">get_publications</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get list of publication offered by cpress.cz.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        list: List of :class:`.Publication` objects.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">DOWNER</span><span class="o">.</span><span class="n">download</span><span class="p">(</span><span class="n">URL</span><span class="p">)</span>
+    <span class="n">dom</span> <span class="o">=</span> <span class="n">dhtmlparser</span><span class="o">.</span><span class="n">parseString</span><span class="p">(</span>
+        <span class="n">handle_encodnig</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="n">book_list</span> <span class="o">=</span> <span class="n">dom</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&quot;div&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s">&quot;class&quot;</span><span class="p">:</span> <span class="s">&quot;polozka&quot;</span><span class="p">})</span>
+
+    <span class="n">books</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">book</span> <span class="ow">in</span> <span class="n">book_list</span><span class="p">:</span>
+        <span class="n">books</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">_process_book</span><span class="p">(</span><span class="n">book</span><span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">books</span>
+
+</div>
+<div class="viewcode-block" id="self_test"><a class="viewcode-back" href="../../../api/harvester.scrappers.cpress_cz.html#harvester.scrappers.cpress_cz.self_test">[docs]</a><span class="k">def</span> <span class="nf">self_test</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Perform basic selftest.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        True: When everything is ok.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        AssertionError: When there is some problem.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">self_test_idiom</span><span class="p">(</span><span class="n">get_publications</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">edeposit.amqp.harvester 1.0.0 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../harvester.html" >harvester</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014 E-deposit team.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

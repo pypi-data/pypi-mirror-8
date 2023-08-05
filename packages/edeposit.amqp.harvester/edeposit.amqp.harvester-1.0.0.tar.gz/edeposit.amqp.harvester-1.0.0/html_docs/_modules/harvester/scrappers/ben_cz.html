@@ -1,0 +1,484 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>harvester.scrappers.ben_cz &mdash; edeposit.amqp.harvester 1.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="edeposit.amqp.harvester 1.0.0 documentation" href="../../../index.html" />
+    <link rel="up" title="harvester" href="../../harvester.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">edeposit.amqp.harvester 1.0.0 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../harvester.html" accesskey="U">harvester</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for harvester.scrappers.ben_cz</h1><div class="highlight"><pre>
+<span class="c">#! /usr/bin/env python</span>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#</span>
+<span class="c"># Interpreter version: python 2.7</span>
+<span class="c">#</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module is used to download last 100 books published by `ben.cz`.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c"># Imports =====================================================================</span>
+<span class="kn">import</span> <span class="nn">httpkie</span>
+<span class="kn">import</span> <span class="nn">dhtmlparser</span>
+
+<span class="kn">from</span> <span class="nn">utils</span> <span class="kn">import</span> <span class="n">self_test_idiom</span>
+
+<span class="kn">from</span> <span class="nn">..structures</span> <span class="kn">import</span> <span class="n">Author</span>
+<span class="kn">from</span> <span class="nn">..structures</span> <span class="kn">import</span> <span class="n">Publication</span>
+
+
+<span class="c"># Variables ===================================================================</span>
+<span class="n">URL</span> <span class="o">=</span> <span class="s">&quot;http://shop.ben.cz/&quot;</span>  <span class="c">#: Base url of the eshop.</span>
+<span class="n">URL</span> <span class="o">+=</span> <span class="s">r&quot;Produkty.aspx?lang=cz&amp;nak=BEN+-+technick</span><span class="si">%u</span><span class="s">00e1+literatura&quot;</span>
+<span class="n">DOWNER</span> <span class="o">=</span> <span class="n">httpkie</span><span class="o">.</span><span class="n">Downloader</span><span class="p">()</span>
+<span class="n">DOWNER</span><span class="o">.</span><span class="n">cookies</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">&quot;shop.ben.cz&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s">&quot;pageSize&quot;</span><span class="p">:</span> <span class="s">&quot;100&quot;</span><span class="p">,</span>
+        <span class="s">&quot;viewProductSize&quot;</span><span class="p">:</span> <span class="s">&quot;tabulka&quot;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+
+<span class="c"># Functions &amp; objects =========================================================</span>
+<div class="viewcode-block" id="_get_last_td"><a class="viewcode-back" href="../../../api/harvester.scrappers.ben_cz.html#harvester.scrappers.ben_cz._get_last_td">[docs]</a><span class="k">def</span> <span class="nf">_get_last_td</span><span class="p">(</span><span class="n">el</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return last &lt;td&gt; found in `el` DOM.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        el (obj): :class:`dhtmlparser.HTMLElement` instance.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        obj: HTMLElement instance if found, or None if there are no &lt;td&gt; tags.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">el</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">None</span>
+
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">el</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">,</span> <span class="nb">set</span><span class="p">]:</span>
+        <span class="n">el</span> <span class="o">=</span> <span class="n">el</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="n">last</span> <span class="o">=</span> <span class="n">el</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&quot;td&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">last</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">None</span>
+
+    <span class="k">return</span> <span class="n">last</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+</div>
+<div class="viewcode-block" id="_get_td_or_none"><a class="viewcode-back" href="../../../api/harvester.scrappers.ben_cz.html#harvester.scrappers.ben_cz._get_td_or_none">[docs]</a><span class="k">def</span> <span class="nf">_get_td_or_none</span><span class="p">(</span><span class="n">details</span><span class="p">,</span> <span class="n">ID</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get &lt;tr&gt; tag with given `ID` and return content of the last &lt;td&gt; tag from</span>
+<span class="sd">    &lt;tr&gt; root.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        details (obj): :class:`dhtmlparser.HTMLElement` instance.</span>
+<span class="sd">        ID (str): id property of the &lt;tr&gt; tag.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: Content of the last &lt;td&gt; as strign.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">content</span> <span class="o">=</span> <span class="n">details</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&quot;tr&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s">&quot;id&quot;</span><span class="p">:</span> <span class="n">ID</span><span class="p">})</span>
+    <span class="n">content</span> <span class="o">=</span> <span class="n">_get_last_td</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
+
+    <span class="c"># if content is None, return it</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">content</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">None</span>
+
+    <span class="n">content</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">getContent</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+    <span class="c"># if content is blank string, return None</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">content</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">None</span>
+
+    <span class="k">return</span> <span class="n">content</span>
+
+
+<span class="c"># Parsers =====================================================================</span></div>
+<div class="viewcode-block" id="_parse_title"><a class="viewcode-back" href="../../../api/harvester.scrappers.ben_cz.html#harvester.scrappers.ben_cz._parse_title">[docs]</a><span class="k">def</span> <span class="nf">_parse_title</span><span class="p">(</span><span class="n">dom</span><span class="p">,</span> <span class="n">details</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parse title/name of the book.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        dom (obj): HTMLElement containing whole HTML page.</span>
+<span class="sd">        details (obj): HTMLElement containing slice of the page with details.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: Book&#39;s title.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        AssertionError: If title not found.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">title</span> <span class="o">=</span> <span class="n">details</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&quot;h1&quot;</span><span class="p">)</span>
+
+    <span class="c"># if the header is missing, try to parse title from the &lt;title&gt; tag</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">title</span><span class="p">:</span>
+        <span class="n">title</span> <span class="o">=</span> <span class="n">dom</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&quot;title&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">title</span><span class="p">,</span> <span class="s">&quot;Can&#39;t find &lt;title&gt; tag!&quot;</span>
+
+        <span class="k">return</span> <span class="n">title</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">getContent</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;|&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">title</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">getContent</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+</div>
+<div class="viewcode-block" id="_parse_authors"><a class="viewcode-back" href="../../../api/harvester.scrappers.ben_cz.html#harvester.scrappers.ben_cz._parse_authors">[docs]</a><span class="k">def</span> <span class="nf">_parse_authors</span><span class="p">(</span><span class="n">details</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parse authors of the book.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        details (obj): HTMLElement containing slice of the page with details.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        list: List of :class:`structures.Author` objects. Blank if no author \</span>
+<span class="sd">              found.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">authors</span> <span class="o">=</span> <span class="n">details</span><span class="o">.</span><span class="n">find</span><span class="p">(</span>
+        <span class="s">&quot;tr&quot;</span><span class="p">,</span>
+        <span class="p">{</span><span class="s">&quot;id&quot;</span><span class="p">:</span> <span class="s">&quot;ctl00_ContentPlaceHolder1_tblRowAutor&quot;</span><span class="p">}</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">authors</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[]</span>  <span class="c"># book with unspecified authors</span>
+
+    <span class="c"># parse authors from HTML and convert them to Author objects</span>
+    <span class="n">author_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">author</span> <span class="ow">in</span> <span class="n">authors</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&quot;a&quot;</span><span class="p">):</span>
+        <span class="n">author_obj</span> <span class="o">=</span> <span class="n">Author</span><span class="p">(</span><span class="n">author</span><span class="o">.</span><span class="n">getContent</span><span class="p">())</span>
+
+        <span class="k">if</span> <span class="s">&quot;href&quot;</span> <span class="ow">in</span> <span class="n">author</span><span class="o">.</span><span class="n">params</span><span class="p">:</span>
+            <span class="n">author_obj</span><span class="o">.</span><span class="n">URL</span> <span class="o">=</span> <span class="n">author</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s">&quot;href&quot;</span><span class="p">]</span>
+
+        <span class="n">author_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">author_obj</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">author_list</span>
+
+</div>
+<div class="viewcode-block" id="_parse_publisher"><a class="viewcode-back" href="../../../api/harvester.scrappers.ben_cz.html#harvester.scrappers.ben_cz._parse_publisher">[docs]</a><span class="k">def</span> <span class="nf">_parse_publisher</span><span class="p">(</span><span class="n">details</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parse publisher of the book.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        details (obj): HTMLElement containing slice of the page with details.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str/None: Publisher&#39;s name as string or None if not found.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">publisher</span> <span class="o">=</span> <span class="n">_get_td_or_none</span><span class="p">(</span>
+        <span class="n">details</span><span class="p">,</span>
+        <span class="s">&quot;ctl00_ContentPlaceHolder1_tblRowNakladatel&quot;</span>
+    <span class="p">)</span>
+
+    <span class="c"># publisher is not specified</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">publisher</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">None</span>
+
+    <span class="n">publisher</span> <span class="o">=</span> <span class="n">dhtmlparser</span><span class="o">.</span><span class="n">removeTags</span><span class="p">(</span><span class="n">publisher</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+    <span class="c"># return None instead of blank string</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">publisher</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">None</span>
+
+    <span class="k">return</span> <span class="n">publisher</span>
+
+</div>
+<div class="viewcode-block" id="_parse_price"><a class="viewcode-back" href="../../../api/harvester.scrappers.ben_cz.html#harvester.scrappers.ben_cz._parse_price">[docs]</a><span class="k">def</span> <span class="nf">_parse_price</span><span class="p">(</span><span class="n">details</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parse price of the book.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        details (obj): HTMLElement containing slice of the page with details.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str/None: Price as string with currency or None if not found.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">price</span> <span class="o">=</span> <span class="n">_get_td_or_none</span><span class="p">(</span>
+        <span class="n">details</span><span class="p">,</span>
+        <span class="s">&quot;ctl00_ContentPlaceHolder1_tblRowBeznaCena&quot;</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">price</span>
+
+</div>
+<div class="viewcode-block" id="_parse_pages_binding"><a class="viewcode-back" href="../../../api/harvester.scrappers.ben_cz.html#harvester.scrappers.ben_cz._parse_pages_binding">[docs]</a><span class="k">def</span> <span class="nf">_parse_pages_binding</span><span class="p">(</span><span class="n">details</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parse number of pages and binding of the book.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        details (obj): HTMLElement containing slice of the page with details.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (pages, binding): Tuple with two string or two None.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">pages</span> <span class="o">=</span> <span class="n">_get_td_or_none</span><span class="p">(</span>
+        <span class="n">details</span><span class="p">,</span>
+        <span class="s">&quot;ctl00_ContentPlaceHolder1_tblRowRozsahVazba&quot;</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">pages</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span>
+
+    <span class="n">binding</span> <span class="o">=</span> <span class="bp">None</span>  <span class="c"># binding info and number of pages is stored in same string</span>
+    <span class="k">if</span> <span class="s">&quot;/&quot;</span> <span class="ow">in</span> <span class="n">pages</span><span class="p">:</span>
+        <span class="n">binding</span> <span class="o">=</span> <span class="n">pages</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;/&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="n">pages</span> <span class="o">=</span> <span class="n">pages</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;/&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">pages</span><span class="p">:</span>
+        <span class="n">pages</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="k">return</span> <span class="n">pages</span><span class="p">,</span> <span class="n">binding</span>
+
+</div>
+<div class="viewcode-block" id="_parse_ISBN_EAN"><a class="viewcode-back" href="../../../api/harvester.scrappers.ben_cz.html#harvester.scrappers.ben_cz._parse_ISBN_EAN">[docs]</a><span class="k">def</span> <span class="nf">_parse_ISBN_EAN</span><span class="p">(</span><span class="n">details</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parse ISBN and EAN.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        details (obj): HTMLElement containing slice of the page with details.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (ISBN, EAN): Tuple with two string or two None.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">isbn_ean</span> <span class="o">=</span> <span class="n">_get_td_or_none</span><span class="p">(</span>
+        <span class="n">details</span><span class="p">,</span>
+        <span class="s">&quot;ctl00_ContentPlaceHolder1_tblRowIsbnEan&quot;</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">isbn_ean</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span>
+
+    <span class="n">ean</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">isbn</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="k">if</span> <span class="s">&quot;/&quot;</span> <span class="ow">in</span> <span class="n">isbn_ean</span><span class="p">:</span>  <span class="c"># ISBN and EAN are stored in same string</span>
+        <span class="n">isbn</span><span class="p">,</span> <span class="n">ean</span> <span class="o">=</span> <span class="n">isbn_ean</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;/&quot;</span><span class="p">)</span>
+        <span class="n">isbn</span> <span class="o">=</span> <span class="n">isbn</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="n">ean</span> <span class="o">=</span> <span class="n">ean</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">isbn</span> <span class="o">=</span> <span class="n">isbn_ean</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">isbn</span><span class="p">:</span>
+        <span class="n">isbn</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="k">return</span> <span class="n">isbn</span><span class="p">,</span> <span class="n">ean</span>
+
+</div>
+<div class="viewcode-block" id="_parse_edition"><a class="viewcode-back" href="../../../api/harvester.scrappers.ben_cz.html#harvester.scrappers.ben_cz._parse_edition">[docs]</a><span class="k">def</span> <span class="nf">_parse_edition</span><span class="p">(</span><span class="n">details</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parse edition (vydání) of the book.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        details (obj): HTMLElement containing slice of the page with details.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str/None: Edition as string with currency or None if not found.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">edition</span> <span class="o">=</span> <span class="n">_get_td_or_none</span><span class="p">(</span>
+        <span class="n">details</span><span class="p">,</span>
+        <span class="s">&quot;ctl00_ContentPlaceHolder1_tblRowVydani&quot;</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">edition</span>
+
+</div>
+<div class="viewcode-block" id="_parse_description"><a class="viewcode-back" href="../../../api/harvester.scrappers.ben_cz.html#harvester.scrappers.ben_cz._parse_description">[docs]</a><span class="k">def</span> <span class="nf">_parse_description</span><span class="p">(</span><span class="n">details</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parse description of the book.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        details (obj): HTMLElement containing slice of the page with details.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str/None: Details as string with currency or None if not found.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">description</span> <span class="o">=</span> <span class="n">details</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&quot;div&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s">&quot;class&quot;</span><span class="p">:</span> <span class="s">&quot;detailPopis&quot;</span><span class="p">})</span>
+
+    <span class="c"># description not found</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">description</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">None</span>
+
+    <span class="c"># remove links to ebook version</span>
+    <span class="n">ekniha</span> <span class="o">=</span> <span class="n">description</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&quot;div&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s">&quot;class&quot;</span><span class="p">:</span> <span class="s">&quot;ekniha&quot;</span><span class="p">})</span>
+    <span class="k">if</span> <span class="n">ekniha</span><span class="p">:</span>
+        <span class="n">ekniha</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">replaceWith</span><span class="p">(</span><span class="n">dhtmlparser</span><span class="o">.</span><span class="n">HTMLElement</span><span class="p">(</span><span class="s">&quot;&quot;</span><span class="p">))</span>
+
+    <span class="c"># remove links to other books from same cathegory</span>
+    <span class="n">detail</span> <span class="o">=</span> <span class="n">description</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&quot;p&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s">&quot;class&quot;</span><span class="p">:</span> <span class="s">&quot;detailKat&quot;</span><span class="p">})</span>
+    <span class="k">if</span> <span class="n">detail</span><span class="p">:</span>
+        <span class="n">detail</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">replaceWith</span><span class="p">(</span><span class="n">dhtmlparser</span><span class="o">.</span><span class="n">HTMLElement</span><span class="p">(</span><span class="s">&quot;&quot;</span><span class="p">))</span>
+
+    <span class="c"># remove all HTML elements</span>
+    <span class="n">description</span> <span class="o">=</span> <span class="n">dhtmlparser</span><span class="o">.</span><span class="n">removeTags</span><span class="p">(</span><span class="n">description</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+    <span class="c"># description is blank</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">description</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">None</span>
+
+    <span class="k">return</span> <span class="n">description</span>
+
+</div>
+<div class="viewcode-block" id="_process_book"><a class="viewcode-back" href="../../../api/harvester.scrappers.ben_cz.html#harvester.scrappers.ben_cz._process_book">[docs]</a><span class="k">def</span> <span class="nf">_process_book</span><span class="p">(</span><span class="n">book_url</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parse available informations about book from the book details page.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        book_url (str): Absolute URL of the book.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        obj: :class:`structures.Publication` instance with book details.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">DOWNER</span><span class="o">.</span><span class="n">download</span><span class="p">(</span><span class="n">book_url</span><span class="p">)</span>
+    <span class="n">dom</span> <span class="o">=</span> <span class="n">dhtmlparser</span><span class="o">.</span><span class="n">parseString</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+    <span class="n">details_tags</span> <span class="o">=</span> <span class="n">dom</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&quot;div&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s">&quot;id&quot;</span><span class="p">:</span> <span class="s">&quot;contentDetail&quot;</span><span class="p">})</span>
+
+    <span class="k">assert</span> <span class="n">details_tags</span><span class="p">,</span> <span class="s">&quot;Can&#39;t find details of the book.&quot;</span>
+
+    <span class="n">details</span> <span class="o">=</span> <span class="n">details_tags</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="c"># parse required informations</span>
+    <span class="n">title</span> <span class="o">=</span> <span class="n">_parse_title</span><span class="p">(</span><span class="n">dom</span><span class="p">,</span> <span class="n">details</span><span class="p">)</span>
+    <span class="n">authors</span> <span class="o">=</span> <span class="n">_parse_authors</span><span class="p">(</span><span class="n">details</span><span class="p">)</span>
+    <span class="n">publisher</span> <span class="o">=</span> <span class="n">_parse_publisher</span><span class="p">(</span><span class="n">details</span><span class="p">)</span>
+    <span class="n">price</span> <span class="o">=</span> <span class="n">_parse_price</span><span class="p">(</span><span class="n">details</span><span class="p">)</span>
+    <span class="n">pages</span><span class="p">,</span> <span class="n">binding</span> <span class="o">=</span> <span class="n">_parse_pages_binding</span><span class="p">(</span><span class="n">details</span><span class="p">)</span>
+
+    <span class="n">pub</span> <span class="o">=</span> <span class="n">Publication</span><span class="p">(</span>
+        <span class="n">title</span><span class="p">,</span>
+        <span class="n">authors</span><span class="p">,</span>
+        <span class="n">price</span><span class="p">,</span>
+        <span class="n">publisher</span>
+    <span class="p">)</span>
+
+    <span class="c"># parse optional informations</span>
+    <span class="n">pub</span><span class="o">.</span><span class="n">optionals</span><span class="o">.</span><span class="n">URL</span> <span class="o">=</span> <span class="n">book_url</span>
+    <span class="n">pub</span><span class="o">.</span><span class="n">optionals</span><span class="o">.</span><span class="n">binding</span> <span class="o">=</span> <span class="n">binding</span>
+
+    <span class="n">pub</span><span class="o">.</span><span class="n">optionals</span><span class="o">.</span><span class="n">pages</span> <span class="o">=</span> <span class="n">pages</span>
+    <span class="n">pub</span><span class="o">.</span><span class="n">optionals</span><span class="o">.</span><span class="n">ISBN</span><span class="p">,</span> <span class="n">pub</span><span class="o">.</span><span class="n">optionals</span><span class="o">.</span><span class="n">EAN</span> <span class="o">=</span> <span class="n">_parse_ISBN_EAN</span><span class="p">(</span><span class="n">details</span><span class="p">)</span>
+    <span class="n">pub</span><span class="o">.</span><span class="n">optionals</span><span class="o">.</span><span class="n">edition</span> <span class="o">=</span> <span class="n">_parse_edition</span><span class="p">(</span><span class="n">details</span><span class="p">)</span>
+    <span class="n">pub</span><span class="o">.</span><span class="n">optionals</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="n">_parse_description</span><span class="p">(</span><span class="n">details</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">pub</span>
+
+</div>
+<div class="viewcode-block" id="get_publications"><a class="viewcode-back" href="../../../api/harvester.scrappers.ben_cz.html#harvester.scrappers.ben_cz.get_publications">[docs]</a><span class="k">def</span> <span class="nf">get_publications</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get list of publication offered by ben.cz.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        list: List of :class:`structures.Publication` objects.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">DOWNER</span><span class="o">.</span><span class="n">download</span><span class="p">(</span><span class="n">URL</span><span class="p">)</span>
+    <span class="n">dom</span> <span class="o">=</span> <span class="n">dhtmlparser</span><span class="o">.</span><span class="n">parseString</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+    <span class="n">book_list</span> <span class="o">=</span> <span class="n">dom</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&quot;div&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s">&quot;class&quot;</span><span class="p">:</span> <span class="s">&quot;seznamKniha&quot;</span><span class="p">})</span>
+
+    <span class="k">assert</span> <span class="n">book_list</span><span class="p">,</span> <span class="s">&quot;Can&#39;t find &lt;div&gt; with class &#39;seznamKniha&#39;!&quot;</span>
+
+    <span class="n">books</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">html_chunk</span> <span class="ow">in</span> <span class="n">book_list</span><span class="p">:</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">html_chunk</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&quot;a&quot;</span><span class="p">)</span>
+
+        <span class="k">assert</span> <span class="n">a</span><span class="p">,</span> <span class="s">&quot;Can&#39;t find link to the details of the book!&quot;</span>
+
+        <span class="k">if</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&quot;span&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s">&quot;class&quot;</span><span class="p">:</span> <span class="s">&quot;ruzek pripravujeme&quot;</span><span class="p">}):</span>
+            <span class="k">continue</span>
+
+        <span class="n">books</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">_process_book</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s">&quot;href&quot;</span><span class="p">])</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">books</span>
+
+</div>
+<div class="viewcode-block" id="self_test"><a class="viewcode-back" href="../../../api/harvester.scrappers.ben_cz.html#harvester.scrappers.ben_cz.self_test">[docs]</a><span class="k">def</span> <span class="nf">self_test</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Perform basic selftest.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        True: When everything is ok.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        AssertionError: When there is some problem.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">self_test_idiom</span><span class="p">(</span><span class="n">get_publications</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">edeposit.amqp.harvester 1.0.0 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../harvester.html" >harvester</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014 E-deposit team.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

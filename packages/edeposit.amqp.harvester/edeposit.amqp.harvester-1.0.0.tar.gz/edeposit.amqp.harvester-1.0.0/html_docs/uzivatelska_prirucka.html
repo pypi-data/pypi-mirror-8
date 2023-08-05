@@ -1,0 +1,207 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>edeposit.amqp.harvester &mdash; edeposit.amqp.harvester 1.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="edeposit.amqp.harvester 1.0.0 documentation" href="index.html" />
+    <link rel="next" title="edeposit_autoparser.py" href="api/harvester.edeposit_autoparser.html" />
+    <link rel="prev" title="edeposit.amqp.harvester" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="api/harvester.edeposit_autoparser.html" title="edeposit_autoparser.py"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="edeposit.amqp.harvester"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">edeposit.amqp.harvester 1.0.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="edeposit-amqp-harvester">
+<h1>edeposit.amqp.harvester<a class="headerlink" href="#edeposit-amqp-harvester" title="Permalink to this headline">¶</a></h1>
+<p>Tento modul obsahuje funkce pro stahování metadat ze stránek několika vybraných vydavatelů. Momentálně jsou k dispozici programové komponenty pro webové prezentace nakladatelství <a class="reference external" href="http://ben.cz">Ben</a>, <a class="reference external" href="http://grada.cz">Grada</a>, <a class="reference external" href="http://cpress.cz">CPress</a> a <a class="reference external" href="http://zonerpress.cz">ZonerPress</a>.</p>
+<div class="section" id="instalace-modulu">
+<h2>Instalace modulu<a class="headerlink" href="#instalace-modulu" title="Permalink to this headline">¶</a></h2>
+<p>Modul je možné nainstalovat na prakticky každý linuxový systém pomocí programu <a class="reference external" href="https://pip.readthedocs.org/en/latest/">pip</a>, který je součástí standardní distribuce <cite>pythonu</cite>:</p>
+<div class="highlight-python"><div class="highlight"><pre>sudo pip install edeposit.amqp.harvester
+</pre></div>
+</div>
+</div>
+<div class="section" id="pouziti-modulu">
+<h2>Použití modulu<a class="headerlink" href="#pouziti-modulu" title="Permalink to this headline">¶</a></h2>
+<p>Podobně jako ostatní prvky projektu Edeposit je i tento modul součástí asynchronního distribuovaného systému, jehož jednotlivé komponenty spolu komunikují přes AMQP protokol. O to se stará modul <a class="reference external" href="http://edeposit-amqp.readthedocs.org/">edeposit.amqp</a>.</p>
+<p><cite>edeposit.amqp.harvester</cite> poskytuje pouze rozhraní umožňující <cite>sklízení</cite> metadat, nikoliv script, které získané informace předává dál. Ten je možné najít v modulu <a class="reference external" href="http://edeposit-amqp.readthedocs.org/">edeposit.amqp</a>, kde se nachází pod názvem <a class="reference external" href="http://edeposit-amqp.readthedocs.org/en/latest/api/harvester.html">edeposit_amqp_harvester.py</a>.</p>
+<p>Spuštěním tohoto scriptu dochází k &#8220;sklizení&#8221; dat ze všech podporovaných komponent a jejich odeslání na AMQP fronty tak, jak je to definováno v souboru <tt class="docutils literal"><span class="pre">settingy.py</span></tt> modulu <cite>edeposit.amqp</cite>. Data jsou odesílána ve formátu struktury <a class="reference internal" href="api/harvester.structures.html#harvester.structures.Publications" title="harvester.structures.Publications"><tt class="xref py py-class docutils literal"><span class="pre">Publications</span></tt></a>, která ve svém těle nese pole struktur <a class="reference internal" href="api/harvester.structures.html#harvester.structures.Publication" title="harvester.structures.Publication"><tt class="xref py py-class docutils literal"><span class="pre">Publication</span></tt></a> se sklizenými metadaty.</p>
+<div class="section" id="filtrace-dat">
+<h3>Filtrace dat<a class="headerlink" href="#filtrace-dat" title="Permalink to this headline">¶</a></h3>
+<p>Modul umožňuje a v základu používá filtraci již zpracovaných záznamů. V tomto režimu jsou všechny stažené výsledky porovnávány vůči lokální databázi (viz soubor definovaný v <a class="reference internal" href="api/harvester.settings.html#harvester.settings.DUP_FILTER_FILE" title="harvester.settings.DUP_FILTER_FILE"><tt class="xref py py-attr docutils literal"><span class="pre">harvester.settings.DUP_FILTER_FILE</span></tt></a>) a odesílány jsou pouze ty, které ještě nebyly zpracovány.</p>
+<p>Toto chování je možné změnit nastavením konfigurační proměnné <a class="reference internal" href="api/harvester.settings.html#harvester.settings.USE_DUP_FILTER" title="harvester.settings.USE_DUP_FILTER"><tt class="xref py py-attr docutils literal"><span class="pre">harvester.settings.USE_DUP_FILTER</span></tt></a> na hodnotu <tt class="docutils literal"><span class="pre">False</span></tt>.</p>
+<p>Dostupný je také filtr, který výsledky porovnává vůči Alephu a propouští pouze ty záznamy, které zatím Aleph neobsahuje.</p>
+<p>Tento filtr je v základě vypnut aby se předešlo zbytečné zátěži Alephu. Zapnout toto chování je možné nastavením konfigurační proměnné <a class="reference internal" href="api/harvester.settings.html#harvester.settings.USE_ALEPH_FILTER" title="harvester.settings.USE_ALEPH_FILTER"><tt class="xref py py-attr docutils literal"><span class="pre">harvester.settings.USE_ALEPH_FILTER</span></tt></a> na hodnotu <tt class="docutils literal"><span class="pre">True</span></tt>.</p>
+</div>
+</div>
+<div class="section" id="testovaci-script">
+<h2>Testovací script<a class="headerlink" href="#testovaci-script" title="Permalink to this headline">¶</a></h2>
+<p>Pro potřeby uživatelského testování byl v modulu <cite>edeposit.amqp.harvester</cite> vytvořen testovací script, který &#8220;sklidí&#8221; všechna data a zobrazí je na standardní výstup.</p>
+<p>Script je možné najít ve složce <tt class="docutils literal"><span class="pre">bin/</span></tt> pod názvem <tt class="docutils literal"><span class="pre">edeposit_harvester_test.py</span></tt>.</p>
+<p>Zde je ukázka nápovědy:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ ./edeposit_harvester_test.py -h
+usage: edeposit_harvester_test.py [-h] [-u] [-r]
+
+This script is used to read data from edeposit.amqp.harvester and print it to
+stdout.
+
+optional arguments:
+  -h, --help      show this help message and exit
+  -u, --unittest  Perform unittest.
+  -r, --harvest   Harvest all data and send them to harvester queue.
+</pre></div>
+</div>
+<p>Jak je vidět z nápovědy, script přijímá dva parametry <tt class="docutils literal"><span class="pre">--unittest</span></tt> pro spuštění
+testu jednotlivých komponent pro sklízení dat a <tt class="docutils literal"><span class="pre">--harvest</span></tt>, jenž stáhne všechna dostupná data a vypíše je na standardní výstup.</p>
+<p>Výsledek spuštění s parametrem <tt class="docutils literal"><span class="pre">--harvest</span></tt> je možné najít například zde:</p>
+<ul class="simple">
+<li><a class="reference download internal" href="_downloads/out.txt"><tt class="xref download docutils literal"><span class="pre">_static/out.txt</span></tt></a></li>
+</ul>
+<p>Stejná data jsou normálně odeslána přes AMQP.</p>
+</div>
+<div class="section" id="testovani-modulu">
+<h2>Testování modulu<a class="headerlink" href="#testovani-modulu" title="Permalink to this headline">¶</a></h2>
+<p>Všechny komponenty, které má smysl automaticky testovat jsou testovány scriptem <tt class="docutils literal"><span class="pre">run_tests.sh</span></tt>, který se nachází v kořenovém adresáři projektu.</p>
+<p>Tento script je postavený nad programem py.test, jenž je možné nainstalovat příkazem:</p>
+<div class="highlight-python"><div class="highlight"><pre>sudo pip install pytest
+</pre></div>
+</div>
+<p>Zde je ukázka běhu všech 116 testů:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ ./run_tests.sh -u
+============================= test session starts ==============================
+platform linux2 -- Python 2.7.5 -- py-1.4.20 -- pytest-2.5.2
+collected 116 items
+
+src/edeposit/amqp/harvester/tests/unittests/test_aleph_filter_unit.py ..
+src/edeposit/amqp/harvester/tests/unittests/test_autoparser.py .........
+src/edeposit/amqp/harvester/tests/unittests/test_dup_filter.py ...
+src/edeposit/amqp/harvester/tests/unittests/test_settings.py .
+src/edeposit/amqp/harvester/tests/unittests/test_structures.py ....
+src/edeposit/amqp/harvester/tests/unittests/autoparser/test_auto_utils.py ....
+src/edeposit/amqp/harvester/tests/unittests/autoparser/test_conf_reader.py ...
+src/edeposit/amqp/harvester/tests/unittests/autoparser/test_path_patterns.py ............
+src/edeposit/amqp/harvester/tests/unittests/autoparser/test_vectors.py ...
+src/edeposit/amqp/harvester/tests/unittests/scrappers/test_ben_cz.py .......................................
+src/edeposit/amqp/harvester/tests/unittests/scrappers/test_cpress_cz.py ..................
+src/edeposit/amqp/harvester/tests/unittests/scrappers/test_grada_cz.py ..........
+src/edeposit/amqp/harvester/tests/unittests/scrappers/test_utils.py ........
+
+========================== 116 passed in 2.65 seconds ==========================
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">edeposit.amqp.harvester</a><ul>
+<li><a class="reference internal" href="#instalace-modulu">Instalace modulu</a></li>
+<li><a class="reference internal" href="#pouziti-modulu">Použití modulu</a><ul>
+<li><a class="reference internal" href="#filtrace-dat">Filtrace dat</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#testovaci-script">Testovací script</a></li>
+<li><a class="reference internal" href="#testovani-modulu">Testování modulu</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">edeposit.amqp.harvester</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="api/harvester.edeposit_autoparser.html"
+                        title="next chapter">edeposit_autoparser.py</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/uzivatelska_prirucka.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="api/harvester.edeposit_autoparser.html" title="edeposit_autoparser.py"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="edeposit.amqp.harvester"
+             >previous</a> |</li>
+        <li><a href="index.html">edeposit.amqp.harvester 1.0.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014 E-deposit team.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

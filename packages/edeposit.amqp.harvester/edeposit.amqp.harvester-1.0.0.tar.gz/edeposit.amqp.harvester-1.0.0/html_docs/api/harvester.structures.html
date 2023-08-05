@@ -1,0 +1,339 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>structures &mdash; edeposit.amqp.harvester 1.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="edeposit.amqp.harvester 1.0.0 documentation" href="../index.html" />
+    <link rel="next" title="conf_reader" href="harvester.autoparser.conf_reader.html" />
+    <link rel="prev" title="settings" href="harvester.settings.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="harvester.autoparser.conf_reader.html" title="conf_reader"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="harvester.settings.html" title="settings"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">edeposit.amqp.harvester 1.0.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-harvester.structures">
+<span id="structures"></span><h1>structures<a class="headerlink" href="#module-harvester.structures" title="Permalink to this headline">¶</a></h1>
+<p>This module contains all structures used in AMQP communication.</p>
+<dl class="class">
+<dt id="harvester.structures.Author">
+<em class="property">class </em><tt class="descclassname">harvester.structures.</tt><tt class="descname">Author</tt><big>(</big><em>name</em>, <em>URL=None</em><big>)</big><a class="reference internal" href="../_modules/harvester/structures.html#Author"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#harvester.structures.Author" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>Author name representation.</p>
+<dl class="attribute">
+<dt id="harvester.structures.Author.name">
+<tt class="descname">name</tt><em class="property"> str</em><a class="headerlink" href="#harvester.structures.Author.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>String containing author&#8217;s name.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="harvester.structures.Author.URL">
+<tt class="descname">URL</tt><em class="property"> str</em><a class="headerlink" href="#harvester.structures.Author.URL" title="Permalink to this definition">¶</a></dt>
+<dd><p>URL to author&#8217;s profile.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="harvester.structures.Author.to_namedtuple">
+<tt class="descname">to_namedtuple</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/harvester/structures.html#Author.to_namedtuple"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#harvester.structures.Author.to_namedtuple" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert class to namedtuple.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This method is neccessary for AMQP communication.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><em>namedtuple</em> &#8211;
+Representation of the class as simple structure.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="harvester.structures.Optionals">
+<em class="property">class </em><tt class="descclassname">harvester.structures.</tt><tt class="descname">Optionals</tt><a class="reference internal" href="../_modules/harvester/structures.html#Optionals"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#harvester.structures.Optionals" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>Structure for holding optional informations about given publication.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This structure is usually used as container inside
+<a class="reference internal" href="#harvester.structures.Publication.optionals" title="harvester.structures.Publication.optionals"><tt class="xref py py-attr docutils literal"><span class="pre">Publication.optionals</span></tt></a>.</p>
+</div>
+<dl class="attribute">
+<dt id="harvester.structures.Optionals.sub_title">
+<tt class="descname">sub_title</tt><em class="property"> str, default None</em><a class="headerlink" href="#harvester.structures.Optionals.sub_title" title="Permalink to this definition">¶</a></dt>
+<dd><p>Subtitle of the book.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="harvester.structures.Optionals.format">
+<tt class="descname">format</tt><em class="property"> str, default None</em><a class="headerlink" href="#harvester.structures.Optionals.format" title="Permalink to this definition">¶</a></dt>
+<dd><p>Format of the book - A5 for example.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="harvester.structures.Optionals.pub_date">
+<tt class="descname">pub_date</tt><em class="property"> str, default None</em><a class="headerlink" href="#harvester.structures.Optionals.pub_date" title="Permalink to this definition">¶</a></dt>
+<dd><p>Date when the book was published.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="harvester.structures.Optionals.pub_place">
+<tt class="descname">pub_place</tt><em class="property"> str, default None</em><a class="headerlink" href="#harvester.structures.Optionals.pub_place" title="Permalink to this definition">¶</a></dt>
+<dd><p>Name of the city, where the book was
+published.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="harvester.structures.Optionals.ISBN">
+<tt class="descname">ISBN</tt><em class="property"> str, default None</em><a class="headerlink" href="#harvester.structures.Optionals.ISBN" title="Permalink to this definition">¶</a></dt>
+<dd><p>ISBN of the book.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="harvester.structures.Optionals.description">
+<tt class="descname">description</tt><em class="property"> str, default None</em><a class="headerlink" href="#harvester.structures.Optionals.description" title="Permalink to this definition">¶</a></dt>
+<dd><p>Description of the book, which may
+contain HTML tags and elements!</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="harvester.structures.Optionals.pages">
+<tt class="descname">pages</tt><em class="property"> str, default None</em><a class="headerlink" href="#harvester.structures.Optionals.pages" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of pages.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="harvester.structures.Optionals.EAN">
+<tt class="descname">EAN</tt><em class="property"> str, default None</em><a class="headerlink" href="#harvester.structures.Optionals.EAN" title="Permalink to this definition">¶</a></dt>
+<dd><p>EAN of the book.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="harvester.structures.Optionals.language">
+<tt class="descname">language</tt><em class="property"> str, default None</em><a class="headerlink" href="#harvester.structures.Optionals.language" title="Permalink to this definition">¶</a></dt>
+<dd><p>Language of the book.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="harvester.structures.Optionals.edition">
+<tt class="descname">edition</tt><em class="property"> str, default None</em><a class="headerlink" href="#harvester.structures.Optionals.edition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Edition in which the book was published.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="harvester.structures.Optionals.URL">
+<tt class="descname">URL</tt><em class="property"> str, default None</em><a class="headerlink" href="#harvester.structures.Optionals.URL" title="Permalink to this definition">¶</a></dt>
+<dd><p>URL to the eshop with the book.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="harvester.structures.Optionals.binding">
+<tt class="descname">binding</tt><em class="property"> str, default None</em><a class="headerlink" href="#harvester.structures.Optionals.binding" title="Permalink to this definition">¶</a></dt>
+<dd><p>Binding of the book (<cite>brožovaná</cite> for
+example).</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="harvester.structures.Optionals.is_ebook">
+<tt class="descname">is_ebook</tt><em class="property"> bool, default False</em><a class="headerlink" href="#harvester.structures.Optionals.is_ebook" title="Permalink to this definition">¶</a></dt>
+<dd><p>If True, metadata belongs to ebook.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="harvester.structures.Optionals.to_namedtuple">
+<tt class="descname">to_namedtuple</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/harvester/structures.html#Optionals.to_namedtuple"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#harvester.structures.Optionals.to_namedtuple" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert class to namedtuple.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This method is neccessary for AMQP communication.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><em>namedtuple</em> &#8211;
+Representation of the class as simple structure.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="harvester.structures.Publication">
+<em class="property">class </em><tt class="descclassname">harvester.structures.</tt><tt class="descname">Publication</tt><big>(</big><em>title</em>, <em>authors</em>, <em>price</em>, <em>publisher</em><big>)</big><a class="reference internal" href="../_modules/harvester/structures.html#Publication"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#harvester.structures.Publication" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>This class contains only required minimal subset of informations about
+<cite>publication</cite>.</p>
+<dl class="attribute">
+<dt id="harvester.structures.Publication.title">
+<tt class="descname">title</tt><em class="property"> str</em><a class="headerlink" href="#harvester.structures.Publication.title" title="Permalink to this definition">¶</a></dt>
+<dd><p>Title of the book.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="harvester.structures.Publication.price">
+<tt class="descname">price</tt><em class="property"> str</em><a class="headerlink" href="#harvester.structures.Publication.price" title="Permalink to this definition">¶</a></dt>
+<dd><p>Price as string with currency.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="harvester.structures.Publication.publisher">
+<tt class="descname">publisher</tt><em class="property"> str</em><a class="headerlink" href="#harvester.structures.Publication.publisher" title="Permalink to this definition">¶</a></dt>
+<dd><p>Publishers name as string.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="harvester.structures.Publication.authors">
+<tt class="descname">authors</tt><em class="property"> list</em><a class="headerlink" href="#harvester.structures.Publication.authors" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of <a class="reference internal" href="#harvester.structures.Author" title="harvester.structures.Author"><tt class="xref py py-class docutils literal"><span class="pre">Author</span></tt></a> objects. May be blank.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="harvester.structures.Publication.optionals">
+<tt class="descname">optionals</tt><em class="property"> obj</em><a class="headerlink" href="#harvester.structures.Publication.optionals" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reference to <a class="reference internal" href="#harvester.structures.Optionals" title="harvester.structures.Optionals"><tt class="xref py py-class docutils literal"><span class="pre">Optionals</span></tt></a> object with optional
+informations.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="harvester.structures.Publication.to_namedtuple">
+<tt class="descname">to_namedtuple</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/harvester/structures.html#Publication.to_namedtuple"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#harvester.structures.Publication.to_namedtuple" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert class and all subclasses (<a class="reference internal" href="#harvester.structures.Author" title="harvester.structures.Author"><tt class="xref py py-class docutils literal"><span class="pre">Author</span></tt></a>, <a class="reference internal" href="#harvester.structures.Optionals" title="harvester.structures.Optionals"><tt class="xref py py-class docutils literal"><span class="pre">Optionals</span></tt></a>)
+to namedtuple.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This method is neccessary for AMQP communication.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><em>namedtuple</em> &#8211;
+Representation of the class as simple structure.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="harvester.structures.Publications">
+<em class="property">class </em><tt class="descclassname">harvester.structures.</tt><tt class="descname">Publications</tt><a class="reference internal" href="../_modules/harvester/structures.html#Publications"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#harvester.structures.Publications" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#harvester.structures.Publication" title="harvester.structures.Publication"><tt class="xref py py-class docutils literal"><span class="pre">harvester.structures.Publication</span></tt></a></p>
+<p>AMQP communication structured used to hold the transfered informations.</p>
+<dl class="attribute">
+<dt id="harvester.structures.Publications.publications">
+<tt class="descname">publications</tt><em class="property"> list</em><a class="headerlink" href="#harvester.structures.Publications.publications" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of <a class="reference internal" href="#harvester.structures.Publication" title="harvester.structures.Publication"><tt class="xref py py-class docutils literal"><span class="pre">Publication</span></tt></a> namedtuples.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="harvester.settings.html"
+                        title="previous chapter">settings</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="harvester.autoparser.conf_reader.html"
+                        title="next chapter">conf_reader</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/api/harvester.structures.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="harvester.autoparser.conf_reader.html" title="conf_reader"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="harvester.settings.html" title="settings"
+             >previous</a> |</li>
+        <li><a href="../index.html">edeposit.amqp.harvester 1.0.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014 E-deposit team.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

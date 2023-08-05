@@ -1,0 +1,232 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>utils &mdash; edeposit.amqp.harvester 1.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="edeposit.amqp.harvester 1.0.0 documentation" href="../index.html" />
+    <link rel="next" title="generator" href="harvester.autoparser.generator.html" />
+    <link rel="prev" title="path_patterns" href="harvester.autoparser.path_patterns.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="harvester.autoparser.generator.html" title="generator"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="harvester.autoparser.path_patterns.html" title="path_patterns"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">edeposit.amqp.harvester 1.0.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-harvester.autoparser.utils">
+<span id="utils"></span><h1>utils<a class="headerlink" href="#module-harvester.autoparser.utils" title="Permalink to this headline">¶</a></h1>
+<p>This module contains number of functions, which are used at multiple places in
+autoparser.</p>
+<dl class="function">
+<dt id="harvester.autoparser.utils.handle_encodnig">
+<tt class="descclassname">harvester.autoparser.utils.</tt><tt class="descname">handle_encodnig</tt><big>(</big><em>html</em><big>)</big><a class="reference internal" href="../_modules/harvester/autoparser/utils.html#handle_encodnig"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#harvester.autoparser.utils.handle_encodnig" title="Permalink to this definition">¶</a></dt>
+<dd><p>Look for encoding in given <cite>html</cite>. Try to convert <cite>html</cite> to utf-8.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>html</strong> (<em>str</em>) &#8211;
+HTML code as string.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><em>str</em> &#8211;
+HTML code encoded in UTF.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="harvester.autoparser.utils.content_matchs">
+<tt class="descclassname">harvester.autoparser.utils.</tt><tt class="descname">content_matchs</tt><big>(</big><em>tag_content</em>, <em>content_transformer=None</em><big>)</big><a class="reference internal" href="../_modules/harvester/autoparser/utils.html#content_matchs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#harvester.autoparser.utils.content_matchs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate function, which checks whether the content of the tag matchs
+<cite>tag_content</cite>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>tag_content</strong> (<em>str</em>) &#8211;
+Content of the tag which will be matched thru whole
+DOM.</li>
+<li><strong>content_transformer</strong> (<em>fn, default None</em>) &#8211;
+Function used to transform all
+tags before matching.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><em>bool</em> &#8211;
+True for every matching tag.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This function can be used as parameter for <tt class="docutils literal"><span class="pre">.find()</span></tt> method in
+HTMLElement.</p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="harvester.autoparser.utils.is_equal_tag">
+<tt class="descclassname">harvester.autoparser.utils.</tt><tt class="descname">is_equal_tag</tt><big>(</big><em>element</em>, <em>tag_name</em>, <em>params</em>, <em>content</em><big>)</big><a class="reference internal" href="../_modules/harvester/autoparser/utils.html#is_equal_tag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#harvester.autoparser.utils.is_equal_tag" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check is <cite>element</cite> object match rest of the parameters.</p>
+<p>All checks are performed only if proper attribute is set in the HTMLElement.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>element</strong> (<em>obj</em>) &#8211;
+HTMLElement instance.</li>
+<li><strong>tag_name</strong> (<em>str</em>) &#8211;
+Tag name.</li>
+<li><strong>params</strong> (<em>dict</em>) &#8211;
+Parameters of the tag.</li>
+<li><strong>content</strong> (<em>str</em>) &#8211;
+Content of the tag.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><em>bool</em> &#8211;
+True if everyhing matchs, False otherwise.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="harvester.autoparser.utils.has_neigh">
+<tt class="descclassname">harvester.autoparser.utils.</tt><tt class="descname">has_neigh</tt><big>(</big><em>tag_name</em>, <em>params=None</em>, <em>content=None</em>, <em>left=True</em><big>)</big><a class="reference internal" href="../_modules/harvester/autoparser/utils.html#has_neigh"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#harvester.autoparser.utils.has_neigh" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function generates functions, which matches all tags with neighbours
+defined by parameters.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>tag_name</strong> (<em>str</em>) &#8211;
+Tag has to have neighbour with this tagname.</li>
+<li><strong>params</strong> (<em>dict</em>) &#8211;
+Tag has to have neighbour with this parameters.</li>
+<li><strong>params</strong> (<em>str</em>) &#8211;
+Tag has to have neighbour with this content.</li>
+<li><strong>left</strong> (<em>bool, default True</em>) &#8211;
+Tag has to have neigbour on the left, or
+right (set to <tt class="docutils literal"><span class="pre">False</span></tt>).</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><em>bool</em> &#8211;
+True for every matching tag.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This function can be used as parameter for <tt class="docutils literal"><span class="pre">.find()</span></tt> method in
+HTMLElement.</p>
+</div>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="harvester.autoparser.path_patterns.html"
+                        title="previous chapter">path_patterns</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="harvester.autoparser.generator.html"
+                        title="next chapter">generator</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/api/harvester.autoparser.utils.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="harvester.autoparser.generator.html" title="generator"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="harvester.autoparser.path_patterns.html" title="path_patterns"
+             >previous</a> |</li>
+        <li><a href="../index.html">edeposit.amqp.harvester 1.0.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014 E-deposit team.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

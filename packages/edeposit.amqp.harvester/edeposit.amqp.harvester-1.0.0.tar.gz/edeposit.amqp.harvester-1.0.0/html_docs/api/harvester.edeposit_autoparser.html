@@ -1,0 +1,585 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>edeposit_autoparser.py &mdash; edeposit.amqp.harvester 1.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="edeposit.amqp.harvester 1.0.0 documentation" href="../index.html" />
+    <link rel="next" title="edeposit_harvester_test.py" href="../scripts/edeposit_harvester_test.html" />
+    <link rel="prev" title="edeposit.amqp.harvester" href="../uzivatelska_prirucka.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../scripts/edeposit_harvester_test.html" title="edeposit_harvester_test.py"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../uzivatelska_prirucka.html" title="edeposit.amqp.harvester"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">edeposit.amqp.harvester 1.0.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="edeposit-autoparser-py">
+<h1>edeposit_autoparser.py<a class="headerlink" href="#edeposit-autoparser-py" title="Permalink to this headline">¶</a></h1>
+<p>This script is used to ease creation of new parsers.</p>
+<div class="section" id="configuration-file">
+<h2>Configuration file<a class="headerlink" href="#configuration-file" title="Permalink to this headline">¶</a></h2>
+<p>The script expects configuration file with patterns, specified as <tt class="docutils literal"><span class="pre">-c</span></tt>
+parameter. Pattern files uses YAML as serialization format.</p>
+<p>Inside the pattern file should be multiple pattern definitions. Here is example
+of the test pattern file:</p>
+<div class="highlight-python"><div class="highlight"><pre>html: simple_xml.xml
+first:
+    data: i wan&#39;t this
+    required: true
+    notfoundmsg: Can&#39;t find variable &#39;$name&#39;.
+second:
+    data: and this
+---
+html: simple_xml2.xml
+first:
+    data: something wanted
+    required: true
+    notfoundmsg: Can&#39;t find variable &#39;$name&#39;.
+second:
+    data: another wanted thing
+</pre></div>
+</div>
+<p>As you can see, this file contains two examples divided by <tt class="docutils literal"><span class="pre">---</span></tt>. Each section,
+of file have to contain <tt class="docutils literal"><span class="pre">html</span></tt> key pointing to either file or URL resource.</p>
+<p>After the <tt class="docutils literal"><span class="pre">html</span></tt> key, there may be unlimited number of <cite>variables</cite>. Each
+<cite>variable</cite> have to contain <tt class="docutils literal"><span class="pre">data</span></tt> key, which defines the match, which will be
+parsed from the file <tt class="docutils literal"><span class="pre">html</span></tt> key is pointing to.</p>
+<p>Optionally, you can also specify <tt class="docutils literal"><span class="pre">required</span></tt> and <tt class="docutils literal"><span class="pre">notfoundmsg</span></tt>. If the
+variable is required, it means that if generated parser will found data without
+this variable, UserWarning exception is raised and <tt class="docutils literal"><span class="pre">notfoundmsg</span></tt> is used as
+message. As you can see in example, you can use <tt class="docutils literal"><span class="pre">$name</span></tt> as variable which
+holds variable name (<cite>first</cite> for example).</p>
+<p>There is also special keyword <tt class="docutils literal"><span class="pre">tagname</span></tt>, which can be used to further specify
+correct element in case, that there is more than one element matching.</p>
+</div>
+<div class="section" id="how-it-works">
+<h2>How it works<a class="headerlink" href="#how-it-works" title="Permalink to this headline">¶</a></h2>
+<p>Autoparser first reads all examples and locates elements, which content matching
+pattern defined in <tt class="docutils literal"><span class="pre">data</span></tt> key. Spaces at the beginning and end of the pattern
+and element&#8217;s content are ignored.</p>
+<p>When the autoparser collects all matching elements, it generates <cite>DOM</cite> paths
+to each element.</p>
+<p>After that, elimination process begins. In this step, autoparser throws away
+all paths, that doesn&#8217;t work for all corresponding variables in all examples.</p>
+<p>When this is done, paths with best priority are selected and
+<a class="reference internal" href="harvester.autoparser.generator.html#harvester.autoparser.generator.generate_parsers" title="harvester.autoparser.generator.generate_parsers"><tt class="xref py py-func docutils literal"><span class="pre">generate_parsers()</span></tt></a> is called.</p>
+<p>Result from this call is string printed to the output. This string contains all
+necessary parsers for each variable and also unittest.</p>
+<p>You can then build the parser you need much more easilly, because now you have
+working <cite>pickers</cite> from <cite>DOM</cite> and all you need to do is to clean the data.</p>
+<p>Live example:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ ./edeposit_autoparser.py -c autoparser/autoparser_data/example_data.yaml
+#! /usr/bin/env python
+# -*- coding: utf-8 -*-
+#
+# Interpreter version: python 2.7
+#
+# HTML parser generated by Autoparser
+# (https://github.com/edeposit/edeposit.amqp.harvester)
+#
+import os
+import os.path
+
+import httpkie
+import dhtmlparser
+
+
+# Utilities
+def _get_source(link):
+    &quot;&quot;&quot;
+    Return source of the `link` whether it is filename or url.
+
+    Args:
+        link (str): Filename or URL.
+
+    Returns:
+        str: Content.
+
+    Raises:
+        UserWarning: When the `link` couldn&#39;t be resolved.
+    &quot;&quot;&quot;
+    if link.startswith(&quot;http://&quot;) or link.startswith(&quot;https://&quot;):
+        down = httpkie.Downloader()
+        return down.download(link)
+
+    if os.path.exists(link):
+        with open(link) as f:
+            return f.read()
+
+    raise UserWarning(&quot;html: &#39;%s&#39; is neither URL or data!&quot; % link)
+
+
+def _get_encoding(dom, default=&quot;utf-8&quot;):
+    &quot;&quot;&quot;
+    Try to look for meta tag in given `dom`.
+
+    Args:
+        dom (obj): pyDHTMLParser dom of HTML elements.
+        default (default &quot;utr-8&quot;): What to use if encoding is not found in
+                                   `dom`.
+
+    Returns:
+        str/default: Given encoding or `default` parameter if not found.
+    &quot;&quot;&quot;
+    encoding = dom.find(&quot;meta&quot;, {&quot;http-equiv&quot;: &quot;Content-Type&quot;})
+
+    if not encoding:
+        return default
+
+    encoding = encoding[0].params.get(&quot;content&quot;, None)
+
+    if not encoding:
+        return default
+
+    return encoding.lower().split(&quot;=&quot;)[-1]
+
+
+def handle_encodnig(html):
+    &quot;&quot;&quot;
+    Look for encoding in given `html`. Try to convert `html` to utf-8.
+
+    Args:
+        html (str): HTML code as string.
+
+    Returns:
+        str: HTML code encoded in UTF.
+    &quot;&quot;&quot;
+    encoding = _get_encoding(
+        dhtmlparser.parseString(
+            html.split(&quot;&lt;/head&gt;&quot;)[0]
+        )
+    )
+
+    if encoding == &quot;utf-8&quot;:
+        return html
+
+    return html.decode(encoding).encode(&quot;utf-8&quot;)
+
+
+def is_equal_tag(element, tag_name, params, content):
+    &quot;&quot;&quot;
+    Check is `element` object match rest of the parameters.
+
+    All checks are performed only if proper attribute is set in the HTMLElement.
+
+    Args:
+        element (obj): HTMLElement instance.
+        tag_name (str): Tag name.
+        params (dict): Parameters of the tag.
+        content (str): Content of the tag.
+
+    Returns:
+        bool: True if everyhing matchs, False otherwise.
+    &quot;&quot;&quot;
+    if tag_name and tag_name != element.getTagName():
+        return False
+
+    if params and not element.containsParamSubset(params):
+        return False
+
+    if content is not None and content.strip() != element.getContent().strip():
+        return False
+
+    return True
+
+
+def has_neigh(tag_name, params=None, content=None, left=True):
+    &quot;&quot;&quot;
+    This function generates functions, which matches all tags with neighbours
+    defined by parameters.
+
+    Args:
+        tag_name (str): Tag has to have neighbour with this tagname.
+        params (dict): Tag has to have neighbour with this parameters.
+        params (str): Tag has to have neighbour with this content.
+        left (bool, default True): Tag has to have neigbour on the left, or
+                                   right (set to ``False``).
+
+    Returns:
+        bool: True for every matching tag.
+
+    Note:
+        This function can be used as parameter for ``.find()`` method in
+        HTMLElement.
+    &quot;&quot;&quot;
+    def has_neigh_closure(element):
+        if not element.parent \
+           or not (element.isTag() and not element.isEndTag()):
+            return False
+
+        # filter only visible tags/neighbours
+        childs = element.parent.childs
+        childs = filter(
+            lambda x: (x.isTag() and not x.isEndTag()) \
+                      or x.getContent().strip() or x is element,
+            childs
+        )
+        if len(childs) &lt;= 1:
+            return False
+
+        ioe = childs.index(element)
+        if left and ioe &gt; 0:
+            return is_equal_tag(childs[ioe - 1], tag_name, params, content)
+
+        if not left and ioe + 1 &lt; len(childs):
+            return is_equal_tag(childs[ioe + 1], tag_name, params, content)
+
+        return False
+
+    return has_neigh_closure
+
+
+# Generated parsers
+def get_second(dom):
+    el = dom.find(
+        &#39;container&#39;,
+        {&#39;id&#39;: &#39;mycontent&#39;},
+        fn=has_neigh(None, None, &#39;something something&#39;, left=False)
+    )
+
+    # pick element from list
+    el = el[0] if el else None
+
+    return el
+
+
+def get_first(dom):
+    el = dom.wfind(&#39;root&#39;).childs
+
+    if not el:
+        raise UserWarning(
+            &quot;Can&#39;t find variable &#39;first&#39;.\n&quot; +
+            &#39;Tag name: root\n&#39; +
+            &#39;El:&#39; + str(el) + &#39;\n&#39; +
+            &#39;Dom:&#39; + str(dom)
+        )
+
+    el = el[-1]
+
+    el = el.wfind(&#39;xax&#39;).childs
+
+    if not el:
+        raise UserWarning(
+            &quot;Can&#39;t find variable &#39;first&#39;.\n&quot; +
+            &#39;Tag name: xax\n&#39; +
+            &#39;El:&#39; + str(el) + &#39;\n&#39; +
+            &#39;Dom:&#39; + str(dom)
+        )
+
+    el = el[-1]
+
+    el = el.wfind(&#39;container&#39;).childs
+
+    if not el:
+        raise UserWarning(
+            &quot;Can&#39;t find variable &#39;first&#39;.\n&quot; +
+            &#39;Tag name: container\n&#39; +
+            &#39;El:&#39; + str(el) + &#39;\n&#39; +
+            &#39;Dom:&#39; + str(dom)
+        )
+
+    el = el[-1]
+
+    return el
+
+
+# Unittest
+def test_parsers():
+    # Test parsers against autoparser/autoparser_data/simple_xml.xml
+    html = handle_encodnig(
+        _get_source(&#39;autoparser/autoparser_data/simple_xml.xml&#39;)
+    )
+    dom = dhtmlparser.parseString(html)
+    dhtmlparser.makeDoubleLinked(dom)
+
+    second = get_second(dom)
+    assert second.getContent().strip() == &#39;and this&#39;
+
+    first = get_first(dom)
+    assert first.getContent().strip() == &quot;i wan&#39;t this&quot;
+
+    # Test parsers against autoparser/autoparser_data/simple_xml2.xml
+    html = handle_encodnig(
+        _get_source(&#39;autoparser/autoparser_data/simple_xml2.xml&#39;)
+    )
+    dom = dhtmlparser.parseString(html)
+    dhtmlparser.makeDoubleLinked(dom)
+
+    second = get_second(dom)
+    assert second.getContent().strip() == &#39;another wanted thing&#39;
+
+    first = get_first(dom)
+    assert first.getContent().strip() == &#39;something wanted&#39;
+
+
+# Run tests of the parser
+if __name__ == &#39;__main__&#39;:
+    test_parsers()
+</pre></div>
+</div>
+</div>
+<div class="section" id="module-harvester.edeposit_autoparser">
+<span id="api"></span><h2>API<a class="headerlink" href="#module-harvester.edeposit_autoparser" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="harvester.edeposit_autoparser._create_dom">
+<tt class="descclassname">harvester.edeposit_autoparser.</tt><tt class="descname">_create_dom</tt><big>(</big><em>data</em><big>)</big><a class="reference internal" href="../_modules/harvester/edeposit_autoparser.html#_create_dom"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#harvester.edeposit_autoparser._create_dom" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates doublelinked DOM from <cite>data</cite>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>data</strong> (<em>str/HTMLElement</em>) &#8211;
+Either string or HTML element.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><em>obj</em> &#8211;
+HTMLElement containing double linked DOM.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="harvester.edeposit_autoparser._locate_element">
+<tt class="descclassname">harvester.edeposit_autoparser.</tt><tt class="descname">_locate_element</tt><big>(</big><em>dom</em>, <em>el_content</em>, <em>transformer=None</em><big>)</big><a class="reference internal" href="../_modules/harvester/edeposit_autoparser.html#_locate_element"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#harvester.edeposit_autoparser._locate_element" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find element containing <cite>el_content</cite> in <cite>dom</cite>. Use <cite>transformer</cite> function
+to content of all elements in <cite>dom</cite> in order to correctly transforming them
+to match them with <cite>el_content</cite>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>dom</strong> (<em>obj</em>) &#8211;
+HTMLElement tree.</li>
+<li><strong>el_content</strong> (<em>str</em>) &#8211;
+Content of element will be picked from <cite>dom</cite>.</li>
+<li><strong>transformer</strong> (<em>fn, default None</em>) &#8211;
+Transforming function.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p><cite>transformer</cite> parameter can be for example simple lambda:</p>
+<div class="last highlight-python"><div class="highlight"><pre><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><em>list</em> &#8211;
+Matching HTMLElements.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="harvester.edeposit_autoparser._match_elements">
+<tt class="descclassname">harvester.edeposit_autoparser.</tt><tt class="descname">_match_elements</tt><big>(</big><em>dom</em>, <em>matches</em><big>)</big><a class="reference internal" href="../_modules/harvester/edeposit_autoparser.html#_match_elements"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#harvester.edeposit_autoparser._match_elements" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find location of elements matching patterns specified in <cite>matches</cite>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>dom</strong> (<em>obj</em>) &#8211;
+HTMLElement DOM tree.</li>
+<li><strong>matches</strong> (<em>dict</em>) &#8211;
+Structure: <tt class="docutils literal"><span class="pre">{&quot;var&quot;:</span> <span class="pre">{&quot;data&quot;:</span> <span class="pre">&quot;match&quot;,</span> <span class="pre">..},</span> <span class="pre">..}</span></tt>.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><em>dict</em> &#8211;
+Structure: <tt class="docutils literal"><span class="pre">{&quot;var&quot;:</span> <span class="pre">{&quot;data&quot;:</span> <span class="pre">HTMLElement_obj,</span> <span class="pre">..},</span> <span class="pre">..}</span></tt></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="harvester.edeposit_autoparser._collect_paths">
+<tt class="descclassname">harvester.edeposit_autoparser.</tt><tt class="descname">_collect_paths</tt><big>(</big><em>element</em><big>)</big><a class="reference internal" href="../_modules/harvester/edeposit_autoparser.html#_collect_paths"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#harvester.edeposit_autoparser._collect_paths" title="Permalink to this definition">¶</a></dt>
+<dd><p>Collect all possible path which leads to <cite>element</cite>.</p>
+<p>Function returns standard path from root element to this, reverse path,
+which uses negative indexes for path, also some pattern matches, like
+&#8220;this is element, which has neighbour with id 7&#8221; and so on.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>element</strong> (<em>obj</em>) &#8211;
+HTMLElement instance.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><em>list</em> &#8211;
+List of <a class="reference internal" href="harvester.autoparser.path_patterns.html#harvester.autoparser.path_patterns.PathCall" title="harvester.autoparser.path_patterns.PathCall"><tt class="xref py py-class docutils literal"><span class="pre">PathCall</span></tt></a> and <a class="reference internal" href="harvester.autoparser.path_patterns.html#harvester.autoparser.path_patterns.Chained" title="harvester.autoparser.path_patterns.Chained"><tt class="xref py py-class docutils literal"><span class="pre">Chained</span></tt></a> objects.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="harvester.edeposit_autoparser._is_working_path">
+<tt class="descclassname">harvester.edeposit_autoparser.</tt><tt class="descname">_is_working_path</tt><big>(</big><em>dom</em>, <em>path</em>, <em>element</em><big>)</big><a class="reference internal" href="../_modules/harvester/edeposit_autoparser.html#_is_working_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#harvester.edeposit_autoparser._is_working_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check whether the path is working or not.</p>
+<p>Aply proper search function interpreting <cite>path</cite> to <cite>dom</cite> and check, if
+returned object is <cite>element</cite>. If so, return <tt class="docutils literal"><span class="pre">True</span></tt>, otherwise <tt class="docutils literal"><span class="pre">False</span></tt>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>dom</strong> (<em>obj</em>) &#8211;
+HTMLElement DOM.</li>
+<li><strong>path</strong> (<em>obj</em>) &#8211;
+<a class="reference internal" href="harvester.autoparser.path_patterns.html#harvester.autoparser.path_patterns.PathCall" title="harvester.autoparser.path_patterns.PathCall"><tt class="xref py py-class docutils literal"><span class="pre">PathCall</span></tt></a> Instance containing informations about
+path and which function it require to obtain element the
+path is pointing to.</li>
+<li><strong>element</strong> (<em>obj</em>) &#8211;
+HTMLElement instance used to decide whether <cite>path</cite>
+points to correct <cite>element</cite> or not.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><em>bool</em> &#8211;
+True if <cite>path</cite> correctly points to proper <cite>element</cite>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="harvester.edeposit_autoparser.select_best_paths">
+<tt class="descclassname">harvester.edeposit_autoparser.</tt><tt class="descname">select_best_paths</tt><big>(</big><em>examples</em><big>)</big><a class="reference internal" href="../_modules/harvester/edeposit_autoparser.html#select_best_paths"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#harvester.edeposit_autoparser.select_best_paths" title="Permalink to this definition">¶</a></dt>
+<dd><p>Process <cite>examples</cite>, select only paths that works for every example. Select
+best paths with highest priority.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>examples</strong> (<em>dict</em>) &#8211;
+Output from <a class="reference internal" href="harvester.autoparser.conf_reader.html#harvester.autoparser.conf_reader.read_config" title="harvester.autoparser.conf_reader.read_config"><tt class="xref py py-func docutils literal"><span class="pre">read_config()</span></tt></a>.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><em>list</em> &#8211;
+List of <a class="reference internal" href="harvester.autoparser.path_patterns.html#harvester.autoparser.path_patterns.PathCall" title="harvester.autoparser.path_patterns.PathCall"><tt class="xref py py-class docutils literal"><span class="pre">PathCall</span></tt></a> and <a class="reference internal" href="harvester.autoparser.path_patterns.html#harvester.autoparser.path_patterns.Chained" title="harvester.autoparser.path_patterns.Chained"><tt class="xref py py-class docutils literal"><span class="pre">Chained</span></tt></a> objects.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">edeposit_autoparser.py</a><ul>
+<li><a class="reference internal" href="#configuration-file">Configuration file</a></li>
+<li><a class="reference internal" href="#how-it-works">How it works</a></li>
+<li><a class="reference internal" href="#module-harvester.edeposit_autoparser">API</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../uzivatelska_prirucka.html"
+                        title="previous chapter">edeposit.amqp.harvester</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../scripts/edeposit_harvester_test.html"
+                        title="next chapter">edeposit_harvester_test.py</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/api/harvester.edeposit_autoparser.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../scripts/edeposit_harvester_test.html" title="edeposit_harvester_test.py"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../uzivatelska_prirucka.html" title="edeposit.amqp.harvester"
+             >previous</a> |</li>
+        <li><a href="../index.html">edeposit.amqp.harvester 1.0.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014 E-deposit team.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

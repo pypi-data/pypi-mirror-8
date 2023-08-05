@@ -1,0 +1,430 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>generator &mdash; edeposit.amqp.harvester 1.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="edeposit.amqp.harvester 1.0.0 documentation" href="../index.html" />
+    <link rel="prev" title="utils" href="harvester.autoparser.utils.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="harvester.autoparser.utils.html" title="utils"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">edeposit.amqp.harvester 1.0.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-harvester.autoparser.generator">
+<span id="generator"></span><h1>generator<a class="headerlink" href="#module-harvester.autoparser.generator" title="Permalink to this headline">¶</a></h1>
+<p>This module contains number of template generators, which generates all the
+python code for the parser.</p>
+<dl class="data">
+<dt id="harvester.autoparser.generator.IND">
+<tt class="descclassname">harvester.autoparser.generator.</tt><tt class="descname">IND</tt><em class="property"> = '    '</em><a class="headerlink" href="#harvester.autoparser.generator.IND" title="Permalink to this definition">¶</a></dt>
+<dd><p>Indentation.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="harvester.autoparser.generator._index_idiom">
+<tt class="descclassname">harvester.autoparser.generator.</tt><tt class="descname">_index_idiom</tt><big>(</big><em>el_name</em>, <em>index</em>, <em>alt=None</em><big>)</big><a class="reference internal" href="../_modules/harvester/autoparser/generator.html#_index_idiom"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#harvester.autoparser.generator._index_idiom" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate string where <cite>el_name</cite> is indexed by <cite>index</cite> if there are enough
+items or <cite>alt</cite> is returned.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>el_name</strong> (<em>str</em>) &#8211;
+Name of the <cite>container</cite> which is indexed.</li>
+<li><strong>index</strong> (<em>int</em>) &#8211;
+Index of the item you want to obtain from container.</li>
+<li><strong>alt</strong> (<em>whatever, default None</em>) &#8211;
+Alternative value.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><em>str</em> &#8211;
+Python code.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Live example::</dt>
+<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">generator</span> <span class="kn">as</span> <span class="nn">g</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">g</span><span class="o">.</span><span class="n">_index_idiom</span><span class="p">(</span><span class="s">&quot;xex&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="go">    # pick element from list</span>
+<span class="go">    xex = xex[0] if xex else None</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">g</span><span class="o">.</span><span class="n">_index_idiom</span><span class="p">(</span><span class="s">&quot;xex&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s">&quot;something&quot;</span><span class="p">)</span>
+<span class="go"># pick element from list</span>
+<span class="go">xex = xex[1] if len(xex) - 1 &gt;= 1 else &#39;something&#39;</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="harvester.autoparser.generator._required_idiom">
+<tt class="descclassname">harvester.autoparser.generator.</tt><tt class="descname">_required_idiom</tt><big>(</big><em>tag_name</em>, <em>index</em>, <em>notfoundmsg</em><big>)</big><a class="reference internal" href="../_modules/harvester/autoparser/generator.html#_required_idiom"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#harvester.autoparser.generator._required_idiom" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate code, which make sure that <cite>tag_name</cite> has enoug items.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>tag_name</strong> (<em>str</em>) &#8211;
+Name of the container.</li>
+<li><strong>index</strong> (<em>int</em>) &#8211;
+Index of the item you want to obtain from container.</li>
+<li><strong>notfoundmsg</strong> (<em>str</em>) &#8211;
+Raise <tt class="xref py py-class docutils literal"><span class="pre">UserWarning</span></tt> with debug data and
+following message.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><em>str</em> &#8211;
+Python code.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="harvester.autoparser.generator._find_template">
+<tt class="descclassname">harvester.autoparser.generator.</tt><tt class="descname">_find_template</tt><big>(</big><em>parameters</em>, <em>index</em>, <em>required=False</em>, <em>notfoundmsg=None</em><big>)</big><a class="reference internal" href="../_modules/harvester/autoparser/generator.html#_find_template"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#harvester.autoparser.generator._find_template" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate <tt class="docutils literal"><span class="pre">.find()</span></tt> call for HTMLElement.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>parameters</strong> (<em>list</em>) &#8211;
+List of parameters for <tt class="docutils literal"><span class="pre">.find()</span></tt>.</li>
+<li><strong>index</strong> (<em>int</em>) &#8211;
+Index of the item you want to get from <tt class="docutils literal"><span class="pre">.find()</span></tt> call.</li>
+<li><strong>required</strong> (<em>bool, default False</em>) &#8211;
+Use <a class="reference internal" href="#harvester.autoparser.generator._required_idiom" title="harvester.autoparser.generator._required_idiom"><tt class="xref py py-func docutils literal"><span class="pre">_required_idiom()</span></tt></a> to returned
+data.</li>
+<li><strong>notfoundmsg</strong> (<em>str, default None</em>) &#8211;
+Message which will be used for
+<a class="reference internal" href="#harvester.autoparser.generator._required_idiom" title="harvester.autoparser.generator._required_idiom"><tt class="xref py py-func docutils literal"><span class="pre">_required_idiom()</span></tt></a> if the item is not found.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><em>str</em> &#8211;
+Python code.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Live example::</dt>
+<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">g</span><span class="o">.</span><span class="n">_find_template</span><span class="p">([</span><span class="s">&quot;&lt;xex&gt;&quot;</span><span class="p">],</span> <span class="mi">3</span><span class="p">)</span>
+<span class="go">    el = dom.find(&#39;&lt;xex&gt;&#39;)</span>
+<span class="go">    # pick element from list</span>
+<span class="go">    el = el[3] if len(el) - 1 &gt;= 3 else None</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="harvester.autoparser.generator._wfind_template">
+<tt class="descclassname">harvester.autoparser.generator.</tt><tt class="descname">_wfind_template</tt><big>(</big><em>use_dom</em>, <em>parameters</em>, <em>index</em>, <em>required=False</em>, <em>notfoundmsg=None</em><big>)</big><a class="reference internal" href="../_modules/harvester/autoparser/generator.html#_wfind_template"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#harvester.autoparser.generator._wfind_template" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate <tt class="docutils literal"><span class="pre">.wfind()</span></tt> call for HTMLElement.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>use_dom</strong> (<em>bool</em>) &#8211;
+Use <tt class="docutils literal"><span class="pre">dom</span></tt> as tag name. If <tt class="docutils literal"><span class="pre">False</span></tt>, <tt class="docutils literal"><span class="pre">el</span></tt> is used.</li>
+<li><strong>parameters</strong> (<em>list</em>) &#8211;
+List of parameters for <tt class="docutils literal"><span class="pre">.wfind()</span></tt>.</li>
+<li><strong>index</strong> (<em>int</em>) &#8211;
+Index of the item you want to get from <tt class="docutils literal"><span class="pre">.wfind()</span></tt> call.</li>
+<li><strong>required</strong> (<em>bool, default False</em>) &#8211;
+Use <a class="reference internal" href="#harvester.autoparser.generator._required_idiom" title="harvester.autoparser.generator._required_idiom"><tt class="xref py py-func docutils literal"><span class="pre">_required_idiom()</span></tt></a> to returned
+data.</li>
+<li><strong>notfoundmsg</strong> (<em>str, default None</em>) &#8211;
+Message which will be used for
+<a class="reference internal" href="#harvester.autoparser.generator._required_idiom" title="harvester.autoparser.generator._required_idiom"><tt class="xref py py-func docutils literal"><span class="pre">_required_idiom()</span></tt></a> if the item is not found.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><em>str</em> &#8211;
+Python code.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Live example::</dt>
+<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">g</span><span class="o">.</span><span class="n">_wfind_template</span><span class="p">(</span><span class="bp">True</span><span class="p">,</span> <span class="p">[</span><span class="s">&quot;&lt;xex&gt;&quot;</span><span class="p">],</span> <span class="mi">3</span><span class="p">)</span>
+<span class="go">    el = dom.wfind(&#39;&lt;xex&gt;&#39;).childs</span>
+<span class="go">    # pick element from list</span>
+<span class="go">    el = el[3] if len(el) - 1 &gt;= 3 else None</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="harvester.autoparser.generator._match_template">
+<tt class="descclassname">harvester.autoparser.generator.</tt><tt class="descname">_match_template</tt><big>(</big><em>parameters</em>, <em>index</em>, <em>required=False</em>, <em>notfoundmsg=None</em><big>)</big><a class="reference internal" href="../_modules/harvester/autoparser/generator.html#_match_template"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#harvester.autoparser.generator._match_template" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate <tt class="docutils literal"><span class="pre">.match()</span></tt> call for HTMLElement.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>parameters</strong> (<em>list</em>) &#8211;
+List of parameters for <tt class="docutils literal"><span class="pre">.match()</span></tt>.</li>
+<li><strong>index</strong> (<em>int</em>) &#8211;
+Index of the item you want to get from <tt class="docutils literal"><span class="pre">.match()</span></tt> call.</li>
+<li><strong>required</strong> (<em>bool, default False</em>) &#8211;
+Use <a class="reference internal" href="#harvester.autoparser.generator._required_idiom" title="harvester.autoparser.generator._required_idiom"><tt class="xref py py-func docutils literal"><span class="pre">_required_idiom()</span></tt></a> to returned
+data.</li>
+<li><strong>notfoundmsg</strong> (<em>str, default None</em>) &#8211;
+Message which will be used for
+<a class="reference internal" href="#harvester.autoparser.generator._required_idiom" title="harvester.autoparser.generator._required_idiom"><tt class="xref py py-func docutils literal"><span class="pre">_required_idiom()</span></tt></a> if the item is not found.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><em>str</em> &#8211;
+Python code.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Live example::</dt>
+<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">g</span><span class="o">.</span><span class="n">_match_template</span><span class="p">([</span><span class="s">&quot;&lt;xex&gt;&quot;</span><span class="p">],</span> <span class="mi">3</span><span class="p">)</span>
+<span class="go">    el = dom.match(&#39;&lt;xex&gt;&#39;)</span>
+<span class="go">    # pick element from list</span>
+<span class="go">    el = el[3] if len(el) - 1 &gt;= 3 else None</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="harvester.autoparser.generator._neigh_template">
+<tt class="descclassname">harvester.autoparser.generator.</tt><tt class="descname">_neigh_template</tt><big>(</big><em>parameters</em>, <em>index</em>, <em>left=True</em>, <em>required=False</em>, <em>notfoundmsg=None</em><big>)</big><a class="reference internal" href="../_modules/harvester/autoparser/generator.html#_neigh_template"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#harvester.autoparser.generator._neigh_template" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate neighbour matching call for HTMLElement, which returns only
+elements with required neighbours.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>parameters</strong> (<em>list</em>) &#8211;
+List of parameters for <tt class="docutils literal"><span class="pre">.match()</span></tt>.</li>
+<li><strong>index</strong> (<em>int</em>) &#8211;
+Index of the item you want to get from <tt class="docutils literal"><span class="pre">.match()</span></tt> call.</li>
+<li><strong>left</strong> (<em>bool, default True</em>) &#8211;
+Look for neigbour in the left side of el.</li>
+<li><strong>required</strong> (<em>bool, default False</em>) &#8211;
+Use <a class="reference internal" href="#harvester.autoparser.generator._required_idiom" title="harvester.autoparser.generator._required_idiom"><tt class="xref py py-func docutils literal"><span class="pre">_required_idiom()</span></tt></a> to returned
+data.</li>
+<li><strong>notfoundmsg</strong> (<em>str, default None</em>) &#8211;
+Message which will be used for
+<a class="reference internal" href="#harvester.autoparser.generator._required_idiom" title="harvester.autoparser.generator._required_idiom"><tt class="xref py py-func docutils literal"><span class="pre">_required_idiom()</span></tt></a> if the item is not found.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><em>str</em> &#8211;
+Python code.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="harvester.autoparser.generator._get_parser_name">
+<tt class="descclassname">harvester.autoparser.generator.</tt><tt class="descname">_get_parser_name</tt><big>(</big><em>var_name</em><big>)</big><a class="reference internal" href="../_modules/harvester/autoparser/generator.html#_get_parser_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#harvester.autoparser.generator._get_parser_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parser name composer.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>var_name</strong> (<em>str</em>) &#8211;
+Name of the variable.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><em>str</em> &#8211;
+Parser function name.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="harvester.autoparser.generator._generate_parser">
+<tt class="descclassname">harvester.autoparser.generator.</tt><tt class="descname">_generate_parser</tt><big>(</big><em>name</em>, <em>path</em>, <em>required=False</em>, <em>notfoundmsg=None</em><big>)</big><a class="reference internal" href="../_modules/harvester/autoparser/generator.html#_generate_parser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#harvester.autoparser.generator._generate_parser" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate parser named <cite>name</cite> for given <cite>path</cite>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>name</strong> (<em>str</em>) &#8211;
+Basename for the parsing function (see
+<a class="reference internal" href="#harvester.autoparser.generator._get_parser_name" title="harvester.autoparser.generator._get_parser_name"><tt class="xref py py-func docutils literal"><span class="pre">_get_parser_name()</span></tt></a> for details).</li>
+<li><strong>path</strong> (<em>obj</em>) &#8211;
+<a class="reference internal" href="harvester.autoparser.path_patterns.html#harvester.autoparser.path_patterns.PathCall" title="harvester.autoparser.path_patterns.PathCall"><tt class="xref py py-class docutils literal"><span class="pre">PathCall</span></tt></a> or <a class="reference internal" href="harvester.autoparser.path_patterns.html#harvester.autoparser.path_patterns.Chained" title="harvester.autoparser.path_patterns.Chained"><tt class="xref py py-class docutils literal"><span class="pre">Chained</span></tt></a> instance.</li>
+<li><strong>required</strong> (<em>bool, default False</em>) &#8211;
+Use <a class="reference internal" href="#harvester.autoparser.generator._required_idiom" title="harvester.autoparser.generator._required_idiom"><tt class="xref py py-func docutils literal"><span class="pre">_required_idiom()</span></tt></a> to returned
+data.</li>
+<li><strong>notfoundmsg</strong> (<em>str, default None</em>) &#8211;
+Message which will be used for
+<a class="reference internal" href="#harvester.autoparser.generator._required_idiom" title="harvester.autoparser.generator._required_idiom"><tt class="xref py py-func docutils literal"><span class="pre">_required_idiom()</span></tt></a> if the item is not found.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><em>str</em> &#8211;
+Python code for parsing <cite>path</cite>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="harvester.autoparser.generator._unittest_template">
+<tt class="descclassname">harvester.autoparser.generator.</tt><tt class="descname">_unittest_template</tt><big>(</big><em>config</em><big>)</big><a class="reference internal" href="../_modules/harvester/autoparser/generator.html#_unittest_template"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#harvester.autoparser.generator._unittest_template" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate unittests for all of the generated code.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>config</strong> (<em>dict</em>) &#8211;
+Original configuration dictionary. See
+<a class="reference internal" href="harvester.autoparser.conf_reader.html#module-harvester.autoparser.conf_reader" title="harvester.autoparser.conf_reader"><tt class="xref py py-mod docutils literal"><span class="pre">conf_reader</span></tt></a> for details.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><em>str</em> &#8211;
+Python code.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="harvester.autoparser.generator.generate_parsers">
+<tt class="descclassname">harvester.autoparser.generator.</tt><tt class="descname">generate_parsers</tt><big>(</big><em>config</em>, <em>paths</em><big>)</big><a class="reference internal" href="../_modules/harvester/autoparser/generator.html#generate_parsers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#harvester.autoparser.generator.generate_parsers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate parser for all <cite>paths</cite>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>config</strong> (<em>dict</em>) &#8211;
+Original configuration dictionary used to get matches
+for unittests. See
+<a class="reference internal" href="harvester.autoparser.conf_reader.html#module-harvester.autoparser.conf_reader" title="harvester.autoparser.conf_reader"><tt class="xref py py-mod docutils literal"><span class="pre">conf_reader</span></tt></a> for details.</li>
+<li><strong>paths</strong> (<em>dict</em>) &#8211;
+Output from <a class="reference internal" href="harvester.edeposit_autoparser.html#harvester.edeposit_autoparser.select_best_paths" title="harvester.edeposit_autoparser.select_best_paths"><tt class="xref py py-func docutils literal"><span class="pre">select_best_paths()</span></tt></a>.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><em>str</em> &#8211;
+Python code containing all parsers for <cite>paths</cite>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="harvester.autoparser.utils.html"
+                        title="previous chapter">utils</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/api/harvester.autoparser.generator.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="harvester.autoparser.utils.html" title="utils"
+             >previous</a> |</li>
+        <li><a href="../index.html">edeposit.amqp.harvester 1.0.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014 E-deposit team.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

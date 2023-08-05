@@ -1,0 +1,471 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>harvester.edeposit_autoparser &mdash; edeposit.amqp.harvester 1.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="edeposit.amqp.harvester 1.0.0 documentation" href="../../index.html" />
+    <link rel="up" title="harvester" href="../harvester.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">edeposit.amqp.harvester 1.0.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../harvester.html" accesskey="U">harvester</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for harvester.edeposit_autoparser</h1><div class="highlight"><pre>
+<span class="c">#! /usr/bin/env python</span>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#</span>
+<span class="c"># Interpreter version: python 2.7</span>
+<span class="c">#</span>
+<span class="c"># Imports =====================================================================</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">os.path</span>
+<span class="kn">import</span> <span class="nn">argparse</span>
+
+<span class="kn">import</span> <span class="nn">dhtmlparser</span>
+
+<span class="kn">import</span> <span class="nn">autoparser.utils</span> <span class="kn">as</span> <span class="nn">utils</span>
+<span class="kn">import</span> <span class="nn">autoparser.conf_reader</span> <span class="kn">as</span> <span class="nn">conf_reader</span>
+<span class="kn">import</span> <span class="nn">autoparser.vectors</span> <span class="kn">as</span> <span class="nn">vectors</span>
+<span class="kn">import</span> <span class="nn">autoparser.path_patterns</span> <span class="kn">as</span> <span class="nn">path_patterns</span>
+<span class="kn">import</span> <span class="nn">autoparser.generator</span> <span class="kn">as</span> <span class="nn">generator</span>
+<span class="kn">from</span> <span class="nn">autoparser.path_patterns</span> <span class="kn">import</span> <span class="n">PathCall</span><span class="p">,</span> <span class="n">Chained</span>
+
+
+<span class="c"># Functions &amp; objects =========================================================</span>
+<div class="viewcode-block" id="_create_dom"><a class="viewcode-back" href="../../api/harvester.edeposit_autoparser.html#harvester.edeposit_autoparser._create_dom">[docs]</a><span class="k">def</span> <span class="nf">_create_dom</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates doublelinked DOM from `data`.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        data (str/HTMLElement): Either string or HTML element.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        obj: HTMLElement containing double linked DOM.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">dhtmlparser</span><span class="o">.</span><span class="n">HTMLElement</span><span class="p">):</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">dhtmlparser</span><span class="o">.</span><span class="n">parseString</span><span class="p">(</span>
+            <span class="n">utils</span><span class="o">.</span><span class="n">handle_encodnig</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="n">dhtmlparser</span><span class="o">.</span><span class="n">makeDoubleLinked</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">data</span>
+
+</div>
+<div class="viewcode-block" id="_locate_element"><a class="viewcode-back" href="../../api/harvester.edeposit_autoparser.html#harvester.edeposit_autoparser._locate_element">[docs]</a><span class="k">def</span> <span class="nf">_locate_element</span><span class="p">(</span><span class="n">dom</span><span class="p">,</span> <span class="n">el_content</span><span class="p">,</span> <span class="n">transformer</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Find element containing `el_content` in `dom`. Use `transformer` function</span>
+<span class="sd">    to content of all elements in `dom` in order to correctly transforming them</span>
+<span class="sd">    to match them with `el_content`.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        dom (obj): HTMLElement tree.</span>
+<span class="sd">        el_content (str): Content of element will be picked from `dom`.</span>
+<span class="sd">        transformer (fn, default None): Transforming function.</span>
+
+<span class="sd">    Note:</span>
+<span class="sd">        `transformer` parameter can be for example simple lambda::</span>
+
+<span class="sd">            lambda x: x.strip()</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        list: Matching HTMLElements.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">dom</span><span class="o">.</span><span class="n">find</span><span class="p">(</span>
+        <span class="bp">None</span><span class="p">,</span>
+        <span class="n">fn</span><span class="o">=</span><span class="n">utils</span><span class="o">.</span><span class="n">content_matchs</span><span class="p">(</span><span class="n">el_content</span><span class="p">,</span> <span class="n">transformer</span><span class="p">)</span>
+    <span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="_match_elements"><a class="viewcode-back" href="../../api/harvester.edeposit_autoparser.html#harvester.edeposit_autoparser._match_elements">[docs]</a><span class="k">def</span> <span class="nf">_match_elements</span><span class="p">(</span><span class="n">dom</span><span class="p">,</span> <span class="n">matches</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Find location of elements matching patterns specified in `matches`.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        dom (obj): HTMLElement DOM tree.</span>
+<span class="sd">        matches (dict): Structure: ``{&quot;var&quot;: {&quot;data&quot;: &quot;match&quot;, ..}, ..}``.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict: Structure: ``{&quot;var&quot;: {&quot;data&quot;: HTMLElement_obj, ..}, ..}``</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">content</span> <span class="ow">in</span> <span class="n">matches</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">pattern</span> <span class="o">=</span> <span class="n">content</span><span class="p">[</span><span class="s">&quot;data&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="k">if</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span> <span class="ow">in</span> <span class="n">pattern</span><span class="p">:</span>
+            <span class="n">pattern</span> <span class="o">=</span> <span class="n">pattern</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+            <span class="n">transformer</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">transformer</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+        <span class="n">matching_elements</span> <span class="o">=</span> <span class="n">_locate_element</span><span class="p">(</span>
+            <span class="n">dom</span><span class="p">,</span>
+            <span class="n">pattern</span><span class="p">,</span>
+            <span class="n">transformer</span><span class="o">=</span><span class="n">transformer</span>
+        <span class="p">)</span>
+
+        <span class="n">not_found_msg</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;notfoundmsg&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot;$name&quot;</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">not_found_msg</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+            <span class="n">not_found_msg</span> <span class="o">=</span> <span class="s">&quot;Can&#39;t locate variable &#39;</span><span class="si">%s</span><span class="s">&#39; with content &#39;</span><span class="si">%s</span><span class="s">&#39;!&quot;</span> <span class="o">%</span> <span class="p">(</span>
+                <span class="n">key</span><span class="p">,</span>
+                <span class="n">pattern</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="n">content</span><span class="p">[</span><span class="s">&quot;notfoundmsg&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">not_found_msg</span>
+
+        <span class="c"># in case of multiple elements, find only elements with propert tagname</span>
+        <span class="n">tagname</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;tagname&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">tagname</span><span class="p">:</span>
+            <span class="n">matching_elements</span> <span class="o">=</span> <span class="nb">filter</span><span class="p">(</span>
+                <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">getTagName</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="n">tagname</span><span class="p">,</span>
+                <span class="n">matching_elements</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">matching_elements</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">UserWarning</span><span class="p">(</span><span class="n">not_found_msg</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">matching_elements</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">UserWarning</span><span class="p">(</span>
+                <span class="s">&quot;Ambigious content &#39;</span><span class="si">%s</span><span class="s">&#39;!&quot;</span> <span class="o">%</span> <span class="n">content</span>
+                <span class="o">+</span> <span class="s">&quot;Content was found in multiple elements!&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">out</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">matching_elements</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">out</span>
+
+</div>
+<div class="viewcode-block" id="_collect_paths"><a class="viewcode-back" href="../../api/harvester.edeposit_autoparser.html#harvester.edeposit_autoparser._collect_paths">[docs]</a><span class="k">def</span> <span class="nf">_collect_paths</span><span class="p">(</span><span class="n">element</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Collect all possible path which leads to `element`.</span>
+
+<span class="sd">    Function returns standard path from root element to this, reverse path,</span>
+<span class="sd">    which uses negative indexes for path, also some pattern matches, like</span>
+<span class="sd">    &quot;this is element, which has neighbour with id 7&quot; and so on.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        element (obj): HTMLElement instance.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        list: List of :class:`.PathCall` and :class:`.Chained` objects.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c"># look for element by parameters - sometimes the ID is unique</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">vectors</span><span class="o">.</span><span class="n">el_to_path_vector</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
+    <span class="n">root</span> <span class="o">=</span> <span class="n">path</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">params</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">params</span> <span class="k">if</span> <span class="n">element</span><span class="o">.</span><span class="n">params</span> <span class="k">else</span> <span class="bp">None</span>
+    <span class="n">match</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">element</span><span class="o">.</span><span class="n">getTagName</span><span class="p">(),</span> <span class="n">params</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">match</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">PathCall</span><span class="p">(</span><span class="s">&quot;find&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">[</span><span class="n">element</span><span class="o">.</span><span class="n">getTagName</span><span class="p">(),</span> <span class="n">params</span><span class="p">])</span>
+        <span class="p">)</span>
+
+    <span class="c"># look for element by neighbours</span>
+    <span class="n">output</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">path_patterns</span><span class="o">.</span><span class="n">neighbours_pattern</span><span class="p">(</span><span class="n">element</span><span class="p">))</span>
+
+    <span class="c"># look for elements by patterns - element, which parent has tagname, and</span>
+    <span class="c"># which parent has tagname ..</span>
+    <span class="n">output</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">path_patterns</span><span class="o">.</span><span class="n">predecesors_pattern</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">root</span><span class="p">))</span>
+
+    <span class="n">index_backtrack</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">last_index_backtrack</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">params_backtrack</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">last_params_backtrack</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c"># look for element by paths from root to element</span>
+    <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+        <span class="c"># skip root elements</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">el</span><span class="o">.</span><span class="n">parent</span><span class="p">:</span>
+            <span class="k">continue</span>
+
+        <span class="n">tag_name</span> <span class="o">=</span> <span class="n">el</span><span class="o">.</span><span class="n">getTagName</span><span class="p">()</span>
+        <span class="n">match</span> <span class="o">=</span> <span class="n">el</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">wfind</span><span class="p">(</span><span class="n">tag_name</span><span class="p">)</span><span class="o">.</span><span class="n">childs</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">el</span><span class="p">)</span>
+
+        <span class="n">index_backtrack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">PathCall</span><span class="p">(</span><span class="s">&quot;wfind&quot;</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="p">[</span><span class="n">tag_name</span><span class="p">])</span>
+        <span class="p">)</span>
+        <span class="n">last_index_backtrack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">PathCall</span><span class="p">(</span><span class="s">&quot;wfind&quot;</span><span class="p">,</span> <span class="n">index</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">match</span><span class="p">),</span> <span class="p">[</span><span class="n">tag_name</span><span class="p">])</span>
+        <span class="p">)</span>
+
+        <span class="c"># if element has some parameters, use them for lookup</span>
+        <span class="k">if</span> <span class="n">el</span><span class="o">.</span><span class="n">params</span><span class="p">:</span>
+            <span class="n">match</span> <span class="o">=</span> <span class="n">el</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">wfind</span><span class="p">(</span><span class="n">tag_name</span><span class="p">,</span> <span class="n">el</span><span class="o">.</span><span class="n">params</span><span class="p">)</span><span class="o">.</span><span class="n">childs</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">el</span><span class="p">)</span>
+
+            <span class="n">params_backtrack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">PathCall</span><span class="p">(</span><span class="s">&quot;wfind&quot;</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="p">[</span><span class="n">tag_name</span><span class="p">,</span> <span class="n">el</span><span class="o">.</span><span class="n">params</span><span class="p">])</span>
+            <span class="p">)</span>
+            <span class="n">last_params_backtrack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">PathCall</span><span class="p">(</span><span class="s">&quot;wfind&quot;</span><span class="p">,</span> <span class="n">index</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">match</span><span class="p">),</span> <span class="p">[</span><span class="n">tag_name</span><span class="p">,</span> <span class="n">el</span><span class="o">.</span><span class="n">params</span><span class="p">])</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">params_backtrack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">PathCall</span><span class="p">(</span><span class="s">&quot;wfind&quot;</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="p">[</span><span class="n">tag_name</span><span class="p">])</span>
+            <span class="p">)</span>
+            <span class="n">last_params_backtrack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">PathCall</span><span class="p">(</span><span class="s">&quot;wfind&quot;</span><span class="p">,</span> <span class="n">index</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">match</span><span class="p">),</span> <span class="p">[</span><span class="n">tag_name</span><span class="p">])</span>
+            <span class="p">)</span>
+
+    <span class="n">output</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span>
+        <span class="n">Chained</span><span class="p">(</span><span class="nb">reversed</span><span class="p">(</span><span class="n">params_backtrack</span><span class="p">)),</span>
+        <span class="n">Chained</span><span class="p">(</span><span class="nb">reversed</span><span class="p">(</span><span class="n">last_params_backtrack</span><span class="p">)),</span>
+        <span class="n">Chained</span><span class="p">(</span><span class="nb">reversed</span><span class="p">(</span><span class="n">index_backtrack</span><span class="p">)),</span>
+        <span class="n">Chained</span><span class="p">(</span><span class="nb">reversed</span><span class="p">(</span><span class="n">last_index_backtrack</span><span class="p">)),</span>
+    <span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">output</span>
+
+</div>
+<div class="viewcode-block" id="_is_working_path"><a class="viewcode-back" href="../../api/harvester.edeposit_autoparser.html#harvester.edeposit_autoparser._is_working_path">[docs]</a><span class="k">def</span> <span class="nf">_is_working_path</span><span class="p">(</span><span class="n">dom</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">element</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check whether the path is working or not.</span>
+
+<span class="sd">    Aply proper search function interpreting `path` to `dom` and check, if</span>
+<span class="sd">    returned object is `element`. If so, return ``True``, otherwise ``False``.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        dom (obj): HTMLElement DOM.</span>
+<span class="sd">        path (obj): :class:`.PathCall` Instance containing informations about</span>
+<span class="sd">                    path and which function it require to obtain element the</span>
+<span class="sd">                    path is pointing to.</span>
+<span class="sd">        element (obj): HTMLElement instance used to decide whether `path`</span>
+<span class="sd">                       points to correct `element` or not.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        bool: True if `path` correctly points to proper `element`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">i_or_none</span><span class="p">(</span><span class="n">el</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return ``el[i]`` if the list is not blank, or None otherwise.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            el (list, tuple): Any indexable object.</span>
+<span class="sd">            i (int): Index.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            obj: Element at index `i` if `el` is not blank, or ``None``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">el</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">None</span>
+
+        <span class="k">return</span> <span class="n">el</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+    <span class="c"># map decoders of all paths to one dictionary to make easier to call them</span>
+    <span class="n">path_functions</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">&quot;find&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">el</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span>
+            <span class="n">i_or_none</span><span class="p">(</span><span class="n">el</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="o">*</span><span class="n">params</span><span class="p">),</span> <span class="n">index</span><span class="p">),</span>
+        <span class="s">&quot;wfind&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">el</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span>
+            <span class="n">i_or_none</span><span class="p">(</span><span class="n">el</span><span class="o">.</span><span class="n">wfind</span><span class="p">(</span><span class="o">*</span><span class="n">params</span><span class="p">)</span><span class="o">.</span><span class="n">childs</span><span class="p">,</span> <span class="n">index</span><span class="p">),</span>
+        <span class="s">&quot;match&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">el</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span>
+            <span class="n">i_or_none</span><span class="p">(</span><span class="n">el</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="o">*</span><span class="n">params</span><span class="p">),</span> <span class="n">index</span><span class="p">),</span>
+        <span class="s">&quot;left_neighbour_tag&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">el</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">neigh_data</span><span class="p">:</span>
+            <span class="n">i_or_none</span><span class="p">(</span>
+                <span class="n">el</span><span class="o">.</span><span class="n">find</span><span class="p">(</span>
+                    <span class="n">neigh_data</span><span class="o">.</span><span class="n">tag_name</span><span class="p">,</span>
+                    <span class="n">neigh_data</span><span class="o">.</span><span class="n">params</span><span class="p">,</span>
+                    <span class="n">fn</span><span class="o">=</span><span class="n">utils</span><span class="o">.</span><span class="n">has_neigh</span><span class="p">(</span><span class="o">*</span><span class="n">neigh_data</span><span class="o">.</span><span class="n">fn_params</span><span class="p">,</span> <span class="n">left</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+                <span class="p">),</span>
+                <span class="n">index</span>
+            <span class="p">),</span>
+        <span class="s">&quot;right_neighbour_tag&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">el</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">neigh_data</span><span class="p">:</span>
+            <span class="n">i_or_none</span><span class="p">(</span>
+                <span class="n">el</span><span class="o">.</span><span class="n">find</span><span class="p">(</span>
+                    <span class="n">neigh_data</span><span class="o">.</span><span class="n">tag_name</span><span class="p">,</span>
+                    <span class="n">neigh_data</span><span class="o">.</span><span class="n">params</span><span class="p">,</span>
+                    <span class="n">fn</span><span class="o">=</span><span class="n">utils</span><span class="o">.</span><span class="n">has_neigh</span><span class="p">(</span><span class="o">*</span><span class="n">neigh_data</span><span class="o">.</span><span class="n">fn_params</span><span class="p">,</span> <span class="n">left</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+                <span class="p">),</span>
+                <span class="n">index</span>
+            <span class="p">),</span>
+    <span class="p">}</span>
+
+    <span class="c"># call all decoders and see what you get from them</span>
+    <span class="n">el</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">PathCall</span><span class="p">):</span>
+        <span class="n">el</span> <span class="o">=</span> <span class="n">path_functions</span><span class="p">[</span><span class="n">path</span><span class="o">.</span><span class="n">call_type</span><span class="p">](</span><span class="n">dom</span><span class="p">,</span> <span class="n">path</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">path</span><span class="o">.</span><span class="n">params</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">Chained</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">path</span><span class="o">.</span><span class="n">chain</span><span class="p">:</span>
+            <span class="n">dom</span> <span class="o">=</span> <span class="n">path_functions</span><span class="p">[</span><span class="n">path</span><span class="o">.</span><span class="n">call_type</span><span class="p">](</span><span class="n">dom</span><span class="p">,</span> <span class="n">path</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">path</span><span class="o">.</span><span class="n">params</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">dom</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">False</span>
+        <span class="n">el</span> <span class="o">=</span> <span class="n">dom</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">UserWarning</span><span class="p">(</span>
+            <span class="s">&quot;Unknown type of path parameters! (</span><span class="si">%s</span><span class="s">)&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">el</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">False</span>
+
+    <span class="c"># test whether returned item is the item we are looking for</span>
+    <span class="k">return</span> <span class="n">el</span><span class="o">.</span><span class="n">getContent</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">==</span> <span class="n">element</span><span class="o">.</span><span class="n">getContent</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+</div>
+<div class="viewcode-block" id="select_best_paths"><a class="viewcode-back" href="../../api/harvester.edeposit_autoparser.html#harvester.edeposit_autoparser.select_best_paths">[docs]</a><span class="k">def</span> <span class="nf">select_best_paths</span><span class="p">(</span><span class="n">examples</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Process `examples`, select only paths that works for every example. Select</span>
+<span class="sd">    best paths with highest priority.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        examples (dict): Output from :func:`.read_config`.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        list: List of :class:`.PathCall` and :class:`.Chained` objects.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">possible_paths</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c"># {varname: [paths]}</span>
+
+    <span class="c"># collect list of all possible paths to all existing variables</span>
+    <span class="k">for</span> <span class="n">example</span> <span class="ow">in</span> <span class="n">examples</span><span class="p">:</span>
+        <span class="n">dom</span> <span class="o">=</span> <span class="n">_create_dom</span><span class="p">(</span><span class="n">example</span><span class="p">[</span><span class="s">&quot;html&quot;</span><span class="p">])</span>
+        <span class="n">matching_elements</span> <span class="o">=</span> <span class="n">_match_elements</span><span class="p">(</span><span class="n">dom</span><span class="p">,</span> <span class="n">example</span><span class="p">[</span><span class="s">&quot;vars&quot;</span><span class="p">])</span>
+
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">matching_elements</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">possible_paths</span><span class="p">:</span>  <span class="c"># TODO: merge paths together?</span>
+                <span class="n">possible_paths</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">_collect_paths</span><span class="p">(</span><span class="n">match</span><span class="p">)</span>
+
+    <span class="c"># leave only paths, that works in all examples where, are required</span>
+    <span class="k">for</span> <span class="n">example</span> <span class="ow">in</span> <span class="n">examples</span><span class="p">:</span>
+        <span class="n">dom</span> <span class="o">=</span> <span class="n">_create_dom</span><span class="p">(</span><span class="n">example</span><span class="p">[</span><span class="s">&quot;html&quot;</span><span class="p">])</span>
+        <span class="n">matching_elements</span> <span class="o">=</span> <span class="n">_match_elements</span><span class="p">(</span><span class="n">dom</span><span class="p">,</span> <span class="n">example</span><span class="p">[</span><span class="s">&quot;vars&quot;</span><span class="p">])</span>
+
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">paths</span> <span class="ow">in</span> <span class="n">possible_paths</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">matching_elements</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="n">possible_paths</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="nb">filter</span><span class="p">(</span>
+                <span class="k">lambda</span> <span class="n">path</span><span class="p">:</span> <span class="n">_is_working_path</span><span class="p">(</span>
+                    <span class="n">dom</span><span class="p">,</span>
+                    <span class="n">path</span><span class="p">,</span>
+                    <span class="n">matching_elements</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+                <span class="p">),</span>
+                <span class="n">paths</span>
+            <span class="p">)</span>
+
+    <span class="n">priorities</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s">&quot;find&quot;</span><span class="p">,</span>
+        <span class="s">&quot;left_neighbour_tag&quot;</span><span class="p">,</span>
+        <span class="s">&quot;right_neighbour_tag&quot;</span><span class="p">,</span>
+        <span class="s">&quot;wfind&quot;</span><span class="p">,</span>
+        <span class="s">&quot;match&quot;</span><span class="p">,</span>
+        <span class="s">&quot;Chained&quot;</span>
+    <span class="p">]</span>
+    <span class="n">priorities</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">priorities</span><span class="p">)))</span>
+
+    <span class="c"># sort all paths by priority table</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">possible_paths</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="n">possible_paths</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span>
+            <span class="n">possible_paths</span><span class="p">[</span><span class="n">key</span><span class="p">],</span>
+            <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">priorities</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">call_type</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+        <span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">possible_paths</span>
+
+</div>
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span>
+        <span class="n">description</span><span class="o">=</span><span class="s">&quot;Autoparser - parser generator.&quot;</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s">&quot;-c&quot;</span><span class="p">,</span>
+        <span class="s">&quot;--config&quot;</span><span class="p">,</span>
+        <span class="n">required</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s">&quot;&quot;&quot;YAML Configuration file used to specify paths to data and</span>
+<span class="s">                matches, which will be used to create generator.&quot;&quot;&quot;</span>
+    <span class="p">)</span>
+
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">config</span><span class="p">):</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;Can&#39;t open &#39;</span><span class="si">%s</span><span class="s">&#39;!</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">args</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">config</span> <span class="o">=</span> <span class="n">conf_reader</span><span class="o">.</span><span class="n">read_config</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">config</span><span class="p">:</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;Configuration file &#39;</span><span class="si">%s</span><span class="s">&#39; is blank!</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">args</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">paths</span> <span class="o">=</span> <span class="n">select_best_paths</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+    <span class="k">print</span> <span class="n">generator</span><span class="o">.</span><span class="n">generate_parsers</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">paths</span><span class="p">)</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">edeposit.amqp.harvester 1.0.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../harvester.html" >harvester</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014 E-deposit team.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

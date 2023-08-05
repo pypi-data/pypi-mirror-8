@@ -1,0 +1,189 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>vectors &mdash; edeposit.amqp.harvester 1.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="edeposit.amqp.harvester 1.0.0 documentation" href="../index.html" />
+    <link rel="next" title="path_patterns" href="harvester.autoparser.path_patterns.html" />
+    <link rel="prev" title="conf_reader" href="harvester.autoparser.conf_reader.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="harvester.autoparser.path_patterns.html" title="path_patterns"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="harvester.autoparser.conf_reader.html" title="conf_reader"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">edeposit.amqp.harvester 1.0.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-harvester.autoparser.vectors">
+<span id="vectors"></span><h1>vectors<a class="headerlink" href="#module-harvester.autoparser.vectors" title="Permalink to this headline">¶</a></h1>
+<p>This module contains functions to convert <cite>DOM</cite> relations to <cite>path-like</cite> lists
+of elements defined by tag names and parameters.</p>
+<dl class="function">
+<dt id="harvester.autoparser.vectors.el_to_path_vector">
+<tt class="descclassname">harvester.autoparser.vectors.</tt><tt class="descname">el_to_path_vector</tt><big>(</big><em>el</em><big>)</big><a class="reference internal" href="../_modules/harvester/autoparser/vectors.html#el_to_path_vector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#harvester.autoparser.vectors.el_to_path_vector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert <cite>el</cite> to vector of foregoing elements.</p>
+<dl class="docutils">
+<dt>Attr:</dt>
+<dd>el (obj): Double-linked HTMLElement instance.</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><em>list</em> &#8211;
+HTMLElements which considered as path from root to <cite>el</cite>.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="harvester.autoparser.vectors.common_vector_root">
+<tt class="descclassname">harvester.autoparser.vectors.</tt><tt class="descname">common_vector_root</tt><big>(</big><em>vec1</em>, <em>vec2</em><big>)</big><a class="reference internal" href="../_modules/harvester/autoparser/vectors.html#common_vector_root"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#harvester.autoparser.vectors.common_vector_root" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return common root of the two vectors.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>vec1</strong> (<em>list/tuple</em>) &#8211;
+First vector.</li>
+<li><strong>vec2</strong> (<em>list/tuple</em>) &#8211;
+Second vector.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Usage example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">common_vector_root</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+<span class="go">[1, 2]</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><em>list</em> &#8211;
+Common part of two vectors or blank list.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="harvester.autoparser.vectors.find_common_root">
+<tt class="descclassname">harvester.autoparser.vectors.</tt><tt class="descname">find_common_root</tt><big>(</big><em>elements</em><big>)</big><a class="reference internal" href="../_modules/harvester/autoparser/vectors.html#find_common_root"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#harvester.autoparser.vectors.find_common_root" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find root which is common for all <cite>elements</cite>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>elements</strong> (<em>list</em>) &#8211;
+List of double-linked HTMLElement objects.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><em>list</em> &#8211;
+Vector of HTMLElement containing path to common root.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="harvester.autoparser.conf_reader.html"
+                        title="previous chapter">conf_reader</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="harvester.autoparser.path_patterns.html"
+                        title="next chapter">path_patterns</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/api/harvester.autoparser.vectors.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="harvester.autoparser.path_patterns.html" title="path_patterns"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="harvester.autoparser.conf_reader.html" title="conf_reader"
+             >previous</a> |</li>
+        <li><a href="../index.html">edeposit.amqp.harvester 1.0.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014 E-deposit team.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

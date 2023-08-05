@@ -1,0 +1,337 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>harvester.scrappers.utils &mdash; edeposit.amqp.harvester 1.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="edeposit.amqp.harvester 1.0.0 documentation" href="../../../index.html" />
+    <link rel="up" title="harvester" href="../../harvester.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">edeposit.amqp.harvester 1.0.0 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../harvester.html" accesskey="U">harvester</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for harvester.scrappers.utils</h1><div class="highlight"><pre>
+<span class="c">#! /usr/bin/env python</span>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#</span>
+<span class="c"># Interpreter version: python 2.7</span>
+<span class="c">#</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module contains number of functions, which are used in the rest of the</span>
+<span class="sd">scrappers submodule.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c"># Imports =====================================================================</span>
+<span class="kn">import</span> <span class="nn">dhtmlparser</span>
+
+
+<span class="c"># Functions &amp; objects =========================================================</span>
+<div class="viewcode-block" id="_get_encoding"><a class="viewcode-back" href="../../../api/harvester.scrappers.utils.html#harvester.scrappers.utils._get_encoding">[docs]</a><span class="k">def</span> <span class="nf">_get_encoding</span><span class="p">(</span><span class="n">dom</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s">&quot;utf-8&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Try to look for meta tag in given `dom`.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        dom (obj): pyDHTMLParser dom of HTML elements.</span>
+<span class="sd">        default (default &quot;utr-8&quot;): What to use if encoding is not found in</span>
+<span class="sd">                                   `dom`.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str/default: Given encoding or `default` parameter if not found.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">encoding</span> <span class="o">=</span> <span class="n">dom</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&quot;meta&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s">&quot;http-equiv&quot;</span><span class="p">:</span> <span class="s">&quot;Content-Type&quot;</span><span class="p">})</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">encoding</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">default</span>
+
+    <span class="n">encoding</span> <span class="o">=</span> <span class="n">encoding</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;content&quot;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">encoding</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">default</span>
+
+    <span class="k">return</span> <span class="n">encoding</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;=&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+</div>
+<div class="viewcode-block" id="handle_encodnig"><a class="viewcode-back" href="../../../api/harvester.scrappers.utils.html#harvester.scrappers.utils.handle_encodnig">[docs]</a><span class="k">def</span> <span class="nf">handle_encodnig</span><span class="p">(</span><span class="n">html</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Look for encoding in given `html`. Try to convert `html` to utf-8.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        html (str): HTML code as string.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: HTML code encoded in UTF.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">encoding</span> <span class="o">=</span> <span class="n">_get_encoding</span><span class="p">(</span>
+        <span class="n">dhtmlparser</span><span class="o">.</span><span class="n">parseString</span><span class="p">(</span>
+            <span class="n">html</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;&lt;/head&gt;&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">encoding</span> <span class="o">==</span> <span class="s">&quot;utf-8&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">html</span>
+
+    <span class="k">return</span> <span class="n">html</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">encoding</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&quot;utf-8&quot;</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="get_first_content"><a class="viewcode-back" href="../../../api/harvester.scrappers.utils.html#harvester.scrappers.utils.get_first_content">[docs]</a><span class="k">def</span> <span class="nf">get_first_content</span><span class="p">(</span><span class="n">el_list</span><span class="p">,</span> <span class="n">alt</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">strip</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return content of the first element in `el_list` or `alt`. Also return `alt`</span>
+<span class="sd">    if the content string of first element is blank.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        el_list (list): List of HTMLElement objects.</span>
+<span class="sd">        alt (default None): Value returner when list or content is blank.</span>
+<span class="sd">        strip (bool, default True): Call .strip() to content.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str or alt: String representation of the content of the first element \</span>
+<span class="sd">                    or `alt` if not found.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">el_list</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">alt</span>
+
+    <span class="n">content</span> <span class="o">=</span> <span class="n">el_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">getContent</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">strip</span><span class="p">:</span>
+        <span class="n">content</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">content</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">alt</span>
+
+    <span class="k">return</span> <span class="n">content</span>
+
+</div>
+<div class="viewcode-block" id="is_absolute_url"><a class="viewcode-back" href="../../../api/harvester.scrappers.utils.html#harvester.scrappers.utils.is_absolute_url">[docs]</a><span class="k">def</span> <span class="nf">is_absolute_url</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="s">&quot;http&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Test whether `url` is absolute url (``http://domain.tld/something``) or</span>
+<span class="sd">    relative (``../something``).</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        url (str): Tested string.</span>
+<span class="sd">        protocol (str, default &quot;http&quot;): Protocol which will be seek at the</span>
+<span class="sd">                 beginning of the `url`.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        bool: True if url is absolute, False if not.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="s">&quot;:&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">url</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">False</span>
+
+    <span class="n">protocol</span><span class="p">,</span> <span class="n">rest</span> <span class="o">=</span> <span class="n">url</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;:&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">protocol</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">protocol</span><span class="p">)</span> <span class="ow">and</span> <span class="n">rest</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&quot;//&quot;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">True</span>
+
+    <span class="k">return</span> <span class="bp">False</span>
+
+</div>
+<div class="viewcode-block" id="normalize_url"><a class="viewcode-back" href="../../../api/harvester.scrappers.utils.html#harvester.scrappers.utils.normalize_url">[docs]</a><span class="k">def</span> <span class="nf">normalize_url</span><span class="p">(</span><span class="n">base_url</span><span class="p">,</span> <span class="n">rel_url</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Normalize the `url` - from relative, create absolute URL.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        base_url (str): Domain with ``protocol://`` string</span>
+<span class="sd">        rel_url (str): Relative or absolute url.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str/None: Normalized URL or None if `url` is blank.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">rel_url</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">None</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">is_absolute_url</span><span class="p">(</span><span class="n">rel_url</span><span class="p">):</span>
+        <span class="n">rel_url</span> <span class="o">=</span> <span class="n">rel_url</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot;../&quot;</span><span class="p">,</span> <span class="s">&quot;/&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">base_url</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s">&quot;/&quot;</span><span class="p">))</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">rel_url</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&quot;/&quot;</span><span class="p">)):</span>
+            <span class="k">return</span> <span class="n">base_url</span> <span class="o">+</span> <span class="s">&quot;/&quot;</span> <span class="o">+</span> <span class="n">rel_url</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot;../&quot;</span><span class="p">,</span> <span class="s">&quot;/&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">base_url</span> <span class="o">+</span> <span class="n">rel_url</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot;../&quot;</span><span class="p">,</span> <span class="s">&quot;/&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">rel_url</span>
+
+</div>
+<div class="viewcode-block" id="has_param"><a class="viewcode-back" href="../../../api/harvester.scrappers.utils.html#harvester.scrappers.utils.has_param">[docs]</a><span class="k">def</span> <span class="nf">has_param</span><span class="p">(</span><span class="n">param</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate function, which will check `param` is in html element.</span>
+
+<span class="sd">    This function can be used as parameter for .find() method in HTMLElement.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">has_param_closure</span><span class="p">(</span><span class="n">element</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Look for `param` in `element`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">element</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+            <span class="k">return</span> <span class="bp">True</span>
+
+        <span class="k">return</span> <span class="bp">False</span>
+
+    <span class="k">return</span> <span class="n">has_param_closure</span>
+
+</div>
+<div class="viewcode-block" id="must_contain"><a class="viewcode-back" href="../../../api/harvester.scrappers.utils.html#harvester.scrappers.utils.must_contain">[docs]</a><span class="k">def</span> <span class="nf">must_contain</span><span class="p">(</span><span class="n">tag_name</span><span class="p">,</span> <span class="n">tag_content</span><span class="p">,</span> <span class="n">container_tag_name</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate function, which checks if given element contains `tag_name` with</span>
+<span class="sd">    string content `tag_content` and also another tag named</span>
+<span class="sd">    `container_tag_name`.</span>
+
+<span class="sd">    This function can be used as parameter for .find() method in HTMLElement.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">must_contain_closure</span><span class="p">(</span><span class="n">element</span><span class="p">):</span>
+        <span class="c"># containing in first level of childs &lt;tag_name&gt; tag</span>
+        <span class="n">matching_tags</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">tag_name</span><span class="p">,</span> <span class="n">absolute</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">matching_tags</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">False</span>
+
+        <span class="c"># which&#39;s content match `tag_content`</span>
+        <span class="k">if</span> <span class="n">matching_tags</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">getContent</span><span class="p">()</span> <span class="o">!=</span> <span class="n">tag_content</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">False</span>
+
+        <span class="c"># and also contains &lt;container_tag_name&gt; tag</span>
+        <span class="k">if</span> <span class="n">container_tag_name</span> <span class="ow">and</span> \
+           <span class="ow">not</span> <span class="n">element</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">container_tag_name</span><span class="p">,</span> <span class="n">absolute</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">False</span>
+
+        <span class="k">return</span> <span class="bp">True</span>
+
+    <span class="k">return</span> <span class="n">must_contain_closure</span>
+
+</div>
+<div class="viewcode-block" id="content_matchs"><a class="viewcode-back" href="../../../api/harvester.scrappers.utils.html#harvester.scrappers.utils.content_matchs">[docs]</a><span class="k">def</span> <span class="nf">content_matchs</span><span class="p">(</span><span class="n">tag_content</span><span class="p">,</span> <span class="n">content_transformer</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate function, which checks whether the content of the tag matchs</span>
+<span class="sd">    `tag_content`.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        tag_content (str): Content of the tag which will be matched thru whole</span>
+<span class="sd">                           DOM.</span>
+<span class="sd">        content_transformer (fn, default None): Function used to transform all</span>
+<span class="sd">                            tags before matching.</span>
+
+<span class="sd">    This function can be used as parameter for .find() method in HTMLElement.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">content_matchs_closure</span><span class="p">(</span><span class="n">element</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">element</span><span class="o">.</span><span class="n">isTag</span><span class="p">():</span>
+            <span class="k">return</span> <span class="bp">False</span>
+
+        <span class="n">cont</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">getContent</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">content_transformer</span><span class="p">:</span>
+            <span class="n">cont</span> <span class="o">=</span> <span class="n">content_transformer</span><span class="p">(</span><span class="n">cont</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">tag_content</span> <span class="o">==</span> <span class="n">cont</span>
+
+    <span class="k">return</span> <span class="n">content_matchs_closure</span>
+
+</div>
+<div class="viewcode-block" id="self_test_idiom"><a class="viewcode-back" href="../../../api/harvester.scrappers.utils.html#harvester.scrappers.utils.self_test_idiom">[docs]</a><span class="k">def</span> <span class="nf">self_test_idiom</span><span class="p">(</span><span class="n">fn</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Perform basic selftest.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        True: When everything is ok.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        AssertionError: When there is some problem.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">books</span> <span class="o">=</span> <span class="n">fn</span><span class="p">()</span>
+
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">books</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
+
+    <span class="k">for</span> <span class="n">book</span> <span class="ow">in</span> <span class="n">books</span><span class="p">:</span>
+        <span class="n">error</span> <span class="o">=</span> <span class="s">&quot;Book doesn&#39;t have all required parameters!</span><span class="se">\n</span><span class="s">&quot;</span>
+        <span class="n">error</span> <span class="o">+=</span> <span class="nb">str</span><span class="p">(</span><span class="n">book</span><span class="o">.</span><span class="n">to_namedtuple</span><span class="p">())</span>
+
+        <span class="k">assert</span> <span class="n">book</span><span class="o">.</span><span class="n">title</span><span class="p">,</span> <span class="n">error</span>
+        <span class="k">assert</span> <span class="n">book</span><span class="o">.</span><span class="n">authors</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">,</span> <span class="n">error</span>  <span class="c"># can be blank</span>
+        <span class="k">assert</span> <span class="n">book</span><span class="o">.</span><span class="n">price</span><span class="p">,</span> <span class="n">error</span>
+        <span class="k">assert</span> <span class="n">book</span><span class="o">.</span><span class="n">publisher</span><span class="p">,</span> <span class="n">error</span>
+
+        <span class="k">if</span> <span class="n">book</span><span class="o">.</span><span class="n">optionals</span><span class="o">.</span><span class="n">ISBN</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">book</span><span class="o">.</span><span class="n">optionals</span><span class="o">.</span><span class="n">ISBN</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">10</span>
+
+        <span class="k">if</span> <span class="n">book</span><span class="o">.</span><span class="n">optionals</span><span class="o">.</span><span class="n">URL</span><span class="p">:</span>
+            <span class="n">protocol</span><span class="p">,</span> <span class="n">rest</span> <span class="o">=</span> <span class="n">book</span><span class="o">.</span><span class="n">optionals</span><span class="o">.</span><span class="n">URL</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;:&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+            <span class="k">assert</span> <span class="n">protocol</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&quot;http&quot;</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="n">rest</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&quot;//&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="bp">True</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">edeposit.amqp.harvester 1.0.0 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../harvester.html" >harvester</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014 E-deposit team.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

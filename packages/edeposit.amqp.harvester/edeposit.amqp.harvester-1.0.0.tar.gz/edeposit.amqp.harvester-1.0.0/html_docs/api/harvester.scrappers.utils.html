@@ -1,0 +1,296 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>harvester.scrappers.utils module &mdash; edeposit.amqp.harvester 1.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="edeposit.amqp.harvester 1.0.0 documentation" href="../index.html" />
+    <link rel="next" title="Aleph filter" href="harvester.filters.aleph_filter.html" />
+    <link rel="prev" title="zonerpress_cz scrapper" href="harvester.scrappers.zonerpress_cz.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="harvester.filters.aleph_filter.html" title="Aleph filter"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="harvester.scrappers.zonerpress_cz.html" title="zonerpress_cz scrapper"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">edeposit.amqp.harvester 1.0.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-harvester.scrappers.utils">
+<span id="harvester-scrappers-utils-module"></span><h1>harvester.scrappers.utils module<a class="headerlink" href="#module-harvester.scrappers.utils" title="Permalink to this headline">¶</a></h1>
+<p>This module contains number of functions, which are used in the rest of the
+scrappers submodule.</p>
+<dl class="function">
+<dt id="harvester.scrappers.utils._get_encoding">
+<tt class="descclassname">harvester.scrappers.utils.</tt><tt class="descname">_get_encoding</tt><big>(</big><em>dom</em>, <em>default='utf-8'</em><big>)</big><a class="reference internal" href="../_modules/harvester/scrappers/utils.html#_get_encoding"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#harvester.scrappers.utils._get_encoding" title="Permalink to this definition">¶</a></dt>
+<dd><p>Try to look for meta tag in given <cite>dom</cite>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>dom</strong> (<em>obj</em>) &#8211;
+pyDHTMLParser dom of HTML elements.</li>
+<li><strong>default</strong> (<em>default &#8220;utr-8&#8221;</em>) &#8211;
+What to use if encoding is not found in
+<cite>dom</cite>.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><em>str/default</em> &#8211;
+Given encoding or <cite>default</cite> parameter if not found.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="harvester.scrappers.utils.handle_encodnig">
+<tt class="descclassname">harvester.scrappers.utils.</tt><tt class="descname">handle_encodnig</tt><big>(</big><em>html</em><big>)</big><a class="reference internal" href="../_modules/harvester/scrappers/utils.html#handle_encodnig"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#harvester.scrappers.utils.handle_encodnig" title="Permalink to this definition">¶</a></dt>
+<dd><p>Look for encoding in given <cite>html</cite>. Try to convert <cite>html</cite> to utf-8.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>html</strong> (<em>str</em>) &#8211;
+HTML code as string.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><em>str</em> &#8211;
+HTML code encoded in UTF.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="harvester.scrappers.utils.get_first_content">
+<tt class="descclassname">harvester.scrappers.utils.</tt><tt class="descname">get_first_content</tt><big>(</big><em>el_list</em>, <em>alt=None</em>, <em>strip=True</em><big>)</big><a class="reference internal" href="../_modules/harvester/scrappers/utils.html#get_first_content"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#harvester.scrappers.utils.get_first_content" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return content of the first element in <cite>el_list</cite> or <cite>alt</cite>. Also return <cite>alt</cite>
+if the content string of first element is blank.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>el_list</strong> (<em>list</em>) &#8211;
+List of HTMLElement objects.</li>
+<li><strong>alt</strong> (<em>default None</em>) &#8211;
+Value returner when list or content is blank.</li>
+<li><strong>strip</strong> (<em>bool, default True</em>) &#8211;
+Call .strip() to content.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><em>str or alt</em> &#8211;
+String representation of the content of the first element                     or <cite>alt</cite> if not found.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="harvester.scrappers.utils.is_absolute_url">
+<tt class="descclassname">harvester.scrappers.utils.</tt><tt class="descname">is_absolute_url</tt><big>(</big><em>url</em>, <em>protocol='http'</em><big>)</big><a class="reference internal" href="../_modules/harvester/scrappers/utils.html#is_absolute_url"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#harvester.scrappers.utils.is_absolute_url" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test whether <cite>url</cite> is absolute url (<tt class="docutils literal"><span class="pre">http://domain.tld/something</span></tt>) or
+relative (<tt class="docutils literal"><span class="pre">../something</span></tt>).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>url</strong> (<em>str</em>) &#8211;
+Tested string.</li>
+<li><strong>protocol</strong> (<em>str, default &#8220;http&#8221;</em>) &#8211;
+Protocol which will be seek at the
+beginning of the <cite>url</cite>.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><em>bool</em> &#8211;
+True if url is absolute, False if not.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="harvester.scrappers.utils.normalize_url">
+<tt class="descclassname">harvester.scrappers.utils.</tt><tt class="descname">normalize_url</tt><big>(</big><em>base_url</em>, <em>rel_url</em><big>)</big><a class="reference internal" href="../_modules/harvester/scrappers/utils.html#normalize_url"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#harvester.scrappers.utils.normalize_url" title="Permalink to this definition">¶</a></dt>
+<dd><p>Normalize the <cite>url</cite> - from relative, create absolute URL.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>base_url</strong> (<em>str</em>) &#8211;
+Domain with <tt class="docutils literal"><span class="pre">protocol://</span></tt> string</li>
+<li><strong>rel_url</strong> (<em>str</em>) &#8211;
+Relative or absolute url.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><em>str/None</em> &#8211;
+Normalized URL or None if <cite>url</cite> is blank.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="harvester.scrappers.utils.has_param">
+<tt class="descclassname">harvester.scrappers.utils.</tt><tt class="descname">has_param</tt><big>(</big><em>param</em><big>)</big><a class="reference internal" href="../_modules/harvester/scrappers/utils.html#has_param"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#harvester.scrappers.utils.has_param" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate function, which will check <cite>param</cite> is in html element.</p>
+<p>This function can be used as parameter for .find() method in HTMLElement.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="harvester.scrappers.utils.must_contain">
+<tt class="descclassname">harvester.scrappers.utils.</tt><tt class="descname">must_contain</tt><big>(</big><em>tag_name</em>, <em>tag_content</em>, <em>container_tag_name</em><big>)</big><a class="reference internal" href="../_modules/harvester/scrappers/utils.html#must_contain"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#harvester.scrappers.utils.must_contain" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate function, which checks if given element contains <cite>tag_name</cite> with
+string content <cite>tag_content</cite> and also another tag named
+<cite>container_tag_name</cite>.</p>
+<p>This function can be used as parameter for .find() method in HTMLElement.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="harvester.scrappers.utils.content_matchs">
+<tt class="descclassname">harvester.scrappers.utils.</tt><tt class="descname">content_matchs</tt><big>(</big><em>tag_content</em>, <em>content_transformer=None</em><big>)</big><a class="reference internal" href="../_modules/harvester/scrappers/utils.html#content_matchs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#harvester.scrappers.utils.content_matchs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate function, which checks whether the content of the tag matchs
+<cite>tag_content</cite>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>tag_content</strong> (<em>str</em>) &#8211;
+Content of the tag which will be matched thru whole
+DOM.</li>
+<li><strong>content_transformer</strong> (<em>fn, default None</em>) &#8211;
+Function used to transform all
+tags before matching.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>This function can be used as parameter for .find() method in HTMLElement.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="harvester.scrappers.utils.self_test_idiom">
+<tt class="descclassname">harvester.scrappers.utils.</tt><tt class="descname">self_test_idiom</tt><big>(</big><em>fn</em><big>)</big><a class="reference internal" href="../_modules/harvester/scrappers/utils.html#self_test_idiom"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#harvester.scrappers.utils.self_test_idiom" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform basic selftest.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><em>True</em> &#8211;
+When everything is ok.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><tt class="xref py py-exc docutils literal"><span class="pre">AssertionError</span></tt> &#8211; 
+When there is some problem.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="harvester.scrappers.zonerpress_cz.html"
+                        title="previous chapter">zonerpress_cz scrapper</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="harvester.filters.aleph_filter.html"
+                        title="next chapter">Aleph filter</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/api/harvester.scrappers.utils.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="harvester.filters.aleph_filter.html" title="Aleph filter"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="harvester.scrappers.zonerpress_cz.html" title="zonerpress_cz scrapper"
+             >previous</a> |</li>
+        <li><a href="../index.html">edeposit.amqp.harvester 1.0.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014 E-deposit team.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

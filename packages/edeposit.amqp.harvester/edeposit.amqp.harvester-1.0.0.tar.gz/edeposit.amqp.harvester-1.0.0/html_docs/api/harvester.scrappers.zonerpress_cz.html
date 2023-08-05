@@ -1,0 +1,261 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>zonerpress_cz scrapper &mdash; edeposit.amqp.harvester 1.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="edeposit.amqp.harvester 1.0.0 documentation" href="../index.html" />
+    <link rel="next" title="harvester.scrappers.utils module" href="harvester.scrappers.utils.html" />
+    <link rel="prev" title="grada.cz scrapper" href="harvester.scrappers.grada_cz.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="harvester.scrappers.utils.html" title="harvester.scrappers.utils module"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="harvester.scrappers.grada_cz.html" title="grada.cz scrapper"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">edeposit.amqp.harvester 1.0.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-harvester.scrappers.zonerpress_cz">
+<span id="zonerpress-cz-scrapper"></span><h1>zonerpress_cz scrapper<a class="headerlink" href="#module-harvester.scrappers.zonerpress_cz" title="Permalink to this headline">¶</a></h1>
+<p>Module for parsing informations from <cite>zonerpress.cz</cite>.</p>
+<dl class="function">
+<dt id="harvester.scrappers.zonerpress_cz._get_max_page">
+<tt class="descclassname">harvester.scrappers.zonerpress_cz.</tt><tt class="descname">_get_max_page</tt><big>(</big><em>dom</em><big>)</big><a class="reference internal" href="../_modules/harvester/scrappers/zonerpress_cz.html#_get_max_page"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#harvester.scrappers.zonerpress_cz._get_max_page" title="Permalink to this definition">¶</a></dt>
+<dd><p>Try to guess how much pages are in book listing.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>dom</strong> (<em>obj</em>) &#8211;
+HTMLElement container of the page with book list.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><em>int</em> &#8211;
+Number of pages for given category.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="harvester.scrappers.zonerpress_cz._parse_book_links">
+<tt class="descclassname">harvester.scrappers.zonerpress_cz.</tt><tt class="descname">_parse_book_links</tt><big>(</big><em>dom</em><big>)</big><a class="reference internal" href="../_modules/harvester/scrappers/zonerpress_cz.html#_parse_book_links"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#harvester.scrappers.zonerpress_cz._parse_book_links" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse links to the details about publications from page with book list.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>dom</strong> (<em>obj</em>) &#8211;
+HTMLElement container of the page with book list.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><em>list</em> &#8211;
+List of strings / absolute links to book details.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="harvester.scrappers.zonerpress_cz.get_book_links">
+<tt class="descclassname">harvester.scrappers.zonerpress_cz.</tt><tt class="descname">get_book_links</tt><big>(</big><em>links</em><big>)</big><a class="reference internal" href="../_modules/harvester/scrappers/zonerpress_cz.html#get_book_links"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#harvester.scrappers.zonerpress_cz.get_book_links" title="Permalink to this definition">¶</a></dt>
+<dd><p>Go thru <cite>links</cite> to categories and return list to all publications in all
+given categories.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>links</strong> (<em>list</em>) &#8211;
+List of strings (absolute links to categories).</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><em>list</em> &#8211;
+List of strings / absolute links to book details.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="harvester.scrappers.zonerpress_cz._strip_content">
+<tt class="descclassname">harvester.scrappers.zonerpress_cz.</tt><tt class="descname">_strip_content</tt><big>(</big><em>el</em><big>)</big><a class="reference internal" href="../_modules/harvester/scrappers/zonerpress_cz.html#_strip_content"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#harvester.scrappers.zonerpress_cz._strip_content" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call <tt class="docutils literal"><span class="pre">.getContent()</span></tt> method of the <cite>el</cite> and strip whitespaces. Return
+<tt class="docutils literal"><span class="pre">None</span></tt> if content is <tt class="docutils literal"><span class="pre">-</span></tt>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>el</strong> (<em>obj</em>) &#8211;
+HTMLElement instance.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><em>str/None</em> &#8211;
+Clean string.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="harvester.scrappers.zonerpress_cz._parse_authors">
+<tt class="descclassname">harvester.scrappers.zonerpress_cz.</tt><tt class="descname">_parse_authors</tt><big>(</big><em>authors</em><big>)</big><a class="reference internal" href="../_modules/harvester/scrappers/zonerpress_cz.html#_parse_authors"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#harvester.scrappers.zonerpress_cz._parse_authors" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse informations about authors of the book.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>dom</strong> (<em>obj</em>) &#8211;
+HTMLElement containing slice of the page with details.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><em>list</em> &#8211;
+List of <a class="reference internal" href="harvester.structures.html#harvester.structures.Author" title="harvester.structures.Author"><tt class="xref py py-class docutils literal"><span class="pre">Author</span></tt></a> objects. Blank if no author               found.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="harvester.scrappers.zonerpress_cz._process_book">
+<tt class="descclassname">harvester.scrappers.zonerpress_cz.</tt><tt class="descname">_process_book</tt><big>(</big><em>link</em><big>)</big><a class="reference internal" href="../_modules/harvester/scrappers/zonerpress_cz.html#_process_book"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#harvester.scrappers.zonerpress_cz._process_book" title="Permalink to this definition">¶</a></dt>
+<dd><p>Download and parse available informations about book from the publishers
+webpages.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>link</strong> (<em>str</em>) &#8211;
+URL of the book at the publishers webpages.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><em>obj</em> &#8211;
+<a class="reference internal" href="harvester.structures.html#harvester.structures.Publication" title="harvester.structures.Publication"><tt class="xref py py-class docutils literal"><span class="pre">Publication</span></tt></a> instance with book details.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="harvester.scrappers.zonerpress_cz.get_publications">
+<tt class="descclassname">harvester.scrappers.zonerpress_cz.</tt><tt class="descname">get_publications</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/harvester/scrappers/zonerpress_cz.html#get_publications"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#harvester.scrappers.zonerpress_cz.get_publications" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get list of publication offered by ben.cz.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><em>list</em> &#8211;
+List of <tt class="xref py py-class docutils literal"><span class="pre">structures.Publication</span></tt> objects.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="harvester.scrappers.zonerpress_cz.self_test">
+<tt class="descclassname">harvester.scrappers.zonerpress_cz.</tt><tt class="descname">self_test</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/harvester/scrappers/zonerpress_cz.html#self_test"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#harvester.scrappers.zonerpress_cz.self_test" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform basic selftest.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><em>True</em> &#8211;
+When everything is ok.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><tt class="xref py py-exc docutils literal"><span class="pre">AssertionError</span></tt> &#8211; 
+When there is some problem.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="harvester.scrappers.grada_cz.html"
+                        title="previous chapter">grada.cz scrapper</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="harvester.scrappers.utils.html"
+                        title="next chapter">harvester.scrappers.utils module</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/api/harvester.scrappers.zonerpress_cz.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="harvester.scrappers.utils.html" title="harvester.scrappers.utils module"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="harvester.scrappers.grada_cz.html" title="grada.cz scrapper"
+             >previous</a> |</li>
+        <li><a href="../index.html">edeposit.amqp.harvester 1.0.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014 E-deposit team.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

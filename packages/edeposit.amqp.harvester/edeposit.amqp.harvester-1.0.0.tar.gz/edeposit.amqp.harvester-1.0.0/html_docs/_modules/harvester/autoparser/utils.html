@@ -1,0 +1,257 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>harvester.autoparser.utils &mdash; edeposit.amqp.harvester 1.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="edeposit.amqp.harvester 1.0.0 documentation" href="../../../index.html" />
+    <link rel="up" title="harvester" href="../../harvester.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">edeposit.amqp.harvester 1.0.0 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../harvester.html" accesskey="U">harvester</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for harvester.autoparser.utils</h1><div class="highlight"><pre>
+<span class="c">#! /usr/bin/env python</span>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#</span>
+<span class="c"># Interpreter version: python 2.7</span>
+<span class="c">#</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module contains number of functions, which are used at multiple places in</span>
+<span class="sd">autoparser.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c"># Imports =====================================================================</span>
+<span class="kn">import</span> <span class="nn">dhtmlparser</span>
+
+
+<span class="c"># Functions &amp; objects =========================================================</span>
+<span class="k">def</span> <span class="nf">_get_encoding</span><span class="p">(</span><span class="n">dom</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s">&quot;utf-8&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Try to look for meta tag in given `dom`.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        dom (obj): pyDHTMLParser dom of HTML elements.</span>
+<span class="sd">        default (default &quot;utr-8&quot;): What to use if encoding is not found in</span>
+<span class="sd">                                   `dom`.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str/default: Given encoding or `default` parameter if not found.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">encoding</span> <span class="o">=</span> <span class="n">dom</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&quot;meta&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s">&quot;http-equiv&quot;</span><span class="p">:</span> <span class="s">&quot;Content-Type&quot;</span><span class="p">})</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">encoding</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">default</span>
+
+    <span class="n">encoding</span> <span class="o">=</span> <span class="n">encoding</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;content&quot;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">encoding</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">default</span>
+
+    <span class="k">return</span> <span class="n">encoding</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;=&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="handle_encodnig"><a class="viewcode-back" href="../../../api/harvester.autoparser.utils.html#harvester.autoparser.utils.handle_encodnig">[docs]</a><span class="k">def</span> <span class="nf">handle_encodnig</span><span class="p">(</span><span class="n">html</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Look for encoding in given `html`. Try to convert `html` to utf-8.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        html (str): HTML code as string.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: HTML code encoded in UTF.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">encoding</span> <span class="o">=</span> <span class="n">_get_encoding</span><span class="p">(</span>
+        <span class="n">dhtmlparser</span><span class="o">.</span><span class="n">parseString</span><span class="p">(</span>
+            <span class="n">html</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;&lt;/head&gt;&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">encoding</span> <span class="o">==</span> <span class="s">&quot;utf-8&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">html</span>
+
+    <span class="k">return</span> <span class="n">html</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">encoding</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&quot;utf-8&quot;</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="content_matchs"><a class="viewcode-back" href="../../../api/harvester.autoparser.utils.html#harvester.autoparser.utils.content_matchs">[docs]</a><span class="k">def</span> <span class="nf">content_matchs</span><span class="p">(</span><span class="n">tag_content</span><span class="p">,</span> <span class="n">content_transformer</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate function, which checks whether the content of the tag matchs</span>
+<span class="sd">    `tag_content`.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        tag_content (str): Content of the tag which will be matched thru whole</span>
+<span class="sd">                           DOM.</span>
+<span class="sd">        content_transformer (fn, default None): Function used to transform all</span>
+<span class="sd">                            tags before matching.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        bool: True for every matching tag.</span>
+
+<span class="sd">    Note:</span>
+<span class="sd">        This function can be used as parameter for ``.find()`` method in</span>
+<span class="sd">        HTMLElement.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">content_matchs_closure</span><span class="p">(</span><span class="n">element</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">element</span><span class="o">.</span><span class="n">isTag</span><span class="p">():</span>
+            <span class="k">return</span> <span class="bp">False</span>
+
+        <span class="n">cont</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">getContent</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">content_transformer</span><span class="p">:</span>
+            <span class="n">cont</span> <span class="o">=</span> <span class="n">content_transformer</span><span class="p">(</span><span class="n">cont</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">tag_content</span> <span class="o">==</span> <span class="n">cont</span>
+
+    <span class="k">return</span> <span class="n">content_matchs_closure</span>
+
+</div>
+<div class="viewcode-block" id="is_equal_tag"><a class="viewcode-back" href="../../../api/harvester.autoparser.utils.html#harvester.autoparser.utils.is_equal_tag">[docs]</a><span class="k">def</span> <span class="nf">is_equal_tag</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">tag_name</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">content</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check is `element` object match rest of the parameters.</span>
+
+<span class="sd">    All checks are performed only if proper attribute is set in the HTMLElement.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        element (obj): HTMLElement instance.</span>
+<span class="sd">        tag_name (str): Tag name.</span>
+<span class="sd">        params (dict): Parameters of the tag.</span>
+<span class="sd">        content (str): Content of the tag.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        bool: True if everyhing matchs, False otherwise.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">tag_name</span> <span class="ow">and</span> <span class="n">tag_name</span> <span class="o">!=</span> <span class="n">element</span><span class="o">.</span><span class="n">getTagName</span><span class="p">():</span>
+        <span class="k">return</span> <span class="bp">False</span>
+
+    <span class="k">if</span> <span class="n">params</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">element</span><span class="o">.</span><span class="n">containsParamSubset</span><span class="p">(</span><span class="n">params</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">False</span>
+
+    <span class="k">if</span> <span class="n">content</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">content</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">!=</span> <span class="n">element</span><span class="o">.</span><span class="n">getContent</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+        <span class="k">return</span> <span class="bp">False</span>
+
+    <span class="k">return</span> <span class="bp">True</span>
+
+</div>
+<div class="viewcode-block" id="has_neigh"><a class="viewcode-back" href="../../../api/harvester.autoparser.utils.html#harvester.autoparser.utils.has_neigh">[docs]</a><span class="k">def</span> <span class="nf">has_neigh</span><span class="p">(</span><span class="n">tag_name</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">left</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function generates functions, which matches all tags with neighbours</span>
+<span class="sd">    defined by parameters.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        tag_name (str): Tag has to have neighbour with this tagname.</span>
+<span class="sd">        params (dict): Tag has to have neighbour with this parameters.</span>
+<span class="sd">        params (str): Tag has to have neighbour with this content.</span>
+<span class="sd">        left (bool, default True): Tag has to have neigbour on the left, or</span>
+<span class="sd">                                   right (set to ``False``).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        bool: True for every matching tag.</span>
+
+<span class="sd">    Note:</span>
+<span class="sd">        This function can be used as parameter for ``.find()`` method in</span>
+<span class="sd">        HTMLElement.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">has_neigh_closure</span><span class="p">(</span><span class="n">element</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">element</span><span class="o">.</span><span class="n">parent</span> \
+           <span class="ow">or</span> <span class="ow">not</span> <span class="p">(</span><span class="n">element</span><span class="o">.</span><span class="n">isTag</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">element</span><span class="o">.</span><span class="n">isEndTag</span><span class="p">()):</span>
+            <span class="k">return</span> <span class="bp">False</span>
+
+        <span class="c"># filter only visible tags/neighbours</span>
+        <span class="n">childs</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">childs</span>
+        <span class="n">childs</span> <span class="o">=</span> <span class="nb">filter</span><span class="p">(</span>
+            <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">isTag</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">x</span><span class="o">.</span><span class="n">isEndTag</span><span class="p">())</span> \
+                      <span class="ow">or</span> <span class="n">x</span><span class="o">.</span><span class="n">getContent</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="ow">or</span> <span class="n">x</span> <span class="ow">is</span> <span class="n">element</span><span class="p">,</span>
+            <span class="n">childs</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">childs</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">False</span>
+
+        <span class="n">ioe</span> <span class="o">=</span> <span class="n">childs</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">left</span> <span class="ow">and</span> <span class="n">ioe</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">is_equal_tag</span><span class="p">(</span><span class="n">childs</span><span class="p">[</span><span class="n">ioe</span> <span class="o">-</span> <span class="mi">1</span><span class="p">],</span> <span class="n">tag_name</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">content</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">left</span> <span class="ow">and</span> <span class="n">ioe</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">childs</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">is_equal_tag</span><span class="p">(</span><span class="n">childs</span><span class="p">[</span><span class="n">ioe</span> <span class="o">+</span> <span class="mi">1</span><span class="p">],</span> <span class="n">tag_name</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">content</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">False</span>
+
+    <span class="k">return</span> <span class="n">has_neigh_closure</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">edeposit.amqp.harvester 1.0.0 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../harvester.html" >harvester</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014 E-deposit team.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>
