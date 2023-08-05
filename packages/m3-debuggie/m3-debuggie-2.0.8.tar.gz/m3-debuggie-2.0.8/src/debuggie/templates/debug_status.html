@@ -1,0 +1,26 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+	<title>Debuggie</title>
+</head>
+<body>
+	<h3>Debuggie</h3>
+	<p>
+		Режим отладки
+		{% if status %}
+		<span style="color: green">ВКЛЮЧЕН</span>.
+		<a href="toggle">Выключить!</a>
+		{% else %}
+		<span style="color: red">ВЫКЛЮЧЕН</span>.
+		<a href="toggle">Включить!</a>
+		{% endif %}
+	</p>
+	<p>
+		{% if download_url %}
+		<a href="clear">Очистить</a> |
+		<a href="{{ download_url }}" target="#new">Выгрузить</a>
+		{% endif %}
+	</p>
+</body>
+</html>

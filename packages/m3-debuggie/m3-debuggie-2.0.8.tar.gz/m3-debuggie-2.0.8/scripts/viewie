@@ -1,0 +1,185 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+Инструмент просмотра дампов отладочной информации в диалоговом режиме
+"""
+
+import cmd
+import json
+import sys
+import tempfile
+import webbrowser
+import pprint
+
+
+HTTP_STATUS_CODES = {
+    200: 'OK',
+    301: 'Moved Permamently',
+    302: 'Moved Temporarily',
+    304: 'Not Modified',
+    400: 'Bad Request',
+    403: 'Forbidden',
+    404: 'Not Found',
+    405: 'Not Allowed',
+    410: 'Gone',
+    500: 'Internal Server Error'
+}
+
+
+def interpose(src, delimiter="\n"):
+    for i in src:
+        yield i
+        yield delimiter
+
+
+def make_complete(*variants):
+    def method(self, sub, line, beg, end):
+        return [v for v in variants if v.startswith(sub)]
+    return method
+
+
+class Viewie(cmd.Cmd):
+    """
+    Интерпретатор командной строки
+    инструмента просмотра дампов отладочной информации
+    """
+    intro = """
+Hello! This is Viewie.
+
+Type "help" for command list"""
+
+    prompt = "> "
+
+    def __init__(self, source, *args, **kwargs):
+        cmd.Cmd.__init__(self, *args, **kwargs)
+        self._actions = []
+        self._sys_info = None
+        with open(source) as f:
+            for line_no, l in enumerate(f, 1):
+                try:
+                    j = json.loads(l)
+                except:
+                    print u"Can`t parse the line #%s" % line_no
+                    sys.exit()
+                if u'url' in j:
+                    self._actions.append(j)
+                elif u'system_info' in j:
+                    self._sys_info = j[u'system_info']
+                else:
+                    raise TypeError(u'Unknown JSON record: %r' % j)
+
+    def do_EOF(self, arg):
+        """
+        Ends the session
+        """
+        self.stdout.write("\nBye!\nWill be Force with you!\n")
+        return True
+
+    do_bye = do_EOF
+
+    def do_ls(self, arg):
+        """
+        Prints the list of dump records
+        """
+        self.stdout.writelines(interpose(
+            '{0:>2}) {1}: {2:<10} {3}'.format(
+                idx,
+                j[u'time'],
+                j[u'action'][u'type'],
+                j[u'url']
+            )
+            for idx, j in enumerate(self._actions)
+            if u'url' in j
+        ))
+
+    def do_info(self, arg):
+        """
+        Shows the information about remote system
+        """
+        if arg == 'os':
+            lines = ['%s: %s' % (k, v) for (k, v) in zip(
+                ('System', 'Node', 'Release', 'Version', 'Machine'),
+                self._sys_info[u'uname'])]
+
+        elif arg == 'env':
+            lines = (
+                '{0} = {1}'.format(*i)
+                for i in sorted(
+                    self._sys_info[u'environ'].items()
+                )
+            )
+
+        elif arg == 'packages':
+            lines = (
+                '{0:<20} {1:<10} {2}'.format(*p.split(' ', 2))
+                for p in self._sys_info[u'packages']
+            )
+
+        else:
+            lines = ['"os", "env", or "packages", please!']
+
+        self.stdout.writelines(interpose(lines))
+
+    complete_info = make_complete('os', 'env', 'packages')
+
+    def do_show(self, arg):
+        """
+        Shows the content of record
+        """
+        if not arg:
+            self.stdout.write("Usage: show <idx>\n")
+        else:
+            try:
+                rec = self._actions[int(arg)]
+            except (IndexError, ValueError):
+                self.stdout.write("Bad index: %r! Try \"ls\"\n" % arg)
+            else:
+                action_type = rec[u'action'][u'type']
+
+                if action_type == u'catch':
+                    with tempfile.NamedTemporaryFile(delete=False) as f:
+                        f.write(rec[u'action'][u'data'][u'traceback'].encode(u'UTF-8'))
+                    webbrowser.open(f.name)
+
+                elif action_type == u'request':
+                    self.stdout.write(
+                        '{0} {1}\n'.format(rec['action']['data']['verb'], rec[u'url']))
+
+                    if rec[u'action'][u'data'][u'request']:
+                        self.stdout.write('\n--- REQUEST: ---\n')
+                        self.stdout.writelines(interpose(
+                            '{0:<20} = {1}'.format(*i)
+                            for i in rec[u'action'][u'data'][u'request'].items()
+                        ))
+                    self.stdout.write('\n--- COOKIES: ---\n')
+                    self.stdout.writelines(interpose(
+                        '{0:<20} = {1}'.format(*i)
+                        for i in rec[u'action'][u'data'][u'cookies'].items()
+                    ))
+
+                elif action_type == u'response':
+                    try:
+                        self.stdout.write('{0}\n'.format(
+                            pprint.pformat(
+                                json.loads(
+                                    rec[u'action'][u'data'][u'content']), width=20)))
+                    except ValueError:
+                        print rec[u'action'][u'data'][u'content']
+
+                elif action_type == u'tell':
+                    self.stdout.write(
+                        pprint.pformat(
+                            rec[u'action'][u'data']))
+
+                else:
+                    self.stdout.write(
+                        "This action I browse can not :(\n"
+                    )
+
+#====================================================================
+
+if __name__ == '__main__':
+    if len(sys.argv) < 2:
+        print "Usage: python viewie.py filename"
+    else:
+        Viewie(sys.argv[1]).cmdloop()
