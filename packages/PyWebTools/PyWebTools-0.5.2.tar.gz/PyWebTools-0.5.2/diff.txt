@@ -1,0 +1,23 @@
+113,114c113,114
+<     response = Response(template.render('xhtml'))
+<     return response
+---
+>     request.response.text = template.render('xhtml')
+>     return request.response
+120,121c120,121
+<     response = Response(json.dumps(result))
+<     return response
+---
+>     request.response.body = json.dumps(result)
+>     return request.response
+129c129,130
+<     response = Response(f.getvalue())
+---
+>     response = request.response
+>     response.body = f.getvalue()
+136,137c137,138
+<     response = Response(template.render('xml'))
+<     return response
+---
+>     request.response.text = template.render('xml')
+>     return request.response
