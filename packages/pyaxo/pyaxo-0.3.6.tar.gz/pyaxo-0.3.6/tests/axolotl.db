@@ -1,0 +1,12 @@
+BEGIN TRANSACTION;
+CREATE TABLE conversations (               my_identity TEXT,               other_identity TEXT,               RK TEXT,               HKs TEXT,               HKr TEXT,               NHKs TEXT,               NHKr TEXT,               CKs TEXT,               CKr TEXT,               DHIs_priv TEXT,               DHIs TEXT,               DHIr TEXT,               DHRs_priv TEXT,               DHRs TEXT,               DHRr TEXT,               CONVid TEXT,               Ns INTEGER,               Nr INTEGER,               PNs INTEGER,               bobs_first_message INTEGER,               mode INTEGER             );
+INSERT INTO "conversations" VALUES('Barb','Angie','asF4YBZqHuYGfrqtnd4lKOaZn22dyD9hkA17t0gAKZQ=','jueUWCOQyFzDNthxf2LaPwfRXyrapMuakX6yVbAzt58=','aZ2brsdcfWXlQkPotBXni/CZDRUkH3WjfxmY1MBmaac=','1yfMB0t9QN9wtvBJ+CwrVw8Iwlr0lspuJXzrHT3ypqw=','DcAQaqDXreE3NZQcghOd+4Y1uIiGfO3E5b8vCY2O7ek=','q2VFA3fhyOcT49D2YtgDoxdDqzKWlv6OFqWH6s1VnDE=','XEAFQtSMByW6WsK7xa/3t9chdpXhsnn9CzG5xSmjMLw=','eF9NyJtn0XB3UT/yYwjWY4sVwAHg1hTqFz33LCDjxks=','iNc649P0QRU65cJv9k3TW84MbfkCv1Isqaa/ciVnxCw=','LTW7FET+pZquL6nHL9pEhZB1BjaNnTTUoRmtO35wdH8=','0','0','aqJdJmdnM+WszLae6fSQ9WDQzQRpSwLnOWdyDxznZ2k=','/lmlhwKWcgLz2yWBXNDTq2JlSjkPttg9YscRUuegK2Y=',3,1,0,0,0);
+CREATE TABLE skipped_mk (               my_identity,               to_identity,               HKr TEXT,               mk TEXT,               timestamp INTEGER             );
+INSERT INTO "skipped_mk" VALUES('Barb','Angie','flMa/gBL2uZSE+V2rTyPsbEW20r1l6NcZ+8zzYJaFMw=','MpCZLDbVxczsr3LijP/F6Wm/39jw6hEa3KhCAyuSwoQ=',1410886805);
+INSERT INTO "skipped_mk" VALUES('Barb','Angie','flMa/gBL2uZSE+V2rTyPsbEW20r1l6NcZ+8zzYJaFMw=','5Lbc+i6y2lmPPpitPBQ5klz9cHLYayiRLv5sj0dj+J0=',1410886805);
+INSERT INTO "skipped_mk" VALUES('Barb','Angie','flMa/gBL2uZSE+V2rTyPsbEW20r1l6NcZ+8zzYJaFMw=','9/4z+eIa8bMhw6uGb6Bx1z0+DL9JPLdXuhJRuH3kM44=',1410886805);
+INSERT INTO "skipped_mk" VALUES('Barb','Angie','flMa/gBL2uZSE+V2rTyPsbEW20r1l6NcZ+8zzYJaFMw=','lfsC5XDf8xnQFcgH1qCr86ia8dc40a6fxvFATs66A+Y=',1410886805);
+INSERT INTO "skipped_mk" VALUES('Barb','Angie','flMa/gBL2uZSE+V2rTyPsbEW20r1l6NcZ+8zzYJaFMw=','PNaYfTzxboCwTeaNU6Q4xYQzZ68Ongww4bNmJzibYsU=',1410886805);
+CREATE UNIQUE INDEX message_keys ON skipped_mk (mk);
+CREATE UNIQUE INDEX conversation_route ON conversations (my_identity, other_identity);
+COMMIT;
