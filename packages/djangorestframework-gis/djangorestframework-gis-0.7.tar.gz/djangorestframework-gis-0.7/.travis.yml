@@ -1,0 +1,42 @@
+language: python
+
+services:
+  - postgresql
+
+python:
+  - "3.4"
+  - "3.3"
+  - "2.7"
+  - "2.6"
+
+env:
+  - DJANGO="django==1.7"
+  - DJANGO="django==1.5.10"
+  - DJANGO="django==1.6.7"
+
+matrix:
+  exclude:
+    - python: "2.6"
+      env: DJANGO="django==1.7"
+
+branches:
+  only:
+    - master 
+
+# command to install requirements
+install:
+  - pip install $DJANGO  --use-mirrors
+  - pip install psycopg2 djangorestframework coverage coveralls django-filter --use-mirrors
+  - python setup.py -q install
+
+before_script:
+  - createdb django_restframework_gis
+  - psql -U postgres -d django_restframework_gis -c "CREATE EXTENSION postgis;"
+  - psql -U postgres -d django_restframework_gis -c "CREATE EXTENSION postgis_topology;"
+
+# command to run tests, e.g. python setup.py test
+script:
+  - coverage run --source=rest_framework_gis,django_restframework_gis_tests runtests.py
+
+after_success:
+  coveralls
