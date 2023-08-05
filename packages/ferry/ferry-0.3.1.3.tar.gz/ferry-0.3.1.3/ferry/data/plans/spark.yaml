@@ -1,0 +1,24 @@
+metadata:
+   author: James Horey
+   version: 0.2.0
+   icon: spark.png
+   description: Spark is a fast and powerful engine for processing Hadoop data. It can process data in HDFS, HBase, Cassandra, Hive, and any Hadoop InputFormat. It is designed to perform both general data processing (similar to MapReduce) and new workloads like streaming, interactive queries, and machine learning.
+   tags: [infrastructure,big data,hadoop,spark]
+   url: https://spark.apache.org
+params:
+   resolver: ferry.docker.resolve.DefaultResolver
+questions:
+   - question: Number of instances for hadoop
+     param: "{numhadoop}"
+   - question: Number of instances for spark
+     param: "{numspark}"
+backend:
+   - storage:
+        personality: "hadoop"
+        instances: "{numhadoop}"
+     compute:
+        - personality: "spark"
+          instances: "{numspark}"
+connectors:
+   - personality: "ferry/spark-client"
+     ports: [8080]

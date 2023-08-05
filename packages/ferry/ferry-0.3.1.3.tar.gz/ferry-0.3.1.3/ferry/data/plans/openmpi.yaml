@@ -1,0 +1,24 @@
+metadata:
+   author: James Horey
+   version: 0.2.0
+   icon: openmpi.png
+   description: The Open MPI Project is an open source Message Passing Interface implementation that is developed and maintained by a consortium of academic, research, and industry partners. This stack combines OpenMPI with GlusterFS, an distributed file system capable of scaling to several petabytes and handling thousands of clients.
+   tags: [infrastructure,openmpi,glusterfs]
+   url: http://www.open-mpi.org
+params:
+   resolver: ferry.docker.resolve.DefaultResolver
+questions:
+   - question: Number of instances for gluster
+     param: "{numgluster}"
+   - question: Number of instances for openmpi
+     param: "{nummpi}"
+backend:
+   - storage:
+        personality: "gluster"
+        instances: "{numgluster}"
+     compute:
+        - personality: "openmpi"
+          instances: "{nummpi}"
+connectors:
+   - personality: "ferry/openmpi-client"
+     name: "control-0"
