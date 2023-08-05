@@ -1,0 +1,24 @@
+Metadata-Version: 1.0
+Name: django-definition-tag
+Version: 0.1.0
+Summary: Allows easy creation of template tags that define a context variable
+Home-page: http://github.com/defcube/django-definition-tag/
+Author: Philip Gatt
+Author-email: gattster@gmail.com
+License: UNKNOWN
+Description: Allows easy creation of template tags that define a context variable
+        
+        
+        The "tag function" returns a value which, when called inside a template, is stored in a
+        variable or displayed directly.
+        
+        Example:
+        
+        @definition_tag(register=register)
+        def top_players(context):
+            return TopScores.objects.order_by('-elo')[:20]
+        
+        Inside the template, we could call {% top_players %} to output the data, or we could call
+        {% top_players as foo %} {{ foo }}.
+        
+Platform: UNKNOWN
