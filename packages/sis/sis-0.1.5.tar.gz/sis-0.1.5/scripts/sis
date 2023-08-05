@@ -1,0 +1,51 @@
+#!/usr/bin/env python
+import sys
+import logging
+from sis import Sisyphus
+from optparse import OptionParser
+
+def colorize(string, color=36):
+    return '\033[{color}m{0}\033[0m'.format(string, color=color)
+
+if __name__ == '__main__':
+    parser = OptionParser("usage: %prog [options] <cmd>")
+    parser.allow_interspersed_args = False
+    parser.add_option("", "--debug", dest="debug", action="store_true",
+            default=False,
+            help="debug output")
+    parser.add_option("-q", "--quiet", dest="quiet", action="store_true",
+            default=False,
+            help="output nothing besides the child's output")
+    parser.add_option("-d", "--dir", dest="directory", action="store",
+            default='.',
+            help="directory to monitor recursively [default=%default]")
+    parser.add_option("-e", "--ext", dest="extensions", action="store",
+            default='',
+            help="file extensions to monitor, comma-separated list")
+    parser.add_option("-c", "--clear", dest="clear", action="store_true",
+            default='',
+            help="clear the screen before running the program")
+    parser.add_option("-s", "--shell", dest="shell", action="store_true",
+            default='',
+            help="interpret <cmd> in a shell")
+
+    (options, args) = parser.parse_args()
+
+    if not options.quiet:
+        # set up logger for the desired level
+        log_level = logging.DEBUG if options.debug else logging.INFO
+        ch = logging.StreamHandler()
+        ch.setLevel(log_level)
+        formatter = logging.Formatter(colorize('%(levelname)s - %(message)s'))
+        ch.setFormatter(formatter)
+        logger = logging.getLogger()
+        logger.setLevel(log_level)
+        logger.addHandler(ch)
+
+    if len(args) == 0:
+        parser.print_help()
+        sys.exit(1)
+
+    sisyphus = Sisyphus(options, cmd=args)
+    sisyphus.run()
+
