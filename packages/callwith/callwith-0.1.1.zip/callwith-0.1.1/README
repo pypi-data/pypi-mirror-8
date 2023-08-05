@@ -1,0 +1,18 @@
+Call function with parameters
+-----------------------------
+
+You can do:
+
+    format(3.1415926, '.2f')
+
+But you can not do:
+
+    parameters = (3.1415926, '.2f')
+    format(parameters)
+
+With callwith, you can do similar thing:
+
+    from callwith import CallWith as _
+
+    parameters = _(args, **kwargs)
+    parameters(format)
