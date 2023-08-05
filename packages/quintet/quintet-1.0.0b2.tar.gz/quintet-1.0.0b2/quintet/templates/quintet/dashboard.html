@@ -1,0 +1,162 @@
+{% load static %}
+{% load humanize %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>{% block title %}Dashboard{% endblock %} - Quintet</title>
+
+    <!-- Bootstrap -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{% static 'css/quintet.css' %}" rel="stylesheet">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/r29/html5.min.js"></script>
+      <script src="//cdnjs.cloudflare.com/ajax/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    {% block css %}{% endblock %}
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
+  </head>
+  <body>
+    <nav class="navbar navbar-default navbar-static-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navigation">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="{% url 'dashboard' %}">Quintet</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="navigation">
+          <ul class="nav navbar-nav">
+            <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+
+            {% if perms.quintet.add_post or perms.quintet.change_post or perms.quintet.delete_post or perms.quintet.publish_post %}
+            <li><a href="{% url 'list_posts' filter='my_posts' %}">Posts</a></li>
+            {% endif %}
+
+            {% if perms.quintet.add_page or perms.quintet.change_page or perms.quintet.delete_page or perms.quintet.publish_page %}
+            <li><a href="{% url 'list_pages' %}">Pages</a></li>
+            {% endif %}
+
+            {% if perms.quintet.add_section or perms.quintet.delete_section %}
+            <li><a href="{% url 'list_sections' %}">Sections</a></li>
+            {% endif %}
+
+            {% if perms.auth.add_user or perms.auth.change_user or perms.auth.delete_user %}
+            <li><a href="{% url 'list_users' %}">Users</a></li>
+            {% endif %}
+          </ul>
+
+          <ul class="nav navbar-nav navbar-right">
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ user.get_full_name }} <b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li><a href="{% url 'edit_user' pk=user.pk %}">Settings</a></li>
+                <li><a href="{% url 'quintet_logout' %}">Logout</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container" style="margin-bottom: 20px;">
+      {% for message in messages %}
+      <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissable">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+        {{ message }}
+      </div>
+      {% endfor %}
+      
+      {% block content %}
+      <h1>Dashboard</h1>
+
+      <div class="row">
+        <div class="col-sm-4">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h3 class="panel-title">Stats</h3>
+            </div>
+            <div class="panel-body text-center" style="padding-top: 0;">
+              <div class="row" style="border-bottom: 1px solid #ddd;">
+                <div class="col-xs-6" style="border-right: 1px solid #ddd;">
+                  <h2>{{ stats.drafts }}</h2>
+                  <p class="text-muted">Drafts</p>
+                </div>
+
+                <div class="col-xs-6">
+                  <h2>{{ stats.ready_for_review }}</h2>
+                  <p class="text-muted">Ready for Review</p>
+                </div>
+              </div>
+              <h2>{{ stats.published }}</h2>
+              <p class="text-muted">Published</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-sm-8">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h3 class="panel-title">Recent Activity</h3>
+            </div>
+            <div class="panel-body">
+              {% for event in feed %}
+                {% if event.type == 'post' %}
+                <p class="lead">{{ event.object.owner.get_full_name }} edited <a href="{% url 'edit_post' pk=event.object.pk %}">{{ event.object.title }}</a>.</p>
+
+                {% elif event.type == 'comment' %}
+                <p class="lead">{{ event.object.user.get_full_name }} commented on <a href="{% url 'edit_post' pk=event.object.post.pk %}">{{ event.object.post.title }}</a>.</p>
+
+                <div class="row comment">
+                  <div class="col-sm-7">
+                    <p>{{ event.object }}</p>
+                  </div>
+
+                  {% if event.object.excerpt %}
+                  <div class="col-sm-5">
+                    <blockquote>
+                      ... <mark>{{ event.object.excerpt }}</mark> ...
+                    </blockquote>
+                  </div>
+                  {% endif %}
+                </div>
+
+                {% elif event.type == 'approval' %}
+                <p class="lead">{{ event.object.user.get_full_name }} approved <a href="{% url 'edit_post' pk=event.object.post.pk %}">{{ event.object.post.title }}</a>.</p>
+                {% endif %}
+                <p class="text-muted text-right"><small>{{ event.timestamp|naturaltime }}</small></p>
+                {% if not forloop.last %}<hr>{% endif %}
+              {% empty %}
+              <p class="text-center text-muted">
+                <em>No recent activity.</em>
+              </p>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endblock %}
+    </div>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <script type="text/javascript">
+    $(document).ready(function() {
+      $('#navigation').find(':contains({% block active_nav %}Dashboard{% endblock %})').addClass('active');
+    });
+    </script>
+    {% block js %}{% endblock %}
+  </body>
+</html>

@@ -1,0 +1,76 @@
+{% extends 'quintet/dashboard.html' %}
+{% load humanize %}
+
+{% block title %}Posts{% endblock %}
+
+{% block active_nav %}Posts{% endblock %}
+
+{% block content %}
+<div class="toolbar" style="margin-bottom: 20px;">
+  {% if perms.quintet.add_post %}
+  <a href="{% url 'create_post' %}" class="btn btn-primary pull-right"><span class="glyphicon glyphicon-plus"></span> Create Post</a>
+  {% endif %}
+
+  <div class="btn-group">
+    <a href="{% url 'my_posts' %}" class="btn btn-default{% if filter == 'my_posts' %} active{% endif %}">My Posts</a>
+    <a href="{% url 'list_posts' filter='R' %}" class="btn btn-default{% if filter == 'R' %} active{% endif %}">
+      Ready for Review
+      {% if ready_for_review_count > 0 %}
+        <span class="badge">{{ ready_for_review_count }}</span>
+      {% endif %}
+    </a>
+    <a href="{% url 'all_posts' %}" class="btn btn-default{% if filter == None %} active{% endif %}">All Posts</a>
+    <div class="btn-group">
+      <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></button>
+      <ul class="dropdown-menu">
+        <li><a href="{% url 'list_posts' filter='D' %}">Drafts</a></li>
+        <li><a href="{% url 'list_posts' filter='S' %}">Scheduled</a></li>
+        <li><a href="{% url 'list_posts' filter='P' %}">Published</a></li>
+        <li><a href="{% url 'list_posts' filter='H' %}">Hidden</a></li>
+        <li><a href="{% url 'list_posts' filter='A' %}">Archived</a></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<table class="table table-hover">
+  <tr>
+    <th>Title</th>
+    <th class="text-center">Section</th>
+    <th>Contributors</th>
+    <th class="text-center">Status</th>
+    <th class="text-center">Updated</th>
+  </tr>
+
+  {% for post in posts %}
+  <tr>
+    <td><a href="{% url 'edit_post' pk=post.pk %}">{{ post.title }}</a></td>
+    <td class="text-center">{{ post.section|default:"-" }}</td>
+    <td>{% for contributor in post.contributors.all %}
+    {{ contributor.user.first_name }}{% if not forloop.last %},{% endif %}
+    {% endfor %}</td>
+    <td class="text-muted text-center">
+    {% if post.status == 'D' %}
+    <span class="glyphicon glyphicon-minus-sign" title="Draft"></span>
+    {% elif post.status == 'R' %}
+    <span class="glyphicon glyphicon-ok-sign" title="Ready for Review"></span>
+    {% elif post.status == 'S' %}
+    <span class="text-success glyphicon glyphicon-calendar" title="Scheduled"></span>
+    {% elif post.status == 'P' %}
+    <span class="text-success glyphicon glyphicon-ok-sign" title="Published"></span>
+    {% elif post.status == 'H' %}
+    <span class="text-danger glyphicon glyphicon-eye-close" title="Hidden"></span>
+    {% elif post.status == 'A' %}
+    <span class="text-danger glyphicon glyphicon-trash" title="Archived"></span>
+    {% endif %}
+    {% if post.stamp_count > 0 %}{{ post.approved_by|length }}{% endif %}
+    </td>
+    <td class="text-center">{{ post.date_updated|naturalday|capfirst }}</td>
+  </tr>
+  {% empty %}
+  <tr>
+    <td colspan="5" class="text-muted text-center"><em>No posts to display.</em></td>
+  </tr>
+  {% endfor %}
+</table>
+{% endblock %}

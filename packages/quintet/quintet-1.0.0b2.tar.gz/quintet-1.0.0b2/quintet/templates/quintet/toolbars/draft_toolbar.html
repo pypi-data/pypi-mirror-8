@@ -1,0 +1,11 @@
+<div class="btn-group pull-right">
+  <a href="{{ post.get_set_ready_for_review_url }}" class="btn btn-primary"><span class="glyphicon glyphicon-check"></span> Ready for Review</a>
+  <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></button>
+  <ul class="dropdown-menu" role="menu">
+    <li><a href="#" data-toggle="modal" data-target="#confirm-archive-modal">Archive</a></li>
+    {% if perms.quintet.delete_post %}
+    <li class="divider"></li>
+    <li><a href="#" data-toggle="modal" data-target="#confirm-delete-modal">Delete</a></li>
+    {% endif %}
+  </ul>
+</div>

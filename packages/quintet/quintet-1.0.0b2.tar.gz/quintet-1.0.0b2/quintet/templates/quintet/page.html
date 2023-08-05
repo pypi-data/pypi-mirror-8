@@ -1,0 +1,113 @@
+{% extends 'quintet/page_list.html' %}
+{% load static %}
+
+{% block title %}Edit Page{% endblock %}
+
+{% block content %}
+<div class="btn-toolbar" style="margin-bottom: 20px;">
+  {% include 'quintet/toolbars/toolbars.html' with post=page %}
+
+  <div class="save-status-wrapper pull-right" style="margin: 10px 15px 0 0; line-height: 1em;">
+    <p class="save-status text-muted" style="display: none;"></p>
+  </div>
+</div>
+
+<form role="form" method="post" style="margin-bottom: 20px;" id="page-form">{% csrf_token %}
+  <div class="row">
+    <div class="col-sm-12">
+      <div class="form-group">
+        <label for="{{ form.title.id_for_label }}" class="sr-only">{{ form.title.label }}</label>
+        {{ form.title }}
+      </div>
+    </div>
+  </div>
+  <div class="form-group">
+    {{ form.markdown }}
+  </div>
+</form>
+
+{% include 'quintet/modals/confirm_archive.html' with post=page %}
+{% include 'quintet/modals/confirm_delete.html' with post=page %}
+{% endblock %}
+
+{% block js %}
+<script src="{% static 'js/murmurhash3.js' %}"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery-scrollTo/1.4.11/jquery.scrollTo.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery.form/3.49/jquery.form.min.js"></script>
+<script src="{% static 'js/jquery.selection.min.js' %}"></script>
+
+{{ form.media }}
+
+<script type="text/javascript">
+  $(document).ready(function() {
+    $('body').tooltip({
+        selector: 'a[rel="tooltip"], [data-toggle="tooltip"]'
+    });
+
+    // Page auto-save
+    window.page_last_saved = false;
+    window.page_hash = murmurhash3_32_gc($('#page-form').formSerialize(), '{{ page.pk }}');
+    window.hide_status_timeout = null;
+
+    setInterval(function() {
+      var hash = murmurhash3_32_gc($('#page-form').formSerialize(), '{{ page.pk }}');
+
+      if(hash != window.page_hash) {
+        page_save();
+      }
+    }, 5*1000); // every 5 seconds
+
+    $('#page-form').submit(function(e) {
+      e.preventDefault();
+      page_save();
+    });
+
+    $('.save-status').on('click', '.save-again', function(e) {
+      e.preventDefault();
+      page_save();
+    });
+
+    function page_save() {
+      var hash = murmurhash3_32_gc($('#page-form').formSerialize(), '{{ page.pk }}');
+
+      display_save_status("Saving...");
+      $('#page-form').ajaxSubmit({
+        'success': function() {
+          display_save_status("Saved.");
+          window.page_hash = hash;
+        },
+        'error': function() {
+          display_save_status("Error Saving. <a class=\"save-again\" href=\"#\">Try again</a>", -1);
+        },
+        'timeout': 4*1000
+      });
+    }
+
+    function display_save_status(status, duration) {
+      duration = typeof duration !== 'undefined' ? duration : 3*1000 // three seconds
+      $('.save-status').html(status);
+
+      if($('.save-status').is(':hidden')) {
+        $('.save-status').fadeIn();
+      }
+
+      clearTimeout(window.hide_status_timeout);
+      if (duration > 1) {
+        window.hide_status_timeout = setTimeout(function() {
+          $('.save-status').fadeOut();
+        }, duration);
+      }
+    }
+
+    // Warn on window close with unsaved changes.
+    $(window).bind('beforeunload', function(e) {
+      var hash = murmurhash3_32_gc($('#page-form').formSerialize(), '{{ page.pk }}');
+
+      if(hash != window.page_hash) {
+        return "You have unsaved changes."
+      }
+      return void 0;
+    });
+  });
+</script>
+{% endblock %}

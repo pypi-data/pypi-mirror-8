@@ -1,0 +1,54 @@
+<div class="modal fade" id="contributor-modal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">Add Contributor</h4>
+      </div>
+      <form action="{% url 'add_contributor' pk=post.pk %}" method="post" id="contributor-form">{% csrf_token %}
+        <div class="modal-body">
+          {% for field in form %}
+          <div class="form-group">
+            {{ field.errors }}
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+          </div>
+          {% endfor %}
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary">Add Contributor</button>
+        </div>
+      </form>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<script type="text/javascript">
+$(document).ready(function() {
+  $('#contributor-form').ajaxForm({
+    'dataType': 'json',
+    'resetForm': true,
+    'success': function(data) {
+      if(data.success) {
+        // Hide Modal
+        $('#contributor-modal').modal('hide');
+
+        // Add contributor icon and tooltip
+        if(!data.thumbnail) {
+          data.thumbnail = "http://upload.wikimedia.org/wikipedia/commons/f/f5/Django_Reinhardt_(Gottlieb_07301).jpg";
+        }
+        $('#contributor-list .add').before('\
+          <a href="#" onclick="event.preventDefault();" data-toggle="tooltip" data-placement="bottom" title="' + data.full_name + ', ' + data.role + '" style="display: block; width: 34px; height: 34px; float: left; margin-right: 10px;" data-pk="' + data.pk + '" data-role-pk="' + data.role_pk + '" data-role="' + data.role + '" data-name="' + data.full_name + '" class="edit">\
+            <img src="' + data.thumbnail + '" alt="' + data.full_name + ', ' + data.role + '" class="img-circle img-responsive">\
+          </a>\
+        ');
+      } else {
+        alert("Sorry, an error occored: " + data.error);
+      }
+    }
+  });
+})
+</script>
+
+{{ form.media }}
