@@ -1,0 +1,1 @@
+Function which calculates coordinates between given positions
