@@ -1,0 +1,166 @@
+#!/usr/bin/env python
+# vim: set fileencoding=UTF-8 :
+
+# Curco is public domain software. For more information read UNLICENSE
+
+import os
+import re
+import sys
+import json
+import time
+from signal import signal, SIGPIPE, SIG_DFL
+
+# Python 2-3 compatibility
+try:
+    from urllib.request import urlopen
+    from urllib.parse import urlencode
+except ImportError:
+    from urllib import urlencode
+    from urllib2 import urlopen
+
+# Python 2-3 compatibility
+try:
+    import cPickle as pickle                # noqa
+except ImportError:
+    import pickle                           # noqa
+
+USAGE = """curco: [--help] [--vein] CONVERSION
+
+A dummy currency converter.  Takes exchange rates from
+http://rate-exchange.appspot.com/ (based on Google's API)
+
+Write the CONVERSION argument in a natural way:
+    $ curco 10$ to eur
+or
+    $ curco USD to A$
+or
+    $ curco 5000.00 cad to jpy
+and so on.
+
+Conversions are cached for 3 hours (by default).
+
+Options:
+    --help      show this
+    --vein      update the cache
+"""
+
+CURRENCIES = ["AED", "ANG", "ARS", "AUD", "BGN", "BHD", "BND", "BOB", "BRL",
+              "BWP", "CAD", "CHF", "CLP", "CNY", "COP", "CRC", "CZK", "DKK",
+              "DOP", "DZD", "EEK", "EGP", "EUR", "FJD", "GBP", "HKD", "HNL",
+              "HRK", "HUF", "IDR", "ILS", "INR", "JMD", "JOD", "JPY", "KES",
+              "KRW", "KWD", "KYD", "KZT", "LBP", "LKR", "LTL", "LVL", "MAD",
+              "MDL", "MKD", "MUR", "MXN", "MYR", "NAD", "NGN", "NIO", "NOK",
+              "NPR", "NZD", "OMR", "PEN", "PGK", "PHP", "PKR", "PLN", "PYG",
+              "QAR", "RON", "RSD", "RUB", "SAR", "SCR", "SEK", "SGD", "SKK",
+              "SLL", "SVC", "THB", "TND", "TRY", "TTD", "TWD", "TZS", "UAH",
+              "UGX", "USD", "UYU", "UZS", "VND", "YER", "ZAR", "ZMK"]
+
+ALIAS = {"A$": "AUD", "R$": "BRL", "CA$": "CAD", "CN¥": "CNY", "€": "EUR",
+         "£": "GBP", "HK$": "HKD", "₪": "ILS", "₹": "INR", "RS.": "INR",
+         "¥": "JPY", "₩": "KRW", "MX$": "MXN", "NZ$": "NZD", "฿": "THB",
+         "NT$": "TWD", "$": "USD", "₫": "VND"}
+
+CACHEFILE = os.path.expanduser("~/.curcocache")
+CACHEEXPHRS = 3
+
+
+def find_cur_code():
+    for i in sys.argv[1:]:
+        if i.upper() in CURRENCIES:
+            sys.argv.remove(i)
+            return i.upper()
+        elif i.upper() in ALIAS:
+            sys.argv.remove(i)
+            return ALIAS[i.upper()]
+
+
+def h2s(h):
+    """Convert hours to seconds"""
+    return h * 60**2
+
+
+def output(amount, format_str, from_, to, value, rate):
+    sys.stdout.write(format_str.format(amount, from_, to, value, rate))
+    sys.stdout.write("\n")
+    sys.stdout.flush()
+
+
+def main():
+    # Ignore BrokenPipeError
+    signal(SIGPIPE, SIG_DFL)
+    if not sys.argv[1:]:
+        try:
+            sys.argv += sys.stdin.read().split()
+        except KeyboardInterrupt:
+            sys.stderr.write("\nKeyboard interrupt received, exiting...\n")
+            sys.stderr.flush()
+            sys.exit(1)
+
+    if "--help" in sys.argv:
+        sys.stdout.write(USAGE)
+        sys.stdout.write("\n")
+        sys.stdout.flush()
+        sys.exit(0)
+
+    cur_from = None
+    cur_to = None
+
+    amount_re = re.findall(r"\d+\.\d*|\.\d+|\d+", " ".join(sys.argv[1:]))
+    if amount_re:
+        amount = amount_re[0]
+        format_str = "{0} {1} = {2} {3}"
+        sys.argv = [sys.argv[0]] + [i.replace(amount, "") for i in sys.argv]
+    else:
+        amount = "1"
+        format_str = "{1} / {3} = {4}"
+
+    cur_from = find_cur_code()
+    cur_to = find_cur_code()
+
+    if not cur_from or not cur_to or cur_from == cur_to:
+        sys.stderr.write("Insert valid currency codes\n")
+        sys.stderr.write("Use '--help' for help\n")
+        sys.stderr.flush()
+        sys.exit(1)
+
+    if os.path.isfile(CACHEFILE):
+        # Need 'rb' for Python 3 compatibility
+        with open(CACHEFILE, "rb") as cf:
+            cache_rates_dict = pickle.load(cf)
+    else:
+        cache_rates_dict = {}
+
+    val_id = cur_from + cur_to
+
+    if (val_id in cache_rates_dict and
+       time.time() < cache_rates_dict[val_id]["t"] and
+       "--vein" not in sys.argv):
+
+        rate = cache_rates_dict[val_id]["rate"]
+        conv_val = str(float(rate) * float(amount))
+        output(amount, format_str, cur_from, conv_val, cur_to, rate)
+    else:
+        URL = "http://rate-exchange.appspot.com/currency?{0}"
+        params = urlencode({"from": cur_from, "to": cur_to, "q": amount})
+        # Need .decode('utf-8') for Python 3 compatibility
+        try:
+            res = urlopen(URL.format(params)).read().decode("utf-8")
+        except Exception as exc:
+            sys.stderr.write("Error: {}\n".format(exc))
+            sys.stderr.flush()
+            sys.exit(1)
+        res_json = json.loads(res)
+        cache_rates_dict[val_id] = {"t": time.time() + h2s(CACHEEXPHRS),
+                                    "rate": res_json["rate"]}
+        # Need 'wb' for Python 3 compatibility
+        with open(CACHEFILE, "wb") as cf:
+            pickle.dump(cache_rates_dict, cf)
+        output(amount,
+               format_str,
+               res_json["from"],
+               res_json["v"],
+               res_json["to"],
+               res_json["rate"])
+
+if __name__ == "__main__":
+    sys.exit(main())
