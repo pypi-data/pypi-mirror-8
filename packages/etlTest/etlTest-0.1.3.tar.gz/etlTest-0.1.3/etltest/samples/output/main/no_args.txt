@@ -1,0 +1,41 @@
+usage: etlTest.py [-h] [-f [IN_FILE]] [-d [IN_DIR]] [-o [OUT_DIR]] [-g] [-e]
+                  [-t] [-v]
+
+Automated data integration test generator and executor.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -f [IN_FILE], --infile [IN_FILE]
+                        Specify the input file
+  -d [IN_DIR], --indir [IN_DIR]
+                        Specify the input directory
+  -o [OUT_DIR], --outdir [OUT_DIR]
+                        Specify the output directory
+  -g, --gen             Generate new test code
+  -e, --exec            Execute test code
+  -t, --test            Run app as tests. Does not persist the generated or
+                        executed code.
+  -v, --version         show program's version number and exit
+
+etlTest -d /your/test_file/directory/ -g
+usage: etlTest.py [-h] [-s [SOURCE]] [-t [TABLE]] [-c [COLUMN]] [-i]
+                  [-r [{ours,theirs}]]
+
+Reference data handler for etlTest.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -s [SOURCE], --source [SOURCE]
+                        Name of the source from the connections.cfg file
+  -t [TABLE], --table [TABLE]
+                        Name of the table from the named source
+  -c [COLUMN], --column [COLUMN]
+                        Name of the key column from the named table. Used to
+                        identify records.
+  -i, --import          Import data from the named source table.
+  -r [{ours,theirs}], --refresh [{ours,theirs}]
+                        Refreshes the stored reference data. If ours, we will
+                        keep our data and refresh the source. If theirs, we
+                        will drop our data and refresh from the source.
+
+etlTest -s yourSource -t yourSourceTable -c yourTableIdentifyingColumn -i
