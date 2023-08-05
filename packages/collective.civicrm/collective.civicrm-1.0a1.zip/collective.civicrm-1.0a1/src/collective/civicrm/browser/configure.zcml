@@ -1,0 +1,32 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser">
+
+  <browser:page
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+      name="civicrm-find-contacts"
+      permission="zope2.View"
+      class=".find_contacts.FindContactsView"
+      template="find_contacts.pt"
+      layer="..interfaces.IAddOnInstalled"
+      />
+
+  <browser:page
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+      name="civicrm-contact"
+      permission="zope2.View"
+      class=".contact.ContactView"
+      template="contact.pt"
+      layer="..interfaces.IAddOnInstalled"
+      />
+
+  <browser:page
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+      name="civicrm-relationships"
+      permission="zope2.View"
+      class=".relationships.RelationshipsView"
+      template="relationships.pt"
+      layer="..interfaces.IAddOnInstalled"
+      />
+
+</configure>

@@ -1,0 +1,85 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:metal="http://xml.zope.org/namespaces/metal"
+    xmlns:tal="http://xml.zope.org/namespaces/tal"
+    xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    metal:use-macro="context/main_template/macros/master"
+    i18n:domain="collective.civicrm">
+<head>
+  <metal:css fill-slot="style_slot">
+    <style type="text/css">
+        .spinner {
+            background: url('++resource++collective.civicrm/spinner.gif') no-repeat center right;
+            padding-right: 20px;
+        }
+    </style>
+  </metal:css>
+</head>
+<body>
+  <metal:block fill-slot="main" tal:define="contact view/contact">
+    <div itemscope itemtype="https://schema.org/Person">
+      <div tal:replace="structure provider:plone.abovecontenttitle" />
+      <h1 class="documentFirstHeading" itemprop="name"
+          tal:content="contact/sort_name" />
+
+      <div tal:replace="structure provider:plone.abovecontentbody" />
+      <div id="content-core">
+        <table class="vertical listing">
+          <tbody>
+            <tr>
+              <th i18n:translate="">Contact Type</th>
+              <td tal:content="contact/contact_type" />
+            </tr>
+            <tr>
+              <th i18n:translate="">Groups</th>
+              <td tal:content="view/groups" />
+            </tr>
+            <tr>
+              <th i18n:translate="">Email</th>
+              <td itemprop="name" tal:content="contact/email" />
+            </tr>
+            <tr>
+              <th i18n:translate="">Phone</th>
+              <td itemprop="phone" tal:content="contact/phone" />
+            </tr>
+            <tr>
+              <th i18n:translate="">Employer</th>
+              <td itemprop="worksFor" tal:content="contact/current_employer" />
+            </tr>
+            <tr>
+              <th i18n:translate="">Job Title</th>
+              <td itemprop="jobTitle" tal:content="contact/job_title" />
+            </tr>
+            <tr>
+              <th i18n:translate="">Address</th>
+              <td itemprop="address">
+                <span tal:content="contact/street_address" /><br />
+                <span tal:content="contact/city" /><br />
+                <span tal:content="contact/country" />
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div id="relationships">
+          <a href=""
+              tal:attributes="href string:civicrm-relationships?contact_id=${request/contact_id}"
+              i18n:translate="">Relationships</a><span><!-- spinner --></span>
+        </div>
+        <script>
+            function getParameterByName(name) {
+                "use strict";
+                name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+                var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+                    results = regex.exec(location.search);
+                return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+            }
+
+            $("#relationships span").addClass("spinner");
+            var contact_id = getParameterByName("contact_id");
+            $("#relationships").load("civicrm-relationships #content table", {contact_id: contact_id});
+        </script>
+      </div>
+      <div tal:replace="structure provider:plone.belowcontentbody" />
+    </div>
+  </metal:block>
+</body>
+</html>
