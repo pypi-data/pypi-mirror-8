@@ -1,0 +1,568 @@
+{% extends admin_base_template %}
+
+ {% block head %}
+ <link href="{{ url_for('dashboard.static', filename='dashboard.css') }}" rel="stylesheet">
+ <link rel="stylesheet" href="{{ url_for('dashboard.static', filename='morris.css') }}">
+ {% endblock %}
+
+{% block body %}
+{% for w in widgets %}
+{{ w|safe }}
+{% endfor %}
+{% endblock %}
+
+{% block tail %}
+{{ super() }}
+<script type="text/javascript" src="{{ url_for('dashboard.static', filename='masonry.min.js') }}"></script>
+<script src="{{ url_for('dashboard.static', filename='morris.min.js') }}"></script>
+
+<script language="javascript">
+        (function($) {
+           $('#wrap > .container').masonry({
+				itemSelector : '.widget',
+				gutter: 12,
+				transitionDuration: 0,
+				isFitWidth: true
+			});
+
+           $('.widget-evolution').each(function (idx, elem) {
+           		console.log(JSON.parse($(elem).children('div.graph').attr('data-graph')))
+           		$(elem).children('div.graph').highcharts({
+		            title: {
+		                text: null
+		            },
+		            chart: {
+		            	backgroundColor: null,
+		            	type: "area"
+		            },
+		            xAxis: {
+		                categories: JSON.parse($(elem).children('div.graph').attr('data-legend')),
+		                lineWidth: 0,
+		                labels: {
+		                	enabled: true,
+		                	style: {
+		                		color: '#d3d3d3'
+		                	}
+		                },
+		                tickWidth: 0
+		            },
+		            yAxis: {
+		                title: {
+		                    text: ''
+		                },
+		                plotLines: [{
+		                    value: 0,
+		                    width: 1,
+		                    color: '#ff0000'
+		                }],
+		                gridLineColor: '#ededed',
+		                labels: {
+		                	enabled: false,
+		                }
+
+		            },
+		            colors: ["#4c4c4c"],
+		            legend: {
+		            	enabled: false
+		            },
+		            plotOptions: {
+		            	area: {
+		            		fillOpacity: 0.15
+		            	},
+		            },
+		            tooltip: {
+		                backgroundColor: "none",
+			            borderWidth: 0,
+			            borderRadius: 0,
+			            shadow: false,
+			            followPointer: true,
+			            headerFormat: "",
+			            formatter: function() {
+			                return this.x+"<br>"+this.y +' visites';
+			            },
+			            style: {
+			            	color: "#ffffff",
+			            	"font-family": "Open Sans",
+			            	"font-size": 12
+			            },
+			            useHTML: true
+		            },
+		            credits: {
+			        	enabled: false
+			        },
+		            series: [{
+		                name: 'Visites',
+		                data: JSON.parse($(elem).children('div.graph').attr('data-graph'))
+		            }]
+           		});
+           	});
+
+			$('.widget-repartition').each(function (idx, elem) {
+				$(elem).children('div.graph').highcharts({
+			        chart: {
+			            plotBackgroundColor: null,
+			            plotBorderWidth: null,
+			            plotShadow: false,
+			            backgroundColor: null,
+			        },
+			        title: {
+			            text: null
+			        },
+			        tooltip: {
+			    	    headerFormat: "",
+			            formatter: function() {
+			                return this.point.name.toUpperCase()+"<br>"+Math.floor(this.point.percentage) +'%';
+			            },
+			            style: {
+			            	color: "#ffffff",
+			            	"font-family": "Open Sans",
+			            	"font-size": 12
+			            },
+			    	    backgroundColor: "#4c4c4c",
+			            borderWidth: 0,
+			            borderRadius: 0,
+			            shadow: false,
+			            followPointer: true,
+			            style: {
+			            	color: "#ffffff"
+			            },
+			            useHTML: true,
+			        },
+			        colors: [ '#f67871', '#ff9d98', '#facdac', '#acb0fa', '#6265b3', '#4e5080'],
+			        plotOptions: {
+			            pie: {
+			                allowPointSelect: true,
+			                cursor: 'pointer',
+			                innerSize: 85,
+			                dataLabels: {
+			                    enabled: false,
+			                    color: '#000000',
+			                    connectorColor: '#000000',
+			                    format: '<b>{point.name}</b>: {point.percentage:.1f} %'
+			                }
+			            }
+			        },
+			        xAxis: {
+		                title: {
+		                    text: null
+		                },
+		                lineWidth: 0,
+		                labels: {
+		                	enabled: false
+		                },
+		                tickWidth: 0
+		            },
+		            yAxis: {
+		                min: 0,
+		                title: {
+		                    text: null,
+		                },
+		                gridLineWidth: 0,
+		                labels: {
+		                	enabled: false
+		                }
+		            },
+			        credits: {
+			        	enabled: false
+			        },
+			        series: [{
+			            type: 'pie',
+			            name: 'Browser share',
+			            data: JSON.parse($(elem).children('div.graph').attr('data-graph'))
+			        }]
+			    });
+			});
+			
+
+
+           {#$('#ufc').highcharts({
+	            title: {
+	                text: null
+	            },
+	            chart: {
+	            	backgroundColor: null,
+	            	type: "area"
+	            },
+	            xAxis: {
+	                categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+	                    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+	                lineWidth: 0,
+	                labels: {
+	                	enabled: true,
+	                	style: {
+	                		color: '#d3d3d3'
+	                	}
+	                },
+	                tickWidth: 0
+	            },
+	            yAxis: {
+	                title: {
+	                    text: ''
+	                },
+	                plotLines: [{
+	                    value: 0,
+	                    width: 1,
+	                    color: '#ff0000'
+	                }],
+	                gridLineColor: '#ededed',
+	                labels: {
+	                	enabled: false,
+	                }
+
+	            },
+	            colors: ["#4c4c4c"],
+	            legend: {
+	            	enabled: false
+	            },
+	            tooltip: {
+	                backgroundColor: "none",
+		            borderWidth: 0,
+		            borderRadius: 0,
+		            shadow: false,
+		            followPointer: true,
+		            headerFormat: "",
+		            formatter: function() {
+		                return this.x+"<br>"+this.y +' visites';
+		            },
+		            style: {
+		            	color: "#ffffff",
+		            	"font-family": "Open Sans",
+		            	"font-size": 12
+		            },
+		            useHTML: true
+	            },
+	            credits: {
+		        	enabled: false
+		        },
+	            series: [{
+	                name: 'Visites',
+	                data: [21000, 20000, 23000, 42000, 55000, 30000, 22000, 20000, 18000, 17000, 18000]
+	            }]
+	        });
+
+			
+
+			$('#bfc').highcharts({
+		        chart: {
+		            plotBackgroundColor: null,
+		            backgroundColor: null,
+		            plotBorderWidth: 0,
+		            plotShadow: false,
+		            type: 'column'
+		        },
+		        tooltip: {
+		        	headerFormat: "",
+		            style: {
+		            	color: "#ffffff",
+		            	"font-family": "Open Sans",
+		            	"font-size": 12,
+		            },
+	                formatter: function() {
+		                return this.series.name +
+		                    '<br>'+ this.y +' visites';
+		            },
+		            backgroundColor: "none",
+		            borderWidth: 0,
+		            borderRadius: 0,
+		            shadow: false,
+		            followPointer: true,
+		            useHTML: true
+	            },
+	            title: {
+	            	text: null,
+	            },
+	            legend: {
+	            	enabled: false
+	            },
+	            xAxis: {
+	                title: {
+	                    text: null
+	                },
+	                lineWidth: 0,
+	                labels: {
+	                	enabled: false
+	                },
+	                tickWidth: 0
+	            },
+	            yAxis: {
+	                min: 0,
+	                max: 15600,
+	                title: {
+	                    text: null,
+	                },
+	                gridLineWidth: 0,
+	                labels: {
+	                	enabled: false
+	                }
+	            },
+		        plotOptions: {
+		            bar: {
+                    	dataLabels: {
+                        	enabled: true
+                    	}
+                	}
+		        },
+		        colors: [ '#f67871', '#ff9d98', '#facdac', '#acb0fa', '#6265b3', '#4e5080'],
+		        credits: {
+		        	enabled: false
+		        },
+		        series: [{
+	                name: '/homepage',
+	                data: [15555]
+	            }, {
+	                name: '/actualites',
+	                data: [10555]
+	            }, {
+	                name: '/actualites/92-sigfox-signe-banania',
+	                data: [10055]
+	            }, {
+	                name: '/produits',
+	                data: [2555]
+	            }, {
+	                name: '/contact',
+	                data: [1200]
+	            }]
+		    });
+
+			
+
+			$('#sfc').highcharts({
+		        chart: {
+		            plotBackgroundColor: null,
+		            plotBorderWidth: null,
+		            plotShadow: false,
+		            backgroundColor: null,
+		        },
+		        title: {
+		            text: null
+		        },
+		        tooltip: {
+		    	    headerFormat: "",
+		            formatter: function() {
+		                return this.point.name+"<br>"+this.y +'%';
+		            },
+		            style: {
+		            	color: "#ffffff",
+		            	"font-family": "Open Sans",
+		            	"font-size": 12
+		            },
+		    	    backgroundColor: "#4c4c4c",
+		            borderWidth: 0,
+		            borderRadius: 0,
+		            shadow: false,
+		            followPointer: true,
+		            style: {
+		            	color: "#ffffff"
+		            },
+		            useHTML: true,
+		        },
+		        colors: [ '#f67871', '#ff9d98', '#facdac', '#acb0fa', '#6265b3', '#4e5080'],
+		        plotOptions: {
+		            pie: {
+		                allowPointSelect: true,
+		                cursor: 'pointer',
+		                innerSize: 85,
+		                dataLabels: {
+		                    enabled: false,
+		                    color: '#000000',
+		                    connectorColor: '#000000',
+		                    format: '<b>{point.name}</b>: {point.percentage:.1f} %'
+		                }
+		            }
+		        },
+		        xAxis: {
+	                title: {
+	                    text: null
+	                },
+	                lineWidth: 0,
+	                labels: {
+	                	enabled: false
+	                },
+	                tickWidth: 0
+	            },
+	            yAxis: {
+	                min: 0,
+	                title: {
+	                    text: null,
+	                },
+	                gridLineWidth: 0,
+	                labels: {
+	                	enabled: false
+	                }
+	            },
+		        credits: {
+		        	enabled: false
+		        },
+		        series: [{
+		            type: 'pie',
+		            name: 'Browser share',
+		            data: [
+		                ['Moteurs de recherche',   45.0],
+		                ['Direct',       26.8],
+		                ['Liens', 12.8],
+		            ]
+		        }]
+		    });
+
+			$('#afc').highcharts({
+		        chart: {
+		            plotBackgroundColor: null,
+		            plotBorderWidth: null,
+		            plotShadow: false,
+		            backgroundColor: null,
+		        },
+		        title: {
+		            text: null
+		        },
+		        tooltip: {
+		    	    headerFormat: "",
+		            formatter: function() {
+		                return this.point.name+"<br>"+this.y +'%';
+		            },
+		            style: {
+		            	color: "#ffffff",
+		            	"font-family": "Open Sans",
+		            	"font-size": 12
+		            },
+		    	    backgroundColor: "#4c4c4c",
+		            borderWidth: 0,
+		            borderRadius: 0,
+		            shadow: false,
+		            followPointer: true,
+		            style: {
+		            	color: "#ffffff"
+		            },
+		            useHTML: true,
+		        },
+		        colors: [ '#f67871', '#ff9d98', '#facdac', '#acb0fa', '#6265b3', '#4e5080'],
+		        plotOptions: {
+		            pie: {
+		                allowPointSelect: true,
+		                cursor: 'pointer',
+		                innerSize: 85,
+		                dataLabels: {
+		                    enabled: false,
+		                    color: '#000000',
+		                    connectorColor: '#000000',
+		                    format: '<b>{point.name}</b>: {point.percentage:.1f} %'
+		                }
+		            }
+		        },
+		        xAxis: {
+	                title: {
+	                    text: null
+	                },
+	                lineWidth: 0,
+	                labels: {
+	                	enabled: false
+	                },
+	                tickWidth: 0
+	            },
+	            yAxis: {
+	                min: 0,
+	                title: {
+	                    text: null,
+	                },
+	                gridLineWidth: 0,
+	                labels: {
+	                	enabled: false
+	                }
+	            },
+		        credits: {
+		        	enabled: false
+		        },
+		        series: [{
+		            type: 'pie',
+		            name: 'Browser share',
+		            data: [
+		                ['Windows',   45.0],
+		                ['IOS',       26.8],
+		                ['Mac OS X', 12.8],
+		                ['Android',    8.5],
+		                ['Autres',   0.7]
+		            ]
+		        }]
+		    });
+
+			$('#dfc').highcharts({
+		        chart: {
+		            plotBackgroundColor: null,
+		            plotBorderWidth: null,
+		            plotShadow: false
+		        },
+		        title: {
+		            text: null
+		        },
+		        tooltip: {
+		    	    headerFormat: "",
+		            formatter: function() {
+		                return this.point.name+"<br>"+this.y +'%';
+		            },
+		            style: {
+		            	color: "#ffffff",
+		            	"font-family": "Open Sans",
+		            	"font-size": 12
+		            },
+		    	    backgroundColor: "#4c4c4c",
+		            borderWidth: 0,
+		            borderRadius: 0,
+		            shadow: false,
+		            followPointer: true,
+		            style: {
+		            	color: "#ffffff",
+		            	"font-family": "Open Sans",
+		            	"font-size": 12
+		            },
+		            useHTML: true
+		        },
+		        credits: {
+		        	enabled: false
+		        },
+		        colors: [ '#f67871', '#ff9d98', '#facdac', '#acb0fa', '#6265b3', '#4e5080'],
+		        plotOptions: {
+		            pie: {
+		                allowPointSelect: true,
+		                cursor: 'pointer',
+		                innerSize: 85,
+		                dataLabels: {
+		                    enabled: false,
+		                    color: '#000000',
+		                    connectorColor: '#000000',
+		                    format: '<b>{point.name}</b>: {point.percentage:.1f} %'
+		                }
+		            }
+		        },
+		        xAxis: {
+	                title: {
+	                    text: null
+	                },
+	                lineWidth: 0,
+	                labels: {
+	                	enabled: false
+	                },
+	                tickWidth: 0
+	            },
+	            yAxis: {
+	                min: 0,
+	                title: {
+	                    text: null,
+	                },
+	                gridLineWidth: 0,
+	                labels: {
+	                	enabled: false
+	                }
+	            },
+		        series: [{
+		            type: 'pie',
+		            name: 'Browser share',
+		            data: [
+		                ['Français',   70.0],
+		                ['Anglais',       22.8],
+		                ['Autres', 7.2],
+		            ]
+		        }]
+		    });#}
+        })(jQuery);
+</script>
+
+{% endblock %}
