@@ -1,0 +1,322 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>wms.layers &mdash; django-wms 0.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="django-wms 0.1.0 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../toc.html">django-wms 0.1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for wms.layers</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">mapscript</span>
+
+<span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">connection</span>
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">django.contrib.gis.db</span> <span class="kn">import</span> <span class="n">models</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">raster.fields</span> <span class="kn">import</span> <span class="n">RasterField</span>
+<span class="k">except</span><span class="p">:</span>
+    <span class="n">RasterField</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="k">pass</span>
+
+<span class="k">def</span> <span class="nf">to_hex</span><span class="p">(</span><span class="n">color</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">color</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;#&#39;</span><span class="p">:</span>
+        <span class="n">rgb</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">color</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39; &#39;</span><span class="p">)))</span>
+        <span class="n">color</span> <span class="o">=</span> <span class="s">&#39;#</span><span class="si">%02x%02x%02x</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">rgb</span>
+    <span class="k">return</span> <span class="n">color</span>
+
+<div class="viewcode-block" id="WmsLayer"><a class="viewcode-back" href="../../layers.html#wms.layers.WmsLayer">[docs]</a><span class="k">class</span> <span class="nc">WmsLayer</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    WMS Layer class representing mapserver layers. Use this class to serve data</span>
+<span class="sd">    from models as WMS layers.</span>
+
+<span class="sd">    By default, WmsLayer will use the first spatial field it finds, but the</span>
+<span class="sd">    field to use can also be specified explicitly using geo_field_name.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">model</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">geo_field_name</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">layer_name</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">where</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">cartography</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">classitem</span> <span class="o">=</span> <span class="bp">None</span>
+
+<div class="viewcode-block" id="WmsLayer.dispatch_by_type"><a class="viewcode-back" href="../../layers.html#wms.layers.WmsLayer.dispatch_by_type">[docs]</a>    <span class="k">def</span> <span class="nf">dispatch_by_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Instantiates layer based on type of spatial field. Finds spatial field</span>
+<span class="sd">        automatically if not set explicitly.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># Get data type for this model</span>
+        <span class="n">field_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_spatial_field</span><span class="p">()</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span>
+
+        <span class="k">if</span> <span class="n">field_name</span> <span class="o">==</span> <span class="s">&#39;RasterField&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_raster_layer</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_vector_layer</span><span class="p">(</span><span class="n">field_name</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="WmsLayer.get_spatial_field"><a class="viewcode-back" href="../../layers.html#wms.layers.WmsLayer.get_spatial_field">[docs]</a>    <span class="k">def</span> <span class="nf">get_spatial_field</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the spatial type for the given model based on field types.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># Setup geo field options</span>
+        <span class="n">geo_field_options</span> <span class="o">=</span> <span class="p">[</span><span class="n">models</span><span class="o">.</span><span class="n">PointField</span><span class="p">,</span> <span class="n">models</span><span class="o">.</span><span class="n">LineStringField</span><span class="p">,</span>
+                             <span class="n">models</span><span class="o">.</span><span class="n">PolygonField</span><span class="p">,</span> <span class="n">models</span><span class="o">.</span><span class="n">MultiPolygonField</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">RasterField</span><span class="p">:</span>
+            <span class="n">geo_field_options</span> <span class="o">+=</span> <span class="p">[</span><span class="n">RasterField</span><span class="p">]</span>
+
+        <span class="c"># If name is specified, use it, otherwise loop through candidates</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">geo_field_name</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">get_field_by_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geo_field_name</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">concrete_fields</span><span class="p">:</span>
+                
+                <span class="k">if</span> <span class="nb">any</span><span class="p">([</span><span class="nb">issubclass</span><span class="p">(</span><span class="n">field</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="n">geofield</span><span class="p">)</span>
+                                <span class="k">for</span> <span class="n">geofield</span> <span class="ow">in</span> <span class="n">geo_field_options</span><span class="p">]):</span>
+                    <span class="k">return</span> <span class="n">field</span>
+
+        <span class="c"># Raise error if no spatial field match was found</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s">&#39;No spatial field match found in specified model. &#39;</span>\
+            <span class="s">&#39;Specify a model that has a spatial field&#39;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="WmsLayer.get_name"><a class="viewcode-back" href="../../layers.html#wms.layers.WmsLayer.get_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns WMS layer name, defaults to model name if not provided.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">model_name</span>
+</div>
+<div class="viewcode-block" id="WmsLayer.get_srs"><a class="viewcode-back" href="../../layers.html#wms.layers.WmsLayer.get_srs">[docs]</a>    <span class="k">def</span> <span class="nf">get_srs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns srs for this layer based on field specification.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">instance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="s">&#39;rasterlayer&#39;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">instance</span><span class="o">.</span><span class="n">rasterlayer</span><span class="o">.</span><span class="n">srid</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_spatial_field</span><span class="p">()</span><span class="o">.</span><span class="n">srid</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="WmsLayer.get_base_layer"><a class="viewcode-back" href="../../layers.html#wms.layers.WmsLayer.get_base_layer">[docs]</a>    <span class="k">def</span> <span class="nf">get_base_layer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Instantiates and returns a base WMS layer with attributes that are</span>
+<span class="sd">        not specific to data types.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># Instanciate mapscript layer</span>
+        <span class="n">layer</span> <span class="o">=</span> <span class="n">mapscript</span><span class="o">.</span><span class="n">layerObj</span><span class="p">()</span>
+        <span class="n">layer</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">mapscript</span><span class="o">.</span><span class="n">MS_OFF</span>
+        <span class="n">layer</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_name</span><span class="p">()</span>
+        <span class="n">layer</span><span class="o">.</span><span class="n">setProjection</span><span class="p">(</span><span class="s">&#39;init=epsg:&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_srs</span><span class="p">())</span>
+        <span class="n">layer</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s">&#39;wms_title&#39;</span><span class="p">,</span> <span class="s">&#39;Landcover&#39;</span><span class="p">)</span>
+        <span class="n">layer</span><span class="o">.</span><span class="n">opacity</span> <span class="o">=</span> <span class="mi">80</span>
+
+        <span class="c"># Allow debugging</span>
+        <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">:</span>
+            <span class="n">layer</span><span class="o">.</span><span class="n">debug</span> <span class="o">=</span> <span class="n">mapscript</span><span class="o">.</span><span class="n">MS_ON</span>
+
+        <span class="k">return</span> <span class="n">layer</span>
+</div>
+<div class="viewcode-block" id="WmsLayer.get_vector_layer"><a class="viewcode-back" href="../../layers.html#wms.layers.WmsLayer.get_vector_layer">[docs]</a>    <span class="k">def</span> <span class="nf">get_vector_layer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Connect this layer to a vector data model.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># Get base layer</span>
+        <span class="n">layer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_base_layer</span><span class="p">()</span>
+
+        <span class="c"># Specify input data type</span>
+        <span class="n">layer_types</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s">&#39;PointField&#39;</span><span class="p">:</span> <span class="n">mapscript</span><span class="o">.</span><span class="n">MS_LAYER_POINT</span><span class="p">,</span>
+                <span class="s">&#39;LineStringField&#39;</span><span class="p">:</span> <span class="n">mapscript</span><span class="o">.</span><span class="n">MS_LAYER_LINE</span><span class="p">,</span>
+                <span class="s">&#39;PolygonField&#39;</span><span class="p">:</span> <span class="n">mapscript</span><span class="o">.</span><span class="n">MS_LAYER_POLYGON</span><span class="p">,</span>
+                <span class="s">&#39;MultiPolygonField&#39;</span><span class="p">:</span> <span class="n">mapscript</span><span class="o">.</span><span class="n">MS_LAYER_POLYGON</span>
+                <span class="p">}</span>
+        <span class="n">layer</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">layer_types</span><span class="p">[</span><span class="n">field_name</span><span class="p">]</span>
+
+        <span class="c"># Set connection to DB</span>
+        <span class="n">layer</span><span class="o">.</span><span class="n">setConnectionType</span><span class="p">(</span><span class="n">mapscript</span><span class="o">.</span><span class="n">MS_POSTGIS</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">layer</span><span class="o">.</span><span class="n">connection</span> <span class="o">=</span> <span class="s">&#39;host={host} dbname={dbname} user={user} &#39;</span>\
+                           <span class="s">&#39;port={port} password={password}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">host</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">DATABASES</span><span class="p">[</span><span class="s">&#39;default&#39;</span><span class="p">][</span><span class="s">&#39;HOST&#39;</span><span class="p">],</span>
+            <span class="n">dbname</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">DATABASES</span><span class="p">[</span><span class="s">&#39;default&#39;</span><span class="p">][</span><span class="s">&#39;NAME&#39;</span><span class="p">],</span>
+            <span class="n">user</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">DATABASES</span><span class="p">[</span><span class="s">&#39;default&#39;</span><span class="p">][</span><span class="s">&#39;USER&#39;</span><span class="p">],</span>
+            <span class="n">port</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">DATABASES</span><span class="p">[</span><span class="s">&#39;default&#39;</span><span class="p">][</span><span class="s">&#39;PORT&#39;</span><span class="p">],</span>
+            <span class="n">password</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">DATABASES</span><span class="p">[</span><span class="s">&#39;default&#39;</span><span class="p">][</span><span class="s">&#39;PASSWORD&#39;</span><span class="p">]</span>
+            <span class="p">)</span>
+
+        <span class="c"># Select data column</span>
+        <span class="n">layer</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="s">&#39;geom FROM {0}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">db_table</span><span class="p">)</span>
+
+        <span class="c"># Set class item</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">classitem</span><span class="p">:</span>
+            <span class="n">layer</span><span class="o">.</span><span class="n">classitem</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">classitem</span>
+
+        <span class="c"># Cartography settings</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cartography</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">cart</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cartography</span><span class="p">:</span>
+                <span class="c"># Set categorization and name</span>
+                <span class="n">category</span> <span class="o">=</span> <span class="n">mapscript</span><span class="o">.</span><span class="n">classObj</span><span class="p">(</span><span class="n">layer</span><span class="p">)</span>
+                <span class="n">category</span><span class="o">.</span><span class="n">setExpression</span><span class="p">(</span><span class="n">cart</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;expression&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">))</span>
+                <span class="n">category</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">cart</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;name&#39;</span><span class="p">,</span> <span class="n">cart</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;expression&#39;</span><span class="p">,</span><span class="s">&#39;&#39;</span><span class="p">))</span>
+                <span class="c"># Set category style</span>
+                <span class="n">style</span> <span class="o">=</span> <span class="n">mapscript</span><span class="o">.</span><span class="n">styleObj</span><span class="p">(</span><span class="n">category</span><span class="p">)</span>
+                <span class="n">style</span><span class="o">.</span><span class="n">color</span><span class="o">.</span><span class="n">setHex</span><span class="p">(</span><span class="n">to_hex</span><span class="p">(</span><span class="n">cart</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;color&#39;</span><span class="p">,</span> <span class="s">&#39;#777777&#39;</span><span class="p">)))</span>
+                <span class="n">style</span><span class="o">.</span><span class="n">outlinecolor</span><span class="o">.</span><span class="n">setHex</span><span class="p">(</span><span class="n">to_hex</span><span class="p">(</span><span class="n">cart</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;outlinecolor&#39;</span><span class="p">,</span> <span class="s">&#39;#000000&#39;</span><span class="p">)))</span>
+                <span class="n">style</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="n">cart</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;width&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="c"># Set symbol name now, this will be linked to the map level</span>
+                <span class="c"># symbolset when registering layers in map.</span>
+                <span class="k">if</span> <span class="n">cart</span><span class="o">.</span><span class="n">has_key</span><span class="p">(</span><span class="s">&#39;symbol&#39;</span><span class="p">):</span>
+                    <span class="n">style</span><span class="o">.</span><span class="n">symbolname</span> <span class="o">=</span> <span class="n">cart</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;symbol&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">category</span> <span class="o">=</span> <span class="n">mapscript</span><span class="o">.</span><span class="n">classObj</span><span class="p">(</span><span class="n">layer</span><span class="p">)</span>
+            <span class="n">category</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">layer</span><span class="o">.</span><span class="n">name</span>
+            <span class="n">style</span> <span class="o">=</span> <span class="n">mapscript</span><span class="o">.</span><span class="n">styleObj</span><span class="p">(</span><span class="n">category</span><span class="p">)</span>
+            <span class="n">style</span><span class="o">.</span><span class="n">color</span><span class="o">.</span><span class="n">setHex</span><span class="p">(</span><span class="s">&#39;#777777&#39;</span><span class="p">)</span>
+            <span class="n">style</span><span class="o">.</span><span class="n">outlinecolor</span><span class="o">.</span><span class="n">setHex</span><span class="p">(</span><span class="s">&#39;#000000&#39;</span><span class="p">)</span>
+            <span class="n">style</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="k">return</span> <span class="n">layer</span>
+</div>
+<div class="viewcode-block" id="WmsLayer.get_raster_layer"><a class="viewcode-back" href="../../layers.html#wms.layers.WmsLayer.get_raster_layer">[docs]</a>    <span class="k">def</span> <span class="nf">get_raster_layer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Connect this layer to a raster model.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># Get base layer and specify type</span>
+        <span class="n">layer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_base_layer</span><span class="p">()</span>
+        <span class="n">layer</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">mapscript</span><span class="o">.</span><span class="n">MS_LAYER_RASTER</span>
+        
+        <span class="c"># Set class item</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">classitem</span><span class="p">:</span>
+            <span class="n">layer</span><span class="o">.</span><span class="n">classitem</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">classitem</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">layer</span><span class="o">.</span><span class="n">classitem</span><span class="o">=</span><span class="s">&quot;[pixel]&quot;</span>
+
+        <span class="c"># Set data source</span>
+        <span class="n">layer</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="s">&quot;PG:host=&#39;{host}&#39; dbname=&#39;{dbname}&#39; user=&#39;{user}&#39; &quot;</span>\
+                     <span class="s">&quot;port=&#39;{port}&#39; password=&#39;{password}&#39; mode=2 &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                            <span class="n">host</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">DATABASES</span><span class="p">[</span><span class="s">&#39;default&#39;</span><span class="p">][</span><span class="s">&#39;HOST&#39;</span><span class="p">],</span>
+                            <span class="n">dbname</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">DATABASES</span><span class="p">[</span><span class="s">&#39;default&#39;</span><span class="p">][</span><span class="s">&#39;NAME&#39;</span><span class="p">],</span>
+                            <span class="n">user</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">DATABASES</span><span class="p">[</span><span class="s">&#39;default&#39;</span><span class="p">][</span><span class="s">&#39;USER&#39;</span><span class="p">],</span>
+                            <span class="n">port</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">DATABASES</span><span class="p">[</span><span class="s">&#39;default&#39;</span><span class="p">][</span><span class="s">&#39;PORT&#39;</span><span class="p">],</span>
+                            <span class="n">password</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">DATABASES</span><span class="p">[</span><span class="s">&#39;default&#39;</span><span class="p">][</span><span class="s">&#39;PASSWORD&#39;</span><span class="p">]</span>
+                        <span class="p">)</span>
+
+        <span class="n">layer</span><span class="o">.</span><span class="n">data</span> <span class="o">+=</span> <span class="s">&quot;table=&#39;&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">db_table</span> <span class="o">+</span> <span class="s">&quot;&#39;&quot;</span>
+
+        <span class="c"># Set where clause if provided</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">where</span><span class="p">:</span>
+            <span class="n">layer</span><span class="o">.</span><span class="n">data</span> <span class="o">+=</span> <span class="s">&quot; where=&#39;&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">where</span> <span class="o">+</span> <span class="s">&quot;&#39;&quot;</span>
+
+        <span class="c"># Set nodata if provided</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodata</span><span class="p">:</span>
+            <span class="n">layer</span><span class="o">.</span><span class="n">addProcessing</span><span class="p">(</span><span class="s">&quot;NODATA=&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodata</span><span class="p">)</span>
+
+        <span class="c"># Class and style settings</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cartography</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">cart</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cartography</span><span class="p">:</span>
+                <span class="c"># Set categorization</span>
+                <span class="n">category</span> <span class="o">=</span> <span class="n">mapscript</span><span class="o">.</span><span class="n">classObj</span><span class="p">(</span><span class="n">layer</span><span class="p">)</span>
+                <span class="n">category</span><span class="o">.</span><span class="n">setExpression</span><span class="p">(</span><span class="n">cart</span><span class="p">[</span><span class="s">&#39;expression&#39;</span><span class="p">])</span>
+                <span class="n">category</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">cart</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span>
+                <span class="c"># Set category style</span>
+                <span class="n">style</span> <span class="o">=</span> <span class="n">mapscript</span><span class="o">.</span><span class="n">styleObj</span><span class="p">(</span><span class="n">category</span><span class="p">)</span>
+                <span class="n">style</span><span class="o">.</span><span class="n">color</span><span class="o">.</span><span class="n">setHex</span><span class="p">(</span><span class="n">to_hex</span><span class="p">(</span><span class="n">cart</span><span class="p">[</span><span class="s">&#39;color&#39;</span><span class="p">]))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">category</span> <span class="o">=</span> <span class="n">mapscript</span><span class="o">.</span><span class="n">classObj</span><span class="p">(</span><span class="n">layer</span><span class="p">)</span>
+            <span class="n">category</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_layer_name</span><span class="p">()</span>
+            <span class="n">style</span> <span class="o">=</span> <span class="n">mapscript</span><span class="o">.</span><span class="n">styleObj</span><span class="p">(</span><span class="n">category</span><span class="p">)</span>
+            <span class="n">style</span><span class="o">.</span><span class="n">color</span><span class="o">.</span><span class="n">setHex</span><span class="p">(</span><span class="s">&#39;#FF00FF&#39;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">layer</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<h3><a href="../../toc.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Django WMS Framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../layers.html">Layers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../maps.html">Maps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../views.html">Map Views</a></li>
+</ul>
+
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../toc.html">django-wms 0.1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Daniel Wiesmann.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

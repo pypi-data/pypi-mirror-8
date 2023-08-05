@@ -1,0 +1,194 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Maps &mdash; django-wms 0.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="django-wms 0.1.0 documentation" href="index.html" />
+    <link rel="next" title="Map Views" href="views.html" />
+    <link rel="prev" title="Layers" href="layers.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="views.html" title="Map Views"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="layers.html" title="Layers"
+             accesskey="P">previous</a> |</li>
+        <li><a href="toc.html">django-wms 0.1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="maps">
+<h1>Maps<a class="headerlink" href="#maps" title="Permalink to this headline">¶</a></h1>
+<p>To create a usable wms map, subclass WmsMap and add WmsLayers to it. The WmsMap class in django-raster represents the <a class="reference external" href="http://mapserver.org/mapfile/map.html">MAP</a> directive in the MapServer terminology. WmsMap defines global parameters for a map service endpoint. Only the most important MapServer MAP parameters are implemented in django-wms. The missing parameters still need to be added. The parameters that are currently implemented are listed below.</p>
+<p>The WmsMap allone does specifiy global setup, but data has to be added through layers. Each WMS layer that can be accessed through the WmsMap is represented by a WmsLayer subclass. Specify a list of layers classes when creating a WmsLayer subclass. For example</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># In myapp.wmsmap</span>
+
+<span class="kn">from</span> <span class="nn">wms.maps</span> <span class="kn">import</span> <span class="n">WmsMap</span>
+<span class="kn">from</span> <span class="nn">myapp.wmslayers</span> <span class="kn">import</span> <span class="n">MyFirstLayer</span><span class="p">,</span> <span class="n">MySecondLayer</span><span class="p">,</span> <span class="n">MyThirdLayer</span>
+
+<span class="k">class</span> <span class="nc">MyMap</span><span class="p">(</span><span class="n">WmsMap</span><span class="p">):</span>
+    <span class="n">layer_classes</span> <span class="o">=</span> <span class="p">[</span><span class="n">MyFirstLayer</span><span class="p">,</span> <span class="n">MySecondLayer</span><span class="p">,</span> <span class="n">MyThirdLayer</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="section" id="map-parameters">
+<h2>Map parameters<a class="headerlink" href="#map-parameters" title="Permalink to this headline">¶</a></h2>
+<p>A list of map parameters that can be specified as class attributes when subclassing WmsMap.</p>
+<p><strong>Title</strong></p>
+<p>The title of a WMS service endpoint. Defaults to</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">title</span> <span class="o">=</span> <span class="s">&#39;Django-wms service&#39;</span>
+</pre></div>
+</div>
+<p><strong>SRS</strong></p>
+<p>An array of map projections (srid) can be requested through the map. Defaults to</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">srs</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;4326&#39;</span><span class="p">,</span> <span class="s">&#39;3086&#39;</span><span class="p">,</span> <span class="s">&#39;3857&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p><strong>Enable-requests</strong></p>
+<p>WMS request types thata are allowed for the map. Defaults to</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">enable_requests</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;GetMap&#39;</span><span class="p">,</span> <span class="s">&#39;GetLegendGraphic&#39;</span><span class="p">,</span> <span class="s">&#39;GetCapabilities&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p><strong>Legend size</strong></p>
+<p>Size in pixels of rendered icons on legends returned by the GetLegendGraphic request. Defaults to</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">legend_size</span> <span class="o">=</span> <span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="module-docs">
+<h2>Module docs<a class="headerlink" href="#module-docs" title="Permalink to this headline">¶</a></h2>
+<p>Auto-generated part of the module documentation.</p>
+<span class="target" id="module-wms.maps"></span><dl class="class">
+<dt id="wms.maps.WmsMap">
+<em class="property">class </em><tt class="descclassname">wms.maps.</tt><tt class="descname">WmsMap</tt><a class="reference internal" href="_modules/wms/maps.html#WmsMap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wms.maps.WmsMap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Map objects representing mapserver map files.</p>
+<p>Method to setup map object based on the input parameters. The map
+object represents the mapserver mapfile and is used to render
+the wms requests.</p>
+<dl class="method">
+<dt id="wms.maps.WmsMap.get_layers">
+<tt class="descname">get_layers</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/wms/maps.html#WmsMap.get_layers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wms.maps.WmsMap.get_layers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Instantiates and returns a list of layers for this map.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="wms.maps.WmsMap.register_layers">
+<tt class="descname">register_layers</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/wms/maps.html#WmsMap.register_layers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wms.maps.WmsMap.register_layers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Registers all layer objects into a map object.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="wms.maps.WmsMap.register_symbolset">
+<tt class="descname">register_symbolset</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/wms/maps.html#WmsMap.register_symbolset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wms.maps.WmsMap.register_symbolset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Registers a symbol set in the current map</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wms.maps.WmsMap.symbolset_class">
+<tt class="descname">symbolset_class</tt><a class="headerlink" href="#wms.maps.WmsMap.symbolset_class" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <tt class="xref py py-class docutils literal"><span class="pre">WmsSymbolSet</span></tt></p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<h3><a href="toc.html">Table Of Contents</a></h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="index.html">Django WMS Framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="layers.html">Layers</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Maps</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#map-parameters">Map parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-docs">Module docs</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="views.html">Map Views</a></li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/maps.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="views.html" title="Map Views"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="layers.html" title="Layers"
+             >previous</a> |</li>
+        <li><a href="toc.html">django-wms 0.1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Daniel Wiesmann.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

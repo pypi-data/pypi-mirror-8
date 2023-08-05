@@ -1,0 +1,228 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>wms.views &mdash; django-wms 0.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="django-wms 0.1.0 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../toc.html">django-wms 0.1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for wms.views</h1><div class="highlight"><pre>
+<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">pi</span>
+
+<span class="kn">import</span> <span class="nn">mapscript</span>
+
+<span class="kn">from</span> <span class="nn">django.http</span> <span class="kn">import</span> <span class="n">HttpResponse</span>
+<span class="kn">from</span> <span class="nn">django.views.generic</span> <span class="kn">import</span> <span class="n">View</span>
+
+<span class="kn">from</span> <span class="nn">wms.maps</span> <span class="kn">import</span> <span class="n">WmsMap</span>
+
+<div class="viewcode-block" id="WmsView"><a class="viewcode-back" href="../../views.html#wms.views.WmsView">[docs]</a><span class="k">class</span> <span class="nc">WmsView</span><span class="p">(</span><span class="n">View</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;WMS view class for setting up WMS endpoints&quot;&quot;&quot;</span>
+
+    <span class="n">map_class</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c"># Setup mapscript IO stream</span>
+        <span class="n">mapscript</span><span class="o">.</span><span class="n">msIO_installStdoutToBuffer</span><span class="p">()</span>
+
+        <span class="c"># Verify that map class has been specified correctly</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_class</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">map_class</span><span class="p">,</span> <span class="n">WmsMap</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s">&#39;map_class attribute is not a subclass of WmsMap. &#39;</span>\
+                <span class="s">&#39;Specify map in map_class attribute.&#39;</span><span class="p">)</span>
+
+        <span class="c"># Instantiate WmsMap class</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wmsmap</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_class</span><span class="p">()</span>
+
+        <span class="c"># Setup wms view allowing only GET requests</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">WmsView</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">http_method_names</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;get&#39;</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+<div class="viewcode-block" id="WmsView.get"><a class="viewcode-back" href="../../views.html#wms.views.WmsView.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Html GET method of WmsView. This view renders WMS requests into </span>
+<span class="sd">        corresponding responses using the attached WmsMap class.</span>
+<span class="sd">        Responses are mainly images and xml files.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># Setup wms request object</span>
+        <span class="n">ows_request</span> <span class="o">=</span> <span class="n">mapscript</span><span class="o">.</span><span class="n">OWSRequest</span><span class="p">()</span>
+
+        <span class="c"># Get ows parameters, try using tiles, otherwise use request</span>
+        <span class="n">parameters</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tiles</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">parameters</span><span class="p">:</span>
+            <span class="n">parameters</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">GET</span>
+
+        <span class="k">for</span> <span class="n">param</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">parameters</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">ows_request</span><span class="o">.</span><span class="n">setParameter</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+        <span class="c"># Dynamically use host for declaring service endpoint</span>
+        <span class="n">onlineresource</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">build_absolute_uri</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;?&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s">&#39;?&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wmsmap</span><span class="o">.</span><span class="n">map_object</span><span class="o">.</span><span class="n">setMetaData</span><span class="p">(</span><span class="s">&#39;wms_onlineresource&#39;</span><span class="p">,</span> 
+                                           <span class="n">onlineresource</span><span class="p">)</span>
+
+        <span class="c"># Dispatch map rendering</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wmsmap</span><span class="o">.</span><span class="n">map_object</span><span class="o">.</span><span class="n">OWSDispatch</span><span class="p">(</span><span class="n">ows_request</span><span class="p">)</span>
+        
+        <span class="c"># Store contenttype</span>
+        <span class="n">contenttype</span> <span class="o">=</span> <span class="n">mapscript</span><span class="o">.</span><span class="n">msIO_stripStdoutBufferContentType</span><span class="p">()</span>
+
+        <span class="c"># Strip buffer from headers</span>
+        <span class="n">mapscript</span><span class="o">.</span><span class="n">msIO_stripStdoutBufferContentHeaders</span><span class="p">()</span>
+
+        <span class="c"># Create response</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">HttpResponse</span><span class="p">()</span>
+
+        <span class="c"># Set contenttype</span>
+        <span class="n">response</span><span class="p">[</span><span class="s">&#39;Content-Type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">contenttype</span>
+
+        <span class="c"># Write data to response</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">mapscript</span><span class="o">.</span><span class="n">msIO_getStdoutBufferBytes</span><span class="p">())</span>
+
+        <span class="k">return</span> <span class="n">response</span>
+</div>
+<div class="viewcode-block" id="WmsView.get_tile_bounds"><a class="viewcode-back" href="../../views.html#wms.views.WmsView.get_tile_bounds">[docs]</a>    <span class="k">def</span> <span class="nf">get_tile_bounds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculates tile bounding box from Tile Map Service XYZ indices.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># Setup scale factor for bounds calculations</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">pi</span> <span class="o">*</span> <span class="mi">6378137</span>
+        <span class="n">shift</span> <span class="o">=</span> <span class="n">res</span> <span class="o">/</span> <span class="mf">2.0</span>
+        <span class="n">scale</span> <span class="o">=</span> <span class="n">res</span> <span class="o">/</span> <span class="mi">2</span><span class="o">**</span><span class="n">z</span>
+
+        <span class="c"># Calculate bounds</span>
+        <span class="n">minx</span> <span class="o">=</span> <span class="n">x</span> <span class="o">*</span> <span class="n">scale</span> <span class="o">-</span> <span class="n">shift</span>
+        <span class="n">maxx</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">scale</span> <span class="o">-</span> <span class="n">shift</span>
+        <span class="n">miny</span> <span class="o">=</span> <span class="n">shift</span> <span class="o">-</span> <span class="p">(</span><span class="n">y</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">scale</span>
+        <span class="n">maxy</span> <span class="o">=</span> <span class="n">shift</span> <span class="o">-</span> <span class="n">y</span> <span class="o">*</span> <span class="n">scale</span>
+
+        <span class="c"># Convert bounds to query string</span>
+        <span class="k">return</span> <span class="s">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">repr</span><span class="p">(</span><span class="n">coord</span><span class="p">)</span> <span class="k">for</span> <span class="n">coord</span> <span class="ow">in</span> <span class="p">[</span><span class="n">minx</span><span class="p">,</span> <span class="n">miny</span><span class="p">,</span> <span class="n">maxx</span><span class="p">,</span> <span class="n">maxy</span><span class="p">]])</span>
+</div>
+<div class="viewcode-block" id="WmsView.tiles"><a class="viewcode-back" href="../../views.html#wms.views.WmsView.tiles">[docs]</a>    <span class="k">def</span> <span class="nf">tiles</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method checks the url parameters for xyz arguments, if found it</span>
+<span class="sd">        uses those to compute bounds for wms rendering.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># Try to get tile indices from url</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;x&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;y&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;z&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">x</span> <span class="ow">and</span> <span class="n">y</span> <span class="ow">and</span> <span class="n">z</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c"># Convert indices to integers</span>
+            <span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">y</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+
+            <span class="c"># Get the tile bounds</span>
+            <span class="n">tilebounds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_tile_bounds</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">)</span>
+
+            <span class="c"># Get layers to draw from url</span>
+            <span class="n">layers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;layers&#39;</span><span class="p">)</span>
+
+            <span class="c"># Get image format from url</span>
+            <span class="n">format</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;.png&#39;</span><span class="p">:</span> <span class="s">&#39;image/png&#39;</span><span class="p">,</span> 
+                      <span class="s">&#39;.jpg&#39;</span><span class="p">:</span> <span class="s">&#39;image/jpeg&#39;</span><span class="p">}[</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;format&#39;</span><span class="p">)]</span>
+
+            <span class="c"># Setup wms parameter object</span>
+            <span class="k">return</span> <span class="p">{</span>
+                    <span class="s">&#39;SERVICE&#39;</span><span class="p">:</span> <span class="s">&#39;WMS&#39;</span><span class="p">,</span>
+                    <span class="s">&#39;REQUEST&#39;</span><span class="p">:</span> <span class="s">&#39;GetMap&#39;</span><span class="p">,</span>
+                    <span class="s">&#39;VERSION&#39;</span><span class="p">:</span> <span class="s">&#39;1.1.1&#39;</span><span class="p">,</span>
+                    <span class="s">&#39;TRANSPARENT&#39;</span><span class="p">:</span> <span class="s">&#39;true&#39;</span><span class="p">,</span>
+                    <span class="s">&#39;HEIGHT&#39;</span><span class="p">:</span> <span class="s">&#39;256&#39;</span><span class="p">,</span>
+                    <span class="s">&#39;WIDTH&#39;</span><span class="p">:</span> <span class="s">&#39;256&#39;</span><span class="p">,</span>
+                    <span class="s">&#39;SRS&#39;</span><span class="p">:</span> <span class="s">&#39;EPSG:3857&#39;</span><span class="p">,</span>
+                    <span class="s">&#39;FORMAT&#39;</span><span class="p">:</span> <span class="n">format</span><span class="p">,</span>
+                    <span class="s">&#39;LAYERS&#39;</span><span class="p">:</span> <span class="n">layers</span><span class="p">,</span>
+                    <span class="s">&#39;BBOX&#39;</span><span class="p">:</span> <span class="n">tilebounds</span>
+                    <span class="p">}</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<h3><a href="../../toc.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Django WMS Framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../layers.html">Layers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../maps.html">Maps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../views.html">Map Views</a></li>
+</ul>
+
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../toc.html">django-wms 0.1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Daniel Wiesmann.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

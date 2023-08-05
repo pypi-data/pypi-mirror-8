@@ -1,0 +1,206 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Django WMS Framework &mdash; django-wms 0.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="django-wms 0.1.0 documentation" href="#" />
+    <link rel="next" title="Layers" href="layers.html" />
+    <link rel="prev" title="Table of Contents" href="toc.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="layers.html" title="Layers"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="toc.html" title="Table of Contents"
+             accesskey="P">previous</a> |</li>
+        <li><a href="toc.html">django-wms 0.1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="django-wms-framework">
+<h1>Django WMS Framework<a class="headerlink" href="#django-wms-framework" title="Permalink to this headline">¶</a></h1>
+<p>The Django WMS Framework is a toolkit that makes it easy to integrate a <a class="reference external" href="http://en.wikipedia.org/wiki/Web_Map_Service">Web Map Service (WMS)</a> or a x-y-z <a class="reference external" href="http://en.wikipedia.org/wiki/Tile_Map_Service">Tile Map Service</a> into a Django project. Rendering of both vector and raster data formats are supported.</p>
+<div class="section" id="requirements">
+<h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h2>
+<p>The processing of spatial data in django-wms relies on <a class="reference external" href="http://mapserver.org/index.html">MapServer</a> and its python bindings <a class="reference external" href="http://mapserver.org/mapscript/mapscript.html">MapScript</a>. Raster data integration depends on the <a class="reference external" href="https://pypi.python.org/pypi/django-raster/0.1.0">django-raster</a> package. The use of <a class="reference external" href="http://postgis.net/">PostGIS</a> as the database backend is required as well, for raster integration PostGIS &gt;= 2.0 is required (see also django-raster package).</p>
+</div>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic">
+<li><p class="first">Install package with <tt class="docutils literal"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">django-wms</span></tt></p>
+</li>
+<li><p class="first">Add &#8220;wms&#8221; to your INSTALLED_APPS setting like this</p>
+<div class="highlight-python"><div class="highlight"><pre>INSTALLED_APPS = (
+    ...
+    &#39;wms&#39;,
+)
+</pre></div>
+</div>
+</li>
+</ol>
+</div>
+<div class="section" id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>The structure of django-wms is closely tied to how MapServer works.</p>
+<p>The spatial data rendering in django-wms relies on <a class="reference external" href="http://mapserver.org/mapscript/mapscript.html">MapScript</a>, the python-bindings for MapServer. The basic funcitonality of django-wms is to use mapscript to dynamically produce directives for MapServer. To render spatial data, MapServer is configured through <a class="reference external" href="http://mapserver.org/mapfile/map.html">MapFiles</a> in which global WMS parameters, layers and cartograpy styles are defined.</p>
+<p>The concept of <a class="reference external" href="http://mapserver.org/mapfile/map.html">MAP</a> directives is translated into a <tt class="docutils literal"><span class="pre">WmsMap</span></tt> class. <a class="reference external" href="http://mapserver.org/mapfile/map.html">LAYER</a> definitions and classes for symbology and cartography are represented in the <tt class="docutils literal"><span class="pre">WmsLayer</span></tt> class within django-wms. A set of <a class="reference external" href="http://mapserver.org/mapfile/map.html">SYMBOL</a> directives for drawing point data are preconfigured as well.</p>
+<p>MapScript has its own class definitions for those directives, django-wms simply makes them easy to use in a django project.</p>
+<p>Web requests in django-wms are handled through a class based view module <tt class="docutils literal"><span class="pre">WmsView</span></tt>. The view can be hooked into a url and will take care of handling WMS and TMS requests automatically.</p>
+</div>
+<div class="section" id="example">
+<h2>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h2>
+<p>To create a mapping service, subclass the django-wms layer, map and view classes and connect them to an existing model in django that has a spatial field (such as Point, Polygon or MultiPolygon). An example <tt class="docutils literal"><span class="pre">wms_config.py</span></tt> module could be specified as follows</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">### wms_config.py</span>
+
+<span class="c"># Load django-wms classes</span>
+<span class="kn">from</span> <span class="nn">wms</span> <span class="kn">import</span> <span class="n">maps</span><span class="p">,</span> <span class="n">layers</span><span class="p">,</span> <span class="n">views</span>
+
+<span class="c"># Load model with spatial field (Point, Polygon or MultiPolygon)</span>
+<span class="kn">from</span> <span class="nn">myapp.models</span> <span class="kn">import</span> <span class="n">MySpatialModel</span>
+
+
+<span class="c"># Subclass the WmsLayer class and point it to a spatial model</span>
+<span class="k">class</span> <span class="nc">MyWmsLayer</span><span class="p">(</span><span class="n">layers</span><span class="o">.</span><span class="n">WmsLayer</span><span class="p">):</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">MySpatialModel</span>
+
+<span class="c"># Subclass the WmsMap class and add the layer to it</span>
+<span class="k">class</span> <span class="nc">MyWmsMap</span><span class="p">(</span><span class="n">maps</span><span class="o">.</span><span class="n">WmsMap</span><span class="p">):</span>
+    <span class="n">layer_classes</span> <span class="o">=</span> <span class="p">[</span> <span class="n">MyWmsLayer</span> <span class="p">]</span>
+
+<span class="c"># Subclass the WmsView to create a view for the map</span>
+<span class="k">class</span> <span class="nc">MyWmsView</span><span class="p">(</span><span class="n">views</span><span class="o">.</span><span class="n">WmsView</span><span class="p">):</span>
+    <span class="n">map_class</span> <span class="o">=</span> <span class="n">MyWmsMap</span>
+</pre></div>
+</div>
+<p>With the WmsView subclass in place, the only thing left to do to create a functional map service is to hook the view into a url. An example url configuration <tt class="docutils literal"><span class="pre">urls.py</span></tt> could be</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">### urls.py</span>
+
+<span class="c"># Import the wms view</span>
+<span class="kn">from</span> <span class="nn">myproject.wms_config</span> <span class="kn">import</span> <span class="n">MyWmsView</span>
+
+<span class="c"># Add url patterns to setup map services from the view</span>
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="n">patterns</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">,</span>
+
+    <span class="c"># This creates a WMS endpoint</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r&#39;^wms/$&#39;</span><span class="p">,</span> <span class="n">MyWmsView</span><span class="o">.</span><span class="n">as_view</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s">&#39;wms&#39;</span><span class="p">),</span>
+
+    <span class="c"># This creates a TMS endpoint</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r&#39;^tile/(?P&lt;layers&gt;[^/]+)/(?P&lt;z&gt;[0-9]+)/(?P&lt;x&gt;[0-9]+)/(?P&lt;y&gt;[0-9]+)(?P&lt;format&gt;\.jpg|\.png)$&#39;</span><span class="p">,</span>
+        <span class="n">MyWmsView</span><span class="o">.</span><span class="n">as_view</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s">&#39;tms&#39;</span><span class="p">),</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>The django-wms package will automatically detect the first spatial field it can find in <tt class="docutils literal"><span class="pre">MySpatialModel</span></tt> and create a WMS endpoint from the class based view. If the three arguments <tt class="docutils literal"><span class="pre">x</span></tt>, <tt class="docutils literal"><span class="pre">y</span></tt> and <tt class="docutils literal"><span class="pre">z</span></tt> are found in the urlpattern, the view functions as TMS endpoint.</p>
+</div>
+<div class="section" id="indices-and-tables">
+<h2>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><a class="reference internal" href="genindex.html"><em>Index</em></a></li>
+<li><a class="reference internal" href="py-modindex.html"><em>Module Index</em></a></li>
+<li><a class="reference internal" href="search.html"><em>Search Page</em></a></li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<h3><a href="toc.html">Table Of Contents</a></h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="">Django WMS Framework</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#requirements">Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#introduction">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#example">Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="layers.html">Layers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="maps.html">Maps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="views.html">Map Views</a></li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/index.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="layers.html" title="Layers"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="toc.html" title="Table of Contents"
+             >previous</a> |</li>
+        <li><a href="toc.html">django-wms 0.1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Daniel Wiesmann.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

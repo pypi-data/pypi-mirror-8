@@ -1,0 +1,196 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>wms.maps &mdash; django-wms 0.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="django-wms 0.1.0 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../toc.html">django-wms 0.1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for wms.maps</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">mapscript</span>
+
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+
+<span class="kn">from</span> <span class="nn">.symbols</span> <span class="kn">import</span> <span class="n">WmsSymbolSet</span>
+
+<div class="viewcode-block" id="WmsMap"><a class="viewcode-back" href="../../maps.html#wms.maps.WmsMap">[docs]</a><span class="k">class</span> <span class="nc">WmsMap</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Map objects representing mapserver map files.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">layer_classes</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">symbolset_class</span> <span class="o">=</span> <span class="n">WmsSymbolSet</span>
+    <span class="n">title</span> <span class="o">=</span> <span class="s">&#39;Django-wms service&#39;</span>
+    <span class="n">srs</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;4326&#39;</span><span class="p">,</span> <span class="s">&#39;3086&#39;</span><span class="p">,</span> <span class="s">&#39;3857&#39;</span><span class="p">]</span>
+    <span class="n">enable_requests</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;GetMap&#39;</span><span class="p">,</span> <span class="s">&#39;GetLegendGraphic&#39;</span><span class="p">,</span> <span class="s">&#39;GetCapabilities&#39;</span><span class="p">]</span>
+    <span class="n">legend_size</span> <span class="o">=</span> <span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Method to setup map object based on the input parameters. The map</span>
+<span class="sd">        object represents the mapserver mapfile and is used to render</span>
+<span class="sd">        the wms requests.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">map_object</span> <span class="o">=</span> <span class="n">mapscript</span><span class="o">.</span><span class="n">mapObj</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_symbolset</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_layers</span><span class="p">()</span>
+
+        <span class="c"># Set map object properties</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">map_object</span><span class="o">.</span><span class="n">setProjection</span><span class="p">(</span><span class="s">&#39;init=epsg:4326&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">map_object</span><span class="o">.</span><span class="n">setExtent</span><span class="p">(</span><span class="o">-</span><span class="mi">180</span><span class="p">,</span> <span class="o">-</span><span class="mi">90</span><span class="p">,</span> <span class="mi">180</span><span class="p">,</span> <span class="mi">90</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">map_object</span><span class="o">.</span><span class="n">setSize</span><span class="p">(</span><span class="mi">500</span><span class="p">,</span> <span class="mi">500</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">map_object</span><span class="o">.</span><span class="n">setMetaData</span><span class="p">(</span><span class="s">&#39;wms_title&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">map_object</span><span class="o">.</span><span class="n">setMetaData</span><span class="p">(</span><span class="s">&#39;wms_srs&#39;</span><span class="p">,</span> <span class="s">&#39;epsg:&#39;</span> <span class="o">+</span> <span class="s">&#39; epsg:&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">srs</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">map_object</span><span class="o">.</span><span class="n">setMetaData</span><span class="p">(</span><span class="s">&#39;wms_enable_request&#39;</span><span class="p">,</span>
+                               <span class="s">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">enable_requests</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">map_object</span><span class="o">.</span><span class="n">outputformat</span><span class="o">.</span><span class="n">transparent</span> <span class="o">=</span> <span class="n">mapscript</span><span class="o">.</span><span class="n">MS_ON</span>
+
+        <span class="c"># Set legend item size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">map_object</span><span class="o">.</span><span class="n">legend</span><span class="o">.</span><span class="n">keysizex</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">legend_size</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">map_object</span><span class="o">.</span><span class="n">legend</span><span class="o">.</span><span class="n">keysizey</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">legend_size</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="c"># Allow debugging</span>
+        <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">map_object</span><span class="o">.</span><span class="n">debug</span> <span class="o">=</span> <span class="n">mapscript</span><span class="o">.</span><span class="n">MS_ON</span>
+
+<div class="viewcode-block" id="WmsMap.get_layers"><a class="viewcode-back" href="../../maps.html#wms.maps.WmsMap.get_layers">[docs]</a>    <span class="k">def</span> <span class="nf">get_layers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Instantiates and returns a list of layers for this map.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># Create layer instances</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">layer</span><span class="p">()</span> <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">layer_classes</span><span class="p">]</span>
+</div>
+<div class="viewcode-block" id="WmsMap.register_layers"><a class="viewcode-back" href="../../maps.html#wms.maps.WmsMap.register_layers">[docs]</a>    <span class="k">def</span> <span class="nf">register_layers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Registers all layer objects into a map object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># Get layers</span>
+        <span class="n">layers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_layers</span><span class="p">()</span>
+
+        <span class="c"># Check for naming consistency</span>
+        <span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="n">layer</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="n">layers</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">names</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">names</span><span class="p">))</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">names</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;Found two identical layer names in single map. &#39;</span>\
+                <span class="s">&#39;Specify unique names for layers. This error be due to &#39;</span>\
+                <span class="s">&#39;automatic naming which uses the model name as layer name &#39;</span>\
+                <span class="s">&#39;by default.&#39;</span><span class="p">)</span>
+
+        <span class="c"># Register layers</span>
+        <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="n">layers</span><span class="p">:</span>
+            <span class="c"># Get layer</span>
+            <span class="n">dispatched_layer</span> <span class="o">=</span> <span class="n">layer</span><span class="o">.</span><span class="n">dispatch_by_type</span><span class="p">()</span>
+
+            <span class="c"># Update symbol index if symbol name was given</span>
+            <span class="c"># This is necessary because mapscript links the symbol index from</span>
+            <span class="c"># the map level symbolset with the layer level style object. So</span>
+            <span class="c"># this step can not be executed when instantiating the layer.</span>
+            <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">while</span> <span class="n">dispatched_layer</span><span class="o">.</span><span class="n">getClass</span><span class="p">(</span><span class="n">i</span><span class="p">):</span>
+                <span class="n">style</span> <span class="o">=</span> <span class="n">dispatched_layer</span><span class="o">.</span><span class="n">getClass</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">getStyle</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">style</span><span class="o">.</span><span class="n">symbolname</span><span class="p">:</span>
+                    <span class="n">style</span><span class="o">.</span><span class="n">setSymbolByName</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">map_object</span><span class="p">,</span> <span class="n">style</span><span class="o">.</span><span class="n">symbolname</span><span class="p">)</span>
+                <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="c"># Insert layer object into map</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">map_object</span><span class="o">.</span><span class="n">insertLayer</span><span class="p">(</span><span class="n">dispatched_layer</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="WmsMap.register_symbolset"><a class="viewcode-back" href="../../maps.html#wms.maps.WmsMap.register_symbolset">[docs]</a>    <span class="k">def</span> <span class="nf">register_symbolset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Registers a symbol set in the current map&quot;&quot;&quot;</span>
+
+        <span class="n">symbolset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">symbolset_class</span><span class="p">()</span>
+
+        <span class="c"># Add symbols</span>
+        <span class="k">for</span> <span class="n">symb</span> <span class="ow">in</span> <span class="n">symbolset</span><span class="o">.</span><span class="n">get_symbols</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">map_object</span><span class="o">.</span><span class="n">symbolset</span><span class="o">.</span><span class="n">appendSymbol</span><span class="p">(</span><span class="n">symb</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<h3><a href="../../toc.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Django WMS Framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../layers.html">Layers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../maps.html">Maps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../views.html">Map Views</a></li>
+</ul>
+
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../toc.html">django-wms 0.1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Daniel Wiesmann.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>
