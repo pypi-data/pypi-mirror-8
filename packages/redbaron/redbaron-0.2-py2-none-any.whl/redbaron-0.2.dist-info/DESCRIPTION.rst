@@ -1,0 +1,78 @@
+Introduction
+============
+
+RedBaron is a query library for the
+`Baron <https://github.com/Psycojoker/baron>`__ Full Syntax Tree (FST).
+But what is Baron? Baron is a syntax tree, like an
+`AST <https://en.wikipedia.org/wiki/Abstract_syntax_tree>`__ for the
+Python language that hold the following rule:
+syntax\_tree\_to\_code(code\_to\_syntax\_tree(code)) == code. The Baron
+FST is in form of JSON-serializable Python (list and dict) which is very
+low level and not extremely funny to work with (a bit like bytecode),
+RedBaron is an abstraction on top of that to ease the exploration and
+modification of this FST.
+
+Ok, but why this can be useful? The (hard) bet made by Baron is to
+induce a paradigm change in which writing code that explore or modify
+code (like (custom) refactoring code, refactoring browser, tooling,
+autoformatting…) is now a realistic task for most of the developers.
+Having a FST for Python means that the task of modifying source code
+just shift from parsing then modifying a string to modifying a
+meaningful tree. For a longer explanation `read
+this <https://redbaron.readthedocs.org/en/latest/why.html>`__.
+
+**For now, RedBaron is in its early stages of development, it is quite
+stable but it is probably not the most shiny experience yet.** Feedback
+is very welcome.
+
+Installation
+============
+
+::
+
+    pip install redbaron
+
+Links
+=====
+
+-  `Documentation <https://redbaron.readthedocs.org>`__
+-  `Baron <https://github.com/Psycojoker/baron>`__
+-  IRC chat:
+   `irc.freenode.net#baron <https://webchat.freenode.net/?channels=%23baron>`__
+
+
+
+Changelog
+=========
+
+0.2 (unreleased)
+----------------
+
+- for EVERY NODE in RedBaron, the automagic behavior when passing a string to
+  modify an attribute has been done, this is HUGE improvment
+  https://redbaron.readthedocs.org/en/latest/modifying.html#full-documentations
+- it's now possible to use regex, globs, list/tuple  and lambda (callable) in .find and
+  .find_all, see https://redbaron.readthedocs.org/en/latest/querying.html#advanced-querying
+- new method on node: .replace() to replace in place a node
+  https://redbaron.readthedocs.org/en/latest/other.html#replace
+- .map .filter and .apply are now documented https://redbaron.readthedocs.org/en/latest/other.html#map-filter-apply
+- .edit() new helper method to launch a text editor on the selected node and
+  replace the node with the modified code https://redbaron.readthedocs.org/en/latest/other.html#edit
+- .root node attribute (property) that return the root node of the tree in which the
+  node is stored https://redbaron.readthedocs.org/en/latest/other.html#root
+- .index node attribute (property) that returns the index at which the node is
+  store if it's store in a nodelist, None otherwise https://redbaron.readthedocs.org/en/latest/other.html#index
+- setitem (a[x] = b) on nodelist now works as expected (accepting string, fst
+  node and redbaron node)
+- new method to handle indentation: .increase_indentation and .decrease_indentation https://redbaron.readthedocs.org/en/latest/other.html#increase-indentation-and-decrease-indentation
+- various small bugfix
+- we have one new contributor \o/ https://github.com/ze42
+- to_node has been move to a class method of Node: Node.from_fst
+- pretty print of nodes when using redbaron in a script
+
+0.1 (2014-06-13)
+----------------
+
+- First release
+
+
