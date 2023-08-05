@@ -1,0 +1,79 @@
+#!/usr/bin/env python
+
+# Copyright (c) 2014 by Pavel Sountsov
+#
+# All rights reserved. Distributed under GPL 3.0. For full terms see the file LICENSE.
+
+from ConfigParser import SafeConfigParser, NoOptionError
+from argparse import ArgumentParser
+
+import re
+
+from optimizer2.differential_evolution import DifferentialEvolutionOptimizer
+from optimizer2.cont_differential_evolution import ContDifferentialEvolutionOptimizer
+from optimizer2.array_parser import parse_array
+from optimizer2.runner import Runner
+
+def main():
+	parser = ArgumentParser(usage='%(prog)s [OPTIONS] CFG_NAME')
+	parser.add_argument('--cfg', dest='cfg_name', help='deprecated, use the positional argument instead')
+	parser.add_argument('--version', action='version', version='%(prog)s 0.7.1')
+	parser.add_argument('CFG_NAME', nargs='?', help='configuration file name')
+	
+	args = parser.parse_args()
+	
+	cfg = SafeConfigParser()
+	
+	if args.cfg_name:
+		cfg.read(args.cfg_name)
+	elif args.CFG_NAME:
+		cfg.read(args.CFG_NAME)
+	else:
+		print 'usage: optimizer [OPTIONS] CFG_NAME'
+		print 'optimizer: error: too few arguments'
+		exit(-1)
+	
+	cmd_str = cfg.get('options', 'command')
+	try:
+		max_launches = cfg.getint('options', 'max_launches')
+	except NoOptionError:
+		max_launches = 1000
+
+	try:
+		pat = cfg.get('options', 'result_re')
+		res_re = re.compile(pat)
+	except NoOptionError:
+		res_re = None
+	
+	try:
+		num_args = cfg.getint('options', 'num_args')
+	except NoOptionError:
+		num_args = 1
+
+	limits = []
+	for i in range(num_args):
+		try:
+			lim_str = cfg.get('options', 'limit%d' % i)
+			lim = parse_array(lim_str)
+			if len(lim) != 2:
+				raise Exception('limit%d invalid: (expected "[low, hi]" but got "%s")' % (i, lim_str))
+		except NoOptionError:
+			lim = [0.0, 1.0]
+		limits.append(lim)
+	
+	alg_str = cfg.get('options', 'algorithm')
+	runner = Runner(cmd_str, res_re, max_launches, False)
+	if alg_str == 'de':
+		opt = DifferentialEvolutionOptimizer(cfg, limits, runner)
+	elif alg_str == 'cont_de':
+		opt = ContDifferentialEvolutionOptimizer(cfg, limits, runner)
+	else:
+		raise Exception('Unknown algorithm \'' + alg_str + '\'')
+	
+	pop = opt.run()
+	print 'Final population:'
+	for ind in pop:
+		print ind[1:], 'fit:', ind[0]
+
+if __name__ == '__main__':
+    main()
