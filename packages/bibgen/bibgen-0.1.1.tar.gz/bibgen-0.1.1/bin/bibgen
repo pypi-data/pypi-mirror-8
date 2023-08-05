@@ -1,0 +1,77 @@
+#! /usr/bin/env python3
+# bibgen.py — Bibliography generator for XML documents
+#
+# Copyright © 2014  Émilien Tlapale
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import argparse
+import sys
+import xml.dom.minidom
+
+import bibgen
+
+description = 'Bibliography generator for XML documents'
+
+if __name__ == '__main__':
+    # Command line arguments
+    ap = argparse.ArgumentParser(description=description)
+    ap.add_argument('document', metavar='DBDOC.XML', nargs=1,
+                    help='input DocBook document')
+    ap.add_argument('biblio', metavar='BIBLIO', nargs='?', default=None,
+                    help='bibliography database')
+    ap.add_argument('-e', '--encoding', dest='db_encoding',
+                    default='utf-8',
+                    help='encoding of the bibliography database')
+    ap.add_argument('-j', '--json', dest='db_type', action='store_const',
+                    const='json', default='bibtex',
+                    help='JSON bibliography database')
+    ap.add_argument('-m', '--mendeley', dest='db_type', action='store_const',
+                    const='mendeley', default='bibtex',
+                    help='Mendeley bibliography database')
+    ap.add_argument('-n', '--no-sort', dest='sort_order', action='store_const',
+                    const='nosort', default='alpha',
+                    help='do not sort the entries')
+    ap.add_argument('-o', '--output', default=None,
+                    help='generated DocBook bibliography')
+    ap.add_argument('-p', '--link-prefix', dest='link_prefix', default='bib-',
+                    help='prefix for bibliography links')
+    ap.add_argument('-s', '--style', metavar='STYLE.CSL', default='harvard1',
+                    help='path or name of citation style')
+    ap.add_argument('-t', '--citation-separator', dest='cit_sep', default=';',
+                    help='citation separator for multi-citing')
+    args = ap.parse_args()
+
+    # Search for the database
+    if args.db_type == 'mendeley' and args.biblio is None:
+        args.biblio = bibgen.default_mendeley_database()
+    elif args.db_type == 'bibtex' and args.biblio is None:
+        args.biblio = bibgen.default_bibtex_database(args.document[0])
+    if args.biblio is None:
+        exit('error: cannot find a bibliography database')
+
+    # Open the DocBook document
+    dom = xml.dom.minidom.parse(args.document[0])
+
+    # Render citations and fill the bibliography
+    bibgen.process_dom(dom, args.db_type, args.biblio, args.db_encoding,
+                       args.cit_sep, args.sort_order,
+                       args.style,
+                       link_format=lambda key: args.link_prefix+key.lower())
+
+    # Write the new DocBook document
+    if args.output is None:
+        out = sys.stdout
+    else:
+        out = open(args.output, 'w')
+    dom.writexml(out)
