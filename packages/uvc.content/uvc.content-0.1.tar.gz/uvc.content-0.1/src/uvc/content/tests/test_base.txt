@@ -1,0 +1,36 @@
+Base components
+===============
+
+This test's purpose is to test a schema behavior:
+
+  >>> import uvc.content
+  >>> from zope.schema import TextLine
+  >>> from zope.interface import Interface
+
+  >>> class TitleSchema(Interface):
+  ...     title = TextLine(
+  ...         title=u'Title',
+  ...         required=True,
+  ...         default=u'Unknown')
+
+
+  >>> class Mammoth(object):
+  ...     uvc.content.schema(TitleSchema)
+  ...     def __init__(self, **kws):
+  ...         uvc.content.schematic_bootstrap(self, **kws)
+
+  >>> print(Mammoth.title)  # doctest: +ELLIPSIS
+  <zope.schema.fieldproperty.FieldProperty object at ...>
+
+  >>> gunther = Mammoth()
+  >>> print(gunther)  # doctest: +ELLIPSIS
+  <__main__.Mammoth object at ...>
+  >>> gunther.title
+  u'Unknown'
+  
+  >>> manfred = Mammoth(title=u'Manfred the Impetuous')
+  >>> print(manfred)   # doctest: +ELLIPSIS
+  <__main__.Mammoth object at ...>
+
+  >>> manfred.title
+  u'Manfred the Impetuous'
