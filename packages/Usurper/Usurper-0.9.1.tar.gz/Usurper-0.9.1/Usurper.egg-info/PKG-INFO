@@ -1,0 +1,192 @@
+Metadata-Version: 1.1
+Name: Usurper
+Version: 0.9.1
+Summary: An unsupervised dependency parser.
+Home-page: http://pypi.python.org/pypi/Usurper/
+Author: Thomas Proisl
+Author-email: thopro@posteo.de
+License: GNU General Public License v3 or later (GPLv3+)
+Description: =======
+        Usurper
+        =======
+        
+        Introduction
+        ============
+        
+        This is an implementation of the unsupervised dependency parser
+        described by Søgaard (2012). The parser is language independent and
+        does not need any training data.
+        
+        The parser operates in two stages. First, it constructs a directed
+        graph from the words in a sentence using
+        
+        - information on word adjacency,
+        
+        - an (automatically created) list of function words [1]_,
+        
+        - morphological cues
+        
+        - and information from part-of-speech tags, if available [2]_.
+        
+        The resulting graph structure is used to rank the words using the
+        PageRank algorithm (Brin and Page, 1998). In the second stage, the
+        parser constructs a dependency tree from that ranked list of words. If
+        part-of-speech information is available, the parser can make use of
+        universal dependency rules (Naseem et al., 2010).
+        
+        .. [1] The list of function words is extracted from the whole input
+               text by applying a variant of Mihalcea and Tarau's (2004)
+               TextRank algorithm.
+        .. [2] The parser relies on a universal part-of-speech tagset (Petrov
+               et al., 2012). The language-dependent input tags are mapped to
+               that universal tagset using the mappings provided `here
+               <https://code.google.com/p/universal-pos-tags/>`_.
+        
+        Installation
+        ============
+        
+        Usurper can be easily installed using pip::
+        
+            pip install Usurper
+        
+        Usage
+        =====
+        
+        Using the usrpr executable
+        --------------------------
+        
+        You can use the parser as a standalone program from the command
+        line. Your input text has to be either in `CoNLL-X format
+        <http://ilk.uvt.nl/conll/>`_ or in a simple format with one token per
+        line and an empty line between sentences. If your data is
+        part-of-speech tagged, the tags should be separated from the tokens by
+        a tab::
+        
+            Many	JJ
+            people	NNS
+            need	VBP
+            our	PRP$
+            help	NN
+            .	.
+            
+            Please	UH
+            continue	VB
+            our	PRP$
+            important	JJ
+            partnership	NN
+            .	.
+        
+        General usage information, including a list of supported
+        part-of-speech tagsets, is available via the ``-h`` option::
+        
+            usrpr -h
+        
+        If you want to use the full parser, i.e. you have part-of-speech
+        tagged input data and you want to use the universal dependency rules,
+        you can invoke the parser like this::
+        
+            usrpr -t <tag-set> [--conll] <file>
+        
+        If you do not want to use the universal dependency rules, you can use
+        the ``--no-rules`` option::
+        
+            usrpr --no-rules -t <tag-set> [--conll] <file>
+        
+        If your data is untagged or you want to ignore the tags, simply omit
+        the ``-t`` option (in that case it is not possible to make use of the
+        universal dependency rules)::
+        
+            usrpr [--conll] <file>
+        
+        Note that the parser tries to automatically identify function
+        words. If your input file is too small, that cannot be done reliably
+        and might have an impact on parser performance.
+        
+        Using the module
+        ----------------
+        
+        You can easily incorporate the parser into your own Python
+        projects. All you have to do is import ``usurper.soegaard``::
+        
+            from usurper import soegaard
+            
+            parse = soegaard.parse_sentence(tokens, function_words, no_rules, tags, tagset)
+        
+        The ``parse_sentence`` function returns a `networkx
+        <https://networkx.github.io/>`_ ``DiGraph`` object. You can convert it
+        into a nested list representation using the ``export_to_conll_format``
+        function in ``usurper.utils.conll``.
+        
+        The function's docstring gives more detailed information about the
+        arguments it takes::
+        
+            parse_sentence(tokens, function_words, no_rules, tags=[], tagset=None)
+                Parse sentence using the algorithm by Søgaard (2012).
+                
+                Args:
+                    tokens: list of tokens
+                    function_words: set of function words
+                    no_rules: boolean; true if universal dependency rules should
+                        not be used
+                    tags: list of tags, if available; the nth element of tags
+                        should be the part-of-speech tag associated with the nth
+                        element of tokens
+                    tagset: string identifying one of the supported tagsets
+                
+                Returns:
+                    A networkx DiGraph representing the dependency structure.
+        
+        Evaluation
+        ==========
+        
+        Here is a table giving unlabeled attachment scores (ignoring
+        punctuation) for a couple of languages. Test data for most of the
+        languages is available from the `CoNLL-X Shared Task website
+        <http://ilk.uvt.nl/conll/post_task_data.html>`_. Performance for
+        English was evaluated on section 23 of the Penn Treebank.
+        
+        ==========  =======  ========  ===========
+        Language    no tags  no rules  full parser
+        ==========  =======  ========  ===========
+        Danish      30.04    37.66     38.20
+        English	    20.41    40.74     40.94
+        German	    18.59    33.93     39.24
+        Portuguese  19.86    44.86     44.50
+        Slovene     19.70    31.41     31.39
+        Swedish     20.75    44.69     49.21
+        ==========  =======  ========  ===========
+        
+        References
+        ==========
+        
+        - Brin, Sergey, Lawrence Page (1998): “The anatomy of a large-scale
+          hypertextual web search engine.” In: Computer Networks and ISDN
+          Systems 30/1–7, 107–117. `PDF
+          <http://infolab.stanford.edu/pub/papers/google.pdf>`__.
+        - Mihalcea, Rada, Paul Tarau (2004): “TextRank: Bringing order into
+          text.” In: Proceedings of the 2004 Conference on Empirical Methods
+          in Natural Language Processing (EMNLP'04). ACL, 404–411. `PDF
+          <http://www.aclweb.org/anthology/W04-3252>`__.
+        - Naseem, Tahira, Harr Chen, Regina Barzilay, Mark Johnson (2010):
+          “Using universal linguistic knowledge to guide grammar induction.”
+          In: Proceedings of the 2010 Conference on Empirical Methods in
+          Natural Language Processing (EMNLP'10). ACL, 1234–1244. `PDF
+          <http://www.aclweb.org/anthology/D10-1120>`__.
+        - Petrov, Slav, Dipanjan Das, Ryan McDonald (2012): “A universal
+          part-of-speech tagset.” In: Proceedings of the Eighth International
+          Conference on Language Resources and Evaluation (LREC'12),
+          2089–2096. `PDF
+          <http://www.lrec-conf.org/proceedings/lrec2012/pdf/274_Paper.pdf>`__.
+        - Søgaard, Anders (2012): “Unsupervised dependency parsing without
+          training.” In: Natural Language Engineering 18/2, 187–203. `Link
+          <http://dx.doi.org/10.1017/S1351324912000022>`_.
+        
+Platform: UNKNOWN
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Environment :: Console
+Classifier: License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 2
+Classifier: Programming Language :: Python :: 3
+Classifier: Topic :: Scientific/Engineering :: Artificial Intelligence
+Classifier: Topic :: Text Processing :: Linguistic
