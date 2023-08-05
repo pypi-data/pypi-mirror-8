@@ -1,0 +1,21 @@
+ <div>
+ <div class="auth-header">
+  <H1>OAuth login:</H1>
+  <P>A reviewboard user will be created if one does not already exist.</P>
+</div>
+ <form method="POST" action="/oauth/"
+       class="auth-section main-auth-section" id="oauth_form">
+{%  block hidden_fields %}
+  <input type="hidden" name="next" value="{{next}}" />
+{%  endblock %}
+
+  <div class="auth-form-row">
+   <div class="auth-button-container">
+    <input type="submit" class="primary" name="provider" value="github" />
+   </div>
+  </div>
+
+  <!-- Add other buttons here. -->
+
+ </form>
+ </div>
