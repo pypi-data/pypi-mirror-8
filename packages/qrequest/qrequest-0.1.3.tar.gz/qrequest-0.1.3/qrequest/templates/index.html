@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">  
+
+  <head>
+    <meta charset="utf-8">
+    <title>{{ title }}</title>
+    <link href="{{ url_for('static', filename='superhero.bootstrap.min.css') }}" rel="stylesheet">
+  </head>
+
+  <body>
+    <div class="navbar navbar-default" role="navigation">
+      <div class="container">
+        <div class="navbar-brand nav-item">{{ title }}</div>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="row">
+        <div class="col-md-3">
+          <ul class="nav nav-pills nav-stacked">
+            <li class="active"><a href="#">{{ title }} home</a></li>
+            {% for s in query_list.keys() %}
+            {% for q in query_list[s] %}
+            <li><a href="/setup/{{ s }}/{{ q }}">{{ s }}/{{ q }}</a></li>
+            {% endfor %}
+            {% endfor %}
+          </ul>
+        </div>
+        <div class="col-md-9">
+          <p class="lead">{{ description }}</p>
+          <p>Select a query on the left to run</p>
+        </div>
+      </div>
+    </div>
+  </body>
+
+</html>
