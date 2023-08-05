@@ -1,0 +1,15 @@
+<ul id="slider" class="slider"
+    tal:define="image_end view/image_size"
+	tal:attributes="style view/style"
+	tal:condition="view/hasImages" >
+	<li tal:repeat="image_url view/image_urls">
+		<img src="" 
+		    tal:define="image_path python: image_url + image_end" 
+		    tal:attributes="src image_path"/>
+	</li>
+</ul>
+
+<link rel="stylesheet" href="++resource++responsiveslides.css">
+<script src="++resource++responsiveslides.min.js"></script>
+  
+<script tal:replace="structure view/javascript"> </script>
