@@ -1,0 +1,64 @@
+{% extends 'qanda/base.html' %}
+
+
+{% block header %}
+
+  <h1>{% block title %}FAQ{% endblock %}</h1>
+
+{% endblock %}
+
+
+{% block primary %}
+
+  <h2>Topics</h2>
+
+  {% if object_list %}
+
+    <ul class="no-bullet bar">
+
+      {% for topic in object_list %}
+
+        <li{% if forloop.last %} class="last"{% endif %}>
+          <a href="{{ topic.get_absolute_url }}">{{ topic }}</a>
+          <p>{{ topic.description }}</p>
+        </li>
+
+      {% endfor %}
+
+    </ul>
+
+  {% else %}
+
+    <p>I'm sorry, but we currently have no FAQs available.</p>
+
+  {% endif %}
+
+{% endblock %}
+
+
+{% block secondary %}
+
+  <h2>Recently Updated</h2>
+
+  {% if related_questions %}
+
+    <dl>
+
+      {% for question in related_questions %}
+
+        <dt class="text-small">
+          <a href="{{ question.get_absolute_url }}">{{ question }}</a>
+        </dt>
+        <dd class="subtext">
+          {{ question.modified|date }}
+          <span class="feint">in</span>
+          <a href="{{ question.topic.get_absolute_url }}">{{ question.topic }}</a>
+        </dd>
+
+      {% endfor %}
+
+    </dl>
+
+  {% endif %}
+
+{% endblock %}

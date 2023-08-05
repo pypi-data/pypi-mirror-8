@@ -1,0 +1,58 @@
+{% extends 'qanda/base.html' %}
+
+
+{% block breadcrumbs %}
+
+  <ul class="breadcrumbs">
+    <li><a href="../../">FAQ</a></li>
+    <li><a href="{{ object.topic.get_absolute_url }}">{{ object.topic }}</a></li>
+    <li class="active">{{ object }}</li>
+  </ul>
+
+{% endblock %}
+
+
+{% block header %}
+
+  <h1 class="with-subtext">{% block title %}{{ object }}{% endblock %}</h1>
+  <p class="subtext">
+    {{ object.modified|date }}
+    <span class="feint">in</span>
+    <a href="{{ object.topic.get_absolute_url }}">{{ object.topic }}</a>
+  </p>
+
+{% endblock %}
+
+
+{% block primary %}
+
+  {{ object.answer|linebreaks }}
+
+{% endblock %}
+
+
+{% block secondary %}
+
+  {% if question_list.count > 1 %}
+
+    <h2>In this section&hellip;</h2>
+
+    <ul class="no-bullet sidebar">
+
+      {% for question in question_list %}
+
+        <li{% if forloop.last %} class="last"{% endif %}>
+        {% if question == object %}
+          <span class="feint">{{ question }}</span>
+        {% else %}
+          <a href="{{ question.get_absolute_url }}">{{ question }}</a>
+        {% endif %}
+        </li>
+
+      {% endfor %}
+
+    </ul>
+
+  {% endif %}
+
+{% endblock %}
