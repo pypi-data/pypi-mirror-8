@@ -1,0 +1,117 @@
+#!/usr/local/pypy-2.3.1/bin/pypy
+
+'''Provides a bitstring type'''
+
+import sys
+
+import bits_mod
+
+
+def two_thirds():
+    '''Test setting two thirds of the bits in a bit string'''
+    all_good = True
+
+    bits = bits_mod.Bits(100)
+
+    for i in bits_mod.my_range(100):
+        if i % 3 == 0:
+            bits.mark(i)
+        else:
+            bits.clear(i)
+
+    for i in bits_mod.my_range(100):
+        if i % 3 == 1:
+            bits.mark(i)
+
+    for i in bits_mod.my_range(100):
+        good_set = set([0, 1])
+        if i % 3 in good_set:
+            if bits.is_true(i):
+                pass
+            else:
+                all_good = False
+        else:
+            if bits.is_true(i):
+                all_good = False
+            else:
+                pass
+
+    if not all_good:
+        sys.stderr.write('2/3rds off\n')
+
+    return all_good
+
+
+def count_one():
+    '''Set one bit, then get a count of the set bits'''
+    bits = bits_mod.Bits(100)
+    bits.mark(10)
+    if bits.count() == 1:
+        return True
+    else:
+        sys.stderr.write('Bit vector does not have one bit set\n')
+        return False
+
+
+def count_two():
+    '''Set two bits, then get a count of the set bits'''
+    bits = bits_mod.Bits(100)
+    bits.mark(10)
+    bits.mark(12)
+    if bits.count() == 2:
+        return True
+    else:
+        sys.stderr.write('Bit vector does not have two bits set\n')
+        return False
+
+
+def count_minus_one():
+    '''Set all bits, then clear one and get a count'''
+    number = 100
+
+    bits = bits_mod.Bits(number)
+    for i in bits_mod.my_range(number):
+        bits.mark(i)
+
+    bits.clear(10)
+
+    if bits.count() == number-1:
+        return True
+    else:
+        sys.stderr.write('Bit vector does not have one bit clear: %d\n' % bits.count())
+        return False
+
+
+def count_minus_two():
+    '''Set all bits, then clear two and get a count'''
+    number = 100
+
+    bits = bits_mod.Bits(number)
+    for i in bits_mod.my_range(number):
+        bits.mark(i)
+
+    bits.clear(10)
+    bits.clear(12)
+
+    if bits.count() == number-2:
+        return True
+    else:
+        sys.stderr.write('Bit vector does not have two bits clear: %d\n' % bits.count())
+        return False
+
+
+def main():
+    '''Main function'''
+    all_good = True
+
+    all_good |= count_one()
+    all_good |= count_two()
+    all_good |= count_minus_one()
+    all_good |= count_minus_two()
+    all_good |= two_thirds()
+
+    if not all_good:
+        sys.stderr.write('One or more errors found\n')
+        sys.exit(1)
+
+main()
