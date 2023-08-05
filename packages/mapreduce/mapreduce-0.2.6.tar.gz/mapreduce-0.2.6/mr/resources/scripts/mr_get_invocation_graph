@@ -1,0 +1,91 @@
+#!/usr/bin/env python2.7
+
+import sys
+import os.path
+dev_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
+sys.path.insert(0, dev_path)
+
+import argparse
+import pprint
+
+import mr.config.log
+import mr.trace
+import mr.constants
+import mr.models.kv.job
+
+description = "Print the invocation-graph for a request"
+
+parser = argparse.ArgumentParser(description=description)
+
+parser.add_argument('workflow_name', help='Workflow name')
+parser.add_argument('request_id', help='Request ID')
+
+args = parser.parse_args()
+
+workflow = mr.models.kv.workflow.get(args.workflow_name)
+request = mr.models.kv.request.get(workflow, args.request_id)
+job = mr.models.kv.job.get(workflow, request.job_name)
+
+print("Request:")
+print('')
+print('  %s' % (request,))
+
+print('')
+print("Job:")
+print('')
+print('  %s' % (job,))
+print('')
+
+print('Graph:')
+print('')
+
+for child_info, is_loop_to_self \
+    in mr.trace.invocation_graph_with_data_gen(workflow, request):
+        (child_invocation, argument_data, post_combine_data, post_reduce_data, 
+         parent_invocation) = child_info
+
+        if child_invocation.direction == mr.constants.D_MAP:
+            action_phrase = 'has MAPPED to'
+        elif child_invocation.direction == mr.constants.D_REDUCE:
+            action_phrase = 'was REDUCED by'
+        else:
+            raise ValueError("Invocation [%s] direction [%s] invalid." % 
+                             (child_invocation.invocation_id, 
+                              child_invocation.direction))
+
+        print("==> INVOCATION [%s]" % (child_invocation.direction))
+        print('')
+
+        if parent_invocation is None:
+            print("ROOT [%s] [%s]" % 
+                  (child_invocation.invocation_id, child_invocation.step_name))
+        else:
+            print("PARENT [%s] [%s]  (%s)  CHILD [%s] [%s]" % 
+                  (parent_invocation.invocation_id, 
+                   parent_invocation.step_name,
+                   action_phrase, child_invocation.invocation_id, 
+                   child_invocation.step_name))
+
+        # The reduction isn't, itself, associated with any data (its parent is 
+        # the mapping that it's both supposed to reduce over and post results 
+        # to).
+        if child_invocation.direction == mr.constants.D_MAP:
+            print('')
+
+            print("Arguments:\n\n%s" % (pprint.pformat(argument_data),))
+
+            print('')
+
+            print("Post-Combine:\n\n%s" % (pprint.pformat(post_combine_data),))
+
+            print('')
+
+            print("Post-Reduce:\n\n%s" % (pprint.pformat(post_reduce_data),))
+
+        print('')
+
+        if child_invocation.error is not None:
+            print("  Child invocation error:")
+            print('')
+            print('  %s' % (child_invocation.error,))
+            print('')
