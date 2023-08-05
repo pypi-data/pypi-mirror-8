@@ -1,0 +1,15 @@
+<div class="slideshowContent"
+    id="slideshow"
+    i18n:domain="collective.mediaShow">
+    <!--<tal:checkForSlideshowFolder condition="exists: context/slideshow">
+          <tal:slideshow replace="structure python:view.slideshow(context['slideshow'])" tal:condition="python:view.slideshowInContext(context, request.URL)">
+         </tal:slideshow>           
+    </tal:checkForSlideshowFolder>-->
+    <tal:checkForSlideshowFolder condition="exists: context/slideshow">
+        <tal:slideshow tal:condition="python:view.slideshowInContext(context, request.URL)">
+            <div class="wrapper-img" tal:condition="python:view.getMediaURL() != ''">
+                <img tal:attributes="src python:view.getMediaURL()"/>
+            </div>
+        </tal:slideshow>
+    </tal:checkForSlideshowFolder>
+</div>
