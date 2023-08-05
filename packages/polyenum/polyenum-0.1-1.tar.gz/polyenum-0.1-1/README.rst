@@ -1,0 +1,190 @@
+~~~~~~~~~~~~~~~~~~~~~~
+Polyominoes enumerator
+~~~~~~~~~~~~~~~~~~~~~~
+
+The files of this repository allows one to enumerate polyominoes based on
+Jensen's algorithm. The code is written in Python, but it has been optimized
+using Cython.
+
+============
+Dependencies
+============
+
+- `Python <http://python.org/>`__
+- `GCC <http://gcc.gnu.org/>`__
+
+--------------------------
+Python module dependencies
+--------------------------
+
+- `Cython <http://cython.org/>`__
+- `setuptools <https://pypi.python.org/pypi/setuptools>`__
+
+=======
+Roadmap
+=======
+
+- Update the docstring in polyenum package (enumerators, data_structures
+  modules).
+- Enhance --north-snake option implementation. The criterion for exluding
+  invalid north snake candidate can be enhanced using the fact that for any
+  row of a north snake the pattern ``x...0...x`` cannot be found. Since the
+  algorithm builds polyominoes column after column, it would be a good idea to
+  make all of the "left snakes" and rotate the results.
+- Creates a test suite.
+- Implements Knuth's algorithm for the minimum connectivity problem (see comment
+  in source code). This will improve significantly the speed when enumerating
+  polyominoes.
+- Takes into account symmetry to improve speed of algorithm. It will also allow
+  to generate free/fixed/one-sided polyominoes. Currently, only fixed
+  polyominoes are generated.
+- Add other types of installers (MacPorts, Homebrew, Windows, Debian package,
+  ArchLinux). 
+- Add a script for extracting statistics and classifying.
+- Add a script for drawing.
+- Improve speed for enumerating partially directed snakes (it uses a Python
+  boolean list instead of a bool*). Moreover, the enumeration columnwise could
+  discard more configurations than by looking only at the pillars.
+
+=========
+Howto use
+=========
+
+The script ``polyenum`` is used to call the enumeration code. You can
+``./scripts/polyenum --help`` for help.
+
+-------------------
+From git repository
+-------------------
+
+In order for the script to run properly, the Cython library has to be compiled.
+It's done by doing::
+
+    $ ./configure
+    $ make
+
+and then, ``polyenum`` will be available under ``./scripts`` directory.
+
+=======
+Example
+=======
+
+-----------------------------------------
+Enumerating all polyominoes of given area
+-----------------------------------------
+
+Let the area of the polyominoes be **4**. Finding all the polyominoes (not
+inscribed in a particular rectangle) of area 4 is done as follows::
+
+    $ ./polyenum -a 4 --fixed
+    Fixed polyomino enumeration.
+    XXXX
+
+    X
+    X
+    X
+    X
+
+    XX
+    XX
+
+    X--
+    XXX
+
+    XX
+    -X
+    -X
+
+    XXX
+    X--
+
+    XX
+    X-
+    X-
+
+    -X-
+    XXX
+
+    -X
+    XX
+    -X
+
+    -XX
+    XX-
+
+    -X
+    XX
+    X-
+
+    --X
+    XXX
+
+    -X
+    -X
+    XX
+
+    XX-
+    -XX
+
+    X-
+    XX
+    -X
+
+    XXX
+    -X-
+
+    X-
+    XX
+    X-
+
+    XXX
+    --X
+
+    X-
+    X-
+    XX
+
+    Time elapsed: 0.000782012939453125 seconds
+    Number of polyominoes: 19
+
+More examples can be found reading polyenum's man page (``man ./doc/polyenum.1``).
+
+==========
+Installing
+==========
+
+----------------------
+From PyPi dist release
+----------------------
+
+Simply do::
+
+    python2.7 setup.py install
+
+-------------------
+From git repository
+-------------------
+
+The script can be installed on your system. This is useful since it provides
+bash tab completion capability for the script. To install, simply do::
+
+    $ ./configure
+    $ make
+    # make install
+
+**NOTE**: Most of the installation process is done by python. On some platforms,
+python may install scripts under a directory which is not in your $PATH bash
+environnement variable.
+
+```````````````
+Bash Completion
+```````````````
+
+In order to install bash completion, do the following ::
+
+    $ BASH_COMPLETION_DIR=$p ./configure
+    $ make
+    # make install
+
+where ``$p`` is the path to the directory where bash-completion scripts are
+installed on your system.

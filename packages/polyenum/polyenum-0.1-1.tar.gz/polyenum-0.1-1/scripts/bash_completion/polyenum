@@ -1,0 +1,16 @@
+#!bash
+_polyenum()
+{
+	local cur
+	cur="${COMP_WORDS[COMP_CWORD]}"
+    opts=("-h" "--help" "-v" "--version" "--snake" "--north-snake" "--tree"
+    "--fixed" "--maximal-inscribed" "--maximal-leaves" "--no-kiss" "--plain"
+    "--verbose" "--count" "--max-area" "--max-area-start" "-m" "--max-leaves"
+    "-b" "--rwidth" "-k" "--rheight" "-a" "--rarea" "-l" "--leaves")
+
+	if [[ ${cur} == -* ]]; then
+		COMPREPLY=( $(compgen -W "${opts[*]}" -- ${cur}) )
+		return 0
+	fi
+}
+complete -F _polyenum -o default polyenum

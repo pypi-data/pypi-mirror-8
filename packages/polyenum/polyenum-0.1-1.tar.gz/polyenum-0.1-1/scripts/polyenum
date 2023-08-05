@@ -1,0 +1,346 @@
+#!/usr/bin/env python2.7
+# coding=utf-8
+#----------------------------------------------------------
+# File: polyenum     Author(s): Alexandre Blondin Massé
+#                                  Simon Désaulniers
+# Date: 2014-01-07
+#----------------------------------------------------------
+# polyenum is a script that enumerates polyominoes.
+#----------------------------------------------------------
+
+import sys
+import os
+
+import argparse
+import time
+import math
+
+# not needed after installation
+sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)+'/..'))
+from polyenum import enumerators
+
+PROG_NAME='polyenum'
+PROG_VERSION='0.1-1'
+PROG_DESCRIPTION='Given a configuration, produces the enumeration of all the polyominoes.'
+
+def max_area(enumerator):
+    """
+    Finds the maximal area according to the enumerator the way it's configured.
+
+    INPUT:
+
+        - ``enumartor`` -- the enumerator to use.
+
+    OUTPUT:
+
+        The maximal area.
+    """
+    global user_data
+
+    if not isinstance(enumerator, enumerators.InscribedPolyominoesEnumerator):
+        return 0
+    # WARNING: must be proved that it is a lower bound
+    if not user_data.max_area_start:
+        if isinstance(enumerator, enumerators.InscribedSnakeEnumerator):
+            area =\
+            int((enumerator.get_width()+1)*(enumerator.get_height()+1)/2) +\
+            int((enumerator.get_width() + enumerator.get_height())/4) - 2
+        elif isinstance(enumerator, enumerators.InscribedTreeEnumerator):
+            area = int(((2 * enumerator.get_width() + 1) * (2 * enumerator.get_height() + 1) - 4) / 6) - 1
+        else:
+            return int(enumerator.get_width()*enumerator.get_height())
+    else:
+        area = user_data.max_area_start[0]
+        if area < user_data.rheight[0] + user_data.rwidth[0] - 1:
+            area = user_data.rheight[0] + user_data.rwidth[0] - 1
+
+    if (user_data.maximal_inscribed or user_data.max_area) and not user_data.plain:
+        print 'Using %s as starting area value' % area
+    enumerator.set_area(area)
+    enumerator.reset()
+
+    if enumerator.has_next():
+        while enumerator.has_next():
+            area += 1
+            if user_data.verbose:
+                print '... now trying %s as area' % area
+            enumerator.set_area(area)
+            enumerator.reset()
+        area -= 1
+        enumerator.set_area(area)
+        enumerator.reset()
+    else:
+        # TODO: May be the bound value for the area could be better...
+        # This handles the case when, for example, -l option has
+        # received a value too high.
+        while not enumerator.has_next() and\
+              not area<enumerator.get_width()+enumerator.get_height()-1:
+            if user_data.verbose:
+                print '... now trying %s as area' % area
+            area -= 1
+            enumerator.set_area(area)
+            enumerator.reset()
+    return area
+
+def max_leaves(enumerator):
+    """
+    Finds the maximal number of leaves for a tree according to the configured
+    enumartor.
+
+    When the rectangle height and width specified by the user is an odd number,
+    a better starting couple (area, leaves) can be used in order to find the
+    maximum number of leaves.
+
+    INPUT:
+
+        - ``enumartor`` -- The enumerator to use.
+
+    OUTPUT:
+
+        The maximal number of leaves.
+    """
+    if enumerator.get_width() % 2 == 1 and enumerator.get_height() % 2 == 1:
+        height = enumerator.get_height()
+        width = enumerator.get_width()
+        enumerator.set_height((enumerator.get_height()-1)/2)
+        enumerator.set_width((enumerator.get_width()-1)/2)
+        area = max_area(enumerator) # max_area() will reset the
+                                    # enumerator
+        # Using starting values according to conjecture
+        leaves = 2 * area + 2
+        enumerator.set_leaves(leaves)
+        area = 4 * area + 1
+        enumerator.set_area(area)
+        enumerator.set_height(height)
+        enumerator.set_width(width)
+        enumerator.reset()
+
+        max_area_val = max_area(enumerator)
+        while area <= max_area_val:
+            while enumerator.has_next():
+                leaves += 1
+                enumerator.set_leaves(leaves)
+                enumerator.reset()
+
+            while not enumerator.has_next() and area <= max_area_val:
+                area += 1
+                enumerator.set_area(area)
+                enumerator.reset()
+    else:
+        area = max_area(enumerator)
+        leaves = enumerator.next_obj().number_of_leaves()
+        enumerator.set_leaves(leaves)
+        enumerator.reset()
+
+        while area > leaves and area >= enumerator.get_width() + enumerator.get_height() - 1:
+            if enumerator.has_next():
+                # trying for higher number of leaves
+                leaves += 1
+                enumerator.set_leaves(leaves)
+                enumerator.reset()
+            while not enumerator.has_next() and area > leaves:
+                # may be lower the area will let room for leaves
+                area -= 1
+                enumerator.set_area(area)
+                enumerator.reset()
+    leaves -= 1
+    enumerator.set_leaves(leaves)
+    enumerator.set_area(area)
+    enumerator.reset()
+
+    return leaves
+
+def main():
+    global user_data
+    enumerator = None
+    area = start = end = n = exit_status = 0
+
+    #creating the parser
+    opt_parser = argparse.ArgumentParser(description=PROG_DESCRIPTION, prog=PROG_NAME)
+
+    #specefying the options
+    opt_parser.add_argument('-v', '--version', action='version',
+            version=PROG_VERSION)
+    opt_parser.add_argument('--snake', action='store_true', help='Only look for\
+            snake polyominoes')
+    opt_parser.add_argument('--north-snake', dest='north_snake', action='store_true', help='Only look for\
+            north snake polyominoes')
+    opt_parser.add_argument('--tree', action='store_true', help='Only look for \
+            tree polyominoes')
+    opt_parser.add_argument('--fixed', action='store_true', help='Enumerate\
+            polyominoes without the restriction of a rectangle (default:\
+            inscribed)')
+    opt_parser.add_argument('--maximal-inscribed', dest='maximal_inscribed', action='store_true',
+            help='Enumerate only maximal polyominoes inscribed in the specified \
+            rectangle.')
+    opt_parser.add_argument('--maximal-leaves', dest='maximal_leaves', action='store_true',
+            help='Enumerate only polyominoes inscribed in the specified \
+            rectangle with a maximal number of leaves.')
+    opt_parser.add_argument('--no-kiss', dest='allow_kiss', action='store_false',
+            help='Forbids kisses to occur in the polyominoes.')
+    opt_parser.add_argument('--plain', dest='plain', action='store_true',
+            help='Indicates that only the results are displayed.')
+    opt_parser.add_argument('--verbose', dest='verbose', action='store_true',
+            help='Displays information about the progression of the enumeration.')
+    opt_parser.add_argument('--count', dest='count', action='store_true',
+            help='Counts the number of polyominoes instead of enumerating them.')
+    opt_parser.add_argument('--max-area', dest='max_area', action='store_true',
+            help='Computes the maximum area instead of enumerating them.')
+    opt_parser.add_argument('--max-leaves', dest='max_leaves', action='store_true',
+            help='Computes the maximum of leaves.')
+
+    opt_parser.add_argument('-m', '--max-area-start', dest='max_area_start',
+            metavar='MAX_AREA_START',
+            help='Specifies the area value to start from when looking for '\
+            'maximal area.', type=int, nargs=1)
+    opt_parser.add_argument('-l', '--leaves', dest='leaves', metavar='LEAVES',
+            help='Number of leaves of each polyominoes enumerated.', type=int,
+            nargs=1, default=[-1])
+    opt_parser.add_argument('-b', '--rwidth', dest='rwidth', metavar='WIDTH',
+            help='the width of the rectangle', type=int, nargs=1)
+    opt_parser.add_argument('-k', '--rheight', dest='rheight', metavar='HEIGHT',
+            help='the height of the rectangle', type=int, nargs=1)
+    opt_parser.add_argument('-a', '--rarea', dest='rarea', metavar='AREA',
+            help='the area of the polyomino', type=int, nargs=1, default=[-1])
+
+    #parses the arguments
+    user_data = opt_parser.parse_args()
+
+    if (user_data.max_area or user_data.maximal_inscribed) and user_data.rarea[0] is not -1:
+        print >>sys.stderr, '--maximal-inscribed, --max-area and -a options are incompatible...'
+        exit(1)
+    elif user_data.rarea is None and\
+         not (user_data.maximal_inscribed or\
+              user_data.max_area or\
+              user_data.maximal_leaves or\
+              user_data.max_leaves):
+        print >>sys.stderr, 'the area of the polyominoes has to be specified...'
+        exit(1)
+
+    if user_data.snake + user_data.tree + user_data.north_snake > 1:
+        print 'Only one type of polyomino can be specefied.'
+        exit(1)
+
+    #TODO: This will change as soon as the PolyominoesEnumerator()
+    #      for snake and tree are implemented
+    if user_data.fixed and\
+            (user_data.snake or\
+            user_data.north_snake or\
+            user_data.tree or\
+            user_data.maximal_inscribed):
+        print >>sys.stderr, 'option --snake, --north-snake, --tree and '\
+                    '--maximal-inscribed  cannot be matched with --fixed.'
+        exit(1)
+
+    start = time.time()
+    try:
+        # Fixed polyomino enumeration
+        if user_data.fixed:
+            if user_data.rwidth is not None:
+                print >>sys.stderr, '\"-b\" option ignored...'
+            if user_data.rheight is not None:
+                print >>sys.stderr, '\"-k\" option ignored...'
+            enumerator = enumerators.PolyominoesEnumerator(user_data.rarea[0],
+                    user_data.allow_kiss, verbose=user_data.verbose)
+            if not user_data.plain:
+                print 'Fixed polyomino enumeration.'
+                if user_data.leaves[0] != -1:
+                    print >>sys.stderr, 'option -l ignored...'
+        # Inscribed polyomino enumeration
+        else:
+            if user_data.rheight is None or user_data.rwidth is None:
+                print >>sys.stderr, '-b, -k options have to be used for enumeration.'
+                exit(1)
+
+            # Snake
+            if user_data.snake:
+                enumerator = enumerators.InscribedSnakeEnumerator(
+                                user_data.rarea[0], user_data.rheight[0],
+                                user_data.rwidth[0],
+                                allow_kiss=user_data.allow_kiss,
+                                verbose=user_data.verbose, do_reset=False)
+                if not user_data.plain:
+                    print 'Inscribed snake polyomino enumeration.'
+                    if user_data.leaves[0] != -1:
+                        print >>sys.stderr, 'option -l ignored...'
+            # North snake
+            elif user_data.north_snake:
+                enumerator = enumerators.InscribedNorthSnakeEnumerator(
+                                user_data.rarea[0], user_data.rheight[0],
+                                user_data.rwidth[0],
+                                allow_kiss=user_data.allow_kiss,
+                                verbose=user_data.verbose, do_reset=False)
+                if not user_data.plain:
+                    print 'Inscribed north snake polyomino enumeration.'
+                    if user_data.leaves[0] != -1:
+                        print >>sys.stderr, 'option -l ignored...'
+            # Tree
+            elif user_data.tree:
+                enumerator = enumerators.InscribedTreeEnumerator(
+                                user_data.rarea[0], user_data.rheight[0],
+                                user_data.rwidth[0], leaves=user_data.leaves[0],
+                                allow_kiss=user_data.allow_kiss,
+                                verbose=user_data.verbose, do_reset=False)
+                if not user_data.plain:
+                    print 'Inscribed tree polyomino enumeration.'
+            # Simple polyomino
+            else:
+                enumerator = enumerators.InscribedPolyominoesEnumerator(
+                                user_data.rarea[0], user_data.rheight[0],
+                                user_data.rwidth[0],
+                                allow_kiss=user_data.allow_kiss,
+                                verbose=user_data.verbose, do_reset=False)
+                if not user_data.plain:
+                    print 'Inscribed polyomino enumeration.'
+                    if user_data.leaves[0] != -1:
+                        print >>sys.stderr, 'option -l ignored...'
+
+        if user_data.maximal_inscribed or user_data.max_area:
+            area = max_area(enumerator)
+        if user_data.max_leaves or user_data.maximal_leaves:
+            leaves = max_leaves(enumerator)
+        if user_data.max_area:
+            print area
+            n = None
+        elif user_data.max_leaves:
+            print leaves
+            n = None
+        elif user_data.maximal_leaves:
+            n = 0
+            area = user_data.rwidth[0] + user_data.rheight[0] - 1
+            max_area_val = max_area(enumerator)
+            while area <= max_area_val:
+                area += 1
+                enumerator.set_area(area)
+                enumerator.reset()
+                if user_data.count:
+                    n += enumerator.count()
+                elif enumerator.has_next():
+                    print "#-----------"
+                    print "# area : %s" % area
+                    print "# leaves : %s" % leaves
+                    print "#-----------"
+                    n += enumerator.print_all()
+            if user_data.count:
+                print n
+        else: 
+            enumerator.reset()
+            if user_data.count:
+                n = enumerator.count()
+                print n
+            else:
+                n = enumerator.print_all()
+    except KeyboardInterrupt, e:
+        print '\nReceived KeyboardInterrupt...  Quitting.'
+        exit_status = 1
+
+    end = time.time()
+    if not user_data.plain:
+        print 'Time elapsed: %s seconds' % (end - start)
+        if enumerator is not None:
+            print 'Number of %s: %s' % (enumerator.lookingFor(), n)
+
+    return exit_status
+
+if __name__ == "__main__":
+    exit(main())
