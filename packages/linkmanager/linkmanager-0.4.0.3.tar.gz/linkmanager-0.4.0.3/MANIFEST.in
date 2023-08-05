@@ -1,0 +1,17 @@
+include README.rst HISTORY.rst LICENSE.txt
+include linkmanager.zsh
+include linkmanager.conf
+
+recursive-exclude . *.pyc
+recursive-exclude . *.pyo
+
+recursive-include requirements *.txt
+recursive-exclude requirements *.txt~
+
+graft docs
+graft linkmanager
+graft linkmanager/locale
+graft linkmserver/static
+recursive-exclude linkmserver/static/.webassets-cache *
+
+graft linkmserver/templates
