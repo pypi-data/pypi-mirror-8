@@ -1,0 +1,14 @@
+#!/usr/bin/env python3
+import sys
+
+sys.path.append('.')
+from knurko import knurko, cli
+
+args = cli.parse_args()
+try:
+    frame_number = knurko(args.filename)
+except ValueError as e:
+    sys.stderr.write(e + '\n')
+    sys.exit(1)
+else:
+    sys.stdout.write('%d\n' % frame_number)
