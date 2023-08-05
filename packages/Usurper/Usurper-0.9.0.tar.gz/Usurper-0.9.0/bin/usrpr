@@ -1,0 +1,73 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import argparse
+import itertools
+import logging
+import multiprocessing
+
+import networkx
+
+from usurper import soegaard
+from usurper import textrank
+from usurper.utils import conll
+from usurper.utils import tsv
+
+
+def sentences_iter(corpus, conll_format):
+    """"""
+    if conll_format:
+        return conll.sentences_iter(corpus, return_id=True)
+    else:
+        return tsv.sentences_iter(corpus, return_id=True)
+
+
+def sentence_graphs_iter(sentences, tagset, conll_format, origid):
+    """"""
+    if conll_format:
+        return ((conll.create_nx_digraph_from_conll(s, tagset, origid=True), sid) for s, sid in sentences)
+    else:
+        return ((tsv.create_nx_digraph_from_tsv(s, tagset, origid=True), sid) for s, sid in sentences)
+
+
+
+def main():
+    parser = argparse.ArgumentParser(description='An implementation of the unsupervised dependency parser described by Søgaard (2012).')
+    parser.add_argument("--no-rules", action="store_true", help="Do not use universal dependency rules (implied when no tagset is given)")
+    parser.add_argument("-t", choices=["ar-padt", "bg-btb", "ca-cat3lb", "cs-pdt", "da-ddt", "de-negra", "de-tiger", "el-gdt", "en-brown", "en-ptb", "en-tweet", "es-cast3lb", "eu-eus3lb", "fi-tdt", "fr-paris", "hu-szeged", "it-isst", "iw-mila", "ja-kyoto", "ja-verbmobil", "ko-sejong", "nl-alpino", "pl-ipipan", "pt-bosque", "ru-rnc", "sl-sdt", "sv-talbanken", "tu-metusbanci", "zh-ctb6", "zh-sinica"], help="Tagset")
+    parser.add_argument('-v', action='count', default=0, help="Verbosity (use -vv for even more verbose output)")
+    parser.add_argument('--conll', action='store_true', help="Corpus is in CoNLL format")
+    parser.add_argument("CORPUS", type=argparse.FileType("r"), help="Corpus")
+    args = parser.parse_args()
+
+    if args.v == 0:
+        logging.basicConfig(format="%(levelname)s %(asctime)s: %(message)s", level=logging.WARNING)
+    elif args.v == 1:
+        logging.basicConfig(format="%(levelname)s %(asctime)s: %(message)s", level=logging.INFO)
+    elif args.v >= 2:
+        logging.basicConfig(format="%(levelname)s %(asctime)s: %(message)s", level=logging.DEBUG)
+
+    pool = multiprocessing.Pool(processes = multiprocessing.cpu_count())
+    groupsize = 5 * 10 * multiprocessing.cpu_count()
+    
+    logging.info("Try to identify function words")
+    sents = sentences_iter(args.CORPUS, args.conll)
+    function_words = set(textrank.get_top_n(sents, 50, 4, args.conll))
+    logging.debug("Function words: %s" % " ".join(function_words))
+
+    logging.info("Parse sentences")
+    # reset file pointer
+    args.CORPUS.seek(0)
+    sents = sentences_iter(args.CORPUS, args.conll)
+    sent_graphs = sentence_graphs_iter(sents, args.t, args.conll, origid=True)
+    #r = pool.imap(soegaard.parse_sentence_graph, zip(sent_graphs, itertools.repeat(function_words), itertools.repeat(args.no_rules)), 10)
+    r = map(soegaard.parse_sentence_graph, zip(sent_graphs, itertools.repeat(function_words), itertools.repeat(args.no_rules)))
+    for parse_tree in r:
+        lines = ["\t".join(l) for l in conll.export_to_conll_format(parse_tree)]
+        print("\n".join(lines) + "\n")
+    logging.info("Done")
+    
+
+
+if __name__ == "__main__":
+    main()
