@@ -1,0 +1,50 @@
+#!/usr/bin/env python2.7
+
+import sys
+import os.path
+dev_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
+sys.path.insert(0, dev_path)
+
+import argparse
+import pprint
+
+import mr.config.log
+import mr.models.kv.workflow
+import mr.models.kv.job
+import mr.models.kv.step
+import mr.models.kv.request
+import mr.models.kv.invocation
+
+description = "Create a request entity"
+
+parser = argparse.ArgumentParser(description=description)
+
+parser.add_argument('workflow_name', help='Workflow name')
+parser.add_argument('job_name', help='Job name')
+
+parser.add_argument('-a', '--argument', 
+                    required=True, action='append', nargs=2, help='Argument')
+
+parser.add_argument('-c', '--context', help='Context information')
+
+args = parser.parse_args()
+
+workflow = mr.models.kv.workflow.get(args.workflow_name)
+job = mr.models.kv.job.get(workflow, args.job_name)
+step = mr.models.kv.step.get(workflow, job.initial_step_name)
+
+i = mr.models.kv.invocation.Invocation(
+        step_name=step.step_name,
+        arguments=dict(args.argument))
+
+i.save()
+
+r = mr.models.kv.request.Request(
+        invocation_id=i.invocation_id,
+        workflow_name=args.workflow_name, 
+        job_name=job.job_name, 
+        context=args.context)
+
+r.save()
+
+print(r.get_debug())
