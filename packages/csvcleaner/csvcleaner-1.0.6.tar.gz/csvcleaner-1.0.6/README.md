@@ -1,0 +1,74 @@
+CSV Cleaner
+===========
+
+CSV Cleaner is an Apache 2.0 licensed Python library that removes rows
+containing blacklisted words from a CSV file.
+
+Instructions
+------------
+
+```python
+>>> import csvcleaner
+>>> f = csvcleaner.CSVCleaner()
+>>> f.run('/path/to/file.csv')
+```
+
+When ``run`` is called, CSV Cleaner will loop through each row within the CSV file and search for blacklisted words.
+
+When a row is rejected because it contains a blacklisted word, it's moved to a ``[name]-rejected.csv`` file. Accepted rows are moved to a ``[name]-accepted.csv`` file. Both files are saved in the same directory as the original CSV file.
+
+Installation
+------------
+
+To install CSV Cleaner, simply run:
+
+```bash
+$ pip install csvcleaner
+```
+
+Parmateres
+----------
+
+``CSVCleaner`` accepts several parameters:
+
+```python
+>>> import csvcleaner
+>>> f = csvcleaner(blacklist=[], replace_chars=[], configure=True, lowercase=True, strict=False)
+```
+
+#### blacklist
+
+A ``list`` of characters or words that are used to determine if a row is rejected.
+
+Default: ``[]`` (unless ``configure`` is ``True``)
+
+#### replace_chars
+
+A ``list`` of words or characters that are replaced by a space in order to make word detection more accurate and effective.
+
+Default: ``[]`` (unless ``configure`` is ``True``)
+
+#### configure
+
+When ``True``, CSV Cleaner will use recommended lists for ``blacklist`` and ``replace_chars``. These recommended lists will only be used if ``blacklist`` and ``replace_chars`` are ommitted during class instantiation or contain an empty list. Set to ``False`` if you intend to supply custom lists for ``blacklist`` and ``replace_chars``.
+
+Default: ``True``.
+
+#### lowercase
+
+When ``True``, all characters and strings will be converted to lowercase for more accurate word detection. When a row is inserted into ``[name]-accepted.csv`` or ``[name]-rejected.csv``, its original case remains. Set to ``False`` if case matching is important.
+
+Default: ``True``.
+
+#### strict
+
+When ``True``, rows that *may* contain (e.g., fuzzy matches) blacklisted words or characters are rejected.
+
+Default: ``False``.
+
+Blacklist
+---------
+
+CSV Cleaner includes a blacklist that's used when ``configure`` is ``True`` and
+``blacklist`` is left empty. This blacklist is maintained by [Shutterstock](https://github.com/shutterstock/)
+on [Github](https://github.com/shutterstock/List-of-Dirty-Naughty-Obscene-and-Otherwise-Bad-Words).
