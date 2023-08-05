@@ -1,0 +1,54 @@
+#! /usr/bin/env python3
+# -*- coding: utf-8 -*-
+import sys
+import os
+import shutil
+import pymobile
+
+def print_err(err):
+    print('usage: pymobile-create-project PROJ_DIR')
+    print('error: {}'.format(err))
+
+
+if len(sys.argv) != 2:
+    print_err('takes exactly one argument: PROJ_DIR.')
+    exit()
+
+src_dir = pymobile.__path__[0]
+dest_dir = sys.argv[1]
+
+if not os.path.isdir(dest_dir):
+    print_err('PROJ_DIR does not exist.')
+    exit()
+
+
+def copytree(src_dir, dest_dir, sub_dir):
+    if not os.path.exists(os.path.join(dest_dir, sub_dir)):
+        shutil.copytree(
+            os.path.join(src_dir, sub_dir),
+            os.path.join(dest_dir, sub_dir),
+            ignore=shutil.ignore_patterns('__pycache__'))
+
+    
+copytree(src_dir, dest_dir, 'controllers')
+copytree(src_dir, dest_dir, 'models')
+copytree(src_dir, dest_dir, 'views')
+
+
+serve_file = os.path.join(dest_dir, 'serve.py')
+settings_file = os.path.join(dest_dir, 'settings.py')
+
+
+if not os.path.exists(serve_file):
+    with open(serve_file, 'w') as f:
+        f.write("#!/usr/bin/env python3\n")
+        f.write("if __name__ == '__main__':\n")
+        f.write("    from pymobile import serve\n")
+        f.write("    serve.run()\n")
+
+
+if not os.path.exists(settings_file):
+    with open(settings_file, 'w') as f:
+        f.write('from pymobile.settings import *')
+
+print ('Done.')
