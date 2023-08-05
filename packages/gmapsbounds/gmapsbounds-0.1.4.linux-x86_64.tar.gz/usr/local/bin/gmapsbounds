@@ -1,0 +1,42 @@
+#!/usr/bin/python3
+
+import os
+import argparse
+import shutil
+from gmapsbounds import obj
+from gmapsbounds import utils
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("input_filename", help="File name containing geographic locations")
+    parser.add_argument('-o', "--output_loc",
+        help="Location of program output. Specifies a file name if ends with .kml, otherwise"
+        " specifies a directory", default=os.getcwd())
+    args = parser.parse_args()
+    with open(args.input_filename) as f:
+        location_list = f.readlines()
+    if location_list:
+        location_objects = []
+        driver = utils.launch_driver()
+        try:
+            for location_name in location_list:
+                location_name = location_name.rstrip('\n')
+                location = obj.Location(driver, location_name)
+                try:
+                    location.download_center_map()
+                    location.calculate_coordinates()
+                    location_objects.append(location)
+                finally:
+                    if os.path.exists(location.save_dir):
+                        shutil.rmtree(location.save_dir)
+            if not args.output_loc.endswith('.kml'):
+                try:
+                    os.makedirs(args.output_loc)
+                except FileExistsError:
+                    pass
+            utils.write_to_kml(location_objects, args.output_loc)
+        finally:
+            driver.close()
+
+if __name__ == '__main__':
+    main()
