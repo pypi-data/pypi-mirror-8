@@ -1,0 +1,64 @@
+#messages-group-member,
+.messages-group-member,
+#messages-dialog-partner,
+.messages-dialog-partner {
+    .alert {
+        @include alert-variant(lighten($btn-default-bg, 5.5%), lighten($btn-default-border, 5.5%), $btn-default-color);
+        @include border-radius(0);
+        
+        a {
+            text-decoration: none;
+        }
+    }
+    
+    .dropdown-menu {
+        min-width: 80%;
+    }
+}
+
+#messages-group-member,
+.messages-group-member {
+    ul {
+        list-style: none;
+        margin-left: 0;
+        
+        &.dropdown-menu {
+            top: auto;
+            left: auto;
+            max-height: 227px;
+            overflow-y: scroll;
+            overflow-x: hidden;
+        }
+        
+        li {
+            overflow: hidden;
+            display: list-item;
+            
+            img.thumbnail {
+                width: 42px;
+                height: 42px;
+                display: inline-block;
+            }
+            
+            span {
+                margin-left: 3px;
+                vertical-align: top;
+            }
+        }
+    }
+}
+
+#messages-dialog-partner,
+.messages-dialog-partner {
+    #dialog-partner {
+        @include border-radius(0);
+    }
+    
+    // &.is-fixed ?
+    span {
+        display: inline-block;
+        @include text-overflow;
+        margin-left: 5px;
+        vertical-align: top;
+    }
+}

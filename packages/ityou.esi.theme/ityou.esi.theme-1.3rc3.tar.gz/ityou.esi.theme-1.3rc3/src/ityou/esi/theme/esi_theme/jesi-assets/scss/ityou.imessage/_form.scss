@@ -1,0 +1,107 @@
+#receiver_list {
+    max-height: 160px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    border-top: 1px solid $gray-lighter;
+    border-bottom: 1px solid $gray-lighter;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    
+    ul {
+        margin-left: 10px !important;
+        margin-right: 10px !important;
+        list-style: none;
+        
+        li {
+            div.thumbnail {
+                margin-bottom: 0;
+                
+                .caption {
+                    margin-left: 50px;
+                    
+                    .close {
+                        position: absolute;
+                        top: 0;
+                        right: 20px;
+                    }
+                }
+            }
+        }
+    }
+}
+
+form[name="message_receiver"] {
+    .input_holder {
+        position: relative;
+        margin: 10px 0;
+        
+        input {
+            width: 100%;
+        }
+        
+        .usersearch {
+            position: absolute;
+            z-index: 99999999;
+            display: none;
+            width: 100%;
+            margin-top: -5px;
+            
+            ul.users {
+                list-style: none !important;
+                margin: 0 !important;
+                padding: 0;
+                background-color: $gray-lighter;
+                border: 1px solid $gray-light;
+                border-top: 0;
+                width: 100%;
+                max-height: 268px;
+                overflow-y: scroll;
+                overflow-x: hidden;
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            li {
+                margin-bottom: 0 !important;
+                padding-bottom: 5px;
+                padding-top: 5px;
+                
+                &.hover, 
+                &:hover {
+                    background-color: $imessage-selection-hover;
+                }
+                    
+                
+                a {
+                    display: block;
+                    position: relative;
+                    padding: 0 5px;
+                    
+                    h2 {
+                        margin: 0;
+                    }
+                    
+                    p,
+                    h2 {
+                        white-space: nowrap;
+                        margin-left: 55px;
+                        @include text-overflow;
+                        margin-bottom: 0;
+                    }
+                    
+                    .button {
+                        position: absolute;
+                        right: 5px;
+                        top: 50%;
+                        font-size: 1.5em;
+                    }
+                }
+                
+                img {
+                    width: 48px;
+                    height: 48px;
+                }
+            }
+        }
+    }
+}

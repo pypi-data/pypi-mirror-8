@@ -1,0 +1,164 @@
+#dialog-overview-messages-list {
+    margin-top: 20px;
+    margin-bottom: 20px;
+
+    .user,
+    .group {
+        padding: 15px;
+        position: relative;
+        margin-bottom: 5px;
+        border-bottom: 1px solid #ccc;
+        
+        &:last-child {
+            //border-bottom: 0;
+        }
+        
+        &.unread {
+            border-bottom-color: $btn-warning-border;
+            border-right: 5px solid $btn-warning-border;
+        }
+        
+        .action-buttons {
+            text-align: center;
+            float: right;
+        }
+        
+        .user-information {
+            .user-portrait {
+                float: left;
+                
+                & + div {
+                    cursor: pointer;
+                    margin-left: 70px;
+                }
+            }
+            
+            .user-name {
+                display: block;
+                vertical-align: top;
+            }
+            
+            .message-text {
+                display: block;
+            }
+        }
+        
+        .message-date {
+            float: right;
+            font-size: 11px;
+        }
+    }
+}
+
+// deprecated
+#imessages-table {
+    margin-top: 15px;
+    
+    .unread {
+        //border-right: 5px solid $imessage-unread-border;
+    }
+    
+    td {
+        &.unread {
+            text-align: center;
+            background-color: $imessage-unread-border;
+        }
+    }
+    
+    @media (max-width: $screen-xs-min) {
+        thead,
+        tbody,
+        tfoot,
+        th,
+        tr,
+        td {
+            display: block;
+        }
+
+        thead {
+            // hide table headers, but not display none, for accessibility
+            tr {
+                position: absolute;
+                border-bottom: 1px solid $gray-lighter;
+                top: -9999px;
+                left: -9999px;
+            }
+        }
+
+        tr {
+            margin-bottom: 2em;
+        }
+
+        // behave like a row
+        td {
+            position: relative;
+
+            &:before {
+                // now like a table header
+                position: absolute;
+                // top/left values mimic padding
+                left: 0;
+                white-space: nowrap;
+            }
+        }
+    }
+}
+
+
+#imessage-inbox {
+    .load-more-messages {
+        cursor: pointer;
+    }
+    
+    .unread {
+        font-weight: bold;
+    }
+    
+    #imessage-inbox-spinner {
+        display: none;
+        
+        i {
+            font-size: 18px;
+        }
+    }
+    
+    .btn-group {
+        > .btn {
+            @include border-radius(0);
+            width: 25px;
+            float: none;
+            
+            &:first-child:not(:last-child) {
+                margin: 5px 0 5px 5px;
+            }
+        }
+    }
+    
+    .sender-portrait {
+        margin-right: 3px;
+    }
+    
+    .inbox-clear-filter {
+        position: absolute;
+        top: 10px;
+        right: 20px;
+        cursor: pointer;
+    }
+    
+    .user-information {
+        span {
+            display: block;
+            
+            @media (max-width: $screen-sm-max) and (min-width: $screen-md-min) {
+                display: inline;
+            }
+        }
+        
+        .user-portrait {
+            @media (max-width: $screen-sm-max) and (min-width: $screen-md-min) {
+                float: left;
+                margin-right: 3px;
+            }
+        }
+    }
+}

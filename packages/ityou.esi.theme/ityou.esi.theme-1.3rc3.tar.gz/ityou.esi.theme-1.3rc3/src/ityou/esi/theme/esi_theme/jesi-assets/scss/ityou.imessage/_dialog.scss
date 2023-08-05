@@ -1,0 +1,269 @@
+//#LM
+div#dialog-header {
+    padding: 15px;
+    background-color: white;
+    border:1px solid #ddd;
+    margin-bottom: 15px;
+}
+
+
+#message-stream {
+
+    ul.latest-messages {
+        margin: 0;
+        padding: 0;
+        list-style: none; 
+
+        li {
+            &.latest-message {
+                background-color: $imessage-message-bg;
+                border: 1px solid $imessage-message-border-color;
+                @include border-radius($imessage-message-border-radius);
+                font-size: $imessage-message-font-size;
+                margin: 0 0 15px;
+                padding: 6px;
+                overflow: hidden;
+                
+                &.message-received,
+                &.message-sent {
+                    width: 94%;
+                }
+                
+                // RECEIVED
+                &.message-received {
+                    background: $imessage-received-bg;
+                    border-color: $imessage-received-border;
+                    float: left;
+                    
+                    &.message-unread {
+                        border-left: 5px solid $imessage-unread-border;
+                    }
+                }
+
+                .btn-group {
+                    .btn {
+                        margin-right: 0;
+                        
+                        &.message-hide-button {
+                            display: $imessage-msg-hide-button-display;
+                            background: $imessage-msg-hide-button-bg !important;
+                            border: $imessage-msg-hide-button-border !important;
+                            @include box-shadow(none);
+                        }
+                        
+                        &.message-delete-button {
+                            display: $imessage-msg-del-button-display;
+                            background: $imessage-msg-del-button-bg !important;
+                            border: $imessage-msg-del-button-border !important;
+                            @include box-shadow(none);
+                        }
+                    }
+                }
+                
+                // SENT
+                &.message-sent {
+                    float: right;
+                    background: $imessage-sent-bg;
+                    border-color: $imessage-sent-border;
+                }
+                
+                &:before,
+                &:after {
+                    content: ' ';
+                    display: table;
+                }
+
+                &:after {
+                    clear: both;
+                }
+                
+                .message-portrait {
+                    float: left;
+                    height: 48px;
+                    width: 48px;
+                    margin: 0 5px 0 0;
+                    padding: 0;
+                    position: relative;
+                    
+                    img {
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        clip: rect(0px 48px 48px 0px);
+                    }
+                }
+                
+                
+                .very-small-personal-portrait {
+                    width: 32px;
+                }
+                
+                img.very-small-personal-portrait {
+                    clip: rect(0px 32px 32px 0px);
+                }
+                
+                
+                
+                .message-text {
+                    margin-left: 50px;
+                    margin-top: 10px;
+                    padding: 0;
+                    
+                    .timestamp {
+                        color: $gray-light;
+                        font-size: $font-size-small;
+                        float: right;
+                    }
+                    
+                    .btn-group {
+                        button:not(.btn) {
+                            background: none;
+                            border: 0;
+                            
+                            i {
+                                font-size: 16px;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    ul.dialog {
+        margin-left: 0;
+        margin-right: 0;
+        list-style: none;
+        
+        li {
+            border-bottom: 1px solid $imessage-message-border-color;
+            padding: 0.5em 0 0 0;
+            width: 100%;
+        }
+    }
+}
+
+
+
+// InstantMessage Controls
+// -----------------------------------------------------------------------------
+#messages-controls {
+    margin: 4px 0;
+    
+    .well {
+        &.previous-messages {
+            padding: 0;
+            background-image: none;
+            margin-top: 10px;
+            text-align: center;
+            cursor: pointer;
+            
+            p {
+                margin: 0;
+                padding: 5px;
+            }
+            
+            .previous-messages-loader {
+                display: none;
+            }
+        }
+    }
+    
+    .messages-all-button {
+        display: none;
+    }
+}
+
+
+.message-input-field {
+    textarea {
+        padding: 0;
+        border: 1px solid $gray-light;
+        @include border-radius(0);
+        background-color: $body-bg;
+        font-size: $imessage-message-font-size;
+        width: 98%;
+        min-height: 6em;
+    }
+    
+    & + .message-save-button {
+        margin: 5px 0 20px 0;
+        float: right;
+    }
+}
+
+#message-stream {
+    .message-controls {
+        .latest-messages + & {
+            margin-top: 20px;
+        }
+        
+        .input-group-btn {
+            vertical-align: top;
+            
+            .btn {
+                margin-top: 0;
+            }
+        }
+    }
+}
+
+
+
+
+// testarea
+
+#test-liste {
+    .user,
+    .group {
+        padding: 5px;
+        position: relative;
+        margin-bottom: 5px;
+        border-bottom: 1px solid #ccc;
+        
+        &:last-child {
+            border-bottom: 0;
+        }
+        
+        &.unread {
+            border-right: 5px solid red;
+        }
+        
+        .action-buttons {
+            text-align: center;
+            float: right;
+        }
+        
+        .user-information {
+            .user-portrait {
+                float: left;
+            }
+            
+            .user-name {
+                display: block;
+                vertical-align: top;
+            }
+            
+            .message-text {
+                display: block;
+            }
+        }
+        
+        .message-date {
+            float: right;
+            font-size: 11px;
+        }
+    }
+}
+
+
+
+
+
+.dialog-msg-text {
+    .fa-stack {
+        .fa-arrow-right {
+            left: 12px;
+        }
+    }
+}

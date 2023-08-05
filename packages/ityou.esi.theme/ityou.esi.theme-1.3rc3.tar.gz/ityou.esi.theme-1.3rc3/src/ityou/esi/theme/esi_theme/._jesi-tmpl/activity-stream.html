@@ -1,0 +1,149 @@
+<!--
+LM -> MR: WERDEN DIESE TEMPLATES NOCH BENÖTIGT?
+-->
+<div id="activity-stream" class="clearfix">
+
+	
+
+	<div class="row headline">
+		<div class="col-xs-12">
+			<h3>Aktivit&auml;ten</h3>
+		</div>
+	</div>
+	
+	<div class="row activity-controls">
+		<div class="col-xs-6 text-center">
+			<button type="button" class="btn btn-default btn-sm show-all hidden">Zeige alle</button>
+		</div>
+		<div class="col-xs-6 text-center">
+			<button type="button" class="btn btn-default btn-sm hide-all">Verstecke alle</button>
+		</div>
+	</div>
+	
+	<div class="row">
+        <div class="col-xs-12">
+            <ul id="activity-stream-list" class="list-unstyled overthrow"></ul>
+        </div>
+        
+        <div class="col-xs-12 get-more-activities">&nbsp;</div>
+	</div>
+		
+
+	<!-- /Content -->
+	
+	<br />
+	
+	
+	<script type="text/x-jsrender" id="activity-stream-template">
+	    <li id="{{:hash}}" data-content-id="{{:content_uid}}" data-timestamp="{{:timestamp}}" class="activity clearfix">
+	        
+	        <div class="well clearfix">
+	        
+	            <div class="clearfix">
+                    <div class="col-xs-11">
+                        <div class="clearfix wrapper">
+                            <img src="{{:portrait}}" class="img-thumbnail pull-left">
+                            <div class="user-information">
+                                <a href="/author/{{:user_id}}" data-uid="{{:user_id}}">{{:user_name}}</a> <small>{{:timestr}}</small>
+                                <br>
+                                <a class="user-message" href="{{:content_url}}">{{:message}}</a>
+                            </div>
+                            {{if thumbnails_available == true}}
+                            <div class="thumbnail-preview {{:portal_type}}">
+                                <a href="{{:content_url}}/@@show_preview" class="linked-document">
+                                    <img class="lazy" data-original="{{:thumbnail_url}}">
+                                </a>
+                            </div>
+                            {{/if}}
+                        </div>
+                    </div>
+                            
+                    <div class="col-xs-1">
+                        <button type="button" class="activity-hide close pull-right" data-parent-hash="#{{:hash}}">&times;</button>
+                    </div>
+                </div>
+                
+                
+                <div class="col-xs-12 divider"><hr></div>
+                
+                
+                <!-- Kommentare -->
+                
+                <ul class="activity-comment-list list-unstyled clearfix">
+					{{for comments tmpl="#comment-stream-template" /}}
+				</ul>
+                
+                <!-- // Kommentare -->
+                
+                
+                <div class="col-xs-12 divider hidden"><hr></div>
+                
+                
+                <div class="col-xs-12 clearfix">
+                    <div class="col-xs-6">
+						<button class="btn btn-xs btn-default comment-show hidden" type="button" data-parent-hash="#{{:hash}}">
+						    alle Kommentare anzeigen
+						</button>
+                    </div>
+                    <div class="col-xs-6">
+                        <button class="btn btn-xs btn-default comment-write pull-right" type="button" data-parent-hash="#{{:hash}}">
+                            kommentieren
+                        </button>
+                    </div>
+                </div>
+                
+                
+                <div class="col-xs-12">
+                
+                    <div class="input-group comment-input-group hidden">
+                        <textarea class="form-control comment-textarea"></textarea>
+                        <span class="input-group-btn">
+                            <button class="btn btn-default comment-save" type="button" data-parent-hash="#{{:hash}}"><i class="fa fa-save"></i></button>
+                        </span>
+                    </div>
+                    
+                </div>
+	        
+	        </div>
+	        
+	    </li>
+	</script>
+	
+	
+	<script type="text/x-jsrender" id="comment-stream-template">
+	    <li id="{{:hash}}" data-timestamp="{{:timestamp}}" class="activity-comment clearfix">
+	        <div class="panel panel-default clearfix">
+	        
+                <div class="panel-body clearfix">
+                    <div class="col-xs-11">
+                        <div class="clearfix">
+                            <img src="{{:portrait}}" class="img-thumbnail pull-left">
+                            <div class="user-information">
+                                <a href="/author/{{:user_id}}" data-uid="{{:user_id}}">{{:user_name}}</a> <small>{{:timestr}}</small>
+                                <br>
+                                <p class="user-comment">{{:comment}}</p>
+                            </div>
+                        </div>
+                    </div>
+                            
+                    <div class="col-xs-1">
+                        <button type="button" class="comment-hide close pull-right" data-parent-hash="#{{:hash}}">&times;</button>
+                    </div>
+                </div>
+	        
+	        </div>
+	    </li>
+	</script>
+	
+	
+	
+	
+	
+	<script type="text/javascript">
+	setTimeout(function() {
+	    window.ITYOU.libs.activitystream.construct();
+	}, 1);
+	</script>
+	
+	
+</div>

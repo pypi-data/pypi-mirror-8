@@ -1,0 +1,71 @@
+#user-table {
+    font-size: 100% !important;
+    
+    .recent_time,
+    .position,
+    .mobile,
+    .location {
+        display: none;
+    }
+    
+    @media (min-width: $screen-sm-min) {
+        .mobile,
+        .location {
+            display: table-cell;
+        }
+    }
+    
+    @media (min-width: $screen-md-min) {
+        .position {
+            display: table-cell;
+        }
+    }
+    
+    .send-message {
+        .btn.btn-default {
+            background: none;
+            border: 0;
+            padding-top: 0;
+        }
+    }
+    
+    
+    th {
+        &,
+        &.sorting,
+        &.sorting_disabled {
+            background-color: $gray-lighter;
+        }
+        
+        &.sorting_asc,
+        &.sorting_desc {
+            background-color: darken($gray-lighter, 4%);
+        }
+        
+        &.portrait {
+            text-indent: -99999px;
+        }
+        
+        &.lastlogin,
+        &.fullname {
+            width: auto;
+        }
+    }
+    
+    th, td {
+        border: 0 !important;
+    }
+}
+
+#user-table_filter {
+    input {
+        max-width: 35% !important;
+    }
+}
+
+
+.template-users {
+    #user-table_length {
+        display: none;
+    }
+}

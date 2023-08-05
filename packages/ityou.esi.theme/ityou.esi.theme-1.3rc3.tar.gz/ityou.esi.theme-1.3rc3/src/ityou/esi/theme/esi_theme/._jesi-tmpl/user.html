@@ -1,0 +1,98 @@
+<div id="user">
+
+	<header class="navbar navbar-inverse bs-docs-nav" role="banner">
+		<div class="container">
+			<div class="navbar-header">
+				<button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".bs-navbar-collapse">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<a href="#start" class="navbar-brand"><img src="img/logo.png" class="img-responsive" /></a>
+				<div class="social-interaction">
+                    <button type="button" class="btn btn-default btn-xs qa-activities">
+                        <i class="icon-globe icon"></i>
+                        <span class="badge"></span>
+                    </button>
+                    <button type="button" class="btn btn-default btn-xs qa-imessage">
+                        <i class="icon-comments-alt icon"></i>
+                        <span class="badge"></span>
+                    </button>
+                </div>
+			</div>
+			<nav class="collapse navbar-collapse bs-navbar-collapse" role="navigation">
+				<ul class="nav navbar-nav">
+					<li><a href="#start">Startseite</a></li>
+					<li><a href="#activity-stream">Aktivit&auml;ten</a></li>
+					<li><a href="#event">Termine</a></li>
+					<li><a href="#doc-list">Dokumente</a></li>
+					<li><a href="#user">Benutzer</a></li>
+				</ul>
+			</nav>
+		</div>
+	</header>
+
+	<div id="content">
+	
+		<div class="row headline page-header">
+			<div class="col-xs-12">
+				<h3>Benutzer</h3>
+			</div>
+		</div>
+		
+		<div class="row search-user clearfix">
+			<div class="col-xs-12">
+				<div class="input-group">
+					<input type="text" name="search_user" placeholder="Benutzersuche ..." class="form-control" />
+					<span class="input-group-addon"><a href="#" class="clear-user-search close">&times;</a></span>
+				</div>
+			</div>
+		</div>
+		
+		<div class="row">
+			<div class="col-xs-12">
+				<table class="table-user-list-view table">
+					<thead>
+						<tr>
+							<th class="hidden-xs visible-xs-portrait"></th>
+							<th>Name</th>
+							<th class="hidden-xs">Position</th>
+							<th class="hidden-xs">Telefon</th>
+							<th class="hidden-xs">Ort</th>
+							<th class="hidden-xs visible-xs-login">Letzte Anmeldung</th>
+						</tr>
+					</thead>
+					<tbody></tbody>
+					<tfoot>
+					   <tr>
+					       <td colspan="6"></td>
+					   </tr>
+					</tfoot>
+				</table>
+			</div>
+		</div>
+		
+	</div>
+	
+	
+	<script type="text/x-jsrender" id="user-table-list-view-template">
+		<tr>
+			<td class="hidden-xs visible-xs-portrait"><img src="{{:portrait}}" class="img-responsive" /></td>
+			<td><a href="#" class="go-to user-profile" data-uid="{{:id}}">{{:fullname}}</a></td>
+			<td class="hidden-xs">{{:position}}</td>
+			<td class="hidden-xs">{{:phone_number}}</td>
+			<td class="hidden-xs">{{:location}}</td>
+			<td class="hidden-xs visible-xs-login" data-timestamp="{{:last_login_timestamp}}">{{:last_login}}</td>
+		</tr>
+	</script>
+	
+	
+	<script type="text/javascript">
+	setTimeout(function() {
+		$(document).ityouUser();
+	}, 1);
+	</script>
+	
+	
+</div>

@@ -1,0 +1,181 @@
+$whoisonline-online-bg:     $btn-success-bg;
+$whoisonline-afk-bg:        $btn-warning-bg;
+
+$whoisonline-bar-wrapper-bg:    $gray-darker;
+
+.user-portrait {
+    position: relative;
+    display: inline-block;
+    
+    .message-portrait & {
+        position: initial;
+        display: initial;
+    }
+    
+    div.online-status {
+        position: absolute;
+        bottom: 1px;
+        right: 1px;
+        width: 12px;
+        height: 12px;
+        @include border-radius(100%);
+        
+        &.online {
+            background-color: $whoisonline-online-bg;
+        }
+        
+        &.afk {
+            background-color: $whoisonline-afk-bg;
+        }
+    }
+}
+
+
+
+// -----
+// PORTLET
+// -----------------------------------------------------------------------------
+
+.portletWhoIsOnline,
+.whoisonline-listing {
+    dd {
+        a {
+            padding-right: 0;
+            
+            &.portrait {
+                padding: 0;
+            }
+        }
+        
+        span {
+            &.bar {
+                display: block;
+                height: 6px;
+                background: transparent url('++resource++ityou.whoisonline.resources/bar.gif') left center no-repeat;
+            }
+        }
+        
+        div {
+            &.clear {
+                clear: left;
+            }
+        }
+    }
+}
+
+
+.bar-wrapper {
+    float: left;
+    width: 75px;
+    height: 6px;
+    position: absolute;
+    top: 110px;
+    left: 10px;
+    background-color: $whoisonline-bar-wrapper-bg;
+}
+
+
+.portletWhoAmI,
+.portletWhoIsOnline {
+    dd {
+        &.portletItem {
+            padding: 0;
+            border: 0;
+        }
+    }
+}
+
+.portletWhoAmI {
+    dd {
+        a {
+            img {
+                height: auto;
+                width: auto;
+            }
+        }
+    }
+}
+
+
+.who-is-online-box {
+    .arrow-top {
+        background: transparent url('++resource++ityou.whoisonline.resources/arrow-top.png') no-repeat 0 bottom;
+        position: absolute;
+        height: 30px;
+        width: 40px;
+        //margin: 13px 0 0 0;
+        margin: -16px 0 0 0;
+        left: auto;
+        display: none;
+        z-index: 1;
+    }
+    .info-profile {
+        &,
+        dd,
+        dd a {
+            color: $gray-dark;
+        }
+    }
+}
+
+.img-clip {
+    position: absolute;
+    clip: rect(10px, 40px, 40px, 10px);
+    margin: -10px 0 0 -10px;
+    width: 40px;
+    height: 60px;
+}
+
+.img-portrait {
+    position: absolute;
+    clip: rect(0px, 75px, 100px, 0px);
+    margin: 0;
+    width: 75px;
+}
+
+.portletWhoIsOnline {
+    .portrait {
+        float: left;
+        height: 30px;
+        width: 30px;
+        cursor: pointer;
+        padding-right: 0;
+    }
+}
+
+.info-profile {
+    margin-left: 80px;
+    color: $gray-dark;
+}
+
+
+.portletWhoAmI {
+    .img-portrait {
+        position: static;
+        clip: auto;
+        width: auto;
+        float: left;
+    }
+}
+
+
+.logout-user {
+    padding: 0;
+    width: 100%;
+    @include box-sizing(border-box);
+    
+    button {
+        &.large {
+            width: 100%;
+            @include box-sizing(border-box);
+            color: $gray-light;
+            text-shadow: none;
+            cursor: pointer;
+            
+            &:hover {
+                
+            }
+        }
+    }
+}
+

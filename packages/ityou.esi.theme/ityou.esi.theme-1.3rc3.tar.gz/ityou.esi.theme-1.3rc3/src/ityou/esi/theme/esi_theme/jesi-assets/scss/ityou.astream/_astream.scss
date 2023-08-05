@@ -1,0 +1,169 @@
+$astream-new-border:                $btn-warning-border;
+$astream-comment-not-activated:     $btn-danger-border;
+
+//LM
+div#astream-header-box {
+    padding: 15px;
+    background-color: white;
+    border:1px solid #ddd;
+    margin-bottom: 15px;
+}
+
+ul#activity-stream-list {
+    list-style: none;
+    margin-left: -15px;
+    margin-right: -15px;
+    
+    li {
+        display: list-item;
+        line-height: 1.5em;
+        margin-bottom: 0; //#LM
+    }
+    
+    li.activity {
+        .well {
+            [class*="col-"] {
+                padding-left: 0;
+                padding-right: 0;
+                // margin-bottom: 15px; //#LM
+            }
+        }
+        
+        & > .well {
+            .user-information {
+                margin-left: 65px;
+                
+                .user-message {
+                    display: block;
+                }
+            }
+            
+            .divider {
+                hr {
+                    border-color: $gray-light;
+                    margin-top: 5px;
+                    margin-bottom: 5px;
+                }
+            }
+            
+            .input-group {
+                margin-top: 1em;
+                margin-left: auto;
+                margin-right: auto;
+            }
+            
+            // comment list
+            ul.activity-comment-list {
+                list-style: none;
+                margin-right: 0;
+                margin-left: 0;
+                margin-bottom: 10px;
+                
+                li {
+                    //&:first-child {
+                        margin-top: 5px;
+                    //}
+                    
+                    &.activity-comment {
+                        margin-right: 10%;
+                        
+                        &.older-revision {
+                            display: none;
+                            
+                            .panel {
+                                @include opacity(0.6);
+                            }
+                        }
+                        
+                        .panel {
+                            margin-bottom: 0;
+                            
+                            .panel-body {
+                                padding: 5px;
+                                
+                                .user-comment {
+                                    font-size: 85%;
+                                    word-break: break-all;
+                                }
+                            }
+                            
+                            [class*="col-"] {
+                                padding-left: 0;
+                                padding-right: 0;
+                            }
+                        }
+                        
+                        &.new {
+                            .panel-body {
+                                border-left: 5px solid $astream-new-border;
+                            }
+                        }
+                        
+                        &.self {
+                            margin-right: 0;
+                            margin-left: 10%;
+                            max-width: 90%;
+                            
+                            &.new {
+                                .panel-body {
+                                    border-left: 0;
+                                    border-right: 5px solid $astream-new-border;
+                                }
+                            }
+                        }
+                        
+                        .comment-moderate {
+                            margin-right: 10px;
+                            
+                            .activated &,
+                            .not-activated & {
+                                @include opacity(1);
+                            }
+                        }
+                        
+                        &.not-activated {
+                            .panel {
+                                border-right: 5px solid $astream-comment-not-activated;
+                            }
+                        }
+                    }
+                }
+            }
+            
+            .comment-input-group {
+                .input-group-btn {
+                    vertical-align: top;
+                    
+                    .btn {
+                        margin-top: 0;
+                    }
+                }
+            }
+        }
+        
+        button {
+            &.activity-hide,
+            &.comment-hide {
+                i {
+                    font-size: 16px;
+                }
+            }
+        }
+        
+        .thumbnail-preview {
+            position: absolute;
+            z-index: 9999999;
+        }
+    }
+    
+    .get-more-activities {
+        margin-top: 2em;
+        text-align: center;
+        height: 2em;
+        display: none;
+    }
+}
+
+
+// THEME
+@import "theme";

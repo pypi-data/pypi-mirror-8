@@ -1,0 +1,364 @@
+<div id="user-profile">
+
+	<header class="navbar navbar-inverse bs-docs-nav" role="banner">
+		<div class="container">
+			<div class="navbar-header">
+				<button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".bs-navbar-collapse">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<a href="#start" class="navbar-brand"><img src="img/logo.png" class="img-responsive" /></a>
+				<div class="social-interaction">
+                    <button type="button" class="btn btn-default btn-xs qa-activities">
+                        <i class="icon-globe icon"></i>
+                        <span class="badge"></span>
+                    </button>
+                    <button type="button" class="btn btn-default btn-xs qa-imessage">
+                        <i class="icon-comments-alt icon"></i>
+                        <span class="badge"></span>
+                    </button>
+                </div>
+			</div>
+			<nav class="collapse navbar-collapse bs-navbar-collapse" role="navigation">
+				<ul class="nav navbar-nav">
+					<li><a href="#start">Startseite</a></li>
+					<li><a href="#activity-stream">Aktivit&auml;ten</a></li>
+					<li><a href="#event">Termine</a></li>
+					<li><a href="#doc-list">Dokumente</a></li>
+					<li><a href="#user">Benutzer</a></li>
+				</ul>
+			</nav>
+		</div>
+	</header>
+
+	<div id="content">
+	
+		<div class="row headline page-header">
+			<div class="col-xs-12">
+				<h3>Benutzerprofil <small></small></h3>
+			</div>
+		</div>
+		
+		<div class="row">
+			<div class="col-xs-12 user-profile-container"></div>
+		</div>
+		
+		
+	</div>
+	
+	
+	<script type="text/x-jsrender" id="user-profile-template">
+		<div class="panel panel-default personal-information">
+			<div class="panel-heading">Pers&ouml;nliche Informationen</div>
+			<div class="panel-body">
+				<table class="table">
+                    {{if !acadtitle && !firstname && !lastname && !birthdate && !homecity && !own_profile}}
+                        <tr>
+                            <td><small>Keine Angaben vorhanden.</small></td>
+                        </tr>
+                    {{/if}}
+                    
+                    {{if acadtitle || own_profile}}
+					<tr>
+						<td><small>Akad. Titel</small></td>
+						<td data-tag="acadtitle" data-type="input-text"><span>{{:acadtitle}}</span><i class="icon-pencil pull-right"></i></td>
+					</tr>
+                    {{/if}}
+                    
+                    {{if firstname || own_profile}}
+					<tr>
+						<td><small>Vorname</small></td>
+						<td data-tag="firstname" data-type="input-text"><span>{{:firstname}}</span><i class="icon-pencil pull-right"></i></td>
+					</tr>
+					{{/if}}
+					
+					{{if lastname || own_profile}}
+					<tr>
+						<td><small>Nachname</small></td>
+						<td data-tag="lastname" data-type="input-text"><span>{{:lastname}}</span><i class="icon-pencil pull-right"></i></td>
+					</tr>
+					{{/if}}
+					
+					{{if birthdate || own_profile}}
+					<tr>
+						<td><small>Geburtsdatum</small></td>
+						<td data-tag="birthdate" data-type="input-text"><span>{{:birthdate}}</span><i class="icon-pencil pull-right"></i></td>
+					</tr>
+					{{/if}}
+					
+					{{if homecity || own_profile}}
+					<tr>
+						<td><small>Herkunft</small></td>
+						<td data-tag="homecity" data-type="input-text"><span>{{:homecity}}</span><i class="icon-pencil pull-right"></i></td>
+					</tr>
+					{{/if}}
+				</table>
+			</div>
+		</div>
+
+        <div class="panel panel-default department-position">
+            <div class="panel-heading">Abteilung und Position</div>
+            <div class="panel-body">
+                <table class="table">
+                    {{if !department && !position && !superior && !location && !own_profile}}
+                        <tr>
+                            <td><small>Keine Angaben vorhanden.</small></td>
+                        </tr>
+                    {{/if}}
+                
+                    {{if department || own_profile}}
+                    <tr>
+                        <td><small>Abteilung</small></td>
+                        <td data-tag="department" data-type="input-text"><span>{{:department}}</span><i class="icon-pencil pull-right"></i></td>
+                    </tr>
+                    {{/if}}
+                    
+                    {{if position || own_profile}}
+                    <tr>
+                        <td><small>Position</small></td>
+                        <td data-tag="position" data-type="input-text"><span>{{:position}}</span><i class="icon-pencil pull-right"></i></td>
+                    </tr>
+                    {{/if}}
+                    
+                    {{if superior || own_profile}}
+                    <tr>
+                        <td><small>Vorgesetzter</small></td>
+                        <td data-tag="superior" data-type="input-text"><span>{{:superior}}</span><i class="icon-pencil pull-right"></i></td>
+                    </tr>
+                    {{/if}}
+                    
+                    {{if location || own_profile}}
+                    <tr>
+                        <td><small>Standort</small></td>
+                        <td data-tag="location" data-type="input-text"><span>{{:location}}</span><i class="icon-pencil pull-right"></i></td>
+                    </tr>
+                    {{/if}}
+                </table>
+            </div>
+        </div>
+        
+        <div class="panel panel-default education">
+            <div class="panel-heading">Bildung</div>
+            <div class="panel-body">
+                <table class="table">
+                    {{if !education && !profession && !own_profile}}
+                        <tr>
+                            <td><small>Keine Angaben vorhanden.</small></td>
+                        </tr>
+                    {{/if}}
+                
+                    {{if education || own_profile}}
+                    <tr>
+                        <td><small>Ausbildung</small></td>
+                        <td data-tag="education" data-type="input-text"><span>{{:education}}</span><i class="icon-pencil pull-right"></i></td>
+                    </tr>
+                    {{/if}}
+                    
+                    {{if profession || own_profile}}
+                    <tr>
+                        <td><small>Beruf</small></td>
+                        <td data-tag="profession" data-type="input-text"><span>{{:profession}}</span><i class="icon-pencil pull-right"></i></td>
+                    </tr>
+                    {{/if}}
+                </table>
+            </div>
+        </div>
+        
+        <div class="panel panel-default biography">
+            <div class="panel-heading">Biographie</div>
+            <div class="panel-body">
+                <table class="table">
+                    {{if description || own_profile}}
+                    <tr>
+                        <td><small>Beschreibung</small></td>
+                        <td data-tag="description" data-type="textarea"><span>{{:description}}</span><i class="icon-pencil pull-right"></i></td>
+                    </tr>
+                    {{else}}
+                        <tr>
+                            <td><small>Keine Angaben vorhanden.</small></td>
+                        </tr>
+                    {{/if}}
+                </table>
+            </div>
+        </div>
+        
+        <div class="panel panel-default interest">
+            <div class="panel-heading">Interessen</div>
+            <div class="panel-body">
+                <table class="table">
+                    {{if !leasure && !like && !dislike && !demands && !offers && !own_profile}}
+                        <tr>
+                            <td><small>Keine Angaben vorhanden.</small></td>
+                        </tr>
+                    {{/if}}
+                
+                    {{if leasure || own_profile}}
+                    <tr>
+                        <td><small>Hobbies</small></td>
+                        <td data-tag="leasure" data-type="input-text"><span>{{:leasure}}</span><i class="icon-pencil pull-right"></i></td>
+                    </tr>
+                    {{/if}}
+                    
+                    {{if like || own_profile}}
+                    <tr>
+                        <td><small>Ich mag</small></td>
+                        <td data-tag="like" data-type="input-text"><span>{{:like}}</span><i class="icon-pencil pull-right"></i></td>
+                    </tr>
+                    {{/if}}
+                    
+                    {{if dislike || own_profile}}
+                    <tr>
+                        <td><small>Ich mag nicht</small></td>
+                        <td data-tag="dislike" data-type="input-text"><span>{{:dislike}}</span><i class="icon-pencil pull-right"></i></td>
+                    </tr>
+                    {{/if}}
+                    
+                    {{if demands || own_profile}}
+                    <tr>
+                        <td><small>Ich bin interessiert an</small></td>
+                        <td data-tag="demands" data-type="input-text"><span>{{:demands}}</span><i class="icon-pencil pull-right"></i></td>
+                    </tr>
+                    {{/if}}
+                    
+                    {{if offers || own_profile}}
+                    <tr>
+                        <td><small>Ich biete</small></td>
+                        <td data-tag="offers" data-type="input-text"><span>{{:offers}}</span><i class="icon-pencil pull-right"></i></td>
+                    </tr>
+                    {{/if}}
+                </table>
+            </div>
+        </div>
+        
+        <div class="panel panel-default address">
+            <div class="panel-heading">Adresse</div>
+            <div class="panel-body">
+                <table class="table">
+                    {{if !street && !city && !country && !home_page && !own_profile}}
+                        <tr>
+                            <td><small>Keine Angaben vorhanden.</small></td>
+                        </tr>
+                    {{/if}}
+                
+                    {{if street || own_profile}}
+                    <tr>
+                        <td><small>Stra&szlig;e + Hausnr.</small></td>
+                        <td data-tag="street" data-type="input-text"><span>{{:street}}</span><i class="icon-pencil pull-right"></i></td>
+                    </tr>
+                    {{/if}}
+                    
+                    {{if city || own_profile}}
+                    <tr>
+                        <td><small>Stadt</small></td>
+                        <td data-tag="city" data-type="input-text"><span>{{:city}}</span><i class="icon-pencil pull-right"></i></td>
+                    </tr>
+                    {{/if}}
+                    
+                    {{if country || own_profile}}
+                    <tr>
+                        <td><small>Land</small></td>
+                        <td data-tag="country" data-type="input-text"><span>{{:country}}</span><i class="icon-pencil pull-right"></i></td>
+                    </tr>
+                    {{/if}}
+                    
+                    {{if home_page || own_profile}}
+                    <tr>
+                        <td><small>Homepage</small></td>
+                        <td data-tag="home_page" data-type="input-text"><span>{{:home_page}}</span><i class="icon-pencil pull-right"></i></td>
+                    </tr>
+                    {{/if}}
+                </table>
+            </div>
+        </div>
+        
+        <div class="panel panel-default contact">
+            <div class="panel-heading">Kontakt</div>
+            <div class="panel-body">
+                <table class="table">
+                    {{if !phone && !fax && !email && !skype && !xing && !linkedin && !fb && !twitter && !icq && !own_profile}}
+                        <tr>
+                            <td><small>Keine Angaben vorhanden.</small></td>
+                        </tr>
+                    {{/if}}
+                
+                    {{if phone || own_profile}}
+                    <tr>
+                        <td><small>Telefon</small></td>
+                        <td data-tag="phone" data-type="input-text"><span>{{:phone}}</span><i class="icon-pencil pull-right"></i></td>
+                    </tr>
+                    {{/if}}
+                    
+                    {{if fax || own_profile}}
+                    <tr>
+                        <td><small>Fax</small></td>
+                        <td data-tag="fax" data-type="input-text"><span>{{:fax}}</span><i class="icon-pencil pull-right"></i></td>
+                    </tr>
+                    {{/if}}
+                    
+                    {{if email || own_profile}}
+                    <tr>
+                        <td><small>eMail</small></td>
+                        <td data-tag="email" data-type="input-text"><span>{{:email}}</span><i class="icon-pencil pull-right"></i></td>
+                    </tr>
+                    {{/if}}
+                    
+                    {{if skype || own_profile}}
+                    <tr>
+                        <td><small>Skype</small></td>
+                        <td data-tag="skype" data-type="input-text"><span>{{:skype}}</span><i class="icon-pencil pull-right"></i></td>
+                    </tr>
+                    {{/if}}
+                    
+                    {{if xing || own_profile}}
+                    <tr>
+                        <td><small>Xing</small></td>
+                        <td data-tag="xing" data-type="input-text"><span>{{:xing}}</span><i class="icon-pencil pull-right"></i></td>
+                    </tr>
+                    {{/if}}
+                    
+                    {{if linkedin || own_profile}}
+                    <tr>
+                        <td><small>LinkedIn</small></td>
+                        <td data-tag="linkedin" data-type="input-text"><span>{{:linkedin}}</span><i class="icon-pencil pull-right"></i></td>
+                    </tr>
+                    {{/if}}
+                    
+                    {{if fb || own_profile}}
+                    <tr>
+                        <td><small>Facebook</small></td>
+                        <td data-tag="fb" data-type="input-text"><span>{{:fb}}</span><i class="icon-pencil pull-right"></i></td>
+                    </tr>
+                    {{/if}}
+                    
+                    {{if twitter || own_profile}}
+                    <tr>
+                        <td><small>Twitter</small></td>
+                        <td data-tag="twitter" data-type="input-text"><span>{{:twitter}}</span><i class="icon-pencil pull-right"></i></td>
+                    </tr>
+                    {{/if}}
+                    
+                    {{if icq || own_profile}}
+                    <tr>
+                        <td><small>ICQ</small></td>
+                        <td data-tag="icq" data-type="input-text"><span>{{:icq}}</span><i class="icon-pencil pull-right"></i></td>
+                    </tr>
+                    {{/if}}
+                </table>
+            </div>
+        </div>
+    </script>
+    
+    
+    <script type="text/javascript">
+    setTimeout(function() {
+        if(ityouUser.cache.current_uid == undefined) {
+        	window.location.hash = ityouRouter.routes.user;
+        }
+    }, 1);
+    </script>
+	
+	
+	
+</div>

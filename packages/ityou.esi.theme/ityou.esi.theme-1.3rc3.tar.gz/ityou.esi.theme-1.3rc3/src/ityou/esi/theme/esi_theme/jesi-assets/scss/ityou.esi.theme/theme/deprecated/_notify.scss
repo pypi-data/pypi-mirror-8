@@ -1,0 +1,145 @@
+$notify-activities-bg: #003345;
+$notify-messages-bg:   #450000;
+$notify-newcontent-bg: #004500;
+
+
+.navbar-notify {
+    position: fixed;
+    top: 0;
+    right: 115px;
+    height: 50px;
+    min-width: 80px;
+    line-height: 42px;
+    padding: 0;
+    text-align: center;
+    background-color: $navbar-inverse-bg;
+    white-space: nowrap;
+}
+
+
+#notify-activities,
+#notify-messages,
+#new-content {
+    color: #fff;
+    display: inline-block;
+    float: left;
+    min-width: 60px;
+    
+    padding: 8px 0 1px 20px;
+    
+    a {
+        color: #fff;
+    }
+    
+    .fa {
+        font-size: 26px;
+        
+        &:hover {
+            cursor: pointer;
+        }
+    }
+}
+
+#notify-activities {
+    background-color: $notify-activities-bg;
+    
+    .fa {
+        &:hover {
+            color: lighten($notify-activities-bg, 25%);
+        }
+    }
+}
+
+#notify-messages {
+    background-color: $notify-messages-bg;
+    
+    .fa {
+        &:hover {
+            color: lighten($notify-messages-bg, 25%);
+        }
+    }
+}
+
+#new-content {
+    background-color: $notify-newcontent-bg;
+    padding: 8px 10px 1px 10px;
+    
+    .fa {
+        &:hover {
+            color: lighten($notify-newcontent-bg, 25%);
+        }
+    }
+}
+
+#notify-activities #activities-counter,
+#notify-messages #messages-counter {
+    &.badge {
+        font-size: 11px;
+        font-family: Arial, sans-serif;
+        position: relative;
+        left: -10px;
+        top: 5px;
+    }
+}
+
+
+
+#notify-messages-box {
+    text-align: left;
+    
+    .message-notify-list {
+        width: 360px;
+        max-width: 360px;
+        
+        li {
+            border-top: 1px solid $gray-lighter;
+            display: block;
+            padding-top: 10px;
+            @include clearfix;
+            
+            &:first-child {
+                border-top: 0;
+            }
+            
+            a {
+                display: block;
+                text-decoration: none;
+                @include clearfix;
+            }
+        }
+        
+        .row {
+            margin: 0;
+            
+            [class*="col-xs-"] {
+                padding-left: 0;
+                @include text-overflow;
+                line-height: 1.5em;
+                
+                &:first-child {
+                    padding-right: 0;
+                    text-align: center;
+                }
+            }
+            
+            span {
+                &.badge {
+                    position: absolute;
+                    top: 35px;
+                    left: 55px;
+                }
+                
+                &.username {
+                    display: inline-block;
+                    @include text-overflow;
+                }
+            }
+            
+            p {
+                display: block;
+                border-top: 1px solid $gray-lighter;
+                white-space: normal;
+            }
+        }
+    }
+}

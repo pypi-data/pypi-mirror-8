@@ -1,0 +1,155 @@
+<div id="doc-list">
+	
+	<header class="navbar navbar-inverse bs-docs-nav" role="banner">
+		<div class="container">
+			<div class="navbar-header">
+				<button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".bs-navbar-collapse">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<a href="#start" class="navbar-brand"><img src="img/logo.png" class="img-responsive" /></a>
+				<div class="social-interaction">
+                    <button type="button" class="btn btn-default btn-xs qa-activities">
+                        <i class="icon-globe icon"></i>
+                        <span class="badge"></span>
+                    </button>
+                    <button type="button" class="btn btn-default btn-xs qa-imessage">
+                        <i class="icon-comments-alt icon"></i>
+                        <span class="badge"></span>
+                    </button>
+                </div>
+			</div>
+			<nav class="collapse navbar-collapse bs-navbar-collapse" role="navigation">
+				<ul class="nav navbar-nav">
+					<li><a href="#start">Startseite</a></li>
+					<li><a href="#activity-stream">Aktivit&auml;ten</a></li>
+					<li><a href="#event">Termine</a></li>
+					<li><a href="#doc-list">Dokumente</a></li>
+					<li><a href="#user">Benutzer</a></li>
+				</ul>
+			</nav>
+		</div>
+	</header>
+
+	<div id="content">
+	
+		<div class="row headline">
+			<div class="col-xs-12">
+				<h3>Dokumente</h3>
+			</div>
+		</div>
+		
+		<div class="row search-document">
+			<div class="col-xs-12">
+				<div class="input-group">
+					<input type="text" name="search_document" placeholder="Dokumentensuche ..." class="form-control" />
+					<span class="input-group-addon"><a href="#" class="clear-doc-search close">&times;</a></span>
+				</div>
+			</div>
+			<div class="col-xs-12 search-document-result-count">
+				<h5>Suchresultate - <span>0</span> Dokumente gefunden.</h5>
+			</div>
+		</div>
+		
+		<div class="row">
+			<div class="col-xs-12">
+				<ul class="search-document-result-list list-unstyled"></ul>
+			</div>
+		</div>
+		
+	</div>
+	
+	
+	<script type="text/x-jsrender" id="doc-list-result-list-template">
+		<li id="{{:uid}}" data-url="{{:url}}" data-contenttype="{{:type}}" data-title="{{:title}}">
+			<div class="panel panel-default">
+				<a href="#" class="toggle-additional-information" data-uid="{{:uid}}">
+					<div class="panel-heading clearfix">
+						<img src="{{:icon}}" class="icon" /> {{:title}}
+						<span class="pull-right toggle-icon icon-angle-down"></span>
+					</div>
+				</a>
+				<div class="additional-information">
+					<div class="panel-body">
+						<p><small><i>erstellt von {{:creator}}</i> - zuletzt ver&auml;ndert: {{:modification_date}}</small></p>
+						<a href="#" class="document-preview text-center" data-uid="{{:uid}}">
+							<img src="img/grey.gif" data-original="{{:url}}/@@show_thumbnail" class="thumbnail lazy" />
+						</a>
+					</div>
+					<div class="panel-footer clearfix">
+						<div class="col-xs-6 border-right text-center">
+							{{if type == 'File' || type == 'Image'}}
+								<div class="download-status">
+									<div class="progress progress-striped active">
+										<div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 80%">
+											<span class="sr-only"></span>
+										</div>
+									</div>
+									<small class="download-finished text-success"><span class="icon-ok"></span> Download beendet</small>
+								</div>
+							{{/if}}
+						</div>
+						<div class="col-xs-6 border-left text-center">
+							{{if type == 'File' || type == 'Image'}}
+								<button type="button" class="document-download btn btn-sm btn-default" data-uid="{{:uid}}">Herunterladen</button>
+							{{else}}
+								<button type="button" class="document-fullview btn btn-sm btn-default" data-uid="{{:uid}}">&Ouml;ffnen</button>
+							{{/if}}
+						</div>
+					</div>
+				</div>
+			</div>
+		
+			<!--<a href="#" class="toggle-additional-information" data-uid="{{:uid}}">
+				<img src="{{:icon}}" class="icon" />
+				{{:title}}
+				<br />
+				<i>erstellt von {{:creator}}</i> - zuletzt ver&auml;ndert: {{:modification_date}}
+			</a>
+			<p class="additional-information">
+				<a href="#" class="document-preview text-center" data-uid="{{:uid}}">
+					<img src="{{:url}}/@@show_thumbnail" class="thumbnail" />
+				</a>
+				<br />
+				{{if type == 'File' || type == 'Image'}}
+				<a href="#" class="document-download" data-uid="{{:uid}}">Herunterladen</a><br />
+				<div class="download-status"></div>
+				{{else}}
+				<a href="#" class="document-fullview" data-uid="{{:uid}}">&Ouml;ffnen</a>
+				{{/if}}
+			</p>-->
+		</li>
+	</script>
+	
+	<script type="text/x-jsrender" id="doc-list-dialog-content-template">
+		<div id="doc-list-dialog" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="bla" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+						<h4 class="modal-title">{{:title}}</h4>
+					</div>
+					<div class="modal-body">
+						<img src="{{:path}}/@@show_thumbnail?size=large" class="img-responsive" />
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Schlie&szlig;en</button>
+					</div>
+				</div>
+				<!-- /modal-content -->
+			</div>
+			<!-- /modal-dialog -->
+		</div>
+	</script>
+	
+	
+	
+	<script type="text/javascript">
+	setTimeout(function() {
+		$(document).ityouDocument();
+	}, 1);
+	</script>
+	
+</div>

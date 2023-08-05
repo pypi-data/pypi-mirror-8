@@ -1,0 +1,74 @@
+<!-- INBOX -->
+	    
+	    
+	    <div class="clearfix"></div>
+	    <div id="imessage-inbox" style="margin-top: 50px;">
+
+            <div class="row">
+                
+                <div class="col-xs-12">
+                
+                    <table class="table table-condensed table-hover">
+                        <thead>
+                            <tr>
+                                <th><input type="checkbox" name="selectAll"></th>
+                                <th>Titel</th>
+                                <th>Absender</th>
+                                <th class="sortable sort-desc" data-sort-by="date">Datum</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        
+                            <!-- data here -->
+                            
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="5" class="text-right">
+                                    <select name="doWithSelected">
+                                        <option readonly>markierte:</option>
+                                        <option disabled></option>
+                                        <option value="markAsRead">als gelesen markieren</option>
+                                    </select>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                
+                </div>
+            
+            </div>
+
+        </div>
+        
+        <script type="text/javascript">
+        $(function() {
+            var inbox = new ityouInbox();
+            
+            inbox.init();
+        });
+        </script>
+        
+        <div id="no-tal" tal:replace='structure string:
+        
+            <script id="inbox-tmpl" type="text/x-jsrender">
+                <tr data-hash="{{:hash}}">
+                    <td><input type="checkbox" name="selectedMessages[]"></td>
+                    <td>{{:msg}}</td>
+                    <td data-uid="{{:sender_id}}">{{:sender_name}}</td>
+                    <td data-unix="{{:timeStamp}}">{{:timestr}}</td>
+                    <td class="action-buttons text-right">
+                        <div class="button-group">
+                            <button type="button" class="btn btn-xs btn-default" data-action="markAsRead" title="Als gelesen markieren">
+                                <i class="fa fa-eye"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            </script>
+        
+        '/>
+	    
+	    
+	    <!-- //INBOX -->
