@@ -1,0 +1,145 @@
+{
+    "a_galaxy_workflow": "true", 
+    "annotation": "", 
+    "format-version": "0.1", 
+    "name": "MiModD single-end read alignment and variant calling", 
+    "steps": {
+        "0": {
+            "annotation": "the reference genome in fasta format", 
+            "id": 0, 
+            "input_connections": {}, 
+            "inputs": [
+                {
+                    "description": "the reference genome in fasta format", 
+                    "name": "reference genome"
+                }
+            ], 
+            "name": "Input dataset", 
+            "outputs": [], 
+            "position": {
+                "left": 191, 
+                "top": 230
+            }, 
+            "tool_errors": null, 
+            "tool_id": null, 
+            "tool_state": "{\"name\": \"reference genome\"}", 
+            "tool_version": null, 
+            "type": "data_input", 
+            "user_outputs": []
+        }, 
+        "1": {
+            "annotation": "", 
+            "id": 1, 
+            "input_connections": {
+                "ref_genome": {
+                    "id": 0, 
+                    "output_name": "output"
+                }
+            }, 
+            "inputs": [], 
+            "name": "SNAP Read Alignment", 
+            "outputs": [
+                {
+                    "name": "outputfile", 
+                    "type": "bam"
+                }
+            ], 
+            "position": {
+                "left": 385.5, 
+                "top": 359
+            }, 
+            "post_job_actions": {}, 
+            "tool_errors": null, 
+            "tool_id": "snap_caller", 
+            "tool_state": "{\"maxdist\": \"\\\"8\\\"\", \"datasets\": \"[{\\\"__index__\\\": 0, \\\"mode_choose\\\": {\\\"input\\\": {\\\"header\\\": null, \\\"ifile\\\": null, \\\"iformat\\\": \\\"bam\\\", \\\"__current_case__\\\": 0}, \\\"mode\\\": \\\"paired\\\", \\\"__current_case__\\\": 1}}]\", \"__page__\": 0, \"set\": \"{\\\"sort\\\": \\\"0\\\", \\\"__current_case__\\\": 1, \\\"max_mate_overlap\\\": \\\"0.95\\\", \\\"filter_output\\\": \\\"off\\\", \\\"slack\\\": \\\"0.3\\\", \\\"maxdist\\\": \\\"8\\\", \\\"maxseeds\\\": \\\"25\\\", \\\"maxhits\\\": \\\"250\\\", \\\"clipping\\\": \\\"++\\\", \\\"selectivity\\\": \\\"1\\\", \\\"settings_mode\\\": \\\"change\\\", \\\"sp_min\\\": \\\"100\\\", \\\"sp_max\\\": \\\"10000\\\", \\\"seedsize\\\": \\\"20\\\", \\\"mmatch_notation\\\": \\\"general\\\", \\\"confdiff\\\": \\\"2\\\"}\", \"sp_min\": \"\\\"100\\\"\", \"sp_max\": \"\\\"10000\\\"\", \"oformat\": \"\\\"bam\\\"\", \"ref_genome\": \"null\", \"mode_choose\": \"{\\\"maxdist\\\": \\\"8\\\", \\\"sp_min\\\": \\\"100\\\", \\\"mode\\\": \\\"paired\\\", \\\"__current_case__\\\": 1, \\\"oformat\\\": \\\"bam\\\", \\\"sp_max\\\": \\\"10000\\\", \\\"input\\\": {\\\"iformat\\\": \\\"bam\\\", \\\"datasets\\\": [{\\\"__index__\\\": 0, \\\"ifile\\\": null}, {\\\"__index__\\\": 1, \\\"ifile\\\": null}, {\\\"__index__\\\": 2, \\\"ifile\\\": null}, {\\\"__index__\\\": 3, \\\"ifile\\\": null}], \\\"__current_case__\\\": 0}, \\\"confdiff\\\": \\\"2\\\"}\", \"confdiff\": \"\\\"2\\\"\"}", 
+            "tool_version": "1.0.0", 
+            "type": "tool", 
+            "user_outputs": []
+        }, 
+        "2": {
+            "annotation": "", 
+            "id": 2, 
+            "input_connections": {
+                "list_input_0|inputfile": {
+                    "id": 1, 
+                    "output_name": "outputfile"
+                }, 
+                "ref_genome": {
+                    "id": 0, 
+                    "output_name": "output"
+                }
+            }, 
+            "inputs": [], 
+            "name": "Variant Calling and Coverage Analysis", 
+            "outputs": [
+                {
+                    "name": "output_vcf", 
+                    "type": "vcf"
+                }, 
+                {
+                    "name": "output_cov", 
+                    "type": "tabular"
+                }, 
+                {
+                    "name": "output_sites", 
+                    "type": "vcf"
+                }
+            ], 
+            "position": {
+                "left": 617, 
+                "top": 200
+            }, 
+            "post_job_actions": {
+                "HideDatasetActionoutput_cov": {
+                    "action_arguments": {}, 
+                    "action_type": "HideDatasetAction", 
+                    "output_name": "output_cov"
+                }, 
+                "HideDatasetActionoutput_sites": {
+                    "action_arguments": {}, 
+                    "action_type": "HideDatasetAction", 
+                    "output_name": "output_sites"
+                }
+            }, 
+            "tool_errors": null, 
+            "tool_id": "snp_caller_caller", 
+            "tool_state": "{\"__page__\": 0, \"group_by_id\": \"\\\"True\\\"\", \"cov\": \"\\\"True\\\"\", \"sites\": \"{\\\"use_sites\\\": \\\"False\\\", \\\"__current_case__\\\": 0, \\\"sites\\\": \\\"None\\\"}\", \"depth\": \"\\\"250\\\"\", \"list_input\": \"[{\\\"__index__\\\": 0, \\\"inputfile\\\": null}]\", \"ref_genome\": \"null\"}", 
+            "tool_version": "1.0.0", 
+            "type": "tool", 
+            "user_outputs": []
+        }, 
+        "3": {
+            "annotation": "", 
+            "id": 3, 
+            "input_connections": {
+                "covfile": {
+                    "id": 2, 
+                    "output_name": "output_cov"
+                }, 
+                "list_input_0|bamfile": {
+                    "id": 1, 
+                    "output_name": "outputfile"
+                }
+            }, 
+            "inputs": [], 
+            "name": "Deletion Prediction for paired-end data", 
+            "outputs": [
+                {
+                    "name": "outputfile", 
+                    "type": "gff"
+                }
+            ], 
+            "position": {
+                "left": 740.183349609375, 
+                "top": 508
+            }, 
+            "post_job_actions": {}, 
+            "tool_errors": null, 
+            "tool_id": "deletion_predictor", 
+            "tool_state": "{\"__page__\": 0, \"group_by_id\": \"\\\"True\\\"\", \"bamfile\": \"null\", \"min_size\": \"\\\"100\\\"\", \"list_input\": \"[{\\\"__index__\\\": 0, \\\"bamfile\\\": null}]\", \"include_uncovered\": \"\\\"False\\\"\", \"coverage\": \"null\", \"covfile\": \"null\", \"max_cov\": \"\\\"0\\\"\", \"max_size\": \"\\\"5000\\\"\"}", 
+            "tool_version": "1.0.0", 
+            "type": "tool", 
+            "user_outputs": []
+        }
+    }
+}
