@@ -1,0 +1,632 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>lexor.core.parser &mdash; lexor 0.1.2c0 documentation</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="top" title="lexor 0.1.2c0 documentation" href="../../../index.html"/>
+        <link rel="up" title="lexor" href="../../lexor.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        <a href="../../../index.html" class="fa fa-home"> lexor</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+        
+            <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../lexor.html"> What is lexor?</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../lexor.html#motivation">Motivation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html"> Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../installation.html#pip-or-manual-installation">Pip or Manual Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../installation.html#lexor-languages">Lexor Languages</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../start.html"> Getting Started</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../commands/index.html"> Commands</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../commands/install.html">install</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html"> API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/lexor.html">lexor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/lexor.core.html">lexor.core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/lexor.core.node.html">lexor.core.node</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/lexor.core.elements.html">lexor.core.elements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/lexor.command.html">lexor.command</a></li>
+</ul>
+</li>
+</ul>
+
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../../index.html">lexor</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      
+          <li><a href="../../lexor.html">lexor</a> &raquo;</li>
+      
+    <li>lexor.core.parser</li>
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            
+  <h1>Source code for lexor.core.parser</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;Parser Module</span>
+
+<span class="sd">Provides the `Parser` object which defines the basic mechanism for</span>
+<span class="sd">parsing character sequences. This involves using objects derived from</span>
+<span class="sd">the abstract class `NodeParser`.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">lexor.command</span> <span class="kn">import</span> <span class="n">config</span>
+<span class="kn">from</span> <span class="nn">lexor.command.lang</span> <span class="kn">import</span> <span class="n">get_style_module</span><span class="p">,</span> <span class="n">map_explanations</span>
+<span class="n">LC</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">[</span><span class="s">&#39;lexor.core&#39;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="NodeParser"><a class="viewcode-back" href="../../../api/lexor.core.html#lexor.core.parser.NodeParser">[docs]</a><span class="k">class</span> <span class="nc">NodeParser</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;An object that has two methods: `makeNode` and `close`. The</span>
+<span class="sd">    first method is required to be overloaded in derived objects.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parser</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;A `NodeParser` needs to be initialized with a `Parser`</span>
+<span class="sd">        object. If this method is to be overloaded then make sure</span>
+<span class="sd">        that it only accepts one parameter: `parser`. This method is</span>
+<span class="sd">        used by `Parser` and it calls it with itself as the parameter.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parser</span> <span class="o">=</span> <span class="n">parser</span>
+
+<div class="viewcode-block" id="NodeParser.make_node"><a class="viewcode-back" href="../../../api/lexor.core.html#lexor.core.parser.NodeParser.make_node">[docs]</a>    <span class="k">def</span> <span class="nf">make_node</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;This method is required to be overloaded by the derived</span>
+<span class="sd">        node parser. It returns `None` if the node parser will not be</span>
+<span class="sd">        able to create a node from the current information in the</span>
+<span class="sd">        parser. Otherwise it creates a `Node` object and returns it.</span>
+
+<span class="sd">        When returning a node you have the option of informing the</span>
+<span class="sd">        parser if the node is complete or not. For instance, if your</span>
+<span class="sd">        node parser creates an Element and it does not have any</span>
+<span class="sd">        children to be parsed then return a list containing only the</span>
+<span class="sd">        single node. This will tell the parser that the node has been</span>
+<span class="sd">        closed and it will not call the `close` method of the node</span>
+<span class="sd">        parser. If the `Node` does not have a child, say</span>
+<span class="sd">        `ProcessingInstruction`, `RawText`, or `Void` then there is</span>
+<span class="sd">        no need to wrap the node in a list.</span>
+
+<span class="sd">        The `Node` object that this method returns also needs</span>
+<span class="sd">        to have the property `pos`. This is a list of two integers</span>
+<span class="sd">        stating the line and column number where the node was</span>
+<span class="sd">        encountered in the text that is being parsed. This property</span>
+<span class="sd">        will be removed by the parser once the parser finishes all</span>
+<span class="sd">        processing with the node.</span>
+
+<span class="sd">        If this method is not overloaded as previously stated then</span>
+<span class="sd">        a `NotImplementedError` exception will be raised.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s"> did not implement `make_node`&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">__class__</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="NodeParser.close"><a class="viewcode-back" href="../../../api/lexor.core.html#lexor.core.parser.NodeParser.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;This method needs to be overloaded if the node parser</span>
+<span class="sd">        returns a `Node` with the `make_node` method.</span>
+
+<span class="sd">        This method will not get called if `make_node` returned a</span>
+<span class="sd">        `Node` inside a `list`. The close function takes as input the</span>
+<span class="sd">        `Node` object that `make_node` returned and it should decide</span>
+<span class="sd">        if the node can be closed or not. If it is indeed time to</span>
+<span class="sd">        close the `Node` then return a list with the position where</span>
+<span class="sd">        the `Node` is being closed, otherwise return `None`.</span>
+
+<span class="sd">        If this method is not overloaded then a `NotImplementedError`</span>
+<span class="sd">        exception will be raised.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s"> did not implement `close`&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">__class__</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="NodeParser.msg"><a class="viewcode-back" href="../../../api/lexor.core.html#lexor.core.parser.NodeParser.msg">[docs]</a>    <span class="k">def</span> <span class="nf">msg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">code</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">arg</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">uri</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Send a message to the parser. &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__module__</span><span class="p">,</span> <span class="n">code</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">arg</span><span class="p">,</span> <span class="n">uri</span><span class="p">)</span>
+
+
+<span class="c"># The default of 7 attributes max in a class is too restrictive.</span>
+<span class="c"># pylint: disable=R0902</span></div></div>
+<div class="viewcode-block" id="Parser"><a class="viewcode-back" href="../../../api/lexor.core.html#lexor.core.parser.Parser">[docs]</a><span class="k">class</span> <span class="nc">Parser</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;To see the languages that it is able to parse see the</span>
+<span class="sd">    `lexor.lang` module. &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="s">&#39;xml&#39;</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s">&#39;default&#39;</span><span class="p">,</span> <span class="n">defaults</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create a new parser by specifying the language and the</span>
+<span class="sd">        style in which text will be parsed. &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">defaults</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">defaults</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lang</span> <span class="o">=</span> <span class="n">lang</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_style</span> <span class="o">=</span> <span class="n">style</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_np</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_next_check</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_in_progress</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_uri</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_reload</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">style_module</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">end</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pos</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caret</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">doc</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">defaults</span> <span class="o">=</span> <span class="n">defaults</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_node_parser</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="k">def</span> <span class="nf">_set_node_parser</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Helper function to create a node parser and store it</span>
+<span class="sd">        in dictionary. &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_parser</span><span class="p">[</span><span class="n">val</span><span class="p">]</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">val</span><span class="o">.</span><span class="n">__name__</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_node_parser</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_parser</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return a Node parser. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_parser</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_set_node_parsers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lang</span><span class="p">,</span> <span class="n">style</span><span class="p">,</span> <span class="n">defaults</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Imports the correct module based on the language and style. &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">style_module</span> <span class="o">=</span> <span class="n">get_style_module</span><span class="p">(</span><span class="s">&#39;parser&#39;</span><span class="p">,</span> <span class="n">lang</span><span class="p">,</span> <span class="n">style</span><span class="p">)</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s">-parser-</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">lang</span><span class="p">,</span> <span class="n">style</span><span class="p">)</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">set_style_cfg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">defaults</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_next_check</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_np</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_node_parser</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">style_module</span><span class="p">,</span> <span class="s">&#39;REPOSITORY&#39;</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">style_module</span><span class="o">.</span><span class="n">REPOSITORY</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_set_node_parser</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">style_module</span><span class="p">,</span> <span class="s">&#39;parser_setup&#39;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">style_module</span><span class="o">.</span><span class="n">parser_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">str_key</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">style_module</span><span class="o">.</span><span class="n">MAPPING</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_next_check</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">&#39;.*?[</span><span class="si">%s</span><span class="s">]&#39;</span> <span class="o">%</span> <span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="n">str_key</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">key</span><span class="p">,</span> <span class="n">val</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_np</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_set_node_parser</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">val</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">str_key</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_np</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_np</span><span class="p">[</span><span class="n">val</span><span class="p">]</span>
+
+<div class="viewcode-block" id="Parser.load_node_parsers"><a class="viewcode-back" href="../../../api/lexor.core.html#lexor.core.parser.Parser.load_node_parsers">[docs]</a>    <span class="k">def</span> <span class="nf">load_node_parsers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Loads the node parsers. This function is called</span>
+<span class="sd">        automatically when `parse` is called only if there was a</span>
+<span class="sd">        change in the settings. &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_node_parsers</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_lang</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_style</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">defaults</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_reload</span> <span class="o">=</span> <span class="bp">False</span>
+</div>
+<div class="viewcode-block" id="Parser.parse"><a class="viewcode-back" href="../../../api/lexor.core.html#lexor.core.parser.Parser.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">uri</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;parses the given `text`. To see the results of this method see</span>
+<span class="sd">        the `document` and `log` property. If no `uri` is given then</span>
+<span class="sd">        `document` will return a `DocumentFragment` node. &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reload</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">load_node_parsers</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">text</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">end</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pos</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caret</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">doc</span> <span class="o">=</span> <span class="n">LC</span><span class="o">.</span><span class="n">Document</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_lang</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">uri</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_uri</span> <span class="o">=</span> <span class="n">uri</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_uri</span> <span class="o">=</span> <span class="s">&#39;string@0x</span><span class="si">%x</span><span class="s">&#39;</span> <span class="o">%</span> <span class="nb">id</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">uri_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_uri</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">=</span> <span class="n">LC</span><span class="o">.</span><span class="n">Document</span><span class="p">(</span><span class="s">&quot;lexor&quot;</span><span class="p">,</span> <span class="s">&quot;log&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">modules</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">explanation</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">style_module</span><span class="p">,</span> <span class="s">&#39;pre_process&#39;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">style_module</span><span class="o">.</span><span class="n">pre_process</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_parse</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">style_module</span><span class="p">,</span> <span class="s">&#39;post_process&#39;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">style_module</span><span class="o">.</span><span class="n">post_process</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">map_explanations</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">modules</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">explanation</span><span class="p">)</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="Parser.cdata"><a class="viewcode-back" href="../../../api/lexor.core.html#lexor.core.parser.Parser.cdata">[docs]</a>    <span class="k">def</span> <span class="nf">cdata</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The character sequence data that was last processed by the</span>
+<span class="sd">        `parse` method. You may use the attribute access `text` if</span>
+<span class="sd">        performance is an issue. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="Parser.uri"><a class="viewcode-back" href="../../../api/lexor.core.html#lexor.core.parser.Parser.uri">[docs]</a>    <span class="k">def</span> <span class="nf">uri</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The Uniform Resource Identifier. This is the name that was</span>
+<span class="sd">        given to the text that was last parsed. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_uri</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="Parser.position"><a class="viewcode-back" href="../../../api/lexor.core.html#lexor.core.parser.Parser.position">[docs]</a>    <span class="k">def</span> <span class="nf">position</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Position of caret in the text in terms of line and column. i.e.</span>
+<span class="sd">        returns [line, column]. You may use the attribute access `pos` if</span>
+<span class="sd">        performance is an issue. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pos</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="Parser.caret_position"><a class="viewcode-back" href="../../../api/lexor.core.html#lexor.core.parser.Parser.caret_position">[docs]</a>    <span class="k">def</span> <span class="nf">caret_position</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The index in the text the parser is processing. You may use</span>
+<span class="sd">        the attribute access `caret` if performance is an issue. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">caret</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="Parser.lexor_log"><a class="viewcode-back" href="../../../api/lexor.core.html#lexor.core.parser.Parser.lexor_log">[docs]</a>    <span class="k">def</span> <span class="nf">lexor_log</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The `lexor_log` document. See this document after each</span>
+<span class="sd">        call to `parse` to see warnings and errors in the text that</span>
+<span class="sd">        was parsed. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">log</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="Parser.document"><a class="viewcode-back" href="../../../api/lexor.core.html#lexor.core.parser.Parser.document">[docs]</a>    <span class="k">def</span> <span class="nf">document</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The parsed document. This is a `Document` or</span>
+<span class="sd">        `FragmentedDocument` created by the `parse` method. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">doc</span>
+</div>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">language</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The language in which the `Parser` object will parse</span>
+<span class="sd">        character sequences. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lang</span>
+
+    <span class="nd">@language.setter</span>
+<div class="viewcode-block" id="Parser.language"><a class="viewcode-back" href="../../../api/lexor.core.html#lexor.core.parser.Parser.language">[docs]</a>    <span class="k">def</span> <span class="nf">language</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Setter function for style. &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lang</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_reload</span> <span class="o">=</span> <span class="bp">True</span>
+</div>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">parsing_style</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The style in which the `Parser` object will parse the</span>
+<span class="sd">        character sequences. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_style</span>
+
+    <span class="nd">@parsing_style.setter</span>
+<div class="viewcode-block" id="Parser.parsing_style"><a class="viewcode-back" href="../../../api/lexor.core.html#lexor.core.parser.Parser.parsing_style">[docs]</a>    <span class="k">def</span> <span class="nf">parsing_style</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Setter function for style. &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_style</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_reload</span> <span class="o">=</span> <span class="bp">True</span>
+</div>
+<div class="viewcode-block" id="Parser.set"><a class="viewcode-back" href="../../../api/lexor.core.html#lexor.core.parser.Parser.set">[docs]</a>    <span class="k">def</span> <span class="nf">set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lang</span><span class="p">,</span> <span class="n">style</span><span class="p">,</span> <span class="n">defaults</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set the language and style in one call. &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">defaults</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">defaults</span> <span class="o">=</span> <span class="n">defaults</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lang</span> <span class="o">=</span> <span class="n">lang</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_style</span> <span class="o">=</span> <span class="n">style</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_reload</span> <span class="o">=</span> <span class="bp">True</span>
+</div>
+<div class="viewcode-block" id="Parser.copy_pos"><a class="viewcode-back" href="../../../api/lexor.core.html#lexor.core.parser.Parser.copy_pos">[docs]</a>    <span class="k">def</span> <span class="nf">copy_pos</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns a copy of the current position. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pos</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Parser.update"><a class="viewcode-back" href="../../../api/lexor.core.html#lexor.core.parser.Parser.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Changes the position of the `caret` and updates `pos`.</span>
+<span class="sd">        This function assumes that you are moving forward. Do not</span>
+<span class="sd">        update to an index which is less than the current position of</span>
+<span class="sd">        the caret. &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">index</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">caret</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">nlines</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">caret</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pos</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="n">nlines</span>
+        <span class="k">if</span> <span class="n">nlines</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pos</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">index</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">rfind</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">caret</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pos</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="n">index</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">caret</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caret</span> <span class="o">=</span> <span class="n">index</span>
+</div>
+<div class="viewcode-block" id="Parser.compute"><a class="viewcode-back" href="../../../api/lexor.core.html#lexor.core.parser.Parser.compute">[docs]</a>    <span class="k">def</span> <span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns a position in the text `[line, column]` given an</span>
+<span class="sd">        index. Note: This does not modify anything in the parser. It</span>
+<span class="sd">        only gives you the line and column where the caret would be</span>
+<span class="sd">        given the index. The same applies as in update. Do not use</span>
+<span class="sd">        compute with an index less than the current position of the</span>
+<span class="sd">        caret. &quot;&quot;&quot;</span>
+        <span class="n">nlines</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">caret</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span>
+        <span class="n">tmpline</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pos</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">nlines</span>
+        <span class="k">if</span> <span class="n">nlines</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">tmpcolumn</span> <span class="o">=</span> <span class="n">index</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">rfind</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">caret</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">tmpcolumn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pos</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">index</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">caret</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">tmpline</span><span class="p">,</span> <span class="n">tmpcolumn</span><span class="p">]</span>
+
+    <span class="c"># pylint: disable=R0913</span></div>
+<div class="viewcode-block" id="Parser.msg"><a class="viewcode-back" href="../../../api/lexor.core.html#lexor.core.parser.Parser.msg">[docs]</a>    <span class="k">def</span> <span class="nf">msg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mod_name</span><span class="p">,</span> <span class="n">code</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">arg</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">uri</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Provide the name of module issuing the message, the code</span>
+<span class="sd">        number, the position of caret and optional arguments and uri.</span>
+<span class="sd">        This information gets stored in the log. &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">uri</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">uri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_uri</span>
+        <span class="k">if</span> <span class="n">arg</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">arg</span> <span class="o">=</span> <span class="p">()</span>
+        <span class="n">node</span> <span class="o">=</span> <span class="n">LC</span><span class="o">.</span><span class="n">Void</span><span class="p">(</span><span class="s">&#39;msg&#39;</span><span class="p">)</span>
+        <span class="n">node</span><span class="p">[</span><span class="s">&#39;module&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">mod_name</span>
+        <span class="n">node</span><span class="p">[</span><span class="s">&#39;code&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">code</span>
+        <span class="n">node</span><span class="p">[</span><span class="s">&#39;position&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">pos</span><span class="p">)</span>
+        <span class="n">node</span><span class="p">[</span><span class="s">&#39;uri&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">uri</span>
+        <span class="n">node</span><span class="p">[</span><span class="s">&#39;arg&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">arg</span>
+        <span class="k">if</span> <span class="n">mod_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">modules</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">modules</span><span class="p">[</span><span class="n">mod_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">[</span><span class="n">mod_name</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">append_child</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+</div>
+    <span class="k">def</span> <span class="nf">_get_np</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get a node parser based on the name of the node. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_np</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_np</span><span class="p">[</span><span class="s">&#39;__default__&#39;</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">_get_next_checker</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get the checker based on the name of the node. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_next_check</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_next_check</span><span class="p">[</span><span class="s">&#39;__default__&#39;</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">_get_next_check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Locate the index where a processor might return Node. If</span>
+<span class="sd">        there is no index then return -1.&quot;&quot;&quot;</span>
+        <span class="n">match</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_next_checker</span><span class="p">(</span><span class="n">node</span><span class="p">)</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">caret</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">match</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="k">return</span> <span class="n">match</span><span class="o">.</span><span class="n">end</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span>
+
+    <span class="k">def</span> <span class="nf">_process_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">crt</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">processor</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Appends the node to crt. &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">LC</span><span class="o">.</span><span class="n">Text</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">crt</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">crt</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">LC</span><span class="o">.</span><span class="n">Text</span><span class="p">):</span>
+                <span class="n">crt</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">data</span> <span class="o">+=</span> <span class="n">node</span><span class="o">.</span><span class="n">data</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">crt</span><span class="o">.</span><span class="n">append_child</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>  <span class="c"># Empty Element</span>
+            <span class="n">crt</span><span class="o">.</span><span class="n">append_child</span><span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">crt</span><span class="o">.</span><span class="n">append_child</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">child</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_in_progress</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">node</span><span class="p">,</span> <span class="n">processor</span><span class="p">))</span>
+                <span class="k">return</span> <span class="n">node</span>
+        <span class="k">return</span> <span class="bp">None</span>
+
+    <span class="k">def</span> <span class="nf">_process_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">crt</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;When there is no node then we just read the text. &quot;&quot;&quot;</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_next_check</span><span class="p">(</span><span class="n">crt</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">index</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">content</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">caret</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">end</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">crt</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">crt</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">LC</span><span class="o">.</span><span class="n">Text</span><span class="p">):</span>
+                <span class="n">crt</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">data</span> <span class="o">+=</span> <span class="n">content</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">crt</span><span class="o">.</span><span class="n">append_child</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">end</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="k">elif</span> <span class="n">index</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">caret</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">index</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">content</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">caret</span><span class="p">:</span><span class="n">index</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">crt</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">crt</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">LC</span><span class="o">.</span><span class="n">Text</span><span class="p">):</span>
+            <span class="n">crt</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">data</span> <span class="o">+=</span> <span class="n">content</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">crt</span><span class="o">.</span><span class="n">append_child</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_close_node</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Checks and closes a node that is in self._in_progress. &quot;&quot;&quot;</span>
+        <span class="n">num</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_in_progress</span><span class="p">)</span>
+        <span class="n">autoclose</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">for</span> <span class="n">node</span><span class="p">,</span> <span class="n">processor</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_in_progress</span><span class="p">):</span>
+            <span class="n">num</span> <span class="o">-=</span> <span class="mi">1</span>
+            <span class="n">autoclose</span> <span class="o">=</span> <span class="n">processor</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">autoclose</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="k">break</span>
+        <span class="k">if</span> <span class="n">autoclose</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="c"># Must go backwards since the list inprogress is</span>
+            <span class="c"># changing.</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_in_progress</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">num</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+                <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_in_progress</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">name</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">__module__</span><span class="p">,</span> <span class="s">&#39;W100&#39;</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_in_progress</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">pos</span><span class="p">,</span>
+                    <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">autoclose</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">autoclose</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                <span class="p">)</span>
+                <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_in_progress</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">pos</span>
+                <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_in_progress</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_in_progress</span><span class="p">[</span><span class="n">num</span><span class="p">]</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_in_progress</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_in_progress</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">doc</span>
+        <span class="k">return</span> <span class="bp">None</span>
+
+    <span class="k">def</span> <span class="nf">_parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Main parsing function. This function depends on the</span>
+<span class="sd">        node parsers of the language. &quot;&quot;&quot;</span>
+        <span class="n">crt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">doc</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_in_progress</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">caret</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">end</span><span class="p">:</span>
+            <span class="n">tmp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_close_node</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">tmp</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">crt</span> <span class="o">=</span> <span class="n">tmp</span>
+                <span class="k">continue</span>
+            <span class="n">match</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="n">processor</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="k">for</span> <span class="n">processor</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_np</span><span class="p">(</span><span class="n">crt</span><span class="p">):</span>
+                <span class="n">node</span> <span class="o">=</span> <span class="n">processor</span><span class="o">.</span><span class="n">make_node</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                    <span class="n">match</span> <span class="o">=</span> <span class="bp">True</span>
+                    <span class="k">break</span>
+                <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">caret</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">end</span><span class="p">:</span>
+                    <span class="k">break</span>
+            <span class="k">if</span> <span class="n">match</span> <span class="ow">is</span> <span class="bp">False</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_process_text</span><span class="p">(</span><span class="n">crt</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process_node</span><span class="p">(</span><span class="n">crt</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">processor</span><span class="p">)</span> <span class="ow">is</span> <span class="n">node</span><span class="p">:</span>
+                <span class="n">crt</span> <span class="o">=</span> <span class="n">node</span>
+        <span class="k">for</span> <span class="n">node</span><span class="p">,</span> <span class="n">processor</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_in_progress</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__module__</span><span class="p">,</span> <span class="s">&#39;E100&#39;</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">pos</span><span class="p">,</span> <span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="p">])</span>
+            <span class="k">del</span> <span class="n">node</span><span class="o">.</span><span class="n">pos</span>
+
+</div>
+<span class="n">MSG</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">&#39;E100&#39;</span><span class="p">:</span> <span class="s">&#39;closing string for `Node` of name &quot;{0}&quot; not found&#39;</span><span class="p">,</span>
+    <span class="s">&#39;W100&#39;</span><span class="p">:</span> <span class="s">&#39;auto-closing `Node` of name &quot;{0}&quot; at {1}:{2:2}&#39;</span><span class="p">,</span>
+<span class="p">}</span>
+<span class="n">MSG_EXPLANATION</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    - The parser did not find a closing string for the given node.</span>
+
+<span class="sd">    - This is a general error which is language dependent. Make sure</span>
+<span class="sd">      to provide the required closing string for the node.</span>
+
+<span class="sd">    The following are examples for HTML, LaTeX and Lexor:</span>
+
+<span class="sd">    Okay: &lt;node&gt;&lt;/node&gt;</span>
+<span class="sd">    Okay: \\begin{node}\\end{node}</span>
+<span class="sd">    Okay: %%{node}%%</span>
+
+<span class="sd">    E100: &lt;node&gt;</span>
+<span class="sd">    E100: \\begin{node}</span>
+<span class="sd">    E100: %%{node}</span>
+<span class="sd">&quot;&quot;&quot;</span><span class="p">,</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    - The parser was forced to automatically close the current node</span>
+<span class="sd">      in progress due to the encounter of the closing sequence of a</span>
+<span class="sd">      parent node.</span>
+
+<span class="sd">    - This is a general warning which is language dependent. To get</span>
+<span class="sd">      rid of this warning provide the closing sequence for the node</span>
+<span class="sd">      before the closing sequence of the parent node.</span>
+
+<span class="sd">    The following is an example in HTML:</span>
+
+<span class="sd">    Okay: &lt;a&gt;&lt;p&gt;stuff&lt;/p&gt;&lt;p&gt;stuff&lt;/p&gt;&lt;/a&gt;</span>
+<span class="sd">    Okay: &lt;a&gt;&lt;p&gt;stuff&lt;p&gt;stuff&lt;/p&gt;&lt;/a&gt;</span>
+
+<span class="sd">    W100: &lt;a&gt;&lt;p&gt;stuff&lt;/p&gt;&lt;p&gt;stuff&lt;/a&gt;</span>
+<span class="sd">    W100: &lt;a&gt;&lt;p&gt;stuff&lt;p&gt;stuff&lt;/a&gt;</span>
+<span class="sd">&quot;&quot;&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+</pre></div>
+
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2014, Manuel Lopez.
+    </p>
+  </div>
+
+  <a href="https://github.com/snide/sphinx_rtd_theme">Sphinx theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'0.1.2c0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+      <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

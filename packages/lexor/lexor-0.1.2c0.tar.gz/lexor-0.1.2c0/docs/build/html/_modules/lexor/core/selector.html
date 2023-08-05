@@ -1,0 +1,806 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>lexor.core.selector &mdash; lexor 0.1.2c0 documentation</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="top" title="lexor 0.1.2c0 documentation" href="../../../index.html"/>
+        <link rel="up" title="lexor" href="../../lexor.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        <a href="../../../index.html" class="fa fa-home"> lexor</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+        
+            <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../lexor.html"> What is lexor?</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../lexor.html#motivation">Motivation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html"> Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../installation.html#pip-or-manual-installation">Pip or Manual Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../installation.html#lexor-languages">Lexor Languages</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../start.html"> Getting Started</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../commands/index.html"> Commands</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../commands/install.html">install</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html"> API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/lexor.html">lexor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/lexor.core.html">lexor.core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/lexor.core.node.html">lexor.core.node</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/lexor.core.elements.html">lexor.core.elements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/lexor.command.html">lexor.command</a></li>
+</ul>
+</li>
+</ul>
+
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../../index.html">lexor</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      
+          <li><a href="../../lexor.html">lexor</a> &raquo;</li>
+      
+    <li>lexor.core.selector</li>
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            
+  <h1>Source code for lexor.core.selector</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;Selector</span>
+
+<span class="sd">This module is trying to simulate jquery selectors. If some code</span>
+<span class="sd">looks similar to that of the Sizzle CSS Selector engine it is because</span>
+<span class="sd">the ideas were taken from it.</span>
+
+<span class="sd">In short, credit goes to [Sizzle][1] and CSS for the seletor idea.</span>
+
+<span class="sd">[1]: http://sizzlejs.com/</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">types</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">mktime</span>
+<span class="kn">from</span> <span class="nn">pprint</span> <span class="kn">import</span> <span class="n">pprint</span>
+<span class="n">LC</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">[</span><span class="s">&#39;lexor.core&#39;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="get_date"><a class="viewcode-back" href="../../../api/lexor.core.html#lexor.core.selector.get_date">[docs]</a><span class="k">def</span> <span class="nf">get_date</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Obtain an integer representation of the date. &quot;&quot;&quot;</span>
+    <span class="n">date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span>
+    <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">mktime</span><span class="p">(</span><span class="n">date</span><span class="o">.</span><span class="n">timetuple</span><span class="p">()))</span>
+
+</div>
+<div class="viewcode-block" id="mark_function"><a class="viewcode-back" href="../../../api/lexor.core.html#lexor.core.selector.mark_function">[docs]</a><span class="k">def</span> <span class="nf">mark_function</span><span class="p">(</span><span class="n">fnc</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Mark a function for special use by Sizzle. &quot;&quot;&quot;</span>
+    <span class="n">fnc</span><span class="o">.</span><span class="n">expando</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="k">return</span> <span class="n">fnc</span>
+
+</div>
+<span class="n">BOOLEANS</span> <span class="o">=</span> <span class="s">&quot;checked|selected|async|autofocus|autoplay|controls|&quot;</span> <span class="o">+</span> \
+           <span class="s">&quot;defer|disabled|hidden|ismap|loop|multiple|open|&quot;</span> <span class="o">+</span> \
+           <span class="s">&quot;readonly|required|scoped&quot;</span>
+<span class="n">WHITESPACE</span> <span class="o">=</span> <span class="s">&quot;[</span><span class="se">\\</span><span class="s">x20</span><span class="se">\\</span><span class="s">t</span><span class="se">\\</span><span class="s">r</span><span class="se">\\</span><span class="s">n</span><span class="se">\\</span><span class="s">f]&quot;</span>
+<span class="n">CHAR_ENCODING</span> <span class="o">=</span> <span class="s">&quot;(?:</span><span class="se">\\\\</span><span class="s">.|[</span><span class="se">\\</span><span class="s">w-]|[^</span><span class="se">\\</span><span class="s">x00-</span><span class="se">\\</span><span class="s">xa0])+&quot;</span>
+<span class="n">IDENTIFIER</span> <span class="o">=</span> <span class="n">CHAR_ENCODING</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot;w&quot;</span><span class="p">,</span> <span class="s">&quot;w#&quot;</span><span class="p">)</span>
+<span class="n">ATTRIBUTES</span> <span class="o">=</span> <span class="s">&quot;</span><span class="se">\\</span><span class="s">[&quot;</span> <span class="o">+</span> <span class="n">WHITESPACE</span> <span class="o">+</span> <span class="s">&quot;*(&quot;</span> <span class="o">+</span> <span class="n">CHAR_ENCODING</span> <span class="o">+</span> <span class="s">&quot;)&quot;</span> <span class="o">+</span> \
+             <span class="n">WHITESPACE</span> <span class="o">+</span> <span class="s">&quot;*(?:([*^$|!~]?=)&quot;</span> <span class="o">+</span> <span class="n">WHITESPACE</span> <span class="o">+</span> \
+             <span class="s">&quot;*(?:([&#39;</span><span class="se">\&quot;</span><span class="s">])((?:</span><span class="se">\\\\</span><span class="s">.|[^</span><span class="se">\\\\</span><span class="s">])*?)</span><span class="se">\\</span><span class="s">3|(&quot;</span> <span class="o">+</span> \
+             <span class="n">IDENTIFIER</span> <span class="o">+</span> <span class="s">&quot;)|)|)&quot;</span> <span class="o">+</span> <span class="n">WHITESPACE</span> <span class="o">+</span> <span class="s">&quot;*</span><span class="se">\\</span><span class="s">]&quot;</span>
+<span class="n">PSEUDOS</span> <span class="o">=</span> <span class="s">&quot;:(&quot;</span> <span class="o">+</span> <span class="n">CHAR_ENCODING</span> <span class="o">+</span> \
+          <span class="s">&quot;)(?:</span><span class="se">\\</span><span class="s">((([&#39;</span><span class="se">\&quot;</span><span class="s">])((?:</span><span class="se">\\\\</span><span class="s">.|[^</span><span class="se">\\\\</span><span class="s">])*?)</span><span class="se">\\</span><span class="s">3|((?:</span><span class="se">\\\\</span><span class="s">.|&quot;</span> <span class="o">+</span> \
+          <span class="s">&quot;[^</span><span class="se">\\\\</span><span class="s">()[</span><span class="se">\\</span><span class="s">]]|&quot;</span> <span class="o">+</span> <span class="n">ATTRIBUTES</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot;3&quot;</span><span class="p">,</span> <span class="s">&quot;8&quot;</span><span class="p">)</span> <span class="o">+</span> \
+          <span class="s">&quot;)*)|.*)</span><span class="se">\\</span><span class="s">)|)&quot;</span>
+<span class="n">RCOMMA</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">&quot;^&quot;</span> <span class="o">+</span> <span class="n">WHITESPACE</span> <span class="o">+</span> <span class="s">&quot;*,&quot;</span> <span class="o">+</span> <span class="n">WHITESPACE</span> <span class="o">+</span> <span class="s">&quot;*&quot;</span><span class="p">)</span>
+<span class="n">RCOMBINATORS</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">&quot;^&quot;</span> <span class="o">+</span> <span class="n">WHITESPACE</span> <span class="o">+</span> <span class="s">&quot;*([&gt;+~]|&quot;</span> <span class="o">+</span>
+                          <span class="n">WHITESPACE</span> <span class="o">+</span> <span class="s">&quot;)&quot;</span> <span class="o">+</span> <span class="n">WHITESPACE</span> <span class="o">+</span> <span class="s">&quot;*&quot;</span><span class="p">)</span>
+<span class="c"># Use .findall instead of search or match since this regex had the</span>
+<span class="c"># global attribute</span>
+<span class="n">RATTRIBUTEQUOTE</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">&quot;=&quot;</span> <span class="o">+</span> <span class="n">WHITESPACE</span> <span class="o">+</span> <span class="s">&quot;*([^</span><span class="se">\\</span><span class="s">]&#39;</span><span class="se">\&quot;</span><span class="s">]*?)&quot;</span> <span class="o">+</span>
+                             <span class="n">WHITESPACE</span> <span class="o">+</span> <span class="s">&quot;*</span><span class="se">\\</span><span class="s">]&quot;</span><span class="p">)</span>
+<span class="n">RPSEUDO</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">PSEUDOS</span><span class="p">)</span>
+<span class="n">RIDENTIFIER</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">&quot;^&quot;</span> <span class="o">+</span> <span class="n">IDENTIFIER</span> <span class="o">+</span> <span class="s">&quot;$&quot;</span><span class="p">)</span>
+<span class="n">MATCH_EXPR</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">&quot;ID&quot;</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">&quot;^#(&quot;</span> <span class="o">+</span> <span class="n">CHAR_ENCODING</span> <span class="o">+</span> <span class="s">&quot;)&quot;</span><span class="p">),</span>
+    <span class="s">&quot;CLASS&quot;</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">&quot;^</span><span class="se">\\</span><span class="s">.(&quot;</span> <span class="o">+</span> <span class="n">CHAR_ENCODING</span> <span class="o">+</span> <span class="s">&quot;)&quot;</span><span class="p">),</span>
+    <span class="s">&quot;TAG&quot;</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">&quot;^(&quot;</span> <span class="o">+</span> <span class="n">CHAR_ENCODING</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot;w&quot;</span><span class="p">,</span> <span class="s">&quot;w*&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;)&quot;</span><span class="p">),</span>
+    <span class="s">&quot;ATTR&quot;</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">&quot;^&quot;</span> <span class="o">+</span> <span class="n">ATTRIBUTES</span><span class="p">),</span>
+    <span class="s">&quot;PSEUDO&quot;</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">&quot;^&quot;</span> <span class="o">+</span> <span class="n">PSEUDOS</span><span class="p">),</span>
+    <span class="s">&quot;CHILD&quot;</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">&quot;^:(only|first|last|nth|nth-last)-&quot;</span> <span class="o">+</span>
+                        <span class="s">&quot;(child|of-type)(?:</span><span class="se">\\</span><span class="s">(&quot;</span> <span class="o">+</span> <span class="n">WHITESPACE</span> <span class="o">+</span>
+                        <span class="s">&quot;*(even|odd|(([+-]|)(</span><span class="se">\\</span><span class="s">d*)n|)&quot;</span> <span class="o">+</span> <span class="n">WHITESPACE</span> <span class="o">+</span>
+                        <span class="s">&quot;*(?:([+-]|)&quot;</span> <span class="o">+</span> <span class="n">WHITESPACE</span> <span class="o">+</span> <span class="s">&quot;*(</span><span class="se">\\</span><span class="s">d+)|))&quot;</span> <span class="o">+</span>
+                        <span class="n">WHITESPACE</span> <span class="o">+</span> <span class="s">&quot;*</span><span class="se">\\</span><span class="s">)|)&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">),</span>
+    <span class="s">&quot;bool&quot;</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">&quot;^(?:&quot;</span> <span class="o">+</span> <span class="n">BOOLEANS</span> <span class="o">+</span> <span class="s">&quot;)$&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">),</span>
+    <span class="c"># For use in libraries implementing .is()</span>
+    <span class="c"># We use this for POS matching in `select`</span>
+    <span class="s">&quot;needsContext&quot;</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">&quot;^&quot;</span> <span class="o">+</span> <span class="n">WHITESPACE</span> <span class="o">+</span>
+                               <span class="s">&quot;*[&gt;+~]|:(even|odd|eq|gt|lt|nth|&quot;</span> <span class="o">+</span>
+                               <span class="s">&quot;first|last)(?:</span><span class="se">\\</span><span class="s">(&quot;</span> <span class="o">+</span> <span class="n">WHITESPACE</span> <span class="o">+</span>
+                               <span class="s">&quot;*((?:-</span><span class="se">\\</span><span class="s">d)?</span><span class="se">\\</span><span class="s">d*)&quot;</span> <span class="o">+</span> <span class="n">WHITESPACE</span> <span class="o">+</span>
+                               <span class="s">&quot;*</span><span class="se">\\</span><span class="s">)|)(?=[^-]|$)&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">),</span>
+<span class="p">}</span>
+<span class="n">RQUICKEXPR</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">r&#39;^(?:#([\w-]+)|(\w+)|\.([\w-]+))$&#39;</span><span class="p">)</span>
+<span class="n">RUNESCAPE</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\\\\</span><span class="s">([</span><span class="se">\\</span><span class="s">da-f]{1,6}&quot;</span> <span class="o">+</span> <span class="n">WHITESPACE</span> <span class="o">+</span> <span class="s">&quot;?|(&quot;</span> <span class="o">+</span>
+                       <span class="n">WHITESPACE</span> <span class="o">+</span> <span class="s">&quot;)|.)&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">)</span>
+<span class="n">EXPANDO</span> <span class="o">=</span> <span class="s">&#39;sizzle&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">get_date</span><span class="p">())</span>
+
+
+<span class="k">def</span> <span class="nf">_pre_filter_attr</span><span class="p">(</span><span class="n">match</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;function for EXPR[&#39;pre_filter&#39;][&#39;ATTR&#39;]&quot;&quot;&quot;</span>
+    <span class="c">#match[0] = match[0].replace(runescape, funescape);</span>
+    <span class="c">#match[0] = re.sub(runescape, funescape, match[0])</span>
+    <span class="c"># Move the given value to match[3] whether quoted or unquoted</span>
+    <span class="n">match</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">match</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="ow">or</span> <span class="n">match</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="ow">or</span> <span class="s">&quot;&quot;</span>
+    <span class="c">#match[2] = match[2].replace(runescape, funescape);</span>
+    <span class="k">if</span> <span class="n">match</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s">&quot;~=&quot;</span><span class="p">:</span>
+        <span class="n">match</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="s">&quot; &quot;</span> <span class="o">+</span> <span class="n">match</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="s">&quot; &quot;</span>
+    <span class="k">return</span> <span class="n">match</span><span class="p">[:</span><span class="mi">4</span><span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">_pre_filter_child</span><span class="p">(</span><span class="n">match</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;function for EXPR[&#39;pre_filter&#39;][&#39;CHILD&#39;]&quot;&quot;&quot;</span>
+    <span class="n">match</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">match</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">match</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">slice</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span> <span class="o">==</span> <span class="s">&quot;nth&quot;</span><span class="p">:</span>
+        <span class="c"># nth-* requires argument</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">match</span><span class="p">[</span><span class="mi">2</span><span class="p">]:</span>
+            <span class="k">print</span> <span class="s">&#39;ERROR&#39;</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+            <span class="c"># Should raise an error showing match[0]</span>
+        <span class="c"># numeric x and y parameters for Expr.filter.CHILD</span>
+        <span class="c"># remember that false/true cast respectively to 0/1</span>
+        <span class="c"># ML: Possible +=</span>
+        <span class="k">if</span> <span class="n">match</span><span class="p">[</span><span class="mi">4</span><span class="p">]:</span>
+            <span class="n">match</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="n">match</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="n">match</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span> <span class="ow">or</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">match</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="n">match</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">==</span> <span class="s">&quot;even&quot;</span> <span class="ow">or</span> <span class="n">match</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">==</span> <span class="s">&quot;odd&quot;</span><span class="p">)</span>
+        <span class="n">match</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="p">((</span><span class="n">match</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span> <span class="o">+</span> <span class="n">match</span><span class="p">[</span><span class="mi">8</span><span class="p">])</span> <span class="ow">or</span> <span class="n">match</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">==</span> <span class="s">&quot;odd&quot;</span><span class="p">)</span>
+    <span class="c">#other types prohibit arguments</span>
+    <span class="k">elif</span> <span class="n">match</span><span class="p">[</span><span class="mi">3</span><span class="p">]:</span>
+        <span class="k">print</span> <span class="s">&#39;ERROR&#39;</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">match</span>
+
+
+<span class="k">def</span> <span class="nf">_filter_tag</span><span class="p">(</span><span class="n">node_name_selector</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">node_name_selector</span>
+    <span class="k">if</span> <span class="n">node_name_selector</span> <span class="o">==</span> <span class="s">&#39;*&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="k">lambda</span><span class="p">:</span> <span class="bp">True</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="k">lambda</span> <span class="n">elem</span><span class="p">:</span> <span class="n">elem</span> <span class="ow">and</span> <span class="n">elem</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="n">name</span>
+
+
+<span class="k">def</span> <span class="nf">_filter_class</span><span class="p">(</span><span class="n">class_name</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">pattern</span> <span class="o">=</span> <span class="n">_filter_class</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="n">class_name</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">pattern</span>
+    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">&quot;(^|&quot;</span> <span class="o">+</span> <span class="n">WHITESPACE</span> <span class="o">+</span> <span class="s">&quot;)&quot;</span> <span class="o">+</span> <span class="n">class_name</span> <span class="o">+</span> <span class="s">&quot;(&quot;</span> <span class="o">+</span> <span class="n">WHITESPACE</span> <span class="o">+</span> <span class="s">&quot;|$)&quot;</span><span class="p">)</span>
+    <span class="n">_filter_class</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="n">class_name</span><span class="p">]</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">elem</span><span class="p">:</span> <span class="n">pattern</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">elem</span><span class="p">[</span><span class="s">&#39;class&#39;</span><span class="p">])</span> <span class="k">if</span> <span class="s">&#39;class&#39;</span> <span class="ow">in</span> <span class="n">elem</span> <span class="k">else</span> <span class="bp">None</span>
+    <span class="k">return</span> <span class="n">_filter_class</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="n">class_name</span><span class="p">]</span>
+<span class="n">_filter_class</span><span class="o">.</span><span class="n">cache</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+<span class="n">EXPR</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">&#39;create_pseudo&#39;</span><span class="p">:</span> <span class="n">mark_function</span><span class="p">,</span>
+    <span class="s">&#39;match&#39;</span><span class="p">:</span> <span class="n">MATCH_EXPR</span><span class="p">,</span>
+    <span class="s">&#39;attr_handle&#39;</span><span class="p">:</span> <span class="p">{},</span>
+    <span class="s">&#39;find&#39;</span><span class="p">:</span> <span class="p">{},</span>
+    <span class="s">&#39;relative&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s">&#39;&gt;&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;dir&#39;</span><span class="p">:</span> <span class="s">&quot;parent_node&quot;</span><span class="p">,</span> <span class="s">&#39;first&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">},</span>
+        <span class="s">&#39; &#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;dir&#39;</span><span class="p">:</span> <span class="s">&quot;parent_node&quot;</span><span class="p">},</span>
+        <span class="s">&#39;+&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;dir&#39;</span><span class="p">:</span> <span class="s">&quot;previous_sibling&quot;</span><span class="p">,</span> <span class="s">&#39;first&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">},</span>
+        <span class="s">&#39;~&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;dir&#39;</span><span class="p">:</span> <span class="s">&quot;previous_sibling&quot;</span><span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s">&#39;pre_filter&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s">&#39;ATTR&#39;</span><span class="p">:</span> <span class="n">_pre_filter_attr</span><span class="p">,</span>
+        <span class="s">&#39;CHILD&#39;</span><span class="p">:</span> <span class="n">_pre_filter_child</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s">&#39;filter&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s">&#39;TAG&#39;</span><span class="p">:</span> <span class="n">_filter_tag</span><span class="p">,</span>
+        <span class="s">&#39;CLASS&#39;</span><span class="p">:</span> <span class="n">_filter_class</span><span class="p">,</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<div class="viewcode-block" id="clone_obj"><a class="viewcode-back" href="../../../api/lexor.core.html#lexor.core.selector.clone_obj">[docs]</a><span class="k">def</span> <span class="nf">clone_obj</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">parser</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Utility function to create deep copies of objects used for the</span>
+<span class="sd">    Selector object. A parser should be given in case the object is a</span>
+<span class="sd">    string. &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">clone_node</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s">&#39;__iter__&#39;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">clone_obj</span><span class="p">(</span><span class="n">ele</span><span class="p">,</span> <span class="n">parser</span><span class="p">)</span> <span class="k">for</span> <span class="n">ele</span> <span class="ow">in</span> <span class="n">obj</span><span class="p">]</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">obj</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">parser</span><span class="o">.</span><span class="n">doc</span>
+
+</div>
+<div class="viewcode-block" id="sizzle"><a class="viewcode-back" href="../../../api/lexor.core.html#lexor.core.selector.sizzle">[docs]</a><span class="k">def</span> <span class="nf">sizzle</span><span class="p">(</span><span class="n">selector</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">results</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Function shamelessly borrowed and partially translated to</span>
+<span class="sd">    python from http://sizzlejs.com/. &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">results</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">selector</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">selector</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">results</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">LC</span><span class="o">.</span><span class="n">Element</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">()</span>
+    <span class="n">match</span> <span class="o">=</span> <span class="n">RQUICKEXPR</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">selector</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">match</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>  <span class="c"># Shortcuts</span>
+        <span class="n">match</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">groups</span><span class="p">()</span>
+        <span class="n">element_id</span> <span class="o">=</span> <span class="n">match</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">element_id</span><span class="p">:</span>  <span class="c"># sizzle(&#39;#ID&#39;)</span>
+            <span class="k">if</span> <span class="n">context</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s">&#39;#document&#39;</span><span class="p">:</span>
+                <span class="n">elem</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">get_element_by_id</span><span class="p">(</span><span class="n">element_id</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">elem</span><span class="p">:</span>
+                    <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">elem</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">context</span><span class="o">.</span><span class="n">owner</span><span class="p">:</span>
+                <span class="n">elem</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">owner</span><span class="o">.</span><span class="n">get_element_by_id</span><span class="p">(</span><span class="n">element_id</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">elem</span> <span class="ow">and</span> <span class="n">context</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="n">elem</span><span class="p">):</span>
+                    <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">elem</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">match</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>  <span class="c"># sizzle(&#39;TAG&#39;)</span>
+            <span class="n">results</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">context</span><span class="o">.</span><span class="n">get_nodes_by_name</span><span class="p">(</span><span class="n">selector</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">LC</span><span class="o">.</span><span class="n">Element</span><span class="p">):</span>  <span class="c"># sizzle(&#39;.CLASS&#39;)</span>
+            <span class="n">results</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">context</span><span class="o">.</span><span class="n">get_elements_by_class_name</span><span class="p">(</span><span class="n">match</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span>
+        <span class="k">return</span> <span class="n">results</span>
+    <span class="k">return</span> <span class="n">select</span><span class="p">(</span><span class="n">selector</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="n">context</span><span class="p">,</span> <span class="n">results</span><span class="p">,</span> <span class="n">seed</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="select"><a class="viewcode-back" href="../../../api/lexor.core.html#lexor.core.selector.select">[docs]</a><span class="k">def</span> <span class="nf">select</span><span class="p">(</span><span class="n">selector</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">results</span><span class="p">,</span> <span class="n">seed</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; A low-level selection function that works with Sizzle&#39;s</span>
+<span class="sd">    compiled selector functions</span>
+
+<span class="sd">    @param {String|Function} selector A selector or a pre-compiled</span>
+<span class="sd">     selector function built with Sizzle.compile</span>
+<span class="sd">    @param {Element} context</span>
+<span class="sd">    @param {Array} [results]</span>
+<span class="sd">    @param {Array} [seed] A set of elements to match against</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c">#compiled = typeof selector === &quot;function&quot; &amp;&amp; selector</span>
+    <span class="c">#selector = compiled.selector or selector</span>
+    <span class="n">match</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">seed</span> <span class="ow">and</span> <span class="n">tokenize</span><span class="p">(</span><span class="n">selector</span><span class="p">)</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="n">results</span> <span class="ow">or</span> <span class="nb">list</span><span class="p">()</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">match</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="c"># Other complicated stuff</span>
+        <span class="k">pass</span>
+    <span class="n">compile_selector</span><span class="p">(</span><span class="n">selector</span><span class="p">,</span> <span class="n">match</span><span class="p">)(</span><span class="n">seed</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">results</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">results</span>
+
+</div>
+<span class="k">def</span> <span class="nf">matcher_from_tokens</span><span class="p">(</span><span class="n">tokens</span><span class="p">):</span>
+    <span class="k">pass</span>
+
+<span class="k">def</span> <span class="nf">matcher_from_group_matchers</span><span class="p">(</span><span class="n">element_matchers</span><span class="p">,</span> <span class="n">set_matchers</span><span class="p">):</span>
+    <span class="k">pass</span>
+
+<span class="k">def</span> <span class="nf">compile_selector</span><span class="p">(</span><span class="n">selector</span><span class="p">,</span> <span class="n">match</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">compile_selector</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="n">selector</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="n">set_matchers</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+    <span class="n">element_matchers</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">match</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">match</span> <span class="o">=</span> <span class="n">tokenize</span><span class="p">(</span><span class="n">selector</span><span class="p">)</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">match</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="k">while</span> <span class="n">i</span><span class="p">:</span>
+        <span class="n">cached</span> <span class="o">=</span> <span class="n">matcher_from_tokens</span><span class="p">(</span><span class="n">match</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">cached</span><span class="p">[</span><span class="n">EXPANDO</span><span class="p">]:</span>
+            <span class="n">set_matchers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cached</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">element_matchers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cached</span><span class="p">)</span>
+    <span class="n">cached</span> <span class="o">=</span> <span class="n">matcher_from_group_matchers</span><span class="p">(</span><span class="n">element_matchers</span><span class="p">,</span> <span class="n">set_matchers</span><span class="p">)</span>
+    <span class="n">compile_selector</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="n">selector</span><span class="p">]</span> <span class="o">=</span> <span class="n">cached</span>
+    <span class="c">#cached.selector = selector</span>
+    <span class="k">return</span> <span class="n">cached</span>
+<span class="n">compile_selector</span><span class="o">.</span><span class="n">cache</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="tokenize"><a class="viewcode-back" href="../../../api/lexor.core.html#lexor.core.selector.tokenize">[docs]</a><span class="k">def</span> <span class="nf">tokenize</span><span class="p">(</span><span class="n">selector</span><span class="p">,</span> <span class="n">parse_only</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Tokenize...&quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">cached</span> <span class="o">=</span> <span class="n">tokenize</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="n">selector</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">parse_only</span> <span class="k">else</span> <span class="n">cached</span>
+    <span class="n">so_far</span> <span class="o">=</span> <span class="n">selector</span>
+    <span class="n">groups</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+    <span class="n">pre_filters</span> <span class="o">=</span> <span class="n">EXPR</span><span class="p">[</span><span class="s">&#39;pre_filter&#39;</span><span class="p">]</span>
+    <span class="n">matched</span> <span class="o">=</span> <span class="bp">False</span>
+    <span class="k">while</span> <span class="n">so_far</span><span class="p">:</span>
+        <span class="n">match</span> <span class="o">=</span> <span class="n">RCOMMA</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">so_far</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">matched</span> <span class="ow">or</span> <span class="n">match</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+                <span class="n">match</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">groups</span><span class="p">()</span>
+                <span class="n">so_far</span> <span class="o">=</span> <span class="n">so_far</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">match</span><span class="p">[</span><span class="mi">0</span><span class="p">]):]</span> <span class="ow">or</span> <span class="n">so_far</span>
+            <span class="n">tokens</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+            <span class="n">groups</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span>
+        <span class="n">matched</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="n">match</span> <span class="o">=</span> <span class="n">RCOMBINATORS</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">so_far</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+            <span class="n">matched</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">match</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">groups</span><span class="p">())</span>
+            <span class="n">tokens</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+                <span class="s">&#39;value&#39;</span><span class="p">:</span> <span class="n">matched</span><span class="p">,</span>
+                <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="n">match</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span>
+            <span class="p">})</span>
+            <span class="n">so_far</span> <span class="o">=</span> <span class="n">so_far</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">matched</span><span class="p">):]</span>
+        <span class="k">for</span> <span class="n">ftype</span> <span class="ow">in</span> <span class="n">EXPR</span><span class="p">[</span><span class="s">&#39;filter&#39;</span><span class="p">]:</span>
+            <span class="n">match</span> <span class="o">=</span> <span class="n">MATCH_EXPR</span><span class="p">[</span><span class="n">ftype</span><span class="p">]</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">so_far</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+                <span class="n">matched</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                <span class="n">match</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">groups</span><span class="p">())</span>
+                <span class="c">#match = pre_filters[ftype](match).groups()</span>
+                <span class="n">tokens</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+                    <span class="s">&#39;value&#39;</span><span class="p">:</span> <span class="n">matched</span><span class="p">,</span>
+                    <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="n">ftype</span><span class="p">,</span>
+                    <span class="s">&#39;matches&#39;</span><span class="p">:</span> <span class="n">match</span><span class="p">,</span>
+                <span class="p">})</span>
+                <span class="n">so_far</span> <span class="o">=</span> <span class="n">so_far</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">matched</span><span class="p">):]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">matched</span><span class="p">:</span>
+            <span class="k">break</span>
+    <span class="k">if</span> <span class="n">parse_only</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">so_far</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">tokenize</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="n">selector</span><span class="p">]</span> <span class="o">=</span> <span class="n">groups</span>
+        <span class="k">return</span> <span class="n">tokenize</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="n">selector</span><span class="p">]</span></div>
+<span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">tokenize</span><span class="p">,</span> <span class="s">&#39;cache&#39;</span><span class="p">):</span>
+    <span class="n">tokenize</span><span class="o">.</span><span class="n">cache</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="Selector"><a class="viewcode-back" href="../../../api/lexor.core.html#lexor.core.selector.Selector">[docs]</a><span class="k">class</span> <span class="nc">Selector</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;JQuery like object. &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">selector</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">results</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">sizzle</span><span class="p">(</span><span class="n">selector</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">results</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the k-th element selected.</span>
+
+<span class="sd">            x.__getitem__(k) &lt;==&gt; x[k]</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;repr method. &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">----------</span><span class="se">\n</span><span class="s">&#39;</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">+=</span> <span class="nb">repr</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+            <span class="n">result</span> <span class="o">+=</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">----------</span><span class="se">\n</span><span class="s">&#39;</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+<div class="viewcode-block" id="Selector.find"><a class="viewcode-back" href="../../../api/lexor.core.html#lexor.core.selector.Selector.find">[docs]</a>    <span class="k">def</span> <span class="nf">find</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">selector</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get the descendants of each element in the current set of</span>
+<span class="sd">        matched elements, filtered by a selector. &quot;&quot;&quot;</span>
+        <span class="n">current</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">current</span><span class="p">:</span>
+            <span class="n">sizzle</span><span class="p">(</span><span class="n">selector</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span>
+</div>
+<div class="viewcode-block" id="Selector.contents"><a class="viewcode-back" href="../../../api/lexor.core.html#lexor.core.selector.Selector.contents">[docs]</a>    <span class="k">def</span> <span class="nf">contents</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get the children of each element in the set of matched</span>
+<span class="sd">        elements, including text and comment nodes.&quot;&quot;&quot;</span>
+        <span class="n">current</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">current</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">node</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">child</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span>
+</div>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_append</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">content</span><span class="p">,</span> <span class="n">parser</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Helper function to `append` method. &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="n">Selector</span><span class="p">):</span>
+            <span class="n">node</span><span class="o">.</span><span class="n">extend_children</span><span class="p">(</span><span class="n">content</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="n">LC</span><span class="o">.</span><span class="n">Node</span><span class="p">):</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">content</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&#39;#document&#39;</span><span class="p">,</span> <span class="s">&#39;#document-fragment&#39;</span><span class="p">]</span>
+                    <span class="ow">and</span> <span class="n">content</span><span class="o">.</span><span class="n">temporary</span><span class="p">):</span>
+                <span class="n">node</span><span class="o">.</span><span class="n">extend_children</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">node</span><span class="o">.</span><span class="n">append_child</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="s">&#39;__iter__&#39;</span><span class="p">):</span>
+            <span class="n">node</span><span class="o">.</span><span class="n">extend_children</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">content</span><span class="p">))</span>
+            <span class="n">node</span><span class="o">.</span><span class="n">extend_children</span><span class="p">(</span><span class="n">parser</span><span class="o">.</span><span class="n">doc</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Selector.append"><a class="viewcode-back" href="../../../api/lexor.core.html#lexor.core.selector.Selector.append">[docs]</a>    <span class="k">def</span> <span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">arg</span><span class="p">,</span> <span class="o">**</span><span class="n">keywords</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Insert content, specified by the parameter, to the end of</span>
+<span class="sd">        each element in the set of matched elements.</span>
+
+<span class="sd">        Should behave similarly as https://api.jquery.com/append/.</span>
+<span class="sd">        Major difference is in the function. When passing a function</span>
+<span class="sd">        it should take 2 parameters: node, index. Where node will be</span>
+<span class="sd">        the current element to which the return value will be</span>
+<span class="sd">        appended to. &quot;&quot;&quot;</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s">&#39;lang&#39;</span><span class="p">:</span> <span class="s">&#39;html&#39;</span><span class="p">,</span>
+            <span class="s">&#39;style&#39;</span><span class="p">:</span> <span class="s">&#39;default&#39;</span><span class="p">,</span>
+            <span class="s">&#39;defaults&#39;</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keywords</span><span class="p">:</span>
+            <span class="n">info</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">keywords</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+        <span class="n">parser</span> <span class="o">=</span> <span class="n">LC</span><span class="o">.</span><span class="n">Parser</span><span class="p">(</span><span class="n">info</span><span class="p">[</span><span class="s">&#39;lang&#39;</span><span class="p">],</span> <span class="n">info</span><span class="p">[</span><span class="s">&#39;style&#39;</span><span class="p">],</span> <span class="n">info</span><span class="p">[</span><span class="s">&#39;defaults&#39;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">types</span><span class="o">.</span><span class="n">FunctionType</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">num</span><span class="p">,</span> <span class="n">node</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_append</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">arg</span><span class="p">[</span><span class="mi">0</span><span class="p">](</span><span class="n">node</span><span class="p">,</span> <span class="n">num</span><span class="p">),</span> <span class="n">parser</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">content</span> <span class="ow">in</span> <span class="n">arg</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                    <span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
+                    <span class="n">content</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">doc</span>
+                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                    <span class="k">for</span> <span class="n">num</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">content</span><span class="p">)):</span>
+                        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">content</span><span class="p">[</span><span class="n">num</span><span class="p">],</span> <span class="nb">str</span><span class="p">):</span>
+                            <span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">content</span><span class="p">[</span><span class="n">num</span><span class="p">])</span>
+                            <span class="n">content</span><span class="p">[</span><span class="n">num</span><span class="p">]</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">doc</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+                    <span class="n">clone</span> <span class="o">=</span> <span class="n">clone_obj</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="n">parser</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">clone</span><span class="p">,</span> <span class="n">parser</span><span class="p">)</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">content</span><span class="p">,</span> <span class="n">parser</span><span class="p">)</span>
+</div>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_prepend</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">content</span><span class="p">,</span> <span class="n">parser</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Helper function to `prepend` method. &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="n">Selector</span><span class="p">):</span>
+            <span class="n">node</span><span class="o">.</span><span class="n">extend_before</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">content</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="n">LC</span><span class="o">.</span><span class="n">Node</span><span class="p">):</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">content</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&#39;#document&#39;</span><span class="p">,</span> <span class="s">&#39;#document-fragment&#39;</span><span class="p">]</span>
+                    <span class="ow">and</span> <span class="n">content</span><span class="o">.</span><span class="n">temporary</span><span class="p">):</span>
+                <span class="n">node</span><span class="o">.</span><span class="n">extend_before</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">content</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">node</span><span class="o">.</span><span class="n">insert_before</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">content</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="s">&#39;__iter__&#39;</span><span class="p">):</span>
+            <span class="k">print</span> <span class="s">&#39;CONTENT = </span><span class="si">%r</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">content</span>
+            <span class="n">node</span><span class="o">.</span><span class="n">extend_before</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">content</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">content</span><span class="p">))</span>
+            <span class="n">node</span><span class="o">.</span><span class="n">extend_before</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">parser</span><span class="o">.</span><span class="n">doc</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Selector.prepend"><a class="viewcode-back" href="../../../api/lexor.core.html#lexor.core.selector.Selector.prepend">[docs]</a>    <span class="k">def</span> <span class="nf">prepend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">arg</span><span class="p">,</span> <span class="o">**</span><span class="n">keywords</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Insert content, specified by the parameter, to the</span>
+<span class="sd">        beginning of each element in the setof matched elements.</span>
+
+<span class="sd">        Should behave similarly as https://api.jquery.com/append/.</span>
+<span class="sd">        Major difference is in the function. When passing a function</span>
+<span class="sd">        it should take 2 parameters: node, index. Where node will be</span>
+<span class="sd">        the current element to which the return value will be</span>
+<span class="sd">        appended to. &quot;&quot;&quot;</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s">&#39;lang&#39;</span><span class="p">:</span> <span class="s">&#39;html&#39;</span><span class="p">,</span>
+            <span class="s">&#39;style&#39;</span><span class="p">:</span> <span class="s">&#39;default&#39;</span><span class="p">,</span>
+            <span class="s">&#39;defaults&#39;</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keywords</span><span class="p">:</span>
+            <span class="n">info</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">keywords</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+        <span class="n">parser</span> <span class="o">=</span> <span class="n">LC</span><span class="o">.</span><span class="n">Parser</span><span class="p">(</span><span class="n">info</span><span class="p">[</span><span class="s">&#39;lang&#39;</span><span class="p">],</span> <span class="n">info</span><span class="p">[</span><span class="s">&#39;style&#39;</span><span class="p">],</span> <span class="n">info</span><span class="p">[</span><span class="s">&#39;defaults&#39;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">types</span><span class="o">.</span><span class="n">FunctionType</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">num</span><span class="p">,</span> <span class="n">node</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_prepend</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">arg</span><span class="p">[</span><span class="mi">0</span><span class="p">](</span><span class="n">node</span><span class="p">,</span> <span class="n">num</span><span class="p">),</span> <span class="n">parser</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">content</span> <span class="ow">in</span> <span class="n">arg</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                    <span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
+                    <span class="n">content</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">doc</span>
+                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                    <span class="k">for</span> <span class="n">num</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">content</span><span class="p">)):</span>
+                        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">content</span><span class="p">[</span><span class="n">num</span><span class="p">],</span> <span class="nb">str</span><span class="p">):</span>
+                            <span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">content</span><span class="p">[</span><span class="n">num</span><span class="p">])</span>
+                            <span class="n">content</span><span class="p">[</span><span class="n">num</span><span class="p">]</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">doc</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+                    <span class="n">clone</span> <span class="o">=</span> <span class="n">clone_obj</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="n">parser</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_prepend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">clone</span><span class="p">,</span> <span class="n">parser</span><span class="p">)</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_prepend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">content</span><span class="p">,</span> <span class="n">parser</span><span class="p">)</span>
+</div>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_after</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">content</span><span class="p">,</span> <span class="n">parser</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Helper function to `after` method. &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="n">Selector</span><span class="p">):</span>
+            <span class="n">node</span><span class="o">.</span><span class="n">append_nodes_after</span><span class="p">(</span><span class="n">content</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="n">LC</span><span class="o">.</span><span class="n">Node</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">content</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&#39;#document&#39;</span><span class="p">,</span> <span class="s">&#39;#document-fragment&#39;</span><span class="p">]:</span>
+                <span class="n">node</span><span class="o">.</span><span class="n">append_nodes_after</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">node</span><span class="o">.</span><span class="n">append_after</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="s">&#39;__iter__&#39;</span><span class="p">):</span>
+            <span class="n">node</span><span class="o">.</span><span class="n">append_nodes_after</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">content</span><span class="p">))</span>
+            <span class="n">node</span><span class="o">.</span><span class="n">append_nodes_after</span><span class="p">(</span><span class="n">parser</span><span class="o">.</span><span class="n">doc</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Selector.after"><a class="viewcode-back" href="../../../api/lexor.core.html#lexor.core.selector.Selector.after">[docs]</a>    <span class="k">def</span> <span class="nf">after</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">arg</span><span class="p">,</span> <span class="o">**</span><span class="n">keywords</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Insert content, specified by the parameter, after each</span>
+<span class="sd">        element in the set of matched elements.</span>
+
+<span class="sd">        : .after(content [,content])</span>
+
+<span class="sd">        :: content</span>
+<span class="sd">        Type: htmlString or Element or Array or jQuery string, Node,</span>
+<span class="sd">        array of Node, or Selector object to insert after each</span>
+<span class="sd">        element in the set of matched elements.</span>
+
+<span class="sd">        :: content</span>
+<span class="sd">        Type: htmlString or Element or Array or jQuery One or</span>
+<span class="sd">        more additional DOM elements, arrays of elements, HTML</span>
+<span class="sd">        strings, or jQuery objects to insert after each element in</span>
+<span class="sd">        the set of matched elements.</span>
+
+<span class="sd">        : .after(function(node, index))</span>
+
+<span class="sd">        :: function(node, index)</span>
+<span class="sd">        A function that returns a string, DOM element(s), or Selector</span>
+<span class="sd">        object to insert after each element in the set of matched</span>
+<span class="sd">        elements. Receives the element in the set and its index</span>
+<span class="sd">        position in the set as its arguments.</span>
+
+<span class="sd">        : .after(..., lang=&#39;html&#39;, style=&#39;default&#39;, &#39;defaults&#39;=None)</span>
+
+<span class="sd">        :: lang</span>
+<span class="sd">        The language in which strings will be parsed in.</span>
+
+<span class="sd">        :: style</span>
+<span class="sd">        The style in which strings will be parsed in.</span>
+
+<span class="sd">        :: defaults</span>
+<span class="sd">        A dictionary with string keywords and values especifying</span>
+<span class="sd">        options for the particular style.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s">&#39;lang&#39;</span><span class="p">:</span> <span class="s">&#39;html&#39;</span><span class="p">,</span>
+            <span class="s">&#39;style&#39;</span><span class="p">:</span> <span class="s">&#39;default&#39;</span><span class="p">,</span>
+            <span class="s">&#39;defaults&#39;</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keywords</span><span class="p">:</span>
+            <span class="n">info</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">keywords</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+        <span class="n">parser</span> <span class="o">=</span> <span class="n">LC</span><span class="o">.</span><span class="n">Parser</span><span class="p">(</span><span class="n">info</span><span class="p">[</span><span class="s">&#39;lang&#39;</span><span class="p">],</span> <span class="n">info</span><span class="p">[</span><span class="s">&#39;style&#39;</span><span class="p">],</span> <span class="n">info</span><span class="p">[</span><span class="s">&#39;defaults&#39;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">types</span><span class="o">.</span><span class="n">FunctionType</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">num</span><span class="p">,</span> <span class="n">node</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_after</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">arg</span><span class="p">[</span><span class="mi">0</span><span class="p">](</span><span class="n">node</span><span class="p">,</span> <span class="n">num</span><span class="p">),</span> <span class="n">parser</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">content</span> <span class="ow">in</span> <span class="n">arg</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                    <span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
+                    <span class="n">content</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">doc</span>
+                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                    <span class="k">for</span> <span class="n">num</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">content</span><span class="p">)):</span>
+                        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">content</span><span class="p">[</span><span class="n">num</span><span class="p">],</span> <span class="nb">str</span><span class="p">):</span>
+                            <span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">content</span><span class="p">[</span><span class="n">num</span><span class="p">])</span>
+                            <span class="n">content</span><span class="p">[</span><span class="n">num</span><span class="p">]</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">doc</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+                    <span class="n">clone</span> <span class="o">=</span> <span class="n">clone_obj</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="n">parser</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_after</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">clone</span><span class="p">,</span> <span class="n">parser</span><span class="p">)</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_after</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">content</span><span class="p">,</span> <span class="n">parser</span><span class="p">)</span>
+</div>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_before</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">content</span><span class="p">,</span> <span class="n">parser</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Helper function to `after` method. &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="n">Selector</span><span class="p">):</span>
+            <span class="n">node</span><span class="o">.</span><span class="n">prepend_nodes_before</span><span class="p">(</span><span class="n">content</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="n">LC</span><span class="o">.</span><span class="n">Node</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">content</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&#39;#document&#39;</span><span class="p">,</span> <span class="s">&#39;#document-fragment&#39;</span><span class="p">]:</span>
+                <span class="n">node</span><span class="o">.</span><span class="n">prepend_nodes_before</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">node</span><span class="o">.</span><span class="n">prepend_before</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="s">&#39;__iter__&#39;</span><span class="p">):</span>
+            <span class="n">node</span><span class="o">.</span><span class="n">prepend_nodes_before</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">content</span><span class="p">))</span>
+            <span class="n">node</span><span class="o">.</span><span class="n">prepend_nodes_before</span><span class="p">(</span><span class="n">parser</span><span class="o">.</span><span class="n">doc</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Selector.before"><a class="viewcode-back" href="../../../api/lexor.core.html#lexor.core.selector.Selector.before">[docs]</a>    <span class="k">def</span> <span class="nf">before</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">arg</span><span class="p">,</span> <span class="o">**</span><span class="n">keywords</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Insert content, specified by the parameter, before each</span>
+<span class="sd">        element in the set of matched elements.</span>
+
+<span class="sd">        : .before(content [,content])</span>
+
+<span class="sd">        :: content</span>
+<span class="sd">        Type: htmlString or Element or Array or jQuery string, Node,</span>
+<span class="sd">        array of Node, or Selector object to insert before each</span>
+<span class="sd">        element in the set of matched elements.</span>
+
+<span class="sd">        :: content</span>
+<span class="sd">        Type: htmlString or Element or Array or jQuery One or</span>
+<span class="sd">        more additional DOM elements, arrays of elements, HTML</span>
+<span class="sd">        strings, or jQuery objects to insert before each element in</span>
+<span class="sd">        the set of matched elements.</span>
+
+<span class="sd">        : .before(function(node, index))</span>
+
+<span class="sd">        :: function(node, index)</span>
+<span class="sd">        A function that returns a string, DOM element(s), or Selector</span>
+<span class="sd">        object to insert before each element in the set of matched</span>
+<span class="sd">        elements. Receives the element in the set and its index</span>
+<span class="sd">        position in the set as its arguments.</span>
+
+<span class="sd">        : .before(..., lang=&#39;html&#39;, style=&#39;default&#39;, &#39;defaults&#39;=None)</span>
+
+<span class="sd">        :: lang</span>
+<span class="sd">        The language in which strings will be parsed in.</span>
+
+<span class="sd">        :: style</span>
+<span class="sd">        The style in which strings will be parsed in.</span>
+
+<span class="sd">        :: defaults</span>
+<span class="sd">        A dictionary with string keywords and values especifying</span>
+<span class="sd">        options for the particular style.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s">&#39;lang&#39;</span><span class="p">:</span> <span class="s">&#39;html&#39;</span><span class="p">,</span>
+            <span class="s">&#39;style&#39;</span><span class="p">:</span> <span class="s">&#39;default&#39;</span><span class="p">,</span>
+            <span class="s">&#39;defaults&#39;</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keywords</span><span class="p">:</span>
+            <span class="n">info</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">keywords</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+        <span class="n">parser</span> <span class="o">=</span> <span class="n">LC</span><span class="o">.</span><span class="n">Parser</span><span class="p">(</span><span class="n">info</span><span class="p">[</span><span class="s">&#39;lang&#39;</span><span class="p">],</span> <span class="n">info</span><span class="p">[</span><span class="s">&#39;style&#39;</span><span class="p">],</span> <span class="n">info</span><span class="p">[</span><span class="s">&#39;defaults&#39;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">types</span><span class="o">.</span><span class="n">FunctionType</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">num</span><span class="p">,</span> <span class="n">node</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_before</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">arg</span><span class="p">[</span><span class="mi">0</span><span class="p">](</span><span class="n">node</span><span class="p">,</span> <span class="n">num</span><span class="p">),</span> <span class="n">parser</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">content</span> <span class="ow">in</span> <span class="n">arg</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                    <span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
+                    <span class="n">content</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">doc</span>
+                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                    <span class="k">for</span> <span class="n">num</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">content</span><span class="p">)):</span>
+                        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">content</span><span class="p">[</span><span class="n">num</span><span class="p">],</span> <span class="nb">str</span><span class="p">):</span>
+                            <span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">content</span><span class="p">[</span><span class="n">num</span><span class="p">])</span>
+                            <span class="n">content</span><span class="p">[</span><span class="n">num</span><span class="p">]</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">doc</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+                    <span class="n">clone</span> <span class="o">=</span> <span class="n">clone_obj</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="n">parser</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_before</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">clone</span><span class="p">,</span> <span class="n">parser</span><span class="p">)</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_before</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">content</span><span class="p">,</span> <span class="n">parser</span><span class="p">)</span>
+</div>
+    <span class="k">def</span> <span class="nf">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">node</span>
+
+    <span class="k">def</span> <span class="nf">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the number of elements.</span>
+
+<span class="sd">            x.__len__() &lt;==&gt; len(x)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2014, Manuel Lopez.
+    </p>
+  </div>
+
+  <a href="https://github.com/snide/sphinx_rtd_theme">Sphinx theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'0.1.2c0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+      <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

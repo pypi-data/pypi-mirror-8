@@ -1,0 +1,540 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>lexor.command.to &mdash; lexor 0.1.2c0 documentation</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="top" title="lexor 0.1.2c0 documentation" href="../../../index.html"/>
+        <link rel="up" title="lexor.command" href="../command.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        <a href="../../../index.html" class="fa fa-home"> lexor</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+        
+            <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../lexor.html"> What is lexor?</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../lexor.html#motivation">Motivation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html"> Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../installation.html#pip-or-manual-installation">Pip or Manual Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../installation.html#lexor-languages">Lexor Languages</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../start.html"> Getting Started</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../commands/index.html"> Commands</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../commands/install.html">install</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html"> API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/lexor.html">lexor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/lexor.core.html">lexor.core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/lexor.core.node.html">lexor.core.node</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/lexor.core.elements.html">lexor.core.elements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/lexor.command.html">lexor.command</a></li>
+</ul>
+</li>
+</ul>
+
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../../index.html">lexor</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      
+          <li><a href="../../lexor.html">lexor</a> &raquo;</li>
+      
+          <li><a href="../command.html">lexor.command</a> &raquo;</li>
+      
+    <li>lexor.command.to</li>
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            
+  <h1>Source code for lexor.command.to</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;to</span>
+
+<span class="sd">Execute lexor by transforming a file &quot;to&quot; another language.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">textwrap</span>
+<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">from</span> <span class="nn">lexor.command</span> <span class="kn">import</span> <span class="n">config</span><span class="p">,</span> <span class="n">error</span><span class="p">,</span> <span class="n">warn</span>
+<span class="kn">from</span> <span class="nn">lexor.core.parser</span> <span class="kn">import</span> <span class="n">Parser</span>
+<span class="kn">from</span> <span class="nn">lexor.core.writer</span> <span class="kn">import</span> <span class="n">Writer</span>
+<span class="kn">from</span> <span class="nn">lexor.core.converter</span> <span class="kn">import</span> <span class="n">Converter</span>
+
+<span class="n">DEFAULTS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">&#39;parse_lang&#39;</span><span class="p">:</span> <span class="s">&#39;lexor:_&#39;</span><span class="p">,</span>
+    <span class="s">&#39;log&#39;</span><span class="p">:</span> <span class="s">&#39;lexor:log&#39;</span><span class="p">,</span>
+    <span class="s">&#39;lang&#39;</span><span class="p">:</span> <span class="s">&#39;html[_:_]&#39;</span>
+<span class="p">}</span>
+
+<span class="n">DESC</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;</span>
+<span class="s">Transform the inputfile to another language. To see the available</span>
+<span class="s">languages use the `lang` command.</span>
+
+<span class="s">examples:</span>
+
+<span class="s">    lexor file.html to markdown[cstyle:wstyle]</span>
+<span class="s">    lexor file.html to markdown[cstyle:otherlang.wstyle]</span>
+<span class="s">    lexor file.html to html~min,plain,_~</span>
+<span class="s">    lexor file.html to html~plain,_~ mk[cstyle:wstyle,cstyle1,cstyle2]</span>
+
+<span class="s">    lexor file.xml to xml~_@tab=&quot;****&quot;~</span>
+
+<span class="s">    lexor Makefile to xml --from makefile</span>
+<span class="s">    lexor Makefile to xml --from makefile:otherstyle</span>
+
+<span class="s">  Store output to `output.html` and store warnings in `log.html`:</span>
+<span class="s">      lexor doc.md &gt; output.html 2&gt; log.html</span>
+
+<span class="s">  Pipe the output from another program:</span>
+<span class="s">       cat doc.md | lexor --from markdown</span>
+
+<span class="s">  Write to files without displaying output:</span>
+<span class="s">      lexor --quiet --nodisplay --write doc.md</span>
+
+<span class="s">&quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="split_at"><a class="viewcode-back" href="../../../api/lexor.command.html#lexor.command.to.split_at">[docs]</a><span class="k">def</span> <span class="nf">split_at</span><span class="p">(</span><span class="n">delimiter</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">opens</span><span class="o">=</span><span class="s">&#39;[&lt;(&#39;</span><span class="p">,</span> <span class="n">closes</span><span class="o">=</span><span class="s">&#39;]&gt;)&#39;</span><span class="p">,</span> <span class="n">quotes</span><span class="o">=</span><span class="s">&#39;&quot;</span><span class="se">\&#39;</span><span class="s">&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Custom function to split at commas. Taken from stackoverflow</span>
+<span class="sd">    http://stackoverflow.com/a/20599372/788553&quot;&quot;&quot;</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">buff</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
+    <span class="n">level</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">is_quoted</span> <span class="o">=</span> <span class="bp">False</span>
+    <span class="k">for</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">text</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">delimiter</span> <span class="ow">and</span> <span class="n">level</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">is_quoted</span><span class="p">:</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">buff</span><span class="p">)</span>
+            <span class="n">buff</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">buff</span> <span class="o">+=</span> <span class="n">char</span>
+            <span class="k">if</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">opens</span><span class="p">:</span>
+                <span class="n">level</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">elif</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">closes</span><span class="p">:</span>
+                <span class="n">level</span> <span class="o">-=</span> <span class="mi">1</span>
+            <span class="k">elif</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">quotes</span><span class="p">:</span>
+                <span class="n">is_quoted</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">is_quoted</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">buff</span> <span class="o">==</span> <span class="s">&quot;&quot;</span><span class="p">:</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">buff</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">result</span>
+
+</div>
+<div class="viewcode-block" id="language_style"><a class="viewcode-back" href="../../../api/lexor.command.html#lexor.command.to.language_style">[docs]</a><span class="k">def</span> <span class="nf">language_style</span><span class="p">(</span><span class="n">lang_str</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Parses a language string. In particular, the options --from</span>
+<span class="sd">    and --log. &quot;&quot;&quot;</span>
+    <span class="n">tmp</span> <span class="o">=</span> <span class="n">split_at</span><span class="p">(</span><span class="s">&#39;:&#39;</span><span class="p">,</span> <span class="n">lang_str</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">tmp</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">input_lang</span> <span class="o">=</span> <span class="n">tmp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">input_style</span> <span class="o">=</span> <span class="n">style_parameters</span><span class="p">(</span><span class="n">tmp</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="n">tmp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&#39;@&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">index</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">input_lang</span> <span class="o">=</span> <span class="n">tmp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">input_style</span> <span class="o">=</span> <span class="n">style_parameters</span><span class="p">(</span><span class="s">&#39;_&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">input_lang</span> <span class="o">=</span> <span class="n">tmp</span><span class="p">[</span><span class="mi">0</span><span class="p">][:</span><span class="n">index</span><span class="p">]</span>
+            <span class="n">input_style</span> <span class="o">=</span> <span class="n">style_parameters</span><span class="p">(</span><span class="n">tmp</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">index</span><span class="p">:])</span>
+    <span class="k">if</span> <span class="n">input_lang</span> <span class="o">==</span> <span class="s">&#39;&#39;</span><span class="p">:</span>
+        <span class="n">input_lang</span> <span class="o">=</span> <span class="s">&#39;_&#39;</span>
+    <span class="k">if</span> <span class="n">input_style</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;&#39;</span><span class="p">:</span>
+        <span class="n">input_style</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;_&#39;</span>
+    <span class="k">return</span> <span class="n">input_lang</span><span class="p">,</span> <span class="n">input_style</span>
+
+</div>
+<div class="viewcode-block" id="parse_styles"><a class="viewcode-back" href="../../../api/lexor.command.html#lexor.command.to.parse_styles">[docs]</a><span class="k">def</span> <span class="nf">parse_styles</span><span class="p">(</span><span class="n">lang_str</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Parses a language string. In particular, the options --from</span>
+<span class="sd">    and --log. &quot;&quot;&quot;</span>
+    <span class="n">tmp</span> <span class="o">=</span> <span class="n">split_at</span><span class="p">(</span><span class="s">&#39;:&#39;</span><span class="p">,</span> <span class="n">lang_str</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">tmp</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">cstyle</span> <span class="o">=</span> <span class="n">style_parameters</span><span class="p">(</span><span class="n">tmp</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">wstyle</span> <span class="o">=</span> <span class="n">style_parameters</span><span class="p">(</span><span class="n">tmp</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">cstyle</span> <span class="o">=</span> <span class="n">style_parameters</span><span class="p">(</span><span class="n">tmp</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">wstyle</span> <span class="o">=</span> <span class="n">style_parameters</span><span class="p">(</span><span class="s">&#39;_&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">cstyle</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;&#39;</span><span class="p">:</span>
+        <span class="n">cstyle</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;_&#39;</span>
+    <span class="k">if</span> <span class="n">wstyle</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;&#39;</span><span class="p">:</span>
+        <span class="n">wstyle</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;_&#39;</span>
+    <span class="k">return</span> <span class="n">cstyle</span><span class="p">,</span> <span class="n">wstyle</span>
+
+</div>
+<div class="viewcode-block" id="style_parameters"><a class="viewcode-back" href="../../../api/lexor.command.html#lexor.command.to.style_parameters">[docs]</a><span class="k">def</span> <span class="nf">style_parameters</span><span class="p">(</span><span class="n">style</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Parsers a style name along with its parameters. &quot;&quot;&quot;</span>
+    <span class="n">style</span> <span class="o">=</span> <span class="n">split_at</span><span class="p">(</span><span class="s">&#39;@&#39;</span><span class="p">,</span> <span class="n">style</span><span class="p">)</span>
+    <span class="n">style_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="n">style</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s">&#39;params&#39;</span><span class="p">:</span> <span class="nb">dict</span><span class="p">()}</span>
+    <span class="k">for</span> <span class="n">ele</span> <span class="ow">in</span> <span class="n">style</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">var</span><span class="p">,</span> <span class="n">val</span> <span class="o">=</span> <span class="n">ele</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;=&#39;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s">&#39;style arguments must be of the form @var=val&#39;</span>
+            <span class="k">raise</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentTypeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;[&#39;</span><span class="p">:</span>
+                <span class="n">val</span> <span class="o">=</span> <span class="n">val</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s">&#39;To give empty values try @var=[]&#39;</span>
+            <span class="k">raise</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentTypeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="n">style_dict</span><span class="p">[</span><span class="s">&#39;params&#39;</span><span class="p">][</span><span class="n">var</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
+    <span class="k">return</span> <span class="n">style_dict</span>
+
+</div>
+<div class="viewcode-block" id="input_language"><a class="viewcode-back" href="../../../api/lexor.command.html#lexor.command.to.input_language">[docs]</a><span class="k">def</span> <span class="nf">input_language</span><span class="p">(</span><span class="n">tolang</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Parses the tolang argument. &quot;&quot;&quot;</span>
+    <span class="n">type_</span> <span class="o">=</span> <span class="s">&#39;w&#39;</span>
+    <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s">&quot;(.+)~(.+)~&quot;</span><span class="p">,</span> <span class="n">tolang</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">match</span><span class="p">:</span>
+        <span class="n">type_</span> <span class="o">=</span> <span class="s">&#39;c&#39;</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="n">tolang</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&#39;[&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">index</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">tolang</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;]&#39;</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="s">&#39;did you mean to write lang[...]?&#39;</span>
+                <span class="k">raise</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentTypeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="n">lang_name</span> <span class="o">=</span> <span class="n">tolang</span>
+            <span class="n">styles</span> <span class="o">=</span> <span class="s">&#39;_&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">tolang</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="s">&#39;]&#39;</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="s">&#39;must be of the form lang[...] or lang~...~&#39;</span>
+                <span class="k">raise</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentTypeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="n">lang_name</span> <span class="o">=</span> <span class="n">tolang</span><span class="p">[:</span><span class="n">index</span><span class="p">]</span>
+            <span class="n">styles</span> <span class="o">=</span> <span class="n">tolang</span><span class="p">[</span><span class="n">index</span><span class="o">+</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">lang_name</span><span class="p">,</span> <span class="n">styles</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">groups</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">type_</span> <span class="o">==</span> <span class="s">&#39;w&#39;</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s">&#39;`:` is not supported in &quot;</span><span class="si">%s</span><span class="s">~</span><span class="si">%s</span><span class="s">~&quot;&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">lang_name</span><span class="p">,</span> <span class="n">styles</span><span class="p">)</span>
+        <span class="n">styles</span> <span class="o">=</span> <span class="n">split_at</span><span class="p">(</span><span class="s">&#39;,&#39;</span><span class="p">,</span> <span class="n">styles</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">style</span> <span class="ow">in</span> <span class="n">styles</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s">&#39;:&#39;</span> <span class="ow">in</span> <span class="n">style</span><span class="p">:</span>
+                <span class="k">pass</span>
+                <span class="c">#raise argparse.ArgumentTypeError(msg)</span>
+        <span class="n">styles</span> <span class="o">=</span> <span class="p">[</span><span class="n">style_parameters</span><span class="p">(</span><span class="n">ele</span><span class="p">)</span> <span class="k">for</span> <span class="n">ele</span> <span class="ow">in</span> <span class="n">styles</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">styles</span> <span class="o">=</span> <span class="p">[</span><span class="n">parse_styles</span><span class="p">(</span><span class="n">ele</span><span class="p">)</span> <span class="k">for</span> <span class="n">ele</span> <span class="ow">in</span> <span class="n">split_at</span><span class="p">(</span><span class="s">&#39;,&#39;</span><span class="p">,</span> <span class="n">styles</span><span class="p">)]</span>
+    <span class="k">return</span> <span class="n">type_</span><span class="p">,</span> <span class="n">lang_name</span><span class="p">,</span> <span class="n">styles</span>
+
+</div>
+<div class="viewcode-block" id="add_parser"><a class="viewcode-back" href="../../../api/lexor.command.html#lexor.command.to.add_parser">[docs]</a><span class="k">def</span> <span class="nf">add_parser</span><span class="p">(</span><span class="n">subp</span><span class="p">,</span> <span class="n">fclass</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Add a parser to the main subparser. &quot;&quot;&quot;</span>
+    <span class="n">tmpp</span> <span class="o">=</span> <span class="n">subp</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span><span class="s">&#39;to&#39;</span><span class="p">,</span>
+                           <span class="n">help</span><span class="o">=</span><span class="s">&#39;transform inputfile to another language&#39;</span><span class="p">,</span>
+                           <span class="n">formatter_class</span><span class="o">=</span><span class="n">fclass</span><span class="p">,</span>
+                           <span class="n">description</span><span class="o">=</span><span class="n">textwrap</span><span class="o">.</span><span class="n">dedent</span><span class="p">(</span><span class="n">DESC</span><span class="p">))</span>
+    <span class="n">tmpp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&#39;tolang&#39;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s">&#39;lang&#39;</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="s">&#39;*&#39;</span><span class="p">,</span>
+                      <span class="nb">type</span><span class="o">=</span><span class="n">input_language</span><span class="p">,</span>
+                      <span class="n">help</span><span class="o">=</span><span class="s">&#39;language to which it will be converted&#39;</span><span class="p">)</span>
+    <span class="n">tmpp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&#39;--from&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">language_style</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s">&#39;FROM&#39;</span><span class="p">,</span>
+                      <span class="n">dest</span><span class="o">=</span><span class="s">&#39;parse_lang&#39;</span><span class="p">,</span>
+                      <span class="n">help</span><span class="o">=</span><span class="s">&#39;language to be parsed in&#39;</span><span class="p">)</span>
+    <span class="n">tmpp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&#39;--log&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">language_style</span><span class="p">,</span>
+                      <span class="n">help</span><span class="o">=</span><span class="s">&#39;language in which the logs will be written&#39;</span><span class="p">)</span>
+    <span class="n">tmpp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&#39;--write&#39;</span><span class="p">,</span> <span class="s">&#39;-w&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&#39;store_true&#39;</span><span class="p">,</span>
+                      <span class="n">help</span><span class="o">=</span><span class="s">&#39;write to file&#39;</span><span class="p">)</span>
+    <span class="n">tmpp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&#39;--quiet&#39;</span><span class="p">,</span> <span class="s">&#39;-q&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&#39;store_true&#39;</span><span class="p">,</span>
+                      <span class="n">help</span><span class="o">=</span><span class="s">&#39;suppress warning messages&#39;</span><span class="p">)</span>
+    <span class="n">tmpp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&#39;--nodisplay&#39;</span><span class="p">,</span> <span class="s">&#39;-n&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&#39;store_true&#39;</span><span class="p">,</span>
+                      <span class="n">help</span><span class="o">=</span><span class="s">&quot;suppress output&quot;</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="get_input"><a class="viewcode-back" href="../../../api/lexor.command.html#lexor.command.to.get_input">[docs]</a><span class="k">def</span> <span class="nf">get_input</span><span class="p">(</span><span class="n">input_file</span><span class="p">,</span> <span class="n">cfg</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s">&#39;_&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the text to be parsed along with the name assigned to</span>
+<span class="sd">    that text. The last output is the extension of the file. &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">input_file</span> <span class="ow">is</span> <span class="s">&#39;_&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdin</span><span class="o">.</span><span class="n">read</span><span class="p">(),</span> <span class="s">&#39;STDIN&#39;</span><span class="p">,</span> <span class="s">&#39;STDIN&#39;</span><span class="p">,</span> <span class="n">default</span>
+    <span class="n">found</span> <span class="o">=</span> <span class="bp">False</span>
+    <span class="k">if</span> <span class="n">input_file</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="s">&#39;/&#39;</span><span class="p">:</span>
+        <span class="n">root</span> <span class="o">=</span> <span class="n">cfg</span><span class="p">[</span><span class="s">&#39;lexor&#39;</span><span class="p">][</span><span class="s">&#39;root&#39;</span><span class="p">]</span>
+        <span class="n">paths</span> <span class="o">=</span> <span class="n">cfg</span><span class="p">[</span><span class="s">&#39;edit&#39;</span><span class="p">][</span><span class="s">&#39;path&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;:&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">paths</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">path</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&#39;/&#39;</span><span class="p">,</span> <span class="s">&#39;.&#39;</span><span class="p">]:</span>
+                <span class="n">abspath</span> <span class="o">=</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s">/</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">input_file</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">abspath</span> <span class="o">=</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s">/</span><span class="si">%s</span><span class="s">/</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">input_file</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">abspath</span><span class="p">):</span>
+                <span class="n">found</span> <span class="o">=</span> <span class="bp">True</span>
+                <span class="k">break</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">abspath</span> <span class="o">=</span> <span class="n">input_file</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">abspath</span><span class="p">):</span>
+            <span class="n">found</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">found</span><span class="p">:</span>
+        <span class="n">error</span><span class="p">(</span><span class="s">&quot;ERROR: The file &#39;</span><span class="si">%s</span><span class="s">&#39; does not exist.</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">input_file</span><span class="p">)</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">abspath</span><span class="p">,</span> <span class="s">&#39;r&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="n">textname</span> <span class="o">=</span> <span class="n">input_file</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">abspath</span><span class="p">)</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+    <span class="n">file_name</span> <span class="o">=</span> <span class="n">name</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">file_ext</span> <span class="o">=</span> <span class="n">name</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">file_ext</span> <span class="o">==</span> <span class="s">&#39;&#39;</span><span class="p">:</span>
+        <span class="n">file_ext</span> <span class="o">=</span> <span class="n">default</span>  <span class="c"># The default language to parse</span>
+    <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="n">textname</span><span class="p">,</span> <span class="n">file_name</span><span class="p">,</span> <span class="n">file_ext</span>
+
+</div>
+<div class="viewcode-block" id="run"><a class="viewcode-back" href="../../../api/lexor.command.html#lexor.command.to.run">[docs]</a><span class="k">def</span> <span class="nf">run</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Run the command. &quot;&quot;&quot;</span>
+    <span class="n">arg</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">CONFIG</span><span class="p">[</span><span class="s">&#39;arg&#39;</span><span class="p">]</span>
+    <span class="n">cfg</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get_cfg</span><span class="p">([</span><span class="s">&#39;to&#39;</span><span class="p">,</span> <span class="s">&#39;edit&#39;</span><span class="p">])</span>
+
+    <span class="n">text</span><span class="p">,</span> <span class="n">t_name</span><span class="p">,</span> <span class="n">f_name</span><span class="p">,</span> <span class="n">f_ext</span> <span class="o">=</span> <span class="n">get_input</span><span class="p">(</span><span class="n">arg</span><span class="o">.</span><span class="n">inputfile</span><span class="p">,</span> <span class="n">cfg</span><span class="p">)</span>
+
+    <span class="n">parse_lang</span> <span class="o">=</span> <span class="n">cfg</span><span class="p">[</span><span class="s">&#39;to&#39;</span><span class="p">][</span><span class="s">&#39;parse_lang&#39;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">parse_lang</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">parse_lang</span> <span class="o">=</span> <span class="n">language_style</span><span class="p">(</span><span class="n">parse_lang</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">arg</span><span class="o">.</span><span class="n">parse_lang</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">f_ext</span> <span class="o">!=</span> <span class="s">&#39;_&#39;</span><span class="p">:</span>
+        <span class="n">parse_lang</span> <span class="o">=</span> <span class="p">(</span><span class="n">f_ext</span><span class="p">,</span> <span class="n">parse_lang</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">in_lang</span><span class="p">,</span> <span class="n">in_style</span> <span class="o">=</span> <span class="n">parse_lang</span>
+
+    <span class="n">log</span> <span class="o">=</span> <span class="n">cfg</span><span class="p">[</span><span class="s">&#39;to&#39;</span><span class="p">][</span><span class="s">&#39;log&#39;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">log</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">log</span> <span class="o">=</span> <span class="n">language_style</span><span class="p">(</span><span class="n">log</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">default_log</span> <span class="o">=</span> <span class="n">DEFAULTS</span><span class="p">[</span><span class="s">&#39;log&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;:&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">log</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;_&#39;</span><span class="p">:</span>
+            <span class="n">log</span> <span class="o">=</span> <span class="p">(</span><span class="n">default_log</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">log</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">log</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="s">&#39;name&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;_&#39;</span><span class="p">:</span>
+            <span class="n">log</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="s">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">default_log</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">Parser</span><span class="p">(</span><span class="n">in_lang</span><span class="p">,</span> <span class="n">in_style</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">],</span> <span class="n">in_style</span><span class="p">[</span><span class="s">&#39;params&#39;</span><span class="p">])</span>
+    <span class="n">log_writer</span> <span class="o">=</span> <span class="n">Writer</span><span class="p">(</span><span class="n">log</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">log</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="s">&#39;name&#39;</span><span class="p">],</span> <span class="n">log</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="s">&#39;params&#39;</span><span class="p">])</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">parser</span><span class="o">.</span><span class="n">style_module</span><span class="p">,</span> <span class="s">&#39;VERSIONS&#39;</span><span class="p">):</span>
+        <span class="n">versions</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">style_module</span><span class="o">.</span><span class="n">VERSIONS</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s">&#39;WARNING: No version specified in configuration.</span><span class="se">\n</span><span class="s">&#39;</span> \
+              <span class="s">&#39;Using the first module in this list:</span><span class="se">\n\n</span><span class="s">  </span><span class="si">%s</span><span class="se">\n\n</span><span class="s">&#39;</span>
+        <span class="n">warn</span><span class="p">(</span><span class="n">msg</span> <span class="o">%</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">  &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">versions</span><span class="p">))</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">t_name</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s">&quot;ERROR: Parsing style not found: [</span><span class="si">%s</span><span class="s">:</span><span class="si">%s</span><span class="s">]</span><span class="se">\n</span><span class="s">&quot;</span>
+        <span class="n">error</span><span class="p">(</span><span class="n">msg</span> <span class="o">%</span> <span class="p">(</span><span class="n">in_lang</span><span class="p">,</span> <span class="n">in_style</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]))</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">write_log</span><span class="p">(</span><span class="n">log_writer</span><span class="p">,</span> <span class="n">parser</span><span class="o">.</span><span class="n">log</span><span class="p">,</span> <span class="n">arg</span><span class="o">.</span><span class="n">quiet</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s">&quot;ERROR: Writing log style not found: [</span><span class="si">%s</span><span class="s">:</span><span class="si">%s</span><span class="s">]</span><span class="se">\n</span><span class="s">&quot;</span>
+        <span class="n">error</span><span class="p">(</span><span class="n">msg</span> <span class="o">%</span> <span class="p">(</span><span class="n">parser</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">lang</span><span class="p">,</span> <span class="n">parser</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">style</span><span class="p">))</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">arg</span><span class="o">.</span><span class="n">tolang</span><span class="p">:</span>
+        <span class="n">arg</span><span class="o">.</span><span class="n">tolang</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">input_language</span><span class="p">(</span><span class="n">cfg</span><span class="p">[</span><span class="s">&#39;to&#39;</span><span class="p">][</span><span class="s">&#39;lang&#39;</span><span class="p">]))</span>
+    <span class="n">convert_and_write</span><span class="p">(</span><span class="n">f_name</span><span class="p">,</span> <span class="n">parser</span><span class="p">,</span> <span class="n">in_lang</span><span class="p">,</span> <span class="n">log</span><span class="p">,</span> <span class="n">arg</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="convert_and_write"><a class="viewcode-back" href="../../../api/lexor.command.html#lexor.command.to.convert_and_write">[docs]</a><span class="k">def</span> <span class="nf">convert_and_write</span><span class="p">(</span><span class="n">f_name</span><span class="p">,</span> <span class="n">parser</span><span class="p">,</span> <span class="n">in_lang</span><span class="p">,</span> <span class="n">log</span><span class="p">,</span> <span class="n">arg</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Auxiliary function to reduce the number of branches in run. &quot;&quot;&quot;</span>
+    <span class="n">log_writer</span> <span class="o">=</span> <span class="n">Writer</span><span class="p">(</span><span class="n">log</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">log</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="s">&#39;name&#39;</span><span class="p">],</span> <span class="n">log</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="s">&#39;params&#39;</span><span class="p">])</span>
+    <span class="n">writer</span> <span class="o">=</span> <span class="n">Writer</span><span class="p">()</span>
+    <span class="n">converter</span> <span class="o">=</span> <span class="n">Converter</span><span class="p">()</span>
+    <span class="n">param</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">&#39;parser&#39;</span><span class="p">:</span> <span class="n">parser</span><span class="p">,</span>
+        <span class="s">&#39;converter&#39;</span><span class="p">:</span> <span class="n">converter</span><span class="p">,</span>
+        <span class="s">&#39;writer&#39;</span><span class="p">:</span> <span class="n">writer</span><span class="p">,</span>
+        <span class="s">&#39;log_writer&#39;</span><span class="p">:</span> <span class="n">log_writer</span><span class="p">,</span>
+        <span class="s">&#39;f_name&#39;</span><span class="p">:</span> <span class="n">f_name</span><span class="p">,</span>
+        <span class="s">&#39;in_lang&#39;</span><span class="p">:</span> <span class="n">in_lang</span><span class="p">,</span>
+        <span class="s">&#39;arg&#39;</span><span class="p">:</span> <span class="n">arg</span>
+    <span class="p">}</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">action</span><span class="p">,</span> <span class="n">lang</span><span class="p">,</span> <span class="n">styles</span><span class="p">)</span> <span class="ow">in</span> <span class="n">arg</span><span class="o">.</span><span class="n">tolang</span><span class="p">:</span>
+        <span class="n">param</span><span class="p">[</span><span class="s">&#39;styles&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">styles</span>
+        <span class="n">param</span><span class="p">[</span><span class="s">&#39;lang&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">lang</span>
+        <span class="k">if</span> <span class="n">action</span> <span class="o">==</span> <span class="s">&#39;c&#39;</span><span class="p">:</span>
+            <span class="n">run_converter</span><span class="p">(</span><span class="n">param</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">action</span> <span class="o">==</span> <span class="s">&#39;w&#39;</span><span class="p">:</span>
+            <span class="n">run_writer</span><span class="p">(</span><span class="n">param</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="write_log"><a class="viewcode-back" href="../../../api/lexor.command.html#lexor.command.to.write_log">[docs]</a><span class="k">def</span> <span class="nf">write_log</span><span class="p">(</span><span class="n">writer</span><span class="p">,</span> <span class="n">log</span><span class="p">,</span> <span class="n">quiet</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Write the log file to stderr. &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">quiet</span> <span class="ow">is</span> <span class="bp">False</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">log</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">writer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">log</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="write_document"><a class="viewcode-back" href="../../../api/lexor.command.html#lexor.command.to.write_document">[docs]</a><span class="k">def</span> <span class="nf">write_document</span><span class="p">(</span><span class="n">writer</span><span class="p">,</span> <span class="n">doc</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">arg</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Auxiliary function for convert_and_write. &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">arg</span><span class="o">.</span><span class="n">nodisplay</span> <span class="ow">is</span> <span class="bp">False</span><span class="p">:</span>
+        <span class="n">writer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">arg</span><span class="o">.</span><span class="n">write</span> <span class="ow">is</span> <span class="bp">True</span><span class="p">:</span>
+        <span class="n">writer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">fname</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="run_converter"><a class="viewcode-back" href="../../../api/lexor.command.html#lexor.command.to.run_converter">[docs]</a><span class="k">def</span> <span class="nf">run_converter</span><span class="p">(</span><span class="n">param</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Auxiliary function for convert and write. &quot;&quot;&quot;</span>
+    <span class="n">lang</span> <span class="o">=</span> <span class="n">param</span><span class="p">[</span><span class="s">&#39;lang&#39;</span><span class="p">]</span>
+    <span class="n">f_name</span> <span class="o">=</span> <span class="n">param</span><span class="p">[</span><span class="s">&#39;f_name&#39;</span><span class="p">]</span>
+    <span class="n">in_lang</span> <span class="o">=</span> <span class="n">param</span><span class="p">[</span><span class="s">&#39;in_lang&#39;</span><span class="p">]</span>
+    <span class="n">arg</span> <span class="o">=</span> <span class="n">param</span><span class="p">[</span><span class="s">&#39;arg&#39;</span><span class="p">]</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">param</span><span class="p">[</span><span class="s">&#39;parser&#39;</span><span class="p">]</span>
+    <span class="n">writer</span> <span class="o">=</span> <span class="n">param</span><span class="p">[</span><span class="s">&#39;writer&#39;</span><span class="p">]</span>
+    <span class="n">log_writer</span> <span class="o">=</span> <span class="n">param</span><span class="p">[</span><span class="s">&#39;log_writer&#39;</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">style</span> <span class="ow">in</span> <span class="n">param</span><span class="p">[</span><span class="s">&#39;styles&#39;</span><span class="p">]:</span>
+        <span class="n">cstyle</span> <span class="o">=</span> <span class="n">style</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s">&#39;name&#39;</span><span class="p">]</span>
+        <span class="n">param</span><span class="p">[</span><span class="s">&#39;converter&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">in_lang</span><span class="p">,</span> <span class="n">lang</span><span class="p">,</span> <span class="n">cstyle</span><span class="p">,</span> <span class="n">style</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s">&#39;params&#39;</span><span class="p">])</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">doc</span><span class="p">,</span> <span class="n">log</span> <span class="o">=</span> <span class="n">param</span><span class="p">[</span><span class="s">&#39;converter&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">parser</span><span class="o">.</span><span class="n">doc</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s">&quot;ERROR: Converting style not found: [</span><span class="si">%s</span><span class="s"> ==&gt; </span><span class="si">%s</span><span class="s">:</span><span class="si">%s</span><span class="s">]</span><span class="se">\n</span><span class="s">&quot;</span>
+            <span class="n">warn</span><span class="p">(</span><span class="n">msg</span> <span class="o">%</span> <span class="p">(</span><span class="n">in_lang</span><span class="p">,</span> <span class="n">lang</span><span class="p">,</span> <span class="n">cstyle</span><span class="p">))</span>
+            <span class="k">continue</span>
+        <span class="n">wstyle</span> <span class="o">=</span> <span class="n">style</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="s">&#39;name&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s">&#39;.&#39;</span> <span class="ow">in</span> <span class="n">wstyle</span><span class="p">:</span>
+            <span class="p">(</span><span class="n">lang</span><span class="p">,</span> <span class="n">wstyle</span><span class="p">)</span> <span class="o">=</span> <span class="n">wstyle</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;.&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">wstyle</span> <span class="o">==</span> <span class="s">&#39;_&#39;</span><span class="p">:</span>
+            <span class="n">wstyle</span> <span class="o">=</span> <span class="s">&#39;default&#39;</span>
+        <span class="n">writer</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">lang</span><span class="p">,</span> <span class="n">wstyle</span><span class="p">,</span> <span class="n">style</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="s">&#39;params&#39;</span><span class="p">])</span>
+        <span class="n">fname</span> <span class="o">=</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s">.</span><span class="si">%s</span><span class="s">.</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">f_name</span><span class="p">,</span> <span class="n">wstyle</span><span class="p">,</span> <span class="n">lang</span><span class="p">)</span>
+        <span class="n">write_log</span><span class="p">(</span><span class="n">log_writer</span><span class="p">,</span> <span class="n">log</span><span class="p">,</span> <span class="n">arg</span><span class="o">.</span><span class="n">quiet</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">write_document</span><span class="p">(</span><span class="n">writer</span><span class="p">,</span> <span class="n">doc</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">arg</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s">&quot;ERROR: Writing style not found: [</span><span class="si">%s</span><span class="s">:</span><span class="si">%s</span><span class="s">]</span><span class="se">\n</span><span class="s">&quot;</span>
+            <span class="n">warn</span><span class="p">(</span><span class="n">msg</span> <span class="o">%</span> <span class="p">(</span><span class="n">lang</span><span class="p">,</span> <span class="n">wstyle</span><span class="p">))</span>
+            <span class="k">continue</span>
+
+</div>
+<div class="viewcode-block" id="run_writer"><a class="viewcode-back" href="../../../api/lexor.command.html#lexor.command.to.run_writer">[docs]</a><span class="k">def</span> <span class="nf">run_writer</span><span class="p">(</span><span class="n">param</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Auxiliary function for convert and write. &quot;&quot;&quot;</span>
+    <span class="n">lang</span> <span class="o">=</span> <span class="n">param</span><span class="p">[</span><span class="s">&#39;lang&#39;</span><span class="p">]</span>
+    <span class="n">f_name</span> <span class="o">=</span> <span class="n">param</span><span class="p">[</span><span class="s">&#39;f_name&#39;</span><span class="p">]</span>
+    <span class="n">arg</span> <span class="o">=</span> <span class="n">param</span><span class="p">[</span><span class="s">&#39;arg&#39;</span><span class="p">]</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">param</span><span class="p">[</span><span class="s">&#39;parser&#39;</span><span class="p">]</span>
+    <span class="n">writer</span> <span class="o">=</span> <span class="n">param</span><span class="p">[</span><span class="s">&#39;writer&#39;</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">style</span> <span class="ow">in</span> <span class="n">param</span><span class="p">[</span><span class="s">&#39;styles&#39;</span><span class="p">]:</span>
+        <span class="n">sname</span> <span class="o">=</span> <span class="s">&#39;default&#39;</span> <span class="k">if</span> <span class="n">style</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;_&#39;</span> <span class="k">else</span> <span class="n">style</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span>
+        <span class="n">writer</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">lang</span><span class="p">,</span> <span class="n">style</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">],</span> <span class="n">style</span><span class="p">[</span><span class="s">&#39;params&#39;</span><span class="p">])</span>
+        <span class="n">fname</span> <span class="o">=</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s">.</span><span class="si">%s</span><span class="s">.</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">f_name</span><span class="p">,</span> <span class="n">sname</span><span class="p">,</span> <span class="n">lang</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">write_document</span><span class="p">(</span><span class="n">writer</span><span class="p">,</span> <span class="n">parser</span><span class="o">.</span><span class="n">doc</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">arg</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s">&quot;ERROR: Writing style not found: [</span><span class="si">%s</span><span class="s">:</span><span class="si">%s</span><span class="s">]</span><span class="se">\n</span><span class="s">&quot;</span>
+            <span class="n">warn</span><span class="p">(</span><span class="n">msg</span> <span class="o">%</span> <span class="p">(</span><span class="n">lang</span><span class="p">,</span> <span class="n">style</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]))</span></div>
+</pre></div>
+
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2014, Manuel Lopez.
+    </p>
+  </div>
+
+  <a href="https://github.com/snide/sphinx_rtd_theme">Sphinx theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'0.1.2c0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+      <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

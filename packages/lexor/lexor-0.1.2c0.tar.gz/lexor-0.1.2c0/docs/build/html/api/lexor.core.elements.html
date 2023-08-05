@@ -1,0 +1,749 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>lexor.core.elements module &mdash; lexor 0.1.2c0 documentation</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="top" title="lexor 0.1.2c0 documentation" href="../index.html"/>
+        <link rel="up" title="API" href="index.html"/>
+        <link rel="next" title="lexor.command package" href="lexor.command.html"/>
+        <link rel="prev" title="lexor.core.node module" href="lexor.core.node.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        <a href="../index.html" class="fa fa-home"> lexor</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+        
+            <ul>
+<li class="toctree-l1"><a class="reference internal" href="../lexor.html"> What is lexor?</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../lexor.html#motivation">Motivation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html"> Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../installation.html#pip-or-manual-installation">Pip or Manual Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../installation.html#lexor-languages">Lexor Languages</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../start.html"> Getting Started</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../commands/index.html"> Commands</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../commands/install.html">install</a></li>
+</ul>
+</li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html"> API</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="lexor.html">lexor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lexor.core.html">lexor.core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lexor.core.node.html">lexor.core.node</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="">lexor.core.elements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lexor.command.html">lexor.command</a></li>
+</ul>
+</li>
+</ul>
+
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">lexor</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="index.html">API</a> &raquo;</li>
+      
+    <li>lexor.core.elements module</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          <a href="../_sources/api/lexor.core.elements.txt" rel="nofollow"> View page source</a>
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            
+  <div class="section" id="module-lexor.core.elements">
+<span id="lexor-core-elements-module"></span><h1>lexor.core.elements module<a class="headerlink" href="#module-lexor.core.elements" title="Permalink to this headline">¶</a></h1>
+<p>This module defines the elements of the document object model (DOM).
+This implementation follows most of the recommendations of <a class="reference external" href="http://www.w3.org/TR/2012/WD-dom-20121206/">w3</a>.</p>
+<div class="section" id="inheritance-tree">
+<h2>Inheritance Tree<a class="headerlink" href="#inheritance-tree" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line"><a class="reference internal" href="lexor.core.node.html#lexor.core.node.Node" title="lexor.core.node.Node"><tt class="xref py py-class docutils literal"><span class="pre">lexor.core.node.Node</span></tt></a> (<tt class="docutils literal"><span class="pre">__builtin__.object</span></tt>)</div>
+<div class="line-block">
+<div class="line"><a class="reference internal" href="#lexor.core.elements.CharacterData" title="lexor.core.elements.CharacterData"><tt class="xref py py-class docutils literal"><span class="pre">CharacterData</span></tt></a></div>
+<div class="line-block">
+<div class="line"><a class="reference internal" href="#lexor.core.elements.Text" title="lexor.core.elements.Text"><tt class="xref py py-class docutils literal"><span class="pre">Text</span></tt></a></div>
+<div class="line"><a class="reference internal" href="#lexor.core.elements.ProcessingInstruction" title="lexor.core.elements.ProcessingInstruction"><tt class="xref py py-class docutils literal"><span class="pre">ProcessingInstruction</span></tt></a></div>
+<div class="line"><a class="reference internal" href="#lexor.core.elements.Comment" title="lexor.core.elements.Comment"><tt class="xref py py-class docutils literal"><span class="pre">Comment</span></tt></a></div>
+<div class="line"><a class="reference internal" href="#lexor.core.elements.CData" title="lexor.core.elements.CData"><tt class="xref py py-class docutils literal"><span class="pre">CData</span></tt></a></div>
+<div class="line"><a class="reference internal" href="#lexor.core.elements.Entity" title="lexor.core.elements.Entity"><tt class="xref py py-class docutils literal"><span class="pre">Entity</span></tt></a></div>
+<div class="line"><a class="reference internal" href="#lexor.core.elements.DocumentType" title="lexor.core.elements.DocumentType"><tt class="xref py py-class docutils literal"><span class="pre">DocumentType</span></tt></a></div>
+</div>
+<div class="line"><a class="reference internal" href="#lexor.core.elements.Element" title="lexor.core.elements.Element"><tt class="xref py py-class docutils literal"><span class="pre">Element</span></tt></a></div>
+<div class="line-block">
+<div class="line"><a class="reference internal" href="#lexor.core.elements.RawText" title="lexor.core.elements.RawText"><tt class="xref py py-class docutils literal"><span class="pre">RawText</span></tt></a> (<a class="reference internal" href="#lexor.core.elements.Element" title="lexor.core.elements.Element"><tt class="xref py py-class docutils literal"><span class="pre">Element</span></tt></a>, <a class="reference internal" href="#lexor.core.elements.CharacterData" title="lexor.core.elements.CharacterData"><tt class="xref py py-class docutils literal"><span class="pre">CharacterData</span></tt></a>)</div>
+<div class="line"><a class="reference internal" href="#lexor.core.elements.Void" title="lexor.core.elements.Void"><tt class="xref py py-class docutils literal"><span class="pre">Void</span></tt></a></div>
+<div class="line"><a class="reference internal" href="#lexor.core.elements.Document" title="lexor.core.elements.Document"><tt class="xref py py-class docutils literal"><span class="pre">Document</span></tt></a></div>
+<div class="line-block">
+<div class="line"><a class="reference internal" href="#lexor.core.elements.DocumentFragment" title="lexor.core.elements.DocumentFragment"><tt class="xref py py-class docutils literal"><span class="pre">DocumentFragment</span></tt></a></div>
+</div>
+</div>
+</div>
+</div>
+<hr class="docutils" />
+<dl class="class">
+<dt id="lexor.core.elements.CharacterData">
+<em class="property">class </em><tt class="descclassname">lexor.core.elements.</tt><tt class="descname">CharacterData</tt><big>(</big><em>text=''</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/elements.html#CharacterData"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.elements.CharacterData" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="lexor.core.node.html#lexor.core.node.Node" title="lexor.core.node.Node"><tt class="xref py py-class docutils literal"><span class="pre">lexor.core.node.Node</span></tt></a></p>
+<p>A simple interface to deal with strings.</p>
+<dl class="method">
+<dt id="lexor.core.elements.CharacterData.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>text=''</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/elements.html#CharacterData.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.elements.CharacterData.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the data property to the value of <cite>text</cite> and set its
+name to <tt class="docutils literal"><span class="pre">'#character-data'</span></tt>.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="lexor.core.elements.CharacterData.node_value">
+<tt class="descname">node_value</tt><a class="reference internal" href="../_modules/lexor/core/elements.html#CharacterData.node_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.elements.CharacterData.node_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return or set the value of the node. This property is a
+wrapper for the <tt class="docutils literal"><span class="pre">data</span></tt> attribute.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="lexor.core.elements.Text">
+<em class="property">class </em><tt class="descclassname">lexor.core.elements.</tt><tt class="descname">Text</tt><big>(</big><em>text=''</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/elements.html#Text"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.elements.Text" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#lexor.core.elements.CharacterData" title="lexor.core.elements.CharacterData"><tt class="xref py py-class docutils literal"><span class="pre">lexor.core.elements.CharacterData</span></tt></a></p>
+<p>A node to represent a string object.</p>
+<dl class="method">
+<dt id="lexor.core.elements.Text.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>text=''</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/elements.html#Text.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.elements.Text.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call its base constructor and set its name to <tt class="docutils literal"><span class="pre">'#text'</span></tt>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lexor.core.elements.Text.clone_node">
+<tt class="descname">clone_node</tt><big>(</big><em>_=True</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/elements.html#Text.clone_node"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.elements.Text.clone_node" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a new <tt class="docutils literal"><span class="pre">Text</span></tt> node with the same data content.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="lexor.core.elements.ProcessingInstruction">
+<em class="property">class </em><tt class="descclassname">lexor.core.elements.</tt><tt class="descname">ProcessingInstruction</tt><big>(</big><em>target</em>, <em>data=''</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/elements.html#ProcessingInstruction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.elements.ProcessingInstruction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#lexor.core.elements.CharacterData" title="lexor.core.elements.CharacterData"><tt class="xref py py-class docutils literal"><span class="pre">lexor.core.elements.CharacterData</span></tt></a></p>
+<p>Represents a &#8220;processing instruction&#8221;, used to keep
+processor-specific information in the text of the document.</p>
+<dl class="method">
+<dt id="lexor.core.elements.ProcessingInstruction.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>target</em>, <em>data=''</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/elements.html#ProcessingInstruction.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.elements.ProcessingInstruction.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a <cite>Text</cite> node with its <cite>data</cite> set to data.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="lexor.core.elements.ProcessingInstruction.target">
+<tt class="descname">target</tt><a class="reference internal" href="../_modules/lexor/core/elements.html#ProcessingInstruction.target"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.elements.ProcessingInstruction.target" title="Permalink to this definition">¶</a></dt>
+<dd><p>The target of this processing instruction.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lexor.core.elements.ProcessingInstruction.clone_node">
+<tt class="descname">clone_node</tt><big>(</big><em>_=True</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/elements.html#ProcessingInstruction.clone_node"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.elements.ProcessingInstruction.clone_node" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a new PI with the same data content.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="lexor.core.elements.Comment">
+<em class="property">class </em><tt class="descclassname">lexor.core.elements.</tt><tt class="descname">Comment</tt><big>(</big><em>data=''</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/elements.html#Comment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.elements.Comment" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#lexor.core.elements.CharacterData" title="lexor.core.elements.CharacterData"><tt class="xref py py-class docutils literal"><span class="pre">lexor.core.elements.CharacterData</span></tt></a></p>
+<p>A node to store comments.</p>
+<dl class="method">
+<dt id="lexor.core.elements.Comment.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>data=''</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/elements.html#Comment.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.elements.Comment.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a comment node.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="lexor.core.elements.Comment.comment_type">
+<tt class="descname">comment_type</tt><a class="reference internal" href="../_modules/lexor/core/elements.html#Comment.comment_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.elements.Comment.comment_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Type of comment. This property is meant to help with
+documents that support different styles of comments.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lexor.core.elements.Comment.clone_node">
+<tt class="descname">clone_node</tt><big>(</big><em>_=True</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/elements.html#Comment.clone_node"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.elements.Comment.clone_node" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a new comment with the same data content.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="lexor.core.elements.CData">
+<em class="property">class </em><tt class="descclassname">lexor.core.elements.</tt><tt class="descname">CData</tt><big>(</big><em>data=''</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/elements.html#CData"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.elements.CData" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#lexor.core.elements.CharacterData" title="lexor.core.elements.CharacterData"><tt class="xref py py-class docutils literal"><span class="pre">lexor.core.elements.CharacterData</span></tt></a></p>
+<p>Although this node has been deprecated from the <a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/API/Node.nodeType">DOM</a>, it
+seems that xml still uses it.</p>
+<dl class="method">
+<dt id="lexor.core.elements.CData.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>data=''</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/elements.html#CData.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.elements.CData.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a CDATA node and set the node name to
+<tt class="docutils literal"><span class="pre">'#cdata-section'</span></tt>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lexor.core.elements.CData.clone_node">
+<tt class="descname">clone_node</tt><big>(</big><em>_=True</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/elements.html#CData.clone_node"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.elements.CData.clone_node" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a new <tt class="docutils literal"><span class="pre">CData</span></tt> node with the same data content.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="lexor.core.elements.Entity">
+<em class="property">class </em><tt class="descclassname">lexor.core.elements.</tt><tt class="descname">Entity</tt><big>(</big><em>text=''</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/elements.html#Entity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.elements.Entity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#lexor.core.elements.CharacterData" title="lexor.core.elements.CharacterData"><tt class="xref py py-class docutils literal"><span class="pre">lexor.core.elements.CharacterData</span></tt></a></p>
+<p>From merriam-webster <a class="reference external" href="http://www.merriam-webster.com/dictionary/entity">definition</a>:</p>
+<ul class="simple">
+<li><em>Something that exists by itself</em>.</li>
+<li><em>Something that is separate from other things</em>.</li>
+</ul>
+<p>This node acts in the same way as a <a class="reference internal" href="#lexor.core.elements.Text" title="lexor.core.elements.Text"><tt class="xref py py-class docutils literal"><span class="pre">Text</span></tt></a> node but it
+has one main difference. The data it contains should contain no
+white spaces. This node should be reserved for special characters
+or words that have different meanings across different languages.
+For instance in HTML you have the <tt class="docutils literal"><span class="pre">&amp;amp;</span></tt> to represent <tt class="docutils literal"><span class="pre">&amp;</span></tt>.
+In LaTeX you have to type <tt class="docutils literal"><span class="pre">\$</span></tt> to represent <tt class="docutils literal"><span class="pre">$</span></tt>. Using this
+node will help you handle these Entities hopefully more
+efficiently than simply finding and replacing them in a Text node.</p>
+<dl class="method">
+<dt id="lexor.core.elements.Entity.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>text=''</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/elements.html#Entity.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.elements.Entity.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create an <tt class="docutils literal"><span class="pre">Entity</span></tt> node and set the node name to
+<tt class="docutils literal"><span class="pre">#entity</span></tt>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lexor.core.elements.Entity.clone_node">
+<tt class="descname">clone_node</tt><big>(</big><em>_=True</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/elements.html#Entity.clone_node"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.elements.Entity.clone_node" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a new <tt class="docutils literal"><span class="pre">Entity</span></tt> with the same data content.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="lexor.core.elements.DocumentType">
+<em class="property">class </em><tt class="descclassname">lexor.core.elements.</tt><tt class="descname">DocumentType</tt><big>(</big><em>data=''</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/elements.html#DocumentType"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.elements.DocumentType" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#lexor.core.elements.CharacterData" title="lexor.core.elements.CharacterData"><tt class="xref py py-class docutils literal"><span class="pre">lexor.core.elements.CharacterData</span></tt></a></p>
+<p>A node to store the doctype declaration. This node will not
+follow the specifications at this point (May 30, 2013). It will
+simply recieve the string in between <tt class="docutils literal"><span class="pre">&lt;!doctype</span></tt> and <tt class="docutils literal"><span class="pre">&gt;</span></tt>.</p>
+<p>Specs: <a class="reference external" href="http://www.w3.org/TR/2012/WD-dom-20121206/#documenttype">http://www.w3.org/TR/2012/WD-dom-20121206/#documenttype</a></p>
+<dl class="method">
+<dt id="lexor.core.elements.DocumentType.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>data=''</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/elements.html#DocumentType.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.elements.DocumentType.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a <tt class="docutils literal"><span class="pre">DocumentType</span></tt> node and set its name to
+<tt class="docutils literal"><span class="pre">#doctype</span></tt>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lexor.core.elements.DocumentType.clone_node">
+<tt class="descname">clone_node</tt><big>(</big><em>_=True</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/elements.html#DocumentType.clone_node"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.elements.DocumentType.clone_node" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a new doctype with the same data content.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="lexor.core.elements.Element">
+<em class="property">class </em><tt class="descclassname">lexor.core.elements.</tt><tt class="descname">Element</tt><big>(</big><em>name</em>, <em>data=None</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/elements.html#Element"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.elements.Element" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="lexor.core.node.html#lexor.core.node.Node" title="lexor.core.node.Node"><tt class="xref py py-class docutils literal"><span class="pre">lexor.core.node.Node</span></tt></a></p>
+<p>Node object configured to have child Nodes and attributes.</p>
+<dl class="method">
+<dt id="lexor.core.elements.Element.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>name</em>, <em>data=None</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/elements.html#Element.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.elements.Element.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>The parameter <tt class="docutils literal"><span class="pre">data</span></tt> should be a <tt class="docutils literal"><span class="pre">dict</span></tt> object. The
+element will use the keys and values to populate its
+attributes. You may modify the elements internal dictionary.
+However, this may unintentially overwrite the attributes
+defined by the <tt class="docutils literal"><span class="pre">__setitem__</span></tt> method. If you wish to add
+another attribute to the <tt class="docutils literal"><span class="pre">Element</span></tt> object use the
+convention of adding an underscore at the end of the
+attribute. i.e</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">strong</span> <span class="o">=</span> <span class="n">Element</span><span class="p">(</span><span class="s">&#39;strong&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">strong</span><span class="o">.</span><span class="n">message_</span> <span class="o">=</span> <span class="s">&#39;An internal message&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">strong</span><span class="p">[</span><span class="s">&#39;message&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;Attribute message&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="lexor.core.elements.Element.__call__">
+<tt class="descname">__call__</tt><big>(</big><em>selector</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/elements.html#Element.__call__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.elements.Element.__call__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a <a class="reference internal" href="lexor.core.html#lexor.core.selector.Selector" title="lexor.core.selector.Selector"><tt class="xref py py-class docutils literal"><span class="pre">lexor.core.selector.Selector</span></tt></a> object.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lexor.core.elements.Element.update_attributes">
+<tt class="descname">update_attributes</tt><big>(</big><em>node</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/elements.html#Element.update_attributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.elements.Element.update_attributes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Copies the attributes of the input node into the calling
+node.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lexor.core.elements.Element.__getitem__">
+<tt class="descname">__getitem__</tt><big>(</big><em>k</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/elements.html#Element.__getitem__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.elements.Element.__getitem__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the <cite>k</cite>-th child of this node if <cite>k</cite> is an integer.
+Otherwise return the attribute of name with value of <cite>k</cite>.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">__getitem__</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="ow">is</span> <span class="n">x</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="lexor.core.elements.Element.get">
+<tt class="descname">get</tt><big>(</big><em>k</em>, <em>val=''</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/elements.html#Element.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.elements.Element.get" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the attribute of name with value of <cite>k</cite>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lexor.core.elements.Element.__setitem__">
+<tt class="descname">__setitem__</tt><big>(</big><em>k</em>, <em>val</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/elements.html#Element.__setitem__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.elements.Element.__setitem__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overloaded array operator. Appends or modifies an
+attribute. See its base method
+<a class="reference internal" href="lexor.core.node.html#lexor.core.node.Node.__setitem__" title="lexor.core.node.Node.__setitem__"><tt class="xref py py-meth docutils literal"><span class="pre">lexor.core.node.Node.__setitem__()</span></tt></a> for documentation on
+when <cite>val</cite> is not string.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">__setitem__</span><span class="p">(</span><span class="n">attname</span><span class="p">)</span> <span class="o">=</span> <span class="s">&#39;att&#39;</span> <span class="o">&lt;==&gt;</span> <span class="n">x</span><span class="p">[</span><span class="n">attname</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;att&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="lexor.core.elements.Element.__delitem__">
+<tt class="descname">__delitem__</tt><big>(</big><em>k</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/elements.html#Element.__delitem__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.elements.Element.__delitem__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove a child or attribute.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">__delitem__</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="o">&lt;==&gt;</span> <span class="k">del</span> <span class="n">x</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="lexor.core.elements.Element.__contains__">
+<tt class="descname">__contains__</tt><big>(</big><em>obj</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/elements.html#Element.__contains__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.elements.Element.__contains__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return <tt class="docutils literal"><span class="pre">True</span></tt> if <cite>obj</cite> is a node and it is a child
+of this element or if <cite>obj</cite> is an attribute of this
+element. Return <tt class="docutils literal"><span class="pre">False</span></tt> otherwise.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">__contains__</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span> <span class="o">==</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">x</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="lexor.core.elements.Element.contains">
+<tt class="descname">contains</tt><big>(</big><em>obj</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/elements.html#Element.contains"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.elements.Element.contains" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unlike <tt class="docutils literal"><span class="pre">__contains__</span></tt>, this method returns <tt class="docutils literal"><span class="pre">True</span></tt> if
+<cite>obj</cite> is any of the desendents of the node.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lexor.core.elements.Element.__iter__">
+<tt class="descname">__iter__</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/lexor/core/elements.html#Element.__iter__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.elements.Element.__iter__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Iterate over the element attributes names.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">attribute_name</span> <span class="ow">in</span> <span class="n">node</span><span class="p">:</span> <span class="o">...</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="lexor.core.elements.Element.attlen">
+<tt class="descname">attlen</tt><a class="reference internal" href="../_modules/lexor/core/elements.html#Element.attlen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.elements.Element.attlen" title="Permalink to this definition">¶</a></dt>
+<dd><p>The number of attributes.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="lexor.core.elements.Element.attributes">
+<tt class="descname">attributes</tt><a class="reference internal" href="../_modules/lexor/core/elements.html#Element.attributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.elements.Element.attributes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of the attribute names in the element.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="lexor.core.elements.Element.values">
+<tt class="descname">values</tt><a class="reference internal" href="../_modules/lexor/core/elements.html#Element.values"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.elements.Element.values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of the attribute values in the Element.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lexor.core.elements.Element.attribute">
+<tt class="descname">attribute</tt><big>(</big><em>index</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/elements.html#Element.attribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.elements.Element.attribute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the name of the attribute at the specified index.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lexor.core.elements.Element.attr">
+<tt class="descname">attr</tt><big>(</big><em>index</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/elements.html#Element.attr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.elements.Element.attr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the value of the attribute at the specified index.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lexor.core.elements.Element.items">
+<tt class="descname">items</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/lexor/core/elements.html#Element.items"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.elements.Element.items" title="Permalink to this definition">¶</a></dt>
+<dd><p>return all the items.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lexor.core.elements.Element.update">
+<tt class="descname">update</tt><big>(</big><em>dict_</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/elements.html#Element.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.elements.Element.update" title="Permalink to this definition">¶</a></dt>
+<dd><p>update with the values of <cite>dict_</cite>. useful when the element
+is empty and you created an Attr object. then just update the
+values.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lexor.core.elements.Element.rename">
+<tt class="descname">rename</tt><big>(</big><em>old_name</em>, <em>new_name</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/elements.html#Element.rename"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.elements.Element.rename" title="Permalink to this definition">¶</a></dt>
+<dd><p>Renames an attribute.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">lexor.core.elements</span> <span class="kn">import</span> <span class="n">Element</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span> <span class="o">=</span> <span class="n">Element</span><span class="p">(</span><span class="s">&#39;div&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="p">[</span><span class="s">&#39;att1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;val1&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span>
+<span class="go">div[0x10a090750 att1=&quot;val1&quot;]:</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="s">&#39;att1&#39;</span><span class="p">,</span> <span class="s">&#39;new-att-name&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span>
+<span class="go">div[0x10a090750 new-att-name=&quot;val1&quot;]:</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="lexor.core.elements.Element.clone_node">
+<tt class="descname">clone_node</tt><big>(</big><em>deep=False</em>, <em>normalize=True</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/elements.html#Element.clone_node"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.elements.Element.clone_node" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a new node. When deep is True, it will clone also
+clone all the child nodes.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lexor.core.elements.Element.get_elements_by_class_name">
+<tt class="descname">get_elements_by_class_name</tt><big>(</big><em>classname</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/elements.html#Element.get_elements_by_class_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.elements.Element.get_elements_by_class_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of all child elements which have all of the
+given class names.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lexor.core.elements.Element.children">
+<tt class="descname">children</tt><big>(</big><em>children=None</em>, <em>**keywords</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/elements.html#Element.children"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.elements.Element.children" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the elements children by providing a list of nodes or
+a string. If using a string then you may provide any of the
+following keywords to dictate how to parse and convert:</p>
+<ul class="simple">
+<li>parser_style: <tt class="docutils literal"><span class="pre">'_'</span></tt></li>
+<li>parser_lang: <tt class="docutils literal"><span class="pre">'html</span></tt></li>
+<li>parser_defaults: <tt class="docutils literal"><span class="pre">None</span></tt>,</li>
+<li>convert_style: <tt class="docutils literal"><span class="pre">'_'</span></tt>,</li>
+<li>convert_from: <tt class="docutils literal"><span class="pre">None</span></tt>,</li>
+<li>convert_to: <tt class="docutils literal"><span class="pre">'html'</span></tt>,</li>
+<li>convert_defaults: <tt class="docutils literal"><span class="pre">None</span></tt>,</li>
+<li>convert: <tt class="docutils literal"><span class="pre">'false'</span></tt></li>
+</ul>
+<p>If no children are provided then it returns a string of the children
+written in plain html. To change this behavior provide the
+following keywords:</p>
+<ul class="simple">
+<li>writer_style: <tt class="docutils literal"><span class="pre">'plain'</span></tt></li>
+<li>writer_lang: <tt class="docutils literal"><span class="pre">'html</span></tt></li>
+</ul>
+<div class="admonition important">
+<p class="first admonition-title">Important</p>
+<p class="last">This requires the installation of lexor styles.</p>
+</div>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="lexor.core.elements.Element.__weakref__">
+<tt class="descname">__weakref__</tt><a class="headerlink" href="#lexor.core.elements.Element.__weakref__" title="Permalink to this definition">¶</a></dt>
+<dd><p>list of weak references to the object (if defined)</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="lexor.core.elements.RawText">
+<em class="property">class </em><tt class="descclassname">lexor.core.elements.</tt><tt class="descname">RawText</tt><big>(</big><em>name</em>, <em>data=''</em>, <em>att=None</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/elements.html#RawText"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.elements.RawText" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#lexor.core.elements.Element" title="lexor.core.elements.Element"><tt class="xref py py-class docutils literal"><span class="pre">lexor.core.elements.Element</span></tt></a>, <a class="reference internal" href="#lexor.core.elements.CharacterData" title="lexor.core.elements.CharacterData"><tt class="xref py py-class docutils literal"><span class="pre">lexor.core.elements.CharacterData</span></tt></a></p>
+<p>A few elements do not have children, instead they have data.
+Such elements exist in HTML: <tt class="docutils literal"><span class="pre">script</span></tt>, <tt class="docutils literal"><span class="pre">title</span></tt> among
+others.</p>
+<dl class="method">
+<dt id="lexor.core.elements.RawText.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>name</em>, <em>data=''</em>, <em>att=None</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/elements.html#RawText.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.elements.RawText.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>You may provide <cite>att</cite> as a <tt class="docutils literal"><span class="pre">dict</span></tt> object.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lexor.core.elements.RawText.clone_node">
+<tt class="descname">clone_node</tt><big>(</big><em>deep=True</em>, <em>normalize=True</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/elements.html#RawText.clone_node"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.elements.RawText.clone_node" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a new <tt class="docutils literal"><span class="pre">RawText</span></tt> element</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="lexor.core.elements.RawText.__weakref__">
+<tt class="descname">__weakref__</tt><a class="headerlink" href="#lexor.core.elements.RawText.__weakref__" title="Permalink to this definition">¶</a></dt>
+<dd><p>list of weak references to the object (if defined)</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="lexor.core.elements.Void">
+<em class="property">class </em><tt class="descclassname">lexor.core.elements.</tt><tt class="descname">Void</tt><big>(</big><em>name</em>, <em>att=None</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/elements.html#Void"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.elements.Void" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#lexor.core.elements.Element" title="lexor.core.elements.Element"><tt class="xref py py-class docutils literal"><span class="pre">lexor.core.elements.Element</span></tt></a></p>
+<p>An element with no children.</p>
+<dl class="method">
+<dt id="lexor.core.elements.Void.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>name</em>, <em>att=None</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/elements.html#Void.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.elements.Void.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>You may provide <cite>att</cite> as a <cite>dict</cite> object.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lexor.core.elements.Void.clone_node">
+<tt class="descname">clone_node</tt><big>(</big><em>_=True</em>, <em>normalize=True</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/elements.html#Void.clone_node"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.elements.Void.clone_node" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a new <tt class="docutils literal"><span class="pre">Void</span></tt> element.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="lexor.core.elements.Document">
+<em class="property">class </em><tt class="descclassname">lexor.core.elements.</tt><tt class="descname">Document</tt><big>(</big><em>lang='xml'</em>, <em>style='default'</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/elements.html#Document"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.elements.Document" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#lexor.core.elements.Element" title="lexor.core.elements.Element"><tt class="xref py py-class docutils literal"><span class="pre">lexor.core.elements.Element</span></tt></a></p>
+<p>Contains information about the document that it holds.</p>
+<dl class="method">
+<dt id="lexor.core.elements.Document.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>lang='xml'</em>, <em>style='default'</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/elements.html#Document.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.elements.Document.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a new document object and sets its name to
+<tt class="docutils literal"><span class="pre">#document</span></tt>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lexor.core.elements.Document.clone_node">
+<tt class="descname">clone_node</tt><big>(</big><em>deep=False</em>, <em>normalize=True</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/elements.html#Document.clone_node"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.elements.Document.clone_node" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a new Document. Note: it does not copy
+the default values.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="lexor.core.elements.Document.language">
+<tt class="descname">language</tt><a class="reference internal" href="../_modules/lexor/core/elements.html#Document.language"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.elements.Document.language" title="Permalink to this definition">¶</a></dt>
+<dd><p>The current document&#8217;s language. This property is used by
+the writer to determine how to write the document.</p>
+<p>This property is a wrapper for the <tt class="docutils literal"><span class="pre">lang</span></tt> attribute.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="lexor.core.elements.Document.writing_style">
+<tt class="descname">writing_style</tt><a class="reference internal" href="../_modules/lexor/core/elements.html#Document.writing_style"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.elements.Document.writing_style" title="Permalink to this definition">¶</a></dt>
+<dd><p>The current document&#8217;s style. This property is used by
+the writer to determine how to write the document.</p>
+<p>This property is a wrapper for the <tt class="docutils literal"><span class="pre">style</span></tt> attribute.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="lexor.core.elements.Document.uri">
+<tt class="descname">uri</tt><a class="reference internal" href="../_modules/lexor/core/elements.html#Document.uri"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.elements.Document.uri" title="Permalink to this definition">¶</a></dt>
+<dd><p>The Uniform Resource Identifier. This property may become
+useful if the document represents a file. This property
+should be set by the a <a class="reference internal" href="lexor.core.html#lexor.core.parser.Parser" title="lexor.core.parser.Parser"><tt class="xref py py-class docutils literal"><span class="pre">Parser</span></tt></a>
+object telling us the location of the file that it parsed
+into the Document object.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="lexor.core.elements.Document.create_element">
+<em class="property">static </em><tt class="descname">create_element</tt><big>(</big><em>tagname</em>, <em>data=None</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/elements.html#Document.create_element"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.elements.Document.create_element" title="Permalink to this definition">¶</a></dt>
+<dd><p>Utility function to avoid having to import
+<tt class="docutils literal"><span class="pre">lexor.core.elements</span></tt> module. Returns an element object.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lexor.core.elements.Document.get_element_by_id">
+<tt class="descname">get_element_by_id</tt><big>(</big><em>element_id</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/elements.html#Document.get_element_by_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.elements.Document.get_element_by_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the first element, in tree order, within the
+document whose ID is element_id, or None if there is none.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="lexor.core.elements.DocumentFragment">
+<em class="property">class </em><tt class="descclassname">lexor.core.elements.</tt><tt class="descname">DocumentFragment</tt><big>(</big><em>lang='xml'</em>, <em>style='default'</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/elements.html#DocumentFragment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.elements.DocumentFragment" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#lexor.core.elements.Document" title="lexor.core.elements.Document"><tt class="xref py py-class docutils literal"><span class="pre">lexor.core.elements.Document</span></tt></a></p>
+<p>Takes in an element and &#8220;steals&#8221; its children. This element
+should only be used as a temporary container. Note that the
+<tt class="docutils literal"><span class="pre">__str__</span></tt> method may not yield the expected results since all
+the function will do is use the <tt class="docutils literal"><span class="pre">__str__</span></tt> method in each of its
+children. First assign this object to an actual Document.</p>
+<dl class="method">
+<dt id="lexor.core.elements.DocumentFragment.append_child">
+<tt class="descname">append_child</tt><big>(</big><em>new_child</em><big>)</big><a class="reference internal" href="../_modules/lexor/core/elements.html#DocumentFragment.append_child"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.elements.DocumentFragment.append_child" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds the node new_child to the end of the list of children
+of this node. The children contained in a
+<tt class="docutils literal"><span class="pre">DocumentFragment</span></tt> only have a parent (the
+<tt class="docutils literal"><span class="pre">DocumentFragment</span></tt>). As opposed as
+<a class="reference internal" href="lexor.core.node.html#lexor.core.node.Node.append_child" title="lexor.core.node.Node.append_child"><tt class="xref py py-meth docutils literal"><span class="pre">lexor.core.node.Node.append_child()</span></tt></a> which also takes
+care of the <tt class="docutils literal"><span class="pre">prev</span></tt> and <tt class="docutils literal"><span class="pre">next</span></tt> attributes.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lexor.core.elements.DocumentFragment.__repr__">
+<tt class="descname">__repr__</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/lexor/core/elements.html#DocumentFragment.__repr__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.elements.DocumentFragment.__repr__" title="Permalink to this definition">¶</a></dt>
+<dd><div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">__repr__</span><span class="p">()</span> <span class="o">&lt;==&gt;</span> <span class="nb">repr</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="lexor.core.elements.DocumentFragment.__str__">
+<tt class="descname">__str__</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/lexor/core/elements.html#DocumentFragment.__str__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lexor.core.elements.DocumentFragment.__str__" title="Permalink to this definition">¶</a></dt>
+<dd><div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">__str__</span><span class="p">()</span> <span class="o">&lt;==&gt;</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="lexor.command.html" class="btn btn-neutral float-right" title="lexor.command package"/>Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="lexor.core.node.html" class="btn btn-neutral" title="lexor.core.node module"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2014, Manuel Lopez.
+    </p>
+  </div>
+
+  <a href="https://github.com/snide/sphinx_rtd_theme">Sphinx theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.1.2c0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

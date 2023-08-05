@@ -1,0 +1,477 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>lexor.command.test &mdash; lexor 0.1.2c0 documentation</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="top" title="lexor 0.1.2c0 documentation" href="../../../index.html"/>
+        <link rel="up" title="lexor.command" href="../command.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        <a href="../../../index.html" class="fa fa-home"> lexor</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+        
+            <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../lexor.html"> What is lexor?</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../lexor.html#motivation">Motivation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html"> Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../installation.html#pip-or-manual-installation">Pip or Manual Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../installation.html#lexor-languages">Lexor Languages</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../start.html"> Getting Started</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../commands/index.html"> Commands</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../commands/install.html">install</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html"> API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/lexor.html">lexor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/lexor.core.html">lexor.core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/lexor.core.node.html">lexor.core.node</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/lexor.core.elements.html">lexor.core.elements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/lexor.command.html">lexor.command</a></li>
+</ul>
+</li>
+</ul>
+
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../../index.html">lexor</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      
+          <li><a href="../../lexor.html">lexor</a> &raquo;</li>
+      
+          <li><a href="../command.html">lexor.command</a> &raquo;</li>
+      
+    <li>lexor.command.test</li>
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            
+  <h1>Source code for lexor.command.test</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;Lexor Test</span>
+
+<span class="sd">This module contains various test for lexor.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span>
+
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">lexor</span>
+<span class="kn">import</span> <span class="nn">textwrap</span>
+<span class="kn">from</span> <span class="nn">glob</span> <span class="kn">import</span> <span class="n">iglob</span>
+<span class="kn">from</span> <span class="nn">nose.tools</span> <span class="kn">import</span> <span class="n">eq_</span>
+<span class="kn">from</span> <span class="nn">lexor.command</span> <span class="kn">import</span> <span class="n">exec_cmd</span><span class="p">,</span> <span class="n">warn</span>
+<span class="kn">from</span> <span class="nn">lexor.command.lang</span> <span class="kn">import</span> <span class="n">LEXOR_PATH</span><span class="p">,</span> <span class="n">get_style_module</span>
+<span class="kn">from</span> <span class="nn">lexor.core.parser</span> <span class="kn">import</span> <span class="n">Parser</span>
+<span class="kn">from</span> <span class="nn">os.path</span> <span class="kn">import</span> <span class="n">dirname</span><span class="p">,</span> <span class="n">exists</span>
+<span class="kn">from</span> <span class="nn">lexor.command</span> <span class="kn">import</span> <span class="n">config</span>
+
+<span class="n">RE</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">r&#39;(?P&lt;code&gt;[A-Z][0-9]*|Okay):&#39;</span><span class="p">)</span>
+<span class="n">WRAPPER</span> <span class="o">=</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">TextWrapper</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="mi">70</span><span class="p">,</span> <span class="n">break_long_words</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+<span class="n">DESC</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;</span>
+<span class="s">This command only takes in one optional parameter. If no parameter</span>
+<span class="s">is given then it will attempt to run all the tests available.</span>
+
+<span class="s">If a parameter is given then it may be of one of the following forms:</span>
+
+<span class="s">    lang</span>
+<span class="s">    lang.type</span>
+<span class="s">    lang.type.style</span>
+<span class="s">    lang.converter.tolang.style</span>
+
+<span class="s">The last two forms have the option of being followed by an</span>
+<span class="s">specific test name:</span>
+
+<span class="s">    lang.type.style:testname</span>
+<span class="s">    lang.converter.tolang.style:testname</span>
+
+<span class="s">&quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="add_parser"><a class="viewcode-back" href="../../../api/lexor.command.html#lexor.command.test.add_parser">[docs]</a><span class="k">def</span> <span class="nf">add_parser</span><span class="p">(</span><span class="n">subp</span><span class="p">,</span> <span class="n">fclass</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Add a parser to the main subparser. &quot;&quot;&quot;</span>
+    <span class="n">tmpp</span> <span class="o">=</span> <span class="n">subp</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span><span class="s">&#39;test&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s">&#39;test a style&#39;</span><span class="p">,</span>
+                           <span class="n">formatter_class</span><span class="o">=</span><span class="n">fclass</span><span class="p">,</span>
+                           <span class="n">description</span><span class="o">=</span><span class="n">textwrap</span><span class="o">.</span><span class="n">dedent</span><span class="p">(</span><span class="n">DESC</span><span class="p">))</span>
+    <span class="n">tmpp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&#39;param&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="s">&#39;?&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">,</span>
+                      <span class="n">help</span><span class="o">=</span><span class="s">&#39;optional parameter to specify the tests&#39;</span><span class="p">)</span>
+    <span class="n">tmpp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&#39;--installed&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&#39;store_true&#39;</span><span class="p">,</span>
+                      <span class="n">help</span><span class="o">=</span><span class="s">&#39;run all installed tests&#39;</span><span class="p">)</span>
+    <span class="n">tmpp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&#39;--verbose&#39;</span><span class="p">,</span> <span class="s">&#39;-v&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&#39;store_true&#39;</span><span class="p">,</span>
+                      <span class="n">help</span><span class="o">=</span><span class="s">&#39;display test messages&#39;</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="run"><a class="viewcode-back" href="../../../api/lexor.command.html#lexor.command.test.run">[docs]</a><span class="k">def</span> <span class="nf">run</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Run command. &quot;&quot;&quot;</span>
+    <span class="n">arg</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">CONFIG</span><span class="p">[</span><span class="s">&#39;arg&#39;</span><span class="p">]</span>
+    <span class="n">cfg</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get_cfg</span><span class="p">([</span><span class="s">&#39;lang&#39;</span><span class="p">,</span> <span class="s">&#39;develop&#39;</span><span class="p">,</span> <span class="s">&#39;version&#39;</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">arg</span><span class="o">.</span><span class="n">installed</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s">&#39;version&#39;</span> <span class="ow">in</span> <span class="n">cfg</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">(</span><span class="s">&#39;Running installed tests ...&#39;</span><span class="p">)</span>
+            <span class="n">run_installed</span><span class="p">(</span><span class="n">arg</span><span class="o">.</span><span class="n">param</span><span class="p">,</span> <span class="n">cfg</span><span class="p">,</span> <span class="n">arg</span><span class="o">.</span><span class="n">verbose</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">(</span><span class="s">&#39;No installed tests to run ...&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s">&#39;develop&#39;</span> <span class="ow">in</span> <span class="n">cfg</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">(</span><span class="s">&#39;Running development tests ...&#39;</span><span class="p">)</span>
+            <span class="n">run_develop</span><span class="p">(</span><span class="n">arg</span><span class="o">.</span><span class="n">param</span><span class="p">,</span> <span class="n">cfg</span><span class="p">,</span> <span class="n">arg</span><span class="o">.</span><span class="n">verbose</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">(</span><span class="s">&#39;No development tests to run ...&#39;</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="run_develop"><a class="viewcode-back" href="../../../api/lexor.command.html#lexor.command.test.run_develop">[docs]</a><span class="k">def</span> <span class="nf">run_develop</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">cfg</span><span class="p">,</span> <span class="n">verbose</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Run develop tests. &quot;&quot;&quot;</span>
+    <span class="n">param</span> <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;:&#39;</span><span class="p">)</span>
+    <span class="n">testname</span> <span class="o">=</span> <span class="s">&#39;*&#39;</span>
+    <span class="n">subtest</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">param</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">testname</span> <span class="o">=</span> <span class="n">param</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">param</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="n">subtest</span> <span class="o">=</span> <span class="s">&#39;:</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">param</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">keys</span> <span class="o">=</span> <span class="p">[</span><span class="n">key</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">cfg</span><span class="p">[</span><span class="s">&#39;develop&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="n">param</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">key</span><span class="p">]</span>
+    <span class="n">failed</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">cfg</span><span class="p">[</span><span class="s">&#39;develop&#39;</span><span class="p">][</span><span class="n">key</span><span class="p">][:</span><span class="o">-</span><span class="mi">3</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">path</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="s">&#39;/&#39;</span><span class="p">:</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s">/</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">CONFIG</span><span class="p">[</span><span class="s">&#39;path&#39;</span><span class="p">],</span> <span class="n">path</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">pth</span> <span class="ow">in</span> <span class="n">iglob</span><span class="p">(</span><span class="s">&#39;</span><span class="si">%s</span><span class="s">/test_</span><span class="si">%s</span><span class="s">.py&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">testname</span><span class="p">)):</span>
+            <span class="n">cmd</span> <span class="o">=</span> <span class="s">&#39;nosetests -vs </span><span class="si">%s%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">pth</span><span class="p">,</span> <span class="n">subtest</span><span class="p">)</span>
+            <span class="n">_</span><span class="p">,</span> <span class="n">err</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">exec_cmd</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+                <span class="k">print</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+            <span class="k">if</span> <span class="s">&#39;FAILED&#39;</span> <span class="ow">in</span> <span class="n">err</span><span class="p">:</span>
+                <span class="n">failed</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">cmd</span><span class="p">,</span> <span class="n">err</span><span class="p">])</span>
+    <span class="n">_display_failed</span><span class="p">(</span><span class="n">failed</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="run_installed"><a class="viewcode-back" href="../../../api/lexor.command.html#lexor.command.test.run_installed">[docs]</a><span class="k">def</span> <span class="nf">run_installed</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">cfg</span><span class="p">,</span> <span class="n">verbose</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Run installed tests. &quot;&quot;&quot;</span>
+    <span class="n">param</span> <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;:&#39;</span><span class="p">)</span>
+    <span class="n">testname</span> <span class="o">=</span> <span class="s">&#39;*&#39;</span>
+    <span class="n">subtest</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">param</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">testname</span> <span class="o">=</span> <span class="n">param</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">param</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="n">subtest</span> <span class="o">=</span> <span class="s">&#39;:</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">param</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">keys</span> <span class="o">=</span> <span class="p">[</span><span class="n">key</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">cfg</span><span class="p">[</span><span class="s">&#39;version&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">param</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span>
+    <span class="n">failed</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="s">&#39;/&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">key</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s">&#39;.&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">base</span> <span class="ow">in</span> <span class="n">LEXOR_PATH</span><span class="p">:</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s">/</span><span class="si">%s</span><span class="s">-</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">cfg</span><span class="p">[</span><span class="s">&#39;version&#39;</span><span class="p">][</span><span class="n">key</span><span class="p">])</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+                <span class="k">continue</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s">/test_</span><span class="si">%s</span><span class="s">.py&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">testname</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">pth</span> <span class="ow">in</span> <span class="n">iglob</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+                <span class="n">cmd</span> <span class="o">=</span> <span class="s">&#39;nosetests -vs </span><span class="si">%s%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">pth</span><span class="p">,</span> <span class="n">subtest</span><span class="p">)</span>
+                <span class="n">_</span><span class="p">,</span> <span class="n">err</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">exec_cmd</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+                    <span class="k">print</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+                <span class="k">if</span> <span class="s">&#39;FAILED&#39;</span> <span class="ow">in</span> <span class="n">err</span><span class="p">:</span>
+                    <span class="n">failed</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">cmd</span><span class="p">,</span> <span class="n">err</span><span class="p">])</span>
+    <span class="n">_display_failed</span><span class="p">(</span><span class="n">failed</span><span class="p">)</span>
+
+</div>
+<span class="k">def</span> <span class="nf">_display_failed</span><span class="p">(</span><span class="n">failed</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Helper function. &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">failed</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&#39;FAILED TESTS:&#39;</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&#39;=&#39;</span><span class="o">*</span><span class="mi">70</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&#39;ALL TESTS HAVE PASSED&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">fail</span> <span class="ow">in</span> <span class="n">failed</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&#39;COMMAND = </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">fail</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&#39;-&#39;</span><span class="o">*</span><span class="mi">70</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">fail</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+
+<div class="viewcode-block" id="compare_with"><a class="viewcode-back" href="../../../api/lexor.command.html#lexor.command.test.compare_with">[docs]</a><span class="k">def</span> <span class="nf">compare_with</span><span class="p">(</span><span class="n">str_obj</span><span class="p">,</span> <span class="n">expected</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Calls nose.eq_ to compare the strings and prints a custom</span>
+<span class="sd">    message. &quot;&quot;&quot;</span>
+    <span class="n">hline</span> <span class="o">=</span> <span class="s">&#39;_&#39;</span><span class="o">*</span><span class="mi">60</span>
+    <span class="n">msg</span> <span class="o">=</span> <span class="s">&quot;str_obj --&gt;</span><span class="se">\n</span><span class="si">%s</span><span class="se">\n</span><span class="si">%s</span><span class="se">\n</span><span class="si">%s</span><span class="se">\n\</span>
+<span class="s">expected --&gt;</span><span class="se">\n</span><span class="si">%s</span><span class="se">\n</span><span class="si">%s</span><span class="se">\n</span><span class="si">%s</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">hline</span><span class="p">,</span> <span class="n">str_obj</span><span class="p">,</span> <span class="n">hline</span><span class="p">,</span>
+                               <span class="n">hline</span><span class="p">,</span> <span class="n">expected</span><span class="p">,</span> <span class="n">hline</span><span class="p">)</span>
+    <span class="n">eq_</span><span class="p">(</span><span class="n">str_obj</span><span class="p">,</span> <span class="n">expected</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="parse_msg"><a class="viewcode-back" href="../../../api/lexor.command.html#lexor.command.test.parse_msg">[docs]</a><span class="k">def</span> <span class="nf">parse_msg</span><span class="p">(</span><span class="n">msg</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Obtain the tests embedded inside the messages declared in a</span>
+<span class="sd">    style. The format of the messages is as follows:</span>
+
+<span class="sd">        &lt;tab&gt;[A-Z][0-9]*: &lt;msg&gt;</span>
+
+<span class="sd">    or</span>
+
+<span class="sd">        &lt;tab&gt;([A-Z][0-9]*|Okay):</span>
+<span class="sd">        &lt;tab&gt;&lt;tab&gt;msg ...</span>
+<span class="sd">        &lt;tab&gt;&lt;tab&gt;msg continues</span>
+<span class="sd">        &lt;tab&gt;([A-Z][0-9]*|Okay): msg</span>
+
+<span class="sd">    Where &lt;tab&gt; consists of 4 whitespaces. This function returns the</span>
+<span class="sd">    message without the tests and a list of tuples of the form</span>
+<span class="sd">    `(code, msg)` along with the message &quot;&quot;&quot;</span>
+    <span class="n">lines</span> <span class="o">=</span> <span class="n">msg</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+    <span class="n">tests</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">index</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">end</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
+    <span class="k">while</span> <span class="n">index</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">):</span>
+        <span class="n">match</span> <span class="o">=</span> <span class="n">RE</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">lines</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+        <span class="k">if</span> <span class="n">match</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">index</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">end</span> <span class="o">=</span> <span class="n">index</span>
+            <span class="k">break</span>
+    <span class="k">while</span> <span class="n">index</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">):</span>
+        <span class="n">line</span> <span class="o">=</span> <span class="n">lines</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="n">match</span> <span class="o">=</span> <span class="n">RE</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">match</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="n">match</span><span class="o">.</span><span class="n">end</span><span class="p">():]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">line</span> <span class="o">==</span> <span class="s">&#39;&#39;</span> <span class="ow">and</span> <span class="n">index</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">):</span>
+                <span class="n">tmp</span> <span class="o">=</span> <span class="n">lines</span><span class="p">[</span><span class="n">index</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">RE</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">tmp</span><span class="p">[</span><span class="mi">4</span><span class="p">:])</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                    <span class="n">line</span> <span class="o">+=</span> <span class="n">tmp</span><span class="p">[</span><span class="mi">8</span><span class="p">:]</span>
+                    <span class="n">index</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="k">while</span> <span class="n">index</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">):</span>
+                        <span class="n">tmp</span> <span class="o">=</span> <span class="n">lines</span><span class="p">[</span><span class="n">index</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+                        <span class="k">if</span> <span class="n">RE</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">tmp</span><span class="p">[</span><span class="mi">4</span><span class="p">:])</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                            <span class="k">break</span>
+                        <span class="n">line</span> <span class="o">+=</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span> <span class="o">+</span> <span class="n">tmp</span><span class="p">[</span><span class="mi">8</span><span class="p">:]</span>
+                        <span class="n">index</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">tests</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s">&#39;code&#39;</span><span class="p">),</span> <span class="n">line</span><span class="p">))</span>
+        <span class="n">index</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">line</span><span class="p">[</span><span class="mi">4</span><span class="p">:]</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">[:</span><span class="n">end</span><span class="p">]]),</span> <span class="n">tests</span>
+
+</div>
+<div class="viewcode-block" id="find_failed"><a class="viewcode-back" href="../../../api/lexor.command.html#lexor.command.test.find_failed">[docs]</a><span class="k">def</span> <span class="nf">find_failed</span><span class="p">(</span><span class="n">tests</span><span class="p">,</span> <span class="n">lang</span><span class="p">,</span> <span class="n">style</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Run the tests and return a list of the tests that fail. &quot;&quot;&quot;</span>
+    <span class="n">failed</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">Parser</span><span class="p">(</span><span class="n">lang</span><span class="p">,</span> <span class="n">style</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">test</span> <span class="ow">in</span> <span class="n">tests</span><span class="p">:</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">test</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">test</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;Okay&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">parser</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">child</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">failed</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">test</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">found</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">parser</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">child</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">test</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">node</span><span class="p">[</span><span class="s">&#39;code&#39;</span><span class="p">]:</span>
+                    <span class="n">found</span> <span class="o">=</span> <span class="bp">True</span>
+                    <span class="k">break</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">found</span><span class="p">:</span>
+                <span class="n">failed</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">test</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">failed</span>
+
+</div>
+<div class="viewcode-block" id="nose_msg_explanations"><a class="viewcode-back" href="../../../api/lexor.command.html#lexor.command.test.nose_msg_explanations">[docs]</a><span class="k">def</span> <span class="nf">nose_msg_explanations</span><span class="p">(</span><span class="n">lang</span><span class="p">,</span> <span class="n">type_</span><span class="p">,</span> <span class="n">style</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Gather the MSG_EXPLANATION list and run the tests it</span>
+<span class="sd">    contains.&quot;&quot;&quot;</span>
+    <span class="n">mod</span> <span class="o">=</span> <span class="n">get_style_module</span><span class="p">(</span><span class="n">type_</span><span class="p">,</span> <span class="n">lang</span><span class="p">,</span> <span class="n">style</span><span class="p">)</span>
+    <span class="n">mod</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">[</span><span class="s">&#39;</span><span class="si">%s</span><span class="s">_</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">mod</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span> <span class="n">name</span><span class="p">)]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="s">&#39;MSG_EXPLANATION&#39;</span><span class="p">):</span>
+        <span class="k">return</span>
+    <span class="n">errors</span> <span class="o">=</span> <span class="bp">False</span>
+    <span class="n">warn</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">num</span><span class="p">,</span> <span class="n">msg</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">mod</span><span class="o">.</span><span class="n">MSG_EXPLANATION</span><span class="p">):</span>
+        <span class="n">warn</span><span class="p">(</span><span class="s">&#39;MSG_EXPLANATION[</span><span class="si">%d</span><span class="s">] ... &#39;</span> <span class="o">%</span> <span class="n">num</span><span class="p">)</span>
+        <span class="n">msg</span><span class="p">,</span> <span class="n">tests</span> <span class="o">=</span> <span class="n">parse_msg</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="n">failed</span> <span class="o">=</span> <span class="n">find_failed</span><span class="p">(</span><span class="n">tests</span><span class="p">,</span> <span class="n">lang</span><span class="p">,</span> <span class="n">style</span><span class="p">)</span>
+        <span class="n">err</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;    </span><span class="si">%s</span><span class="s">: </span><span class="si">%r</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">fail</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">fail</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="k">for</span> <span class="n">fail</span> <span class="ow">in</span> <span class="n">failed</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">err</span><span class="p">:</span>
+            <span class="n">errors</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="n">warn</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="si">%s</span><span class="se">\n</span><span class="s">&#39;</span> <span class="o">%</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">err</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">warn</span><span class="p">(</span><span class="s">&#39;ok</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+        <span class="n">err</span> <span class="o">=</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+    <span class="n">eq_</span><span class="p">(</span><span class="n">errors</span><span class="p">,</span> <span class="bp">False</span><span class="p">,</span> <span class="s">&quot;Errors in MSG_EXPLANATION&quot;</span><span class="p">)</span>
+    <span class="n">warn</span><span class="p">(</span><span class="s">&#39;...................... &#39;</span><span class="p">)</span>
+
+
+<span class="c"># @deprecated</span></div>
+<div class="viewcode-block" id="print_log"><a class="viewcode-back" href="../../../api/lexor.command.html#lexor.command.test.print_log">[docs]</a><span class="k">def</span> <span class="nf">print_log</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Display the error obtained from parsing. &quot;&quot;&quot;</span>
+    <span class="n">pos</span> <span class="o">=</span> <span class="n">node</span><span class="p">[</span><span class="s">&#39;position&#39;</span><span class="p">]</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">  Line </span><span class="si">%d</span><span class="s">, Column </span><span class="si">%d</span><span class="s"> &#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">pos</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">pos</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;in </span><span class="si">%s</span><span class="s">:</span><span class="se">\n</span><span class="s">      &#39;</span> <span class="o">%</span> <span class="n">node</span><span class="p">[</span><span class="s">&#39;file&#39;</span><span class="p">])</span>
+    <span class="n">tmp</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s">r&quot;\s+&quot;</span><span class="p">,</span> <span class="s">&quot; &quot;</span><span class="p">,</span> <span class="n">node</span><span class="p">[</span><span class="s">&#39;message&#39;</span><span class="p">])</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">      &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">WRAPPER</span><span class="o">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">tmp</span><span class="p">)))</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n\n</span><span class="s"> ... &#39;</span><span class="p">)</span>
+
+
+<span class="c"># @deprecated</span></div>
+<div class="viewcode-block" id="parse_write"><a class="viewcode-back" href="../../../api/lexor.command.html#lexor.command.test.parse_write">[docs]</a><span class="k">def</span> <span class="nf">parse_write</span><span class="p">(</span><span class="n">callerfile</span><span class="p">,</span> <span class="n">in_</span><span class="p">,</span> <span class="n">out_</span><span class="p">,</span> <span class="n">style</span><span class="p">,</span> <span class="n">lang</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Provide the filename as the input and the style you wish</span>
+<span class="sd">    to compare it against. &quot;&quot;&quot;</span>
+    <span class="n">inputfile</span> <span class="o">=</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s">/../</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">dirname</span><span class="p">(</span><span class="n">callerfile</span><span class="p">),</span> <span class="n">in_</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">inputfile</span><span class="p">)</span> <span class="k">as</span> <span class="n">tmpf</span><span class="p">:</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">tmpf</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="si">%s</span><span class="se">\n</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="s">&#39;=&#39;</span><span class="o">*</span><span class="mi">70</span><span class="p">,</span> <span class="n">text</span><span class="p">))</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;</span><span class="si">%s</span><span class="se">\n</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="s">&#39;-&#39;</span><span class="o">*</span><span class="mi">50</span><span class="p">))</span>
+    <span class="n">outputfile</span> <span class="o">=</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s">/</span><span class="si">%s</span><span class="s">.</span><span class="si">%s</span><span class="s">.</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">dirname</span><span class="p">(</span><span class="n">callerfile</span><span class="p">),</span> <span class="n">out_</span><span class="p">,</span> <span class="n">style</span><span class="p">,</span> <span class="n">lang</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">outputfile</span><span class="p">)</span> <span class="k">as</span> <span class="n">tmpf</span><span class="p">:</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">tmpf</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="n">doc</span><span class="p">,</span> <span class="n">log</span> <span class="o">=</span> <span class="n">lexor</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">inputfile</span><span class="p">)</span>
+    <span class="n">doc</span><span class="o">.</span><span class="n">style</span> <span class="o">=</span> <span class="n">style</span>
+    <span class="n">lexor</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">log</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="si">%s</span><span class="se">\n</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="s">&#39;-&#39;</span><span class="o">*</span><span class="mi">50</span><span class="p">))</span>
+    <span class="n">lexor</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="si">%s</span><span class="se">\n</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="s">&#39;=&#39;</span><span class="o">*</span><span class="mi">70</span><span class="p">))</span>
+    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">doc</span><span class="p">),</span> <span class="n">text</span>
+
+
+<span class="c"># @deprecated</span></div>
+<div class="viewcode-block" id="parse_convert_write"><a class="viewcode-back" href="../../../api/lexor.command.html#lexor.command.test.parse_convert_write">[docs]</a><span class="k">def</span> <span class="nf">parse_convert_write</span><span class="p">(</span><span class="n">callerfile</span><span class="p">,</span> <span class="n">in_</span><span class="p">,</span> <span class="n">out_</span><span class="p">,</span> <span class="n">style</span><span class="p">,</span> <span class="n">tolang</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Provide the filename as the input and the style you wish</span>
+<span class="sd">    to compare it against. &quot;&quot;&quot;</span>
+    <span class="n">inputfile</span> <span class="o">=</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s">/../</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">dirname</span><span class="p">(</span><span class="n">callerfile</span><span class="p">),</span> <span class="n">in_</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">inputfile</span><span class="p">)</span> <span class="k">as</span> <span class="n">tmpf</span><span class="p">:</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">tmpf</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="si">%s</span><span class="se">\n</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="s">&#39;=&#39;</span><span class="o">*</span><span class="mi">70</span><span class="p">,</span> <span class="n">text</span><span class="p">))</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;</span><span class="si">%s</span><span class="se">\n</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="s">&#39;-&#39;</span><span class="o">*</span><span class="mi">50</span><span class="p">))</span>
+    <span class="n">outputfile</span> <span class="o">=</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s">/</span><span class="si">%s</span><span class="s">.</span><span class="si">%s</span><span class="s">.</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">dirname</span><span class="p">(</span><span class="n">callerfile</span><span class="p">),</span> <span class="n">out_</span><span class="p">,</span> <span class="n">style</span><span class="p">,</span> <span class="n">tolang</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">outputfile</span><span class="p">)</span> <span class="k">as</span> <span class="n">tmpf</span><span class="p">:</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">tmpf</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="n">doc</span><span class="p">,</span> <span class="n">log</span> <span class="o">=</span> <span class="n">lexor</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">inputfile</span><span class="p">)</span>
+    <span class="n">doc</span><span class="o">.</span><span class="n">style</span> <span class="o">=</span> <span class="s">&#39;default&#39;</span>
+    <span class="n">newdoc</span><span class="p">,</span> <span class="n">newlog</span> <span class="o">=</span> <span class="n">lexor</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">tolang</span><span class="p">,</span> <span class="n">style</span><span class="p">)</span>
+    <span class="n">lexor</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">log</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+    <span class="n">lexor</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">newlog</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="si">%s</span><span class="se">\n</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="s">&#39;-&#39;</span><span class="o">*</span><span class="mi">50</span><span class="p">))</span>
+    <span class="n">lexor</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">newdoc</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="si">%s</span><span class="se">\n</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="s">&#39;=&#39;</span><span class="o">*</span><span class="mi">70</span><span class="p">))</span>
+    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">newdoc</span><span class="p">),</span> <span class="n">text</span></div>
+</pre></div>
+
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2014, Manuel Lopez.
+    </p>
+  </div>
+
+  <a href="https://github.com/snide/sphinx_rtd_theme">Sphinx theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'0.1.2c0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+      <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
