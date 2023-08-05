@@ -1,0 +1,63 @@
+{% extends "sentry/groups/details.html" %}
+
+{% load i18n crispy_forms_filters crispy_forms_tags %}
+
+{% block title %}{{ title }} | {{ block.super }}{% endblock %}
+
+{% block inner %}
+<div class="span12">
+    <div class="page-header">
+        <h3>{{ title }}</h3>
+    </div>
+    <p>Choose data to export.</p>
+    <br />
+    <form class="form-horizontal" action="" method="POST" id="export_form">
+        {% csrf_token %}
+        {% for form in forms %}
+            {{ form|crispy }}
+        {% endfor %}
+        <div id="export_add_field" class="controls">
+            <button class="btn btn-add-raw-field">{% trans "Add Raw Field" %}</button>
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">{% trans "Export Data" %}</button>
+            <button type="submit" class="btn btn-preview">{% trans "Preview" %}</button>
+        </div>
+    </form>
+    <div><pre id="export_preview">{{ sample }}</pre></div>
+</div>
+
+<div id="export_raw_field_template" class="control-group" style="display:none">
+    {{ raw_template_form|crispy }}
+</div>
+{% endblock %}
+
+{% block meta %}
+    {{ block.super }}
+    <script type="text/javascript">
+        function show_hide_count() {
+            $('#div_id_count').toggle($("#id_export_all").attr('checked'));
+        }
+        $(document).ready(function(){
+            show_hide_count();
+            $("#id_export_all").click(show_hide_count);
+
+            $('.btn-preview').click(function(evt){
+                evt.preventDefault();
+                $.post(
+                    '', // post to self
+                    $("#export_form").serialize() + "&preview=true",
+                    function(data) {
+                        $("#export_preview").html(data);
+                    }
+                );
+            });
+
+            $('.btn-add-raw-field').click(function(evt){
+                evt.preventDefault();
+                var raw_field = $("#export_raw_field_template").children().clone();
+                raw_field.insertBefore("#export_add_field").show();
+            });
+        });
+    </script>
+{% endblock %}
