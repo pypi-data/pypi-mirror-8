@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+  <script src="static/sockjs-0.3.min.js"></script>
+  <script src="static/pushme.js"></script>
+  <script>
+    $(function() {
+      pushMeConnection.connect('http://localhost', 9999, 123);
+      pushMeConnection.subscribe(
+        (
+          function(out) {
+            return function(data){
+              out.text(out.text() + "\n" + data);
+            }
+          }
+        )(
+          $('#msg')
+        )
+      );
+    });
+</script>
+</head>
+<body>
+  <h3>PushMe client UID=123</h3>
+  <pre id="msg"></pre>
+</body>
+</html>
