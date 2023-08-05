@@ -1,0 +1,28 @@
+# a collection of git repos (books, that fill your shelf) that we don't want to treat as submodules.
+# book "path/to/drop/in/to", git: "git-url", branch: "some-branch-or-tag-name"
+
+defaults:
+  environment: dev
+
+environments:
+  aw2:
+    description: "PaaS Core AW2 deploy kit, things that need to be tweaked for each environment"
+    tokens:
+      target: "this-file"
+      token2: "second-token"
+  dev:
+    description: "PaaS Core AW2 deploy kit, things that need to be tweaked for each environment"
+    tokens:
+      target: "dev-that-file"
+      token2: "second-token"
+      nestedtokens: "before-{target}-after"
+
+books:
+  - book: "some-book"
+    link: {target}
+
+  - book: "multiple-tokens"
+    link: "{target}-{token2}"
+
+  - book: "nested-tokens"
+    link: "{nestedtokens}"
