@@ -1,0 +1,55 @@
+Get data from the `NYC Crime Map <http://maps.nyc.gov/crime/>`_,
+and save them as geojson files.
+
+Getting data I have already saved
+================================================
+If you just want to get the data in geojson or CSV format, go to
+http://small.dada.pink/nyc-crime-map-data/.
+
+Running the program
+========================================
+If you want to run the program, perhaps to get the most recent data,
+you can run the program. I present a couple ways of doing this.
+
+Installing from PyPI
+-------------------------
+You can install the package like so ::
+
+    sudo pip install nyc-crime-map
+
+and then run it like so. ::
+
+    nyc-crime-map
+
+A ``data`` directory will be created inside your working directory,
+and you'll find the results here. ::
+
+    cat nyc-crime-map/data/02378420399528461352-17772055697785505571.geojson
+    cat nyc-crime-map/data/02378420399528461352-17772055697785505571.csv
+
+Running from the checked-out repository
+------------------------------------------
+Perhaps you don't have pip installed; in that case, you can do this. ::
+
+    git clone git://github.com/tlevine/nyc-crime-map.git --recursive
+
+    # Delete the cached data.
+    rm nyc-crime-map/data/all_results/*
+
+    # Run the program.
+    cd nyc-crime-map
+    ./nyc-crime-map
+
+    # View the results.
+    cat nyc-crime-map/data/02378420399528461352-17772055697785505571.geojson
+    cat nyc-crime-map/data/02378420399528461352-17772055697785505571.csv
+
+More about the data
+=========================================
+The data are stored in two tables.
+
+* 02378420399528461352-11853667273131550346
+* 02378420399528461352-17772055697785505571
+
+The latter of these tables contains a "CR" field for the crime type;
+the former does not.
