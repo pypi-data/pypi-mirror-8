@@ -1,0 +1,47 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:zcml="http://namespaces.zope.org/zcml"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:plone="http://namespaces.plone.org/plone"
+    xmlns:five="http://namespaces.zope.org/five"
+    xmlns:cmf="http://namespaces.zope.org/cmf"
+    i18n_domain="plonetheme.intkModern">
+
+    <include package="plone.app.contentmenu" />
+    <include package="z3c.jbot" file="meta.zcml" />
+
+    <!-- Viewlets -->
+    <browser:viewlet
+      name="plonetheme.INTKmodern.footer"
+      manager="plone.app.layout.viewlets.interfaces.IPortalFooter"
+      layer=".interfaces.IThemeSpecific"
+      class=".views.FooterView"
+      template="templates/footer.pt"
+      permission="zope2.View"
+    />
+
+    <!-- Pages -->
+
+    <browser:page
+        name="folder_view"
+        menu="plone_displayviews"
+        title="Folder View"
+        for="plone.app.collection.interfaces.ICollection"
+        class=".views.FolderListing"
+        template="templates/collection_custom.pt"
+        layer=".interfaces.IThemeSpecific"
+        permission="zope2.View"
+    />
+
+    <!-- Portlets --> 
+    <!-- Portlet manager interface -->
+    <include package ="plone.app.portlets" />
+    
+    <browser:page
+      for="plone.portlets.interfaces.ILocalPortletAssignable"
+      class="plone.app.portlets.browser.manage.ManageContextualPortlets"
+      name="manage-portal-footer"
+      template="templates/managefooter.pt"
+      permission="plone.app.portlets.ManagePortlets"
+    />
+</configure>

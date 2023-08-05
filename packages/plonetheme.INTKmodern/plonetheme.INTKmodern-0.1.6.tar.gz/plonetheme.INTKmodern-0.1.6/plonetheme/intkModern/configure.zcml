@@ -1,0 +1,31 @@
+<configure
+  xmlns="http://namespaces.zope.org/zope"
+  xmlns:zcml="http://namespaces.zope.org/zcml"
+  xmlns:five="http://namespaces.zope.org/five"
+  xmlns:browser="http://namespaces.zope.org/browser"
+  xmlns:plone="http://namespaces.plone.org/plone"
+  xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+  i18n_domain="plonetheme.intkModern"
+  xmlns:cmf="http://namespaces.zope.org/cmf">
+
+  <!-- Include browser folder -->
+  <five:registerPackage package="." initialize=".initialize" />
+  <include package=".browser" />
+
+  	<genericsetup:registerProfile
+      		name="default"
+      		title="intkModern"
+      		directory="profiles/default"
+      		description="Installs the plonetheme.intkModern package"
+      		provides="Products.GenericSetup.interfaces.EXTENSION"
+      	/>
+
+  <browser:resourceDirectory
+        directory="static" name="plonetheme.intkModern" />
+
+	<plone:static
+		directory="theme" type="theme" />
+
+  <cmf:registerDirectory name="intkModern_custom"/>
+    
+</configure>
