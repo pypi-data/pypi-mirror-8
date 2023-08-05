@@ -1,0 +1,76 @@
+Metadata-Version: 1.1
+Name: subler
+Version: 0.3.1
+Summary: Python interface to the Subler style metadata tagging.
+Home-page: https://github.com/moogar0880/PySubler
+Author: Jonathan Nappi
+Author-email: moogar@comcast.net
+License: UNKNOWN
+Description: PySubler
+        ========
+        
+        Simple Python interface to the SublerCLI utility to make scripting metadata
+        tagging with `SublerCLI <https://code.google.com/p/subler/wiki/SublerCLIHelp>`_. even easier.
+        Full documentation can be found on `Read The Docs <http://subler.readthedocs.org>`_.
+        
+        Install
+        -------
+        Installing is as easy as
+        ::
+        
+            $ pip install subler
+        
+        
+        Atoms
+        -----
+        
+        To construct metadata you simply create a collection of Metadata Atoms like
+        so,
+        ::
+        
+            >>> artist = Atom('Artist', 'Linkin Park')
+            >>> album = Atom('Album', 'Hybrid Theory')
+            >>> metadata = [artist, album]
+        
+        Tagging
+        -------
+        Then, you simply pass that through to a Subler instance and use the Subler tag
+        method, like so,
+        ::
+        
+            >>> subler = Subler(path_to_source_file, dest=path_to_dest_file,
+                                metadata=metadata)
+            >>> subler.tag()
+        
+        
+        
+        Release History
+        ---------------
+        0.3.1 (2014-09-14)
+        ++++++++++++++++++
+        
+        * Bug fix to keep RTD happy
+        
+        0.3.0 (2014-09-14)
+        ++++++++++++++++++
+        
+        * Addition of subler.utils module for utility functions
+        * More intuitive SublerCLI executable path discovery
+        * Added better shell escaping for SublerCLI arguments
+        * Fixed SublerCLI version property
+        * Fixed tracks property for outputting the track listings of the source file
+        * Subler existing_metadata property is now returned as a list of Atoms
+        
+        0.2.0 (2014-06-21)
+        ++++++++++++++++++
+        
+        * Initial release
+        
+Platform: UNKNOWN
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Intended Audience :: Developers
+Classifier: Natural Language :: English
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.4
