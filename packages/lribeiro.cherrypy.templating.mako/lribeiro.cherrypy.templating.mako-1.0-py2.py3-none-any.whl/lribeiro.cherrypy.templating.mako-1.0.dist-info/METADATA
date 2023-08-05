@@ -1,0 +1,76 @@
+Metadata-Version: 2.0
+Name: lribeiro.cherrypy.templating.mako
+Version: 1.0
+Summary: Mako renderer for lribeiro.cherrypy.templating
+Home-page: http://bitbucket.org/livioribeiro/cherrypy-templating-mako
+Author: Livio Ribeiro
+Author-email: livioribeiro@outlook.com
+License: BSD License
+Keywords: templating,cherrypy,mako
+Platform: UNKNOWN
+Classifier: Development Status :: 4 - Beta
+Classifier: Environment :: Web Environment
+Classifier: Framework :: CherryPy
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 2
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: Implementation :: PyPy
+Classifier: Topic :: Internet :: WWW/HTTP
+Classifier: Topic :: Internet :: WWW/HTTP :: Dynamic Content
+Requires-Dist: CherryPy
+Requires-Dist: Mako
+Requires-Dist: lribeiro.cherrypy.templating
+
+=================================
+lribeiro.cherrypy.templating.mako
+=================================
+
+Mako renderer for ``lribeiro.cherrypy.templating``
+
+It has two optional config entries:
+
+- templating.mako.template_directories: can be a path to the templates directory, absolute (with leading slash) or
+relative to the root module location, or a list of paths. If none is given, ``{root directory}/templates`` is used.
+
+- templating.mako.config: any additional arguments to be passed to the TemplateLookup constructor
+
+Developed under Python3.4 and tested against Python2.7, Python3.4 and pypy.
+
+Usage:
+------
+
+.. sourcecode:: python
+
+    import cherrypy
+
+    from lribeiro.cherrypy.templating import template
+    from lribeiro.cherrypy.templating.mako import renderer
+
+
+    class Root(object):
+        @cherrypy.expose
+        @template('index.html')
+        def index(self):
+            return {'context': 'variables'}
+
+        @cherrypy.expose
+        @template('/page.html')
+        def page(self):
+            return {'context': 'variables'}
+
+
+    config = {
+        '/': {
+            'templating.renderer': renderer,
+            'templating.mako.template_directories': 'mako_templates',  # optional
+            'templating.mako.config': {'module_directory': '/tmp/modules'}  # also optional
+        }
+    }
+
+    if __name__ == '__main__':
+        cherrypy.quickstart(Root(), '/', config)
+
