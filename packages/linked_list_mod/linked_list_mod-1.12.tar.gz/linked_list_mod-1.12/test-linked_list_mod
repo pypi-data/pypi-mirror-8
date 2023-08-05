@@ -1,0 +1,654 @@
+#!/usr/local/cpython-3.3/bin/python
+
+'''Automated tests for Linked_list class'''
+
+
+import sys
+
+import linked_list_mod
+
+
+def test_empty():
+    '''Test an empty list'''
+    empty_list = linked_list_mod.Linked_list()
+    if empty_list:
+        sys.stderr.write('{}: test_empty: empty_list is not empty\n'.format(sys.argv[0]))
+        return False
+    else:
+        return True
+
+
+def test_nonempty():
+    '''Test a nonempty list'''
+    linked_list = linked_list_mod.Linked_list()
+    linked_list.append(1)
+    if linked_list:
+        return True
+    else:
+        sys.stderr.write('{}: test_nonempty: linked_list is empty\n'.format(sys.argv[0]))
+        return False
+
+
+def test_append1():
+    '''Test appending a single value'''
+    linked_list = linked_list_mod.Linked_list()
+    linked_list.append(1)
+    if list(linked_list) == [1]:
+        return True
+    else:
+        sys.stderr.write('{}: test_append1: linked_list is not [1] when converted to list\n'.format(sys.argv[0]))
+        return False
+
+
+def test_append2():
+    '''Test appending two values'''
+    linked_list = linked_list_mod.Linked_list()
+    linked_list.append(1)
+    linked_list.append(2)
+    if list(linked_list) == [1, 2]:
+        return True
+    else:
+        sys.stderr.write('{}: test_append2: linked_list is not [1, 2] when converted to list\n'.format(sys.argv[0]))
+        return False
+
+
+def test_append3():
+    '''Test appending three values'''
+    linked_list = linked_list_mod.Linked_list()
+    linked_list.append(1)
+    linked_list.append(2)
+    linked_list.append(3)
+    if list(linked_list) == [1, 2, 3]:
+        return True
+    else:
+        sys.stderr.write('{}: test_append3: linked_list is not [1, 2, 3] when converted to list\n'.format(sys.argv[0]))
+        return False
+
+
+def test_prepend1():
+    '''Test prepending one value'''
+    linked_list = linked_list_mod.Linked_list()
+    linked_list.prepend(1)
+    if list(linked_list) == [1]:
+        return True
+    else:
+        sys.stderr.write('{}: test_prepend1: linked_list is not [1] when converted to list\n'.format(sys.argv[0]))
+        return False
+
+
+def test_prepend2():
+    '''Test prepending two values'''
+    linked_list = linked_list_mod.Linked_list()
+    linked_list.prepend(1)
+    linked_list.prepend(2)
+    if list(linked_list) == [2, 1]:
+        return True
+    else:
+        sys.stderr.write('{}: test_prepend2: linked_list is not [2, 1] when converted to list\n'.format(sys.argv[0]))
+        return False
+
+
+def test_prepend3():
+    '''Test prepending three values'''
+    linked_list = linked_list_mod.Linked_list()
+    linked_list.prepend(1)
+    linked_list.prepend(2)
+    linked_list.prepend(3)
+    if list(linked_list) == [3, 2, 1]:
+        return True
+    else:
+        sys.stderr.write('{}: test_prepend3: linked_list is not [3, 2, 1] when converted to list\n'.format(sys.argv[0]))
+        return False
+
+
+def test_length0():
+    '''Test the length of an empty list'''
+    linked_list = linked_list_mod.Linked_list()
+    if len(linked_list) == 0:
+        return True
+    else:
+        sys.stderr.write('{}: test_length0: len(linked_list) is not 0\n'.format(sys.argv[0]))
+        return False
+
+
+def test_length1():
+    '''Test the length of a singleton'''
+    linked_list = linked_list_mod.Linked_list()
+    linked_list.prepend(1)
+    if len(linked_list) == 1:
+        return True
+    else:
+        sys.stderr.write('{}: test_length1: len(linked_list) is not 1\n'.format(sys.argv[0]))
+        return False
+
+
+def test_length2():
+    '''Test the length of a list of length 2'''
+    linked_list = linked_list_mod.Linked_list()
+    linked_list.prepend(1)
+    linked_list.prepend(2)
+    if len(linked_list) == 2:
+        return True
+    else:
+        sys.stderr.write('{}: test_length2: len(linked_list) is not 2\n'.format(sys.argv[0]))
+        return False
+
+
+def test_length3():
+    '''Test the length of a list of length 3'''
+    linked_list = linked_list_mod.Linked_list()
+    linked_list.prepend(1)
+    linked_list.prepend(2)
+    linked_list.prepend(3)
+    if len(linked_list) == 3:
+        return True
+    else:
+        sys.stderr.write('{}: test_length3: linked_list is not 3\n'.format(sys.argv[0]))
+        return False
+
+
+def test_reverse0():
+    '''Test reversing an empty list'''
+    linked_list = linked_list_mod.Linked_list()
+    linked_list.reverse()
+    if list(linked_list) == []:
+        return True
+    else:
+        sys.stderr.write('{}: test_reverse0: reversed linked_list is not [] when converted to list\n'.format(sys.argv[0]))
+        sys.stderr.write('{}\n'.format(str(linked_list)))
+        return False
+
+
+def test_reverse1():
+    '''Test reversing a singleton'''
+    linked_list = linked_list_mod.Linked_list()
+    linked_list.append(1)
+    linked_list.reverse()
+    if list(linked_list) == [1]:
+        return True
+    else:
+        sys.stderr.write('{}: test_reverse1: reversed linked_list is not [1] when converted to list\n'.format(sys.argv[0]))
+        sys.stderr.write('{}\n'.format(str(linked_list)))
+        return False
+
+
+def test_reverse2():
+    '''Test reversing a two-element list'''
+    linked_list = linked_list_mod.Linked_list()
+    linked_list.append(1)
+    linked_list.append(2)
+    linked_list.reverse()
+    if list(linked_list) == [2, 1]:
+        return True
+    else:
+        sys.stderr.write('{}: test_reverse2: reversed linked_list is not [2, 1] when converted to list\n'.format(sys.argv[0]))
+        sys.stderr.write('{}\n'.format(str(linked_list)))
+        return False
+
+
+def test_reverse3():
+    '''Test reversing a three-element list'''
+    linked_list = linked_list_mod.Linked_list()
+    linked_list.append(1)
+    linked_list.append(2)
+    linked_list.append(3)
+    linked_list.reverse()
+    if list(linked_list) == [3, 2, 1]:
+        return True
+    else:
+        sys.stderr.write('{}: test_reverse3: reversed linked_list is not [3, 2, 1] when converted to list\n'.format(sys.argv[0]))
+        sys.stderr.write('{}\n'.format(str(linked_list)))
+        return False
+
+
+def test_reverse3_and_append():
+    '''Test reversing a 3 element list, followed by an append'''
+    linked_list = linked_list_mod.Linked_list()
+    linked_list.append(1)
+    linked_list.append(2)
+    linked_list.append(3)
+    linked_list.reverse()
+    linked_list.append(4)
+    if list(linked_list) == [3, 2, 1, 4]:
+        return True
+    else:
+        sys.stderr.write(
+            '{}: test_reverse3_and_append, reversed, appended linked_list is not '
+            '[3, 2, 1, 4] when converted to list\n'.format(sys.argv[0]))
+        sys.stderr.write('{}\n'.format(str(linked_list)))
+        return False
+
+
+def test_reverse3_and_prepend():
+    '''Test reversing a 3 element list, followed by a prepend'''
+    linked_list = linked_list_mod.Linked_list()
+    linked_list.append(1)
+    linked_list.append(2)
+    linked_list.append(3)
+    linked_list.reverse()
+    linked_list.prepend(4)
+    if list(linked_list) == [4, 3, 2, 1]:
+        return True
+    else:
+        sys.stderr.write(
+            '{}: test_reverse3_and_prepend, reversed, prepended linked_list is not '
+            '[4, 3, 2, 1] when converted to list\n'.format(sys.argv[0]))
+        sys.stderr.write('{}\n'.format(str(linked_list)))
+        return False
+
+
+def test_str0():
+    '''Test converting an empty list to a string'''
+    linked_list = linked_list_mod.Linked_list()
+
+    string = str(linked_list)
+
+    if string == 'Linked_list([])':
+        return True
+    else:
+        sys.stderr.write('{}: test_str0: str(linked_list) is not Linked_list([])\n'.format(sys.argv[0]))
+        sys.stderr.write('{}\n'.format(str(linked_list)))
+        return False
+
+
+def test_str3():
+    '''Test converting a three-element list to a string'''
+    linked_list = linked_list_mod.Linked_list()
+    linked_list.append(1)
+    linked_list.append(2)
+    linked_list.append(3)
+
+    string = str(linked_list)
+
+    if string == 'Linked_list([1, 2, 3])':
+        return True
+    else:
+        sys.stderr.write('{}: test_str3: str(linked_list) is not Linked_list([1, 2, 3])\n'.format(sys.argv[0]))
+        sys.stderr.write('{}\n'.format(str(linked_list)))
+        return False
+
+
+def test_popleft():
+    '''Test removing a single value from the left end of a 3-element list'''
+    all_good = True
+
+    linked_list = linked_list_mod.Linked_list()
+    linked_list.append(1)
+    linked_list.append(2)
+    linked_list.append(3)
+
+    value = linked_list.popleft()
+
+    if value == 1:
+        pass
+    else:
+        sys.stderr.write('{}: test_popleft: linked_list.popleft() is not 1\n'.format(sys.argv[0]))
+        sys.stderr.write('{}\n'.format(str(linked_list)))
+        all_good = False
+
+    if len(linked_list) == 2:
+        pass
+    else:
+        sys.stderr.write('{}: test_popleft: len(linked_list) is not 2\n'.format(sys.argv[0]))
+        sys.stderr.write('{}\n'.format(str(linked_list)))
+        all_good = False
+
+    return all_good
+
+
+def test_popleft_empty():
+    '''Test removing a single value from the left end of a 0-element list'''
+    all_good = True
+
+    linked_list = linked_list_mod.Linked_list()
+
+    try:
+        dummy = linked_list.popleft()
+    except IndexError:
+        pass
+    else:
+        sys.stderr.write('{}: test_popleft: linked_list.popleft() is not IndexError\n'.format(sys.argv[0]))
+        sys.stderr.write('{}\n'.format(str(linked_list)))
+        all_good = False
+
+    if len(linked_list) == 0:
+        pass
+    else:
+        sys.stderr.write('{}: test_popleft_empty: len(linked_list) is not 0\n'.format(sys.argv[0]))
+        sys.stderr.write('{}\n'.format(str(linked_list)))
+        all_good = False
+
+    return all_good
+
+
+def test_popleft1():
+    '''Test removing a single value from the left end of a 1-element list'''
+    all_good = True
+
+    linked_list = linked_list_mod.Linked_list()
+    linked_list.append(1)
+
+    value = linked_list.popleft()
+
+    if value == 1:
+        pass
+    else:
+        sys.stderr.write('{}: test_popleft1: linked_list.popleft() is not 1\n'.format(sys.argv[0]))
+        sys.stderr.write('{}\n'.format(str(linked_list)))
+        all_good = False
+
+    if len(linked_list) == 0:
+        pass
+    else:
+        sys.stderr.write('{}: test_popleft1: len(linked_list) is not 0\n'.format(sys.argv[0]))
+        sys.stderr.write('{}\n'.format(str(linked_list)))
+        all_good = False
+
+    return all_good
+
+
+def test_remove0():
+    '''Test removing a single value from an empty list'''
+    all_good = True
+
+    linked_list = linked_list_mod.Linked_list()
+    try:
+        linked_list.remove(0)
+    except ValueError:
+        pass
+    else:
+        sys.stderr.write('{}: test_remove0: removed empty linked_list did not raise ValueError \n'.format(sys.argv[0]))
+        sys.stderr.write('{}\n'.format(str(linked_list)))
+        all_good = False
+
+    if len(linked_list) == 0:
+        pass
+    else:
+        sys.stderr.write('{}: test_remove0: len(linked_list) is not 0\n'.format(sys.argv[0]))
+        sys.stderr.write('{}\n'.format(str(linked_list)))
+        all_good = False
+
+    return all_good
+
+
+def test_remove1():
+    '''Test removing a single value from single-element list'''
+    all_good = True
+
+    linked_list = linked_list_mod.Linked_list()
+    linked_list.append(1)
+    linked_list.remove(1)
+    if list(linked_list) == []:
+        pass
+    else:
+        sys.stderr.write('{}: test_remove1: removed linked_list is not [] when converted to list\n'.format(sys.argv[0]))
+        sys.stderr.write('{}\n'.format(str(linked_list)))
+        all_good = False
+
+    if len(linked_list) == 0:
+        pass
+    else:
+        sys.stderr.write('{}: test_remove1: len(linked_list) is not 0\n'.format(sys.argv[0]))
+        sys.stderr.write('{}\n'.format(str(linked_list)))
+        all_good = False
+
+    return all_good
+
+
+def test_remove2():
+    '''Test removing a single value from two-element list'''
+    all_good = True
+
+    linked_list = linked_list_mod.Linked_list()
+    linked_list.append(1)
+    linked_list.append(2)
+    linked_list.remove(2)
+    if list(linked_list) == [1]:
+        pass
+    else:
+        sys.stderr.write('{}: test_remove2: removed linked_list is not [1] when converted to list\n'.format(sys.argv[0]))
+        sys.stderr.write('{}\n'.format(str(linked_list)))
+        all_good = False
+
+    if len(linked_list) == 1:
+        pass
+    else:
+        sys.stderr.write('{}: test_remove2: len(linked_list) is not 1\n'.format(sys.argv[0]))
+        sys.stderr.write('{}\n'.format(str(linked_list)))
+        all_good = False
+
+    return all_good
+
+
+def test_remove3_first():
+    '''Test removing the first value from three-element list'''
+    all_good = True
+
+    linked_list = linked_list_mod.Linked_list()
+    linked_list.append(1)
+    linked_list.append(2)
+    linked_list.append(3)
+    linked_list.remove(1)
+    if list(linked_list) == [2, 3]:
+        return True
+    else:
+        sys.stderr.write('{}: test_remove3_first: removed linked_list is not [2, 1] when converted to list\n'.format(sys.argv[0]))
+        sys.stderr.write('{}\n'.format(str(linked_list)))
+        return False
+
+    if len(linked_list) == 2:
+        pass
+    else:
+        sys.stderr.write('{}: test_remove3_first: len(linked_list) is not 2\n'.format(sys.argv[0]))
+        sys.stderr.write('{}\n'.format(str(linked_list)))
+        all_good = False
+
+    return all_good
+
+
+def test_remove3_middle():
+    '''Test removing the middle value from three-element list'''
+    all_good = True
+
+    linked_list = linked_list_mod.Linked_list()
+    linked_list.append(1)
+    linked_list.append(2)
+    linked_list.append(3)
+    linked_list.remove(2)
+    if list(linked_list) == [1, 3]:
+        pass
+    else:
+        sys.stderr.write('{}: test_remove3_middle: removed linked_list is not [1, 3] when converted to list\n'.format(sys.argv[0]))
+        sys.stderr.write('{}\n'.format(str(linked_list)))
+        all_good = False
+
+    if len(linked_list) == 2:
+        pass
+    else:
+        sys.stderr.write('{}: test_remove3_middle: len(linked_list) is not 2\n'.format(sys.argv[0]))
+        sys.stderr.write('{}\n'.format(str(linked_list)))
+        all_good = False
+
+    return all_good
+
+
+def test_remove3_last():
+    '''Test removing the last value from three-element list'''
+    all_good = True
+
+    linked_list = linked_list_mod.Linked_list()
+    linked_list.append(1)
+    linked_list.append(2)
+    linked_list.append(3)
+    linked_list.remove(3)
+    if list(linked_list) == [1, 2]:
+        pass
+    else:
+        sys.stderr.write('{}: test_remove3_last: removed linked_list is not [1, 2] when converted to list\n'.format(sys.argv[0]))
+        sys.stderr.write('{}\n'.format(str(linked_list)))
+        all_good = False
+
+    if len(linked_list) == 2:
+        pass
+    else:
+        sys.stderr.write('{}: test_remove3_last: len(linked_list) is not 2\n'.format(sys.argv[0]))
+        sys.stderr.write('{}\n'.format(str(linked_list)))
+        all_good = False
+
+    return all_good
+
+
+def test_in_positive():
+    '''Test "in" operator for a value that exists'''
+    linked_list = linked_list_mod.Linked_list()
+    linked_list.append(1)
+    linked_list.append(2)
+    linked_list.append(3)
+    if 2 in linked_list:
+        return True
+    else:
+        sys.stderr.write('{}: test_in_positive: 2 not in list\n'.format(sys.argv[0]))
+        sys.stderr.write('{}\n'.format(str(linked_list)))
+        return False
+
+
+def test_in_negative():
+    '''Test "in" operator for a value that does not exist'''
+    linked_list = linked_list_mod.Linked_list()
+    linked_list.append(1)
+    linked_list.append(2)
+    linked_list.append(3)
+    if 0 in linked_list:
+        sys.stderr.write('{}: test_in_negative: 0 in list\n'.format(sys.argv[0]))
+        sys.stderr.write('{}\n'.format(str(linked_list)))
+        return False
+    else:
+        return True
+
+
+def test_index_positive():
+    '''Test finding the index of an element that exists'''
+    linked_list = linked_list_mod.Linked_list()
+    linked_list.append(1)
+    linked_list.append(2)
+    linked_list.append(3)
+
+    try:
+        result = linked_list.index(2)
+    except ValueError:
+        sys.stderr.write('{}: test_index_positive: 2 not found'.format(sys.argv[0]))
+        return False
+
+    if result == 1:
+        return True
+    else:
+        sys.stderr.write('{}: test_index: incorrect value\n'.format(sys.argv[0]))
+        sys.stderr.write('{}\n'.format(str(linked_list)))
+        return False
+
+
+def test_index_negative():
+    '''Test finding the index of an element that does not exist'''
+    linked_list = linked_list_mod.Linked_list()
+    linked_list.append(1)
+    linked_list.append(2)
+    linked_list.append(3)
+
+    try:
+        linked_list.index(4)
+    except ValueError:
+        return True
+    else:
+        sys.stderr.write('{}: test_index_positive: 4 found\n'.format(sys.argv[0]))
+        return False
+
+
+def test_extend():
+    '''Test extending a list with values from an iterator'''
+    linked_list = linked_list_mod.Linked_list()
+    linked_list.append(1)
+    linked_list.append(2)
+    linked_list.append(3)
+    linked_list.extend([4, 5, 6])
+    if list(linked_list) == [1, 2, 3, 4, 5, 6]:
+        return True
+    else:
+        sys.stderr.write('{}: test_extend: linked_list is not [1, 2, 3, 4, 5, 6] when converted to list\n'.format(sys.argv[0]))
+        return False
+
+
+def test_list_constructor():
+    '''Test creating a list with values from a list'''
+    linked_list = linked_list_mod.Linked_list([1, 2, 3])
+    if list(linked_list) == [1, 2, 3]:
+        return True
+    else:
+        sys.stderr.write(
+            '{}: test_list_constructor: linked_list is not [1, 2, 3] when converted to list\n'.format(sys.argv[0]))
+        return False
+
+
+def test_iterator_constructor():
+    '''Test extending a list with values from an iterator'''
+    def iterator():
+        '''Yield 1, then 2, then 3'''
+        yield 1
+        yield 2
+        yield 3
+
+    linked_list = linked_list_mod.Linked_list(iterator())
+    if list(linked_list) == [1, 2, 3]:
+        return True
+    else:
+        sys.stderr.write(
+            '{}: test_iterator_constructor: linked_list is not [1, 2, 3] when converted to list\n'.format(sys.argv[0]))
+        return False
+
+
+def main():
+    '''Main function'''
+    all_good = True
+    all_good &= test_empty()
+    all_good &= test_nonempty()
+    all_good &= test_append1()
+    all_good &= test_append2()
+    all_good &= test_append3()
+    all_good &= test_prepend1()
+    all_good &= test_prepend2()
+    all_good &= test_prepend3()
+    all_good &= test_length0()
+    all_good &= test_length1()
+    all_good &= test_length2()
+    all_good &= test_length3()
+    all_good &= test_reverse0()
+    all_good &= test_reverse1()
+    all_good &= test_reverse2()
+    all_good &= test_reverse3()
+    all_good &= test_reverse3_and_append()
+    all_good &= test_reverse3_and_prepend()
+    all_good &= test_str0()
+    all_good &= test_str3()
+    all_good &= test_popleft()
+    all_good &= test_popleft_empty()
+    all_good &= test_popleft1()
+    all_good &= test_remove0()
+    all_good &= test_remove1()
+    all_good &= test_remove2()
+    all_good &= test_remove3_first()
+    all_good &= test_remove3_middle()
+    all_good &= test_remove3_last()
+    all_good &= test_in_positive()
+    all_good &= test_in_negative()
+    all_good &= test_index_positive()
+    all_good &= test_index_negative()
+    all_good &= test_extend()
+    all_good &= test_list_constructor()
+    all_good &= test_iterator_constructor()
+
+    if all_good:
+        sys.exit(0)
+    else:
+        sys.stderr.write('{}: One or more tests failed\n'.format(sys.argv[0]))
+        sys.exit(1)
+
+main()

@@ -1,0 +1,263 @@
+#!/usr/local/cpython-3.3/bin/python
+
+'''Tests for fifo_mod'''
+
+import sys
+
+import fifo_mod
+
+
+def test_push1_pop1():
+    '''push 1 value, pop it, compare'''
+
+    fifo = fifo_mod.Fifo()
+    fifo.push(1)
+
+    if fifo.pop() == 1:
+        if not fifo:
+            return True
+        else:
+            sys.stderr.write('{}: test_push1_pop1: FIFO not empty\n'.format(sys.argv[0]))
+            return False
+    else:
+        sys.stderr.write('{}: test_push1_pop1: Did not pop a 1\n'.format(sys.argv[0]))
+        return False
+
+
+def test_push2_pop2():
+    '''push 2 values, pop 2 values, compare'''
+
+    all_good = True
+
+    fifo = fifo_mod.Fifo()
+    fifo.push(1)
+    fifo.push(2)
+
+    if fifo.pop() == 1:
+        pass
+    else:
+        sys.stderr.write('{}: test_push2_pop2: Did not pop a 1\n'.format(sys.argv[0]))
+        all_good = False
+
+    if fifo.pop() == 2:
+        pass
+    else:
+        sys.stderr.write('{}: test_push2_pop2: Did not pop a 2\n'.format(sys.argv[0]))
+        all_good = False
+
+    if not fifo:
+        pass
+    else:
+        sys.stderr.write('{}: test_push2_pop2: FIFO not empty\n'.format(sys.argv[0]))
+        all_good = False
+
+    return all_good
+
+
+def test_push3_pop3():
+    '''push 3 values, pop 3 values, compare'''
+
+    all_good = True
+
+    fifo = fifo_mod.Fifo()
+    fifo.push(1)
+    fifo.push(2)
+    fifo.push(3)
+
+    if fifo.pop() == 1:
+        pass
+    else:
+        sys.stderr.write('{}: test_push3_pop3: Did not pop a 1\n'.format(sys.argv[0]))
+        all_good = False
+
+    if fifo.pop() == 2:
+        pass
+    else:
+        sys.stderr.write('{}: test_push3_pop3: Did not pop a 2\n'.format(sys.argv[0]))
+        all_good = False
+
+    if fifo.pop() == 3:
+        pass
+    else:
+        sys.stderr.write('{}: test_push3_pop3: Did not pop a 3\n'.format(sys.argv[0]))
+        all_good = False
+
+    if not fifo:
+        pass
+    else:
+        sys.stderr.write('{}: test_push3_pop3: FIFO not empty\n'.format(sys.argv[0]))
+        all_good = False
+
+    return all_good
+
+
+def test_push2_pop1_push1_pop2():
+    '''push 2 values, pop 1 value, push 1 value, pop 2 values, compare'''
+
+    all_good = True
+
+    fifo = fifo_mod.Fifo()
+    fifo.push(1)
+    fifo.push(2)
+
+    if fifo.pop() == 1:
+        pass
+    else:
+        sys.stderr.write('{}: test_push2_pop1_push1_pop2: Did not pop a 1\n'.format(sys.argv[0]))
+        all_good = False
+
+    fifo.push(3)
+
+    if fifo.pop() == 2:
+        pass
+    else:
+        sys.stderr.write('{}: test_push2_pop1_push1_pop2: Did not pop a 2\n'.format(sys.argv[0]))
+        all_good = False
+
+    if fifo.pop() == 3:
+        pass
+    else:
+        sys.stderr.write('{}: test_push2_pop1_push1_pop2: Did not pop a 3\n'.format(sys.argv[0]))
+        all_good = False
+
+    if not fifo:
+        pass
+    else:
+        sys.stderr.write('{}: test_push2_pop1_push1_pop2: FIFO not empty\n'.format(sys.argv[0]))
+        all_good = False
+
+    return all_good
+
+
+def test_push2_peek():
+    '''push 2 values, peek, compare'''
+
+    all_good = True
+
+    fifo = fifo_mod.Fifo()
+    fifo.push(1)
+    fifo.push(2)
+
+    if fifo.peek() == 1:
+        pass
+    else:
+        sys.stderr.write('{}: test_push2_peek: peek not 1\n'.format(sys.argv[0]))
+        all_good = False
+
+    if len(fifo) == 2:
+        pass
+    else:
+        sys.stderr.write('{}: test_push2_peek: length not 2\n'.format(sys.argv[0]))
+        all_good = False
+
+    return all_good
+
+
+def test_push3_pop4():
+    '''push 3 values, pop 4 values, verify exception'''
+
+    all_good = True
+
+    fifo = fifo_mod.Fifo()
+    fifo.push(1)
+    fifo.push(2)
+    fifo.push(3)
+
+    if fifo.pop() == 1:
+        pass
+    else:
+        sys.stderr.write('{}: test_push3_pop4: Did not pop a 1\n'.format(sys.argv[0]))
+        all_good = False
+
+    if fifo.pop() == 2:
+        pass
+    else:
+        sys.stderr.write('{}: test_push3_pop4: Did not pop a 2\n'.format(sys.argv[0]))
+        all_good = False
+
+    if fifo.pop() == 3:
+        pass
+    else:
+        sys.stderr.write('{}: test_push3_pop4: Did not pop a 3\n'.format(sys.argv[0]))
+        all_good = False
+
+    try:
+        fifo.pop()
+    except IndexError:
+        pass
+    else:
+        sys.stderr.write('{}: test_push3_pop4: Did not get an exception\n'.format(sys.argv[0]))
+        all_good = False
+
+    return all_good
+
+
+def test_bool():
+    '''Test in a boolean context'''
+    all_good = True
+
+    fifo = fifo_mod.Fifo()
+    if fifo:
+        sys.stderr.write('{}: test_bool: fifo thinks it is not empty, but it is\n'.format(sys.argv[0]))
+        all_good = False
+    else:
+        pass
+
+    fifo.push(1)
+    if not fifo:
+        sys.stderr.write('{}: test_bool: fifo thinks it is empty, but it is not\n'.format(sys.argv[0]))
+        all_good = False
+    else:
+        pass
+
+    return all_good
+
+
+def test_len():
+    '''Test len()'''
+    all_good = True
+
+    fifo = fifo_mod.Fifo()
+
+    if len(fifo) == 0:
+        pass
+    else:
+        sys.stderr.write('{}: test_len: len(fifo) is not 0\n'.format(sys.argv[0]))
+        all_good = False
+
+    fifo.push(1)
+    if len(fifo) == 1:
+        pass
+    else:
+        sys.stderr.write('{}: test_len: len(fifo) is not 1\n'.format(sys.argv[0]))
+        all_good = False
+
+    fifo.push(5)
+    if len(fifo) == 2:
+        pass
+    else:
+        sys.stderr.write('{}: test_len: len(fifo) is not 2\n'.format(sys.argv[0]))
+        all_good = False
+
+    return all_good
+
+
+def main():
+    '''Main function'''
+
+    all_good = True
+
+    all_good &= test_push1_pop1()
+    all_good &= test_push2_pop2()
+    all_good &= test_push3_pop3()
+    all_good &= test_push2_pop1_push1_pop2()
+    all_good &= test_push2_peek()
+    all_good &= test_push3_pop4()
+    all_good &= test_bool()
+    all_good &= test_len()
+
+    if all_good:
+        sys.exit(0)
+    else:
+        sys.stderr.write('{}: One or more tests failed\n'.format(sys.argv[0]))
+        sys.exit(1)

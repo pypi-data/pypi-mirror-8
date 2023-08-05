@@ -1,0 +1,79 @@
+#!/usr/local/cpython-3.4/bin/python3
+
+# pylint: disable=superfluous-parens
+# superfluous-parens: parens are good for portability and clarity!
+
+'''Performance comparison between built-in list type and linked_list class'''
+
+import time
+import linked_list_mod
+
+
+def one_append(list_, num_elements):
+    '''Test one appension of one list type'''
+    time0 = time.time()
+    for elementno in range(num_elements):
+        list_.append(elementno)
+    time1 = time.time()
+    return time1 - time0
+
+
+def one_prepend(list_, num_elements, operator):
+    '''Test one prepension of one list type'''
+    time0 = time.time()
+    for elementno in range(num_elements):
+        operator(list_, elementno)
+    time1 = time.time()
+    return time1 - time0
+
+
+def list_prepend(list_, value):
+    '''Insert a value at the beginning of a list'''
+    list_.insert(0, value)
+
+
+def linked_list_prepend(linked_list, value):
+    '''
+    Insert a value at the beginning of a linked list
+    Note that this doesn't really need to be a function.
+    We use one to make the comparison a little more fair.
+    '''
+    linked_list.prepend(value)
+
+
+def main():
+    '''Main function'''
+    step = 2 ** 16
+    maximum = 2 ** 25
+    list_append_duration = 0
+    linked_list_append_duration = 0
+    list_prepend_duration = 0
+    linked_list_prepend_duration = 0
+    max_seconds = 30
+    for num_elements in range(step, maximum, step):
+        if list_append_duration == 'n/a' or list_append_duration > max_seconds:
+            list_append_duration = 'n/a'
+        else:
+            list_append_duration = one_append([], num_elements)
+        if linked_list_append_duration == 'n/a' or linked_list_append_duration > max_seconds:
+            linked_list_append_duration = 'n/a'
+        else:
+            linked_list_append_duration = one_append(linked_list_mod.Linked_list(), num_elements)
+        if list_prepend_duration == 'n/a' or list_prepend_duration > max_seconds:
+            list_prepend_duration = 'n/a'
+        else:
+            list_prepend_duration = one_prepend([], num_elements, list_prepend)
+        if linked_list_prepend_duration == 'n/a' or linked_list_prepend_duration > max_seconds:
+            linked_list_prepend_duration = 'n/a'
+        else:
+            linked_list_prepend_duration = one_prepend(linked_list_mod.Linked_list(), num_elements, linked_list_prepend)
+        print('{} {} {} {} {}'.format(
+            num_elements,
+            list_append_duration,
+            linked_list_append_duration,
+            list_prepend_duration,
+            linked_list_prepend_duration,
+            ))
+
+
+main()
