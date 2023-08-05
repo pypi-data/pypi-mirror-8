@@ -1,0 +1,1401 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>InversionTest.StatisticalTests</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >InversionTest</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        Package&nbsp;InversionTest ::
+        Module&nbsp;StatisticalTests
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="InversionTest.StatisticalTests-module.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== MODULE DESCRIPTION ==================== -->
+<h1 class="epydoc">Module StatisticalTests</h1><p class="nomargin-top"></p>
+<p>General statistical tests that operate on population samples, such as 
+  the binomial test, sign test, and Wilcoxon signed rank test. Also, 
+  contains relevant CDF, PMF, and PDF functions for related distributions 
+  such as the binomial and normal distributions.</p>
+  <p>Note: If available, SciPy's optimized versions of binomial testing and
+  normal CDF calculations are utilized by default.  These should be 
+  marginally faster, as they have hooks into C code.</p>
+  <p>Author: Benjamin D. Nye License: Apache License V2.0</p>
+
+<!-- ==================== CLASSES ==================== -->
+<a name="section-Classes"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Classes</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-Classes"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="InversionTest.StatisticalTests.SignTestCancelationError-class.html" class="summary-name">SignTestCancelationError</a>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="InversionTest.StatisticalTests.SignTestException-class.html" class="summary-name">SignTestException</a>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="InversionTest.StatisticalTests.SignTestInvalidPairLengthError-class.html" class="summary-name">SignTestInvalidPairLengthError</a>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="InversionTest.StatisticalTests.SystemReseededRandom-class.html" class="summary-name">SystemReseededRandom</a><br />
+      Random number generator that randomly re-positions a standard MT 
+        generator based on the system random entropy generator, so that any
+        permutation is theoretically possible.
+    </td>
+  </tr>
+</table>
+<!-- ==================== FUNCTIONS ==================== -->
+<a name="section-Functions"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Functions</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-Functions"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">tuple of (int or float, int or float)</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="InversionTest.StatisticalTests-module.html#absAndValKey" class="summary-sig-name">absAndValKey</a>(<span class="summary-sig-arg">x</span>)</span><br />
+      Return the absolute value and the value of a number</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">float</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="InversionTest.StatisticalTests-module.html#binomialCDF" class="summary-sig-name">binomialCDF</a>(<span class="summary-sig-arg">x</span>,
+        <span class="summary-sig-arg">n</span>,
+        <span class="summary-sig-arg">p</span>)</span><br />
+      Binomial CDF, using log-gamma implementation</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">bool</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="InversionTest.StatisticalTests-module.html#binomialNormalApproximationHeuristic" class="summary-sig-name">binomialNormalApproximationHeuristic</a>(<span class="summary-sig-arg">n</span>,
+        <span class="summary-sig-arg">p</span>,
+        <span class="summary-sig-arg">threshold</span>=<span class="summary-sig-default">0.3</span>,
+        <span class="summary-sig-arg">minN</span>=<span class="summary-sig-default">25</span>)</span><br />
+      A heuristic for when the normal approximation is reasonable</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">float</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="InversionTest.StatisticalTests-module.html#binomialPMF" class="summary-sig-name">binomialPMF</a>(<span class="summary-sig-arg">x</span>,
+        <span class="summary-sig-arg">n</span>,
+        <span class="summary-sig-arg">p</span>)</span><br />
+      Binomial PMF, using log-gamma implementation</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">float</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="InversionTest.StatisticalTests-module.html#binomialTest" class="summary-sig-name">binomialTest</a>(<span class="summary-sig-arg">x</span>,
+        <span class="summary-sig-arg">n</span>,
+        <span class="summary-sig-arg">p</span>=<span class="summary-sig-default">0.5</span>,
+        <span class="summary-sig-arg">alternative</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">two.sided</code><code class="variable-quote">'</code></span>)</span><br />
+      Wrapper for the SciPy binomial two-sided test and binomial CDF 
+      calculations for one-tailed tests.</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="InversionTest.StatisticalTests-module.html#genericSymmetricPairedTest" class="summary-sig-name">genericSymmetricPairedTest</a>(<span class="summary-sig-arg">statistic</span>,
+        <span class="summary-sig-arg">statisticAlternative</span>,
+        <span class="summary-sig-arg">alternative</span>,
+        <span class="summary-sig-arg">*args</span>,
+        <span class="summary-sig-arg">**kwds</span>)</span><br />
+      Generic symmetric paired test, to convert between different-sided 
+      results</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">float</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="InversionTest.StatisticalTests-module.html#permutationMeanTest" class="summary-sig-name">permutationMeanTest</a>(<span class="summary-sig-arg">x</span>,
+        <span class="summary-sig-arg">y</span>,
+        <span class="summary-sig-arg">alternative</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">two.sided</code><code class="variable-quote">'</code></span>,
+        <span class="summary-sig-arg">pValue</span>=<span class="summary-sig-default">0.99</span>,
+        <span class="summary-sig-arg">iterations</span>=<span class="summary-sig-default">100000</span>,
+        <span class="summary-sig-arg">useStoppingRule</span>=<span class="summary-sig-default">True</span>,
+        <span class="summary-sig-arg">maxExactN</span>=<span class="summary-sig-default">7</span>)</span><br />
+      Permutation test that tests for differences in the means of two 
+      samples (e.g., a two-sample t-like statistic of mean(s1)-mean(s2)).</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">float</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="InversionTest.StatisticalTests-module.html#permutationRankTest" class="summary-sig-name">permutationRankTest</a>(<span class="summary-sig-arg">x</span>,
+        <span class="summary-sig-arg">y</span>,
+        <span class="summary-sig-arg">alternative</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">two.sided</code><code class="variable-quote">'</code></span>,
+        <span class="summary-sig-arg">pValue</span>=<span class="summary-sig-default">0.99</span>,
+        <span class="summary-sig-arg">iterations</span>=<span class="summary-sig-default">100000</span>,
+        <span class="summary-sig-arg">useStoppingRule</span>=<span class="summary-sig-default">True</span>,
+        <span class="summary-sig-arg">maxExactN</span>=<span class="summary-sig-default">7</span>)</span><br />
+      Permutation test that tests for differences in the ranks of two 
+      samples.</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">float</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="InversionTest.StatisticalTests-module.html#permutationTest" class="summary-sig-name">permutationTest</a>(<span class="summary-sig-arg">x</span>,
+        <span class="summary-sig-arg">y</span>,
+        <span class="summary-sig-arg">funct</span>,
+        <span class="summary-sig-arg">alternative</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">two.sided</code><code class="variable-quote">'</code></span>)</span><br />
+      A generic permutation hypothesis test between two sample populations.</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">float</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="InversionTest.StatisticalTests-module.html#pythonBinomialTest" class="summary-sig-name">pythonBinomialTest</a>(<span class="summary-sig-arg">x</span>,
+        <span class="summary-sig-arg">n</span>,
+        <span class="summary-sig-arg">p</span>=<span class="summary-sig-default">0.5</span>,
+        <span class="summary-sig-arg">alternative</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">two.sided</code><code class="variable-quote">'</code></span>,
+        <span class="summary-sig-arg">useMinlike</span>=<span class="summary-sig-default">True</span>)</span><br />
+      Exact binomial test, where two-sided test uses a minlike formulation.</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">float</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="InversionTest.StatisticalTests-module.html#pythonNormalCDF" class="summary-sig-name">pythonNormalCDF</a>(<span class="summary-sig-arg">x</span>,
+        <span class="summary-sig-arg">loc</span>=<span class="summary-sig-default">0.0</span>,
+        <span class="summary-sig-arg">scale</span>=<span class="summary-sig-default">1.0</span>)</span><br />
+      Normal CDF (Phi) implementation based on the error function in Python
+      2.7</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">float</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="InversionTest.StatisticalTests-module.html#pythonSignTestStatistic" class="summary-sig-name">pythonSignTestStatistic</a>(<span class="summary-sig-arg">series</span>,
+        <span class="summary-sig-arg">series2</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">mu</span>=<span class="summary-sig-default">0.0</span>,
+        <span class="summary-sig-arg">alternative</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">two.sided</code><code class="variable-quote">'</code></span>)</span><br />
+      A sign test, which works based on the counts that are greater or less
+      than the compared pairs or null hypothesis mean.</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">float, float</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="InversionTest.StatisticalTests-module.html#pythonWilcoxonSignedRankStatistic" class="summary-sig-name">pythonWilcoxonSignedRankStatistic</a>(<span class="summary-sig-arg">series</span>,
+        <span class="summary-sig-arg">series2</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">mu</span>=<span class="summary-sig-default">0.0</span>)</span><br />
+      A Wilcoxon two-sided test.</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">float</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="InversionTest.StatisticalTests-module.html#scipyBinomialTestStatistic" class="summary-sig-name">scipyBinomialTestStatistic</a>(<span class="summary-sig-arg">x</span>,
+        <span class="summary-sig-arg">n</span>,
+        <span class="summary-sig-arg">p</span>=<span class="summary-sig-default">0.5</span>,
+        <span class="summary-sig-arg">alternative</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">two.sided</code><code class="variable-quote">'</code></span>)</span><br />
+      Wrapper for the SciPy binomial two-sided test and binomial CDF 
+      calculations for one-tailed tests.</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">float, float</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="InversionTest.StatisticalTests-module.html#scipyWilcoxonStatistic" class="summary-sig-name">scipyWilcoxonStatistic</a>(<span class="summary-sig-arg">series</span>,
+        <span class="summary-sig-arg">series2</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">mu</span>=<span class="summary-sig-default">0.0</span>)</span><br />
+      The SciPy Wilcoxon two-sided test.</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">float</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="InversionTest.StatisticalTests-module.html#signTest" class="summary-sig-name">signTest</a>(<span class="summary-sig-arg">series</span>,
+        <span class="summary-sig-arg">series2</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">mu</span>=<span class="summary-sig-default">0.0</span>,
+        <span class="summary-sig-arg">alternative</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">two.sided</code><code class="variable-quote">'</code></span>)</span><br />
+      A sign test, which works based on the counts that are greater or less
+      than the compared pairs or null hypothesis mean.</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">float</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="InversionTest.StatisticalTests-module.html#transformSymmetricPValueHypothesis" class="summary-sig-name">transformSymmetricPValueHypothesis</a>(<span class="summary-sig-arg">statisticVal</span>,
+        <span class="summary-sig-arg">pValue</span>,
+        <span class="summary-sig-arg">originalAlternative</span>,
+        <span class="summary-sig-arg">newAlternative</span>)</span><br />
+      Transform a probability of one hypothesis into another hypothesis, 
+      assuming a symmetric distribution (such as a normal distribution).</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">float, float</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="InversionTest.StatisticalTests-module.html#wilcoxonMeanScore" class="summary-sig-name">wilcoxonMeanScore</a>(<span class="summary-sig-arg">series</span>,
+        <span class="summary-sig-arg">series2</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">mu</span>=<span class="summary-sig-default">0.0</span>)</span><br />
+      Get the mean Wilcoxon score, given equality</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">float, float</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="InversionTest.StatisticalTests-module.html#wilcoxonSignedRankStatistic" class="summary-sig-name">wilcoxonSignedRankStatistic</a>(<span class="summary-sig-arg">series</span>,
+        <span class="summary-sig-arg">series2</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">mu</span>=<span class="summary-sig-default">0.0</span>)</span><br />
+      A Wilcoxon two-sided test.</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">float</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="InversionTest.StatisticalTests-module.html#wilcoxonSignedRankTest" class="summary-sig-name">wilcoxonSignedRankTest</a>(<span class="summary-sig-arg">x</span>,
+        <span class="summary-sig-arg">y</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">mu</span>=<span class="summary-sig-default">0.0</span>,
+        <span class="summary-sig-arg">alternative</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">two.sided</code><code class="variable-quote">'</code></span>)</span><br />
+      A Wilcoxon Signed Rank test, for distributions symmetric around the 
+      median</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+</table>
+<!-- ==================== VARIABLES ==================== -->
+<a name="section-Variables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Variables</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-Variables"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="GREATER_THAN_HYPOTHESIS"></a><span class="summary-name">GREATER_THAN_HYPOTHESIS</span> = <code title="'greater'"><code class="variable-quote">'</code><code class="variable-string">greater</code><code class="variable-quote">'</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="IS_SCIPY_AVAILABLE"></a><span class="summary-name">IS_SCIPY_AVAILABLE</span> = <code title="True">True</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="LESS_THAN_HYPOTHESIS"></a><span class="summary-name">LESS_THAN_HYPOTHESIS</span> = <code title="'less'"><code class="variable-quote">'</code><code class="variable-string">less</code><code class="variable-quote">'</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="SQRT_OF_TWO"></a><span class="summary-name">SQRT_OF_TWO</span> = <code title="1.41421356237">1.41421356237</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="TEST_HYPOTHESES"></a><span class="summary-name">TEST_HYPOTHESES</span> = <code title="frozenset(['greater', 'less', 'two.sided'])"><code class="variable-group">frozenset([</code><code class="variable-quote">'</code><code class="variable-string">greater</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">less</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">two.sided</code><code class="variable-quote">'</code><code class="variable-group">])</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="TWO_SIDED_HYPOTHESIS"></a><span class="summary-name">TWO_SIDED_HYPOTHESIS</span> = <code title="'two.sided'"><code class="variable-quote">'</code><code class="variable-string">two.sided</code><code class="variable-quote">'</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="InversionTest.StatisticalTests-module.html#__loader__" class="summary-name">__loader__</a> = <code title="&lt;zipimporter object &quot;C:\Python27\lib\site-packages\inversiontest-1.1-p\
+y2.7.egg\InversionTest\&quot;&gt;">&lt;zipimporter object &quot;C:\Python27\lib\site-package<code class="variable-ellipsis">...</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="__package__"></a><span class="summary-name">__package__</span> = <code title="'InversionTest'"><code class="variable-quote">'</code><code class="variable-string">InversionTest</code><code class="variable-quote">'</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="pi"></a><span class="summary-name">pi</span> = <code title="3.14159265359">3.14159265359</code>
+    </td>
+  </tr>
+</table>
+<!-- ==================== FUNCTION DETAILS ==================== -->
+<a name="section-FunctionDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Function Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-FunctionDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="absAndValKey"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">absAndValKey</span>(<span class="sig-arg">x</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return the absolute value and the value of a number</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>x</code></strong> (int or float) - Some number</li>
+    </ul></dd>
+    <dt>Returns: tuple of (int or float, int or float)</dt>
+        <dd>abs(x), x</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="binomialCDF"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">binomialCDF</span>(<span class="sig-arg">x</span>,
+        <span class="sig-arg">n</span>,
+        <span class="sig-arg">p</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Binomial CDF, using log-gamma implementation</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>x</code></strong> (int) - # of successes</li>
+        <li><strong class="pname"><code>n</code></strong> (int) - Number of observations</li>
+        <li><strong class="pname"><code>p</code></strong> (float) - Probability of a success</li>
+    </ul></dd>
+    <dt>Returns: float</dt>
+        <dd>Cummulative distribution function for x in the binomial 
+          distribution</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="binomialNormalApproximationHeuristic"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">binomialNormalApproximationHeuristic</span>(<span class="sig-arg">n</span>,
+        <span class="sig-arg">p</span>,
+        <span class="sig-arg">threshold</span>=<span class="sig-default">0.3</span>,
+        <span class="sig-arg">minN</span>=<span class="sig-default">25</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>A heuristic for when the normal approximation is reasonable</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>n</code></strong> (int) - Number of observations</li>
+        <li><strong class="pname"><code>p</code></strong> (float) - Probability of a success</li>
+        <li><strong class="pname"><code>threshold</code></strong> (float) - Threshold for the heuristic, in [0, 1] where 0 is never and 1 is 
+          always</li>
+        <li><strong class="pname"><code>minN</code></strong> (int) - Minimum n to have before using the approximation under any 
+          circumstances</li>
+    </ul></dd>
+    <dt>Returns: bool</dt>
+        <dd>True (use normal distribution) if heuristic &lt; threshold and n 
+          &gt; minN, else False</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="binomialPMF"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">binomialPMF</span>(<span class="sig-arg">x</span>,
+        <span class="sig-arg">n</span>,
+        <span class="sig-arg">p</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Binomial PMF, using log-gamma implementation</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>x</code></strong> (int) - # of successes</li>
+        <li><strong class="pname"><code>n</code></strong> (int) - Number of observations</li>
+        <li><strong class="pname"><code>p</code></strong> (float) - Probability of a success</li>
+    </ul></dd>
+    <dt>Returns: float</dt>
+        <dd>Point mass for x in the binomial distribution</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="binomialTest"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">binomialTest</span>(<span class="sig-arg">x</span>,
+        <span class="sig-arg">n</span>,
+        <span class="sig-arg">p</span>=<span class="sig-default">0.5</span>,
+        <span class="sig-arg">alternative</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string">two.sided</code><code class="variable-quote">'</code></span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Wrapper for the SciPy binomial two-sided test and binomial CDF 
+  calculations for one-tailed tests.  This allows testing two-sided and 
+  both one-sided hypotheses.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>x</code></strong> (int) - Number of successes</li>
+        <li><strong class="pname"><code>n</code></strong> (int) - Number of observations</li>
+        <li><strong class="pname"><code>p</code></strong> (float) - Assumed probability of a success, in [0,1]</li>
+        <li><strong class="pname"><code>alternative</code></strong> (str) - The alternate hypothesis for this test, from TEST_HYPOTHESES set</li>
+    </ul></dd>
+    <dt>Returns: float</dt>
+        <dd>Probability of the null hypothesis, in [0,1]</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="genericSymmetricPairedTest"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">genericSymmetricPairedTest</span>(<span class="sig-arg">statistic</span>,
+        <span class="sig-arg">statisticAlternative</span>,
+        <span class="sig-arg">alternative</span>,
+        <span class="sig-arg">*args</span>,
+        <span class="sig-arg">**kwds</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Generic symmetric paired test, to convert between different-sided 
+  results</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>statistic</code></strong> (callable) - A statistic function, in the form f(x, y, mu)</li>
+        <li><strong class="pname"><code>statisticAlternative</code></strong> (str) - The hypothesis for the test alternative, from TEST_HYPOTHESES set</li>
+        <li><strong class="pname"><code>args</code></strong> (list of object) - Variable arguments, to pass to the statistic</li>
+        <li><strong class="pname"><code>kwds</code></strong> (dict of {str : object}) - Variable keyword arguments, to pass to the statistic</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="permutationMeanTest"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">permutationMeanTest</span>(<span class="sig-arg">x</span>,
+        <span class="sig-arg">y</span>,
+        <span class="sig-arg">alternative</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string">two.sided</code><code class="variable-quote">'</code></span>,
+        <span class="sig-arg">pValue</span>=<span class="sig-default">0.99</span>,
+        <span class="sig-arg">iterations</span>=<span class="sig-default">100000</span>,
+        <span class="sig-arg">useStoppingRule</span>=<span class="sig-default">True</span>,
+        <span class="sig-arg">maxExactN</span>=<span class="sig-default">7</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Permutation test that tests for differences in the means of two 
+  samples (e.g., a two-sample t-like statistic of mean(s1)-mean(s2)). If 
+  nToApprox is defined, this sets a cutoff for exact estimation after which
+  a Monte Carlo approximation is used instead.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>x</code></strong> (list of float) - First sample set of data points</li>
+        <li><strong class="pname"><code>y</code></strong> (list of float) - Second sample set of data points</li>
+        <li><strong class="pname"><code>alternative</code></strong> (str) - The alternate hypothesis for this test, from TEST_HYPOTHESES set</li>
+        <li><strong class="pname"><code>pValue</code></strong> (float) - The p-Value for the test to confirm, used for Monte Carlo early 
+          termination</li>
+        <li><strong class="pname"><code>iterations</code></strong> (int) - The max number of iterations to run for Monte Carlo</li>
+        <li><strong class="pname"><code>useStoppingRule</code></strong> (bool) - If True, use version of MonteCarlo with an unbiased early 
+          stopping rule</li>
+        <li><strong class="pname"><code>maxExactN</code></strong> (int) - The largest N=len(x)+len(y) to calculate an exact test value. For
+          values higher than this, use a Monte Carlo approximation.</li>
+    </ul></dd>
+    <dt>Returns: float</dt>
+        <dd>Probability of the null hypothesis, given the alternative</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="permutationRankTest"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">permutationRankTest</span>(<span class="sig-arg">x</span>,
+        <span class="sig-arg">y</span>,
+        <span class="sig-arg">alternative</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string">two.sided</code><code class="variable-quote">'</code></span>,
+        <span class="sig-arg">pValue</span>=<span class="sig-default">0.99</span>,
+        <span class="sig-arg">iterations</span>=<span class="sig-default">100000</span>,
+        <span class="sig-arg">useStoppingRule</span>=<span class="sig-default">True</span>,
+        <span class="sig-arg">maxExactN</span>=<span class="sig-default">7</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Permutation test that tests for differences in the ranks of two 
+  samples.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>x</code></strong> (list of float) - First sample set of data points</li>
+        <li><strong class="pname"><code>y</code></strong> (list of float) - Second sample set of data points</li>
+        <li><strong class="pname"><code>alternative</code></strong> (str) - The alternate hypothesis for this test, from TEST_HYPOTHESES set</li>
+        <li><strong class="pname"><code>pValue</code></strong> (float) - The p-Value for the test to confirm, used for Monte Carlo early 
+          termination</li>
+        <li><strong class="pname"><code>iterations</code></strong> (int) - The max number of iterations to run for Monte Carlo</li>
+        <li><strong class="pname"><code>useStoppingRule</code></strong> (bool) - If True, use version of MonteCarlo with an unbiased early 
+          stopping rule</li>
+        <li><strong class="pname"><code>maxExactN</code></strong> (int) - The largest N=len(x)+len(y) to calculate an exact test value. For
+          values higher than this, use a Monte Carlo approximation.</li>
+    </ul></dd>
+    <dt>Returns: float</dt>
+        <dd>Probability of the null hypothesis, given the alternative</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="permutationTest"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">permutationTest</span>(<span class="sig-arg">x</span>,
+        <span class="sig-arg">y</span>,
+        <span class="sig-arg">funct</span>,
+        <span class="sig-arg">alternative</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string">two.sided</code><code class="variable-quote">'</code></span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>A generic permutation hypothesis test between two sample populations. 
+  Runs all permutations of funct(x',y') where x' and y' are generated from 
+  the data points in x and y, then finds where funct(x,y) falls into the 
+  generated distribution. NOTE: This is crushingly slow as len(x) + len(y) 
+  &gt; 10.  A Monte Carlo or partial-coverage permutation test is 
+  recommended for larger N.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>x</code></strong> (list of float) - First sample set of data points</li>
+        <li><strong class="pname"><code>y</code></strong> (list of float) - Second sample set of data points</li>
+        <li><strong class="pname"><code>funct</code></strong> (callable) - Statistic function, in form funct(x, y)</li>
+        <li><strong class="pname"><code>alternative</code></strong> (str) - The alternate hypothesis for this test, from TEST_HYPOTHESES set</li>
+    </ul></dd>
+    <dt>Returns: float</dt>
+        <dd>Probability of the null hypothesis, given the alternative</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="pythonBinomialTest"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">pythonBinomialTest</span>(<span class="sig-arg">x</span>,
+        <span class="sig-arg">n</span>,
+        <span class="sig-arg">p</span>=<span class="sig-default">0.5</span>,
+        <span class="sig-arg">alternative</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string">two.sided</code><code class="variable-quote">'</code></span>,
+        <span class="sig-arg">useMinlike</span>=<span class="sig-default">True</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Exact binomial test, where two-sided test uses a minlike formulation. 
+  This two-sided approach was chosen to match frameworks like R and SciPy. 
+  For reference, the minlike calculation is the sum of all p(k,n) where 
+  p(k,n)&lt;=p(x,n)</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>x</code></strong> (int) - Number of successes</li>
+        <li><strong class="pname"><code>n</code></strong> (int) - Number of observations</li>
+        <li><strong class="pname"><code>p</code></strong> (float) - Assumed probability of a success, in [0,1]</li>
+        <li><strong class="pname"><code>alternative</code></strong> (str) - The alternate hypothesis for this test, from TEST_HYPOTHESES set</li>
+        <li><strong class="pname"><code>useMinlike</code></strong> (bool) - If True, calculate a minlike two-tail.  Else, return 2*min(p_low,
+          p_high).</li>
+    </ul></dd>
+    <dt>Returns: float</dt>
+        <dd>Probability of the null hypothesis, in [0,1]</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="pythonNormalCDF"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">pythonNormalCDF</span>(<span class="sig-arg">x</span>,
+        <span class="sig-arg">loc</span>=<span class="sig-default">0.0</span>,
+        <span class="sig-arg">scale</span>=<span class="sig-default">1.0</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Normal CDF (Phi) implementation based on the error function in Python 
+  2.7</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>x</code></strong> (float) - Value for CDF, x in P(X&lt;=x) where X ~ N(mu=loc, var=scale**2)</li>
+        <li><strong class="pname"><code>loc</code></strong> (float) - Location parameter (mean)</li>
+        <li><strong class="pname"><code>scale</code></strong> (float) - Scale parameter (variance)</li>
+    </ul></dd>
+    <dt>Returns: float</dt>
+        <dd>CDF value from the normal distribution</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="pythonSignTestStatistic"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">pythonSignTestStatistic</span>(<span class="sig-arg">series</span>,
+        <span class="sig-arg">series2</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">mu</span>=<span class="sig-default">0.0</span>,
+        <span class="sig-arg">alternative</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string">two.sided</code><code class="variable-quote">'</code></span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>A sign test, which works based on the counts that are greater or less 
+  than the compared pairs or null hypothesis mean.  Uses the binomial test 
+  with p=0.5 to calculate the probability.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>series</code></strong> (list of float) - The series of values to test</li>
+        <li><strong class="pname"><code>series2</code></strong> (list of float or None) - A series of comparison pairs, optionally.  If None, mu is used 
+          instead.</li>
+        <li><strong class="pname"><code>mu</code></strong> (float) - A comparison value to compare all values in series against (used 
+          only if series2 is None)</li>
+        <li><strong class="pname"><code>alternative</code></strong> (str) - The alternate hypothesis for this test, from TEST_HYPOTHESES set</li>
+    </ul></dd>
+    <dt>Returns: float</dt>
+        <dd>Probability of the null hypothesis, in [0,1]</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="pythonWilcoxonSignedRankStatistic"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">pythonWilcoxonSignedRankStatistic</span>(<span class="sig-arg">series</span>,
+        <span class="sig-arg">series2</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">mu</span>=<span class="sig-default">0.0</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>A Wilcoxon two-sided test.  This uses a normal approximation and 
+  adjusts for ties using a variance penalty of (t^3-t)/48.0 for each tie of
+  length t.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>series</code></strong> (list of float) - A series of values</li>
+        <li><strong class="pname"><code>series2</code></strong> (list of float or None) - A second series of values, optionally (if None, mu is used 
+          instead)</li>
+        <li><strong class="pname"><code>mu</code></strong> (float) - The presumed median for values (used only if y is None)</li>
+    </ul></dd>
+    <dt>Returns: float, float</dt>
+        <dd>Wilcoxon statistic value (W+), Probability of the null hypothesis</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="scipyBinomialTestStatistic"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">scipyBinomialTestStatistic</span>(<span class="sig-arg">x</span>,
+        <span class="sig-arg">n</span>,
+        <span class="sig-arg">p</span>=<span class="sig-default">0.5</span>,
+        <span class="sig-arg">alternative</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string">two.sided</code><code class="variable-quote">'</code></span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Wrapper for the SciPy binomial two-sided test and binomial CDF 
+  calculations for one-tailed tests.  This allows testing two-sided and 
+  both one-sided hypotheses.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>x</code></strong> (int) - Number of successes</li>
+        <li><strong class="pname"><code>n</code></strong> (int) - Number of observations</li>
+        <li><strong class="pname"><code>p</code></strong> (float) - Assumed probability of a success, in [0,1]</li>
+        <li><strong class="pname"><code>alternative</code></strong> (str) - The alternate hypothesis for this test, from TEST_HYPOTHESES set</li>
+    </ul></dd>
+    <dt>Returns: float</dt>
+        <dd>Probability of the null hypothesis, in [0,1]</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="scipyWilcoxonStatistic"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">scipyWilcoxonStatistic</span>(<span class="sig-arg">series</span>,
+        <span class="sig-arg">series2</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">mu</span>=<span class="sig-default">0.0</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>The SciPy Wilcoxon two-sided test.  This test always uses a normal 
+  approximation and does not adjust for ties properly, but should be 
+  (theoretically) faster than the pure python versions here, as it uses C 
+  code under the hood.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>series</code></strong> (list of float) - A series of values</li>
+        <li><strong class="pname"><code>series2</code></strong> (list of float or None) - A second series of values, optionally (if None, mu is used 
+          instead)</li>
+        <li><strong class="pname"><code>mu</code></strong> (float) - The presumed median for values (used only if y is None)</li>
+    </ul></dd>
+    <dt>Returns: float, float</dt>
+        <dd>Wilcoxon statistic value of min(W+,W-), Probability of the null 
+          hypothesis</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="signTest"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">signTest</span>(<span class="sig-arg">series</span>,
+        <span class="sig-arg">series2</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">mu</span>=<span class="sig-default">0.0</span>,
+        <span class="sig-arg">alternative</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string">two.sided</code><code class="variable-quote">'</code></span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>A sign test, which works based on the counts that are greater or less 
+  than the compared pairs or null hypothesis mean.  Uses the binomial test 
+  with p=0.5 to calculate the probability.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>series</code></strong> (list of float) - The series of values to test</li>
+        <li><strong class="pname"><code>series2</code></strong> (list of float or None) - A series of comparison pairs, optionally.  If None, mu is used 
+          instead.</li>
+        <li><strong class="pname"><code>mu</code></strong> (float) - A comparison value to compare all values in series against (used 
+          only if series2 is None)</li>
+        <li><strong class="pname"><code>alternative</code></strong> (str) - The alternate hypothesis for this test, from TEST_HYPOTHESES set</li>
+    </ul></dd>
+    <dt>Returns: float</dt>
+        <dd>Probability of the null hypothesis, in [0,1]</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="transformSymmetricPValueHypothesis"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">transformSymmetricPValueHypothesis</span>(<span class="sig-arg">statisticVal</span>,
+        <span class="sig-arg">pValue</span>,
+        <span class="sig-arg">originalAlternative</span>,
+        <span class="sig-arg">newAlternative</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Transform a probability of one hypothesis into another hypothesis, 
+  assuming a symmetric distribution (such as a normal distribution).  This 
+  is used to convert from functions that return a statistic and pValue, but
+  a different hypothesis must be examined.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>statisticVal</code></strong> (float) - Value of the statistic (assumed that the CDF integrates from 
+          lowest to highest values)</li>
+        <li><strong class="pname"><code>pValue</code></strong> (float) - Probability, as based on the original alternative for the 
+          statistic calculator</li>
+        <li><strong class="pname"><code>originalAlternative</code></strong> (str) - The alternate hypothesis assumed by the test, from 
+          TEST_HYPOTHESES set</li>
+        <li><strong class="pname"><code>newAlternative</code></strong> (str) - The new alternate hypothesis to report a pValue for</li>
+    </ul></dd>
+    <dt>Returns: float</dt>
+        <dd>Adjusted pValue to reflect new alternative hypothesis</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="wilcoxonMeanScore"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">wilcoxonMeanScore</span>(<span class="sig-arg">series</span>,
+        <span class="sig-arg">series2</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">mu</span>=<span class="sig-default">0.0</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Get the mean Wilcoxon score, given equality</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>series</code></strong> (list of float) - A series of values</li>
+        <li><strong class="pname"><code>series2</code></strong> (list of float or None) - A second series of values, optionally (if None, mu is used 
+          instead)</li>
+        <li><strong class="pname"><code>mu</code></strong> (float) - The presumed median for values (used only if y is None)</li>
+    </ul></dd>
+    <dt>Returns: float, float</dt>
+        <dd>Mean Wilcoxon statistic value</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="wilcoxonSignedRankStatistic"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">wilcoxonSignedRankStatistic</span>(<span class="sig-arg">series</span>,
+        <span class="sig-arg">series2</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">mu</span>=<span class="sig-default">0.0</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>A Wilcoxon two-sided test.  This uses a normal approximation and 
+  adjusts for ties using a variance penalty of (t^3-t)/48.0 for each tie of
+  length t.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>series</code></strong> (list of float) - A series of values</li>
+        <li><strong class="pname"><code>series2</code></strong> (list of float or None) - A second series of values, optionally (if None, mu is used 
+          instead)</li>
+        <li><strong class="pname"><code>mu</code></strong> (float) - The presumed median for values (used only if y is None)</li>
+    </ul></dd>
+    <dt>Returns: float, float</dt>
+        <dd>Wilcoxon statistic value (W+), Probability of the null hypothesis</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="wilcoxonSignedRankTest"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">wilcoxonSignedRankTest</span>(<span class="sig-arg">x</span>,
+        <span class="sig-arg">y</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">mu</span>=<span class="sig-default">0.0</span>,
+        <span class="sig-arg">alternative</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string">two.sided</code><code class="variable-quote">'</code></span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>A Wilcoxon Signed Rank test, for distributions symmetric around the 
+  median</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>x</code></strong> (list of float) - A series of values</li>
+        <li><strong class="pname"><code>y</code></strong> (list of float or None) - A second series of values, optionally (if None, mu is used 
+          instead)</li>
+        <li><strong class="pname"><code>mu</code></strong> (float) - The presumed median for values (used only if y is None)</li>
+        <li><strong class="pname"><code>alternative</code></strong> (str) - The alternate hypothesis for this test, from TEST_HYPOTHESES set</li>
+    </ul></dd>
+    <dt>Returns: float</dt>
+        <dd>Probability of the null hypothesis, given the alternative</dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== VARIABLES DETAILS ==================== -->
+<a name="section-VariablesDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Variables Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-VariablesDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="__loader__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">__loader__</h3>
+  
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+&lt;zipimporter object &quot;C:\Python27\lib\site-packages\inversiontest-1.1-p<span class="variable-linewrap"><img src="crarr.png" alt="\" /></span>
+y2.7.egg\InversionTest\&quot;&gt;
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >InversionTest</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Sun Sep 07 17:01:43 2014
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

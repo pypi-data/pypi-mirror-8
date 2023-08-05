@@ -1,0 +1,1802 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>InversionTest.InversionAnalysis.GradedPosetSequence</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >InversionTest</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        Package&nbsp;InversionTest ::
+        <a href="InversionTest.InversionAnalysis-module.html">Module&nbsp;InversionAnalysis</a> ::
+        Class&nbsp;GradedPosetSequence
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="InversionTest.InversionAnalysis.GradedPosetSequence-class.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class GradedPosetSequence</h1><p class="nomargin-top"></p>
+<pre class="base-tree">
+object --+
+         |
+        <strong class="uidshort">GradedPosetSequence</strong>
+</pre>
+
+<hr />
+<p>An analysis of the inversion distribution of a graded poset This can 
+  be used to analyze the reference sequence against a sorted version of 
+  itself or against permutations of these elements in a sequence passed in 
+  (which may be graded or not). Note: When comparing two sequences, it 
+  should be noted that these inversion measures are symmetric with respect 
+  to which sequence is considered the reference versus the comparison.</p>
+  <p>Graded sequences are represented through nested lists, where each 
+  subsequence contains the elements of a grade.  So then, the sequence: 
+  [[A,B,C], [1,2,3], [X,Y]] contains three grades, where A, B, and C have 
+  rank 1, [1,2,3] have rank 2, etc.  Elements that share a grade cannot 
+  have inversions between them.  The elements can be any valid Python 
+  objects that have valid comparison operations (including custom class 
+  instance).  However, if any of the elements cannot be hashed, the 
+  hashableElements flag must be set false or problems will occur.</p>
+  <p>Note: Technically, while this code refers to ``permutations'', two 
+  sequences with the same elements but different grade structures are not 
+  technically permutations (though two with the same grade structure, 
+  regardless of structure, are certainly permutations). However, they are 
+  VERY close to permutations and may be considered analogous to 
+  permutations where you can't see the order of certain elements (i.e., 
+  censored observations).</p>
+
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Instance Methods</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-InstanceMethods"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="InversionTest.InversionAnalysis.GradedPosetSequence-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">sequence</span>,
+        <span class="summary-sig-arg">isGraded</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">hashableElements</span>=<span class="summary-sig-default">True</span>,
+        <span class="summary-sig-arg">validate</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">defaultGrade</span>=<span class="summary-sig-default">None</span>)</span><br />
+      Initialize the reference sequence</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">list of object or object</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="InversionTest.InversionAnalysis.GradedPosetSequence-class.html#__iter__" class="summary-sig-name">__iter__</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Iterate over the grades/elements</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">int</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="InversionTest.InversionAnalysis.GradedPosetSequence-class.html#__len__" class="summary-sig-name">__len__</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Get the number of grades in the sequence</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">int or float</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="InversionTest.InversionAnalysis.GradedPosetSequence-class.html#_calcGradedStatistic" class="summary-sig-name" onclick="show_private();">_calcGradedStatistic</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">operation</span>,
+        <span class="summary-sig-arg">sequence</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">isGraded</span>=<span class="summary-sig-default">False</span>)</span><br />
+      Calculate a series length statistic, adjusting for incomparable 
+      elements.</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">List of list of object</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="InversionTest.InversionAnalysis.GradedPosetSequence-class.html#_calcOverloadedRanks" class="summary-sig-name" onclick="show_private();">_calcOverloadedRanks</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">sequence</span>,
+        <span class="summary-sig-arg">isGraded</span>,
+        <span class="summary-sig-arg">otherSequence</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">isOtherGraded</span>=<span class="summary-sig-default">False</span>)</span><br />
+      Calculate the grades with more than one element (overloaded grades).</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">list of list of object</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="InversionTest.InversionAnalysis.GradedPosetSequence-class.html#_calcRankIntersections" class="summary-sig-name" onclick="show_private();">_calcRankIntersections</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">overloadedRanks</span>,
+        <span class="summary-sig-arg">overloadedRanks2</span>)</span><br />
+      Calculate the intersection of overloaded ranks between sequences.</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">float</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="InversionTest.InversionAnalysis.GradedPosetSequence-class.html#_comparisonTest" class="summary-sig-name" onclick="show_private();">_comparisonTest</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">test</span>,
+        <span class="summary-sig-arg">sequences</span>,
+        <span class="summary-sig-arg">sequences2</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">isGraded</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">measure</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">similarity</code><code class="variable-quote">'</code></span>,
+        <span class="summary-sig-arg">**kwds</span>)</span><br />
+      Perform a hypothesis test on either the similarity or the complements
+      of the CDF values, which are a measure of the match between the each 
+      sequence and the reference seq.</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">int</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="InversionTest.InversionAnalysis.GradedPosetSequence-class.html#_getElementIndex" class="summary-sig-name" onclick="show_private();">_getElementIndex</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">element</span>,
+        <span class="summary-sig-arg">sequence</span>,
+        <span class="summary-sig-arg">isGraded</span>=<span class="summary-sig-default">False</span>)</span><br />
+      Get the index of the given value in the sequence Note: This hashes 
+      element indices, if possible</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="InversionTest.InversionAnalysis.GradedPosetSequence-class.html#_populateHashRanks" class="summary-sig-name" onclick="show_private();">_populateHashRanks</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Populate hash table that reports the grade of any element.</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">float</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="InversionTest.InversionAnalysis.GradedPosetSequence-class.html#cdf" class="summary-sig-name">cdf</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">sequence</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">isGraded</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">cdfType</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">adaptive</code><code class="variable-quote">'</code></span>)</span><br />
+      Calculate a CDF value for inversions between the reference sequence 
+      abd a comparison sequence.</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">float</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="InversionTest.InversionAnalysis.GradedPosetSequence-class.html#correlation" class="summary-sig-name">correlation</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">sequence</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">isGraded</span>=<span class="summary-sig-default">False</span>)</span><br />
+      The correlation of the reference sequence to a comparison sequence.</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">float</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="InversionTest.InversionAnalysis.GradedPosetSequence-class.html#exactCDF" class="summary-sig-name">exactCDF</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">sequence</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">isGraded</span>=<span class="summary-sig-default">False</span>)</span><br />
+      Calculate an exact CDF value for inversions between the reference 
+      sequence abd a comparison sequence.</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">int</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="InversionTest.InversionAnalysis.GradedPosetSequence-class.html#getNumElements" class="summary-sig-name">getNumElements</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Get the number of elements in this sequence</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">list of list of object</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="InversionTest.InversionAnalysis.GradedPosetSequence-class.html#getOverloadedRanks" class="summary-sig-name">getOverloadedRanks</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Get the elements in grades with more than one element</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">int</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="InversionTest.InversionAnalysis.GradedPosetSequence-class.html#inversions" class="summary-sig-name">inversions</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">sequence</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">isGraded</span>=<span class="summary-sig-default">False</span>)</span><br />
+      The inversions between the reference sequence and the comparison 
+      sequence.</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="InversionTest.InversionAnalysis.GradedPosetSequence-class.html#isGraded" class="summary-sig-name">isGraded</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return if this is a graded poset.</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">list of object or object</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="InversionTest.InversionAnalysis.GradedPosetSequence-class.html#iterElements" class="summary-sig-name">iterElements</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Iterate over the elements (flat iteration over grades)</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">int</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="InversionTest.InversionAnalysis.GradedPosetSequence-class.html#maxInversions" class="summary-sig-name">maxInversions</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">sequence</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">isGraded</span>=<span class="summary-sig-default">False</span>)</span><br />
+      The maximum possible inversions, given the number of elements and the
+      number sharing each grade (e.g.</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">int</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="InversionTest.InversionAnalysis.GradedPosetSequence-class.html#mean" class="summary-sig-name">mean</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">sequence</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">isGraded</span>=<span class="summary-sig-default">False</span>)</span><br />
+      The mean of inversion across permutations, given the number of 
+      elements and the number sharing each grade (e.g.</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">float</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="InversionTest.InversionAnalysis.GradedPosetSequence-class.html#normalCDF" class="summary-sig-name">normalCDF</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">sequence</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">isGraded</span>=<span class="summary-sig-default">False</span>)</span><br />
+      Calculate an approximate CDF value for inversions between the 
+      reference sequence abd a comparison sequence.</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">float</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="InversionTest.InversionAnalysis.GradedPosetSequence-class.html#permutationMeanTest" class="summary-sig-name">permutationMeanTest</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">sequences</span>,
+        <span class="summary-sig-arg">sequences2</span>,
+        <span class="summary-sig-arg">isGraded</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">measure</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">adaptive</code><code class="variable-quote">'</code></span>,
+        <span class="summary-sig-arg">alternative</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">greater</code><code class="variable-quote">'</code></span>,
+        <span class="summary-sig-arg">pValue</span>=<span class="summary-sig-default">0.95</span>,
+        <span class="summary-sig-arg">iterations</span>=<span class="summary-sig-default">100000</span>,
+        <span class="summary-sig-arg">useStoppingRule</span>=<span class="summary-sig-default">True</span>,
+        <span class="summary-sig-arg">maxExactN</span>=<span class="summary-sig-default">7</span>)</span><br />
+      Perform a Permutation or Monte Carlo Mean Difference test on some 
+      measure (similarity or 1-CDF) for the match between the each sequence
+      and the reference seq.</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">float</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="InversionTest.InversionAnalysis.GradedPosetSequence-class.html#permutationRankTest" class="summary-sig-name">permutationRankTest</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">sequences</span>,
+        <span class="summary-sig-arg">sequences2</span>,
+        <span class="summary-sig-arg">isGraded</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">measure</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">adaptive</code><code class="variable-quote">'</code></span>,
+        <span class="summary-sig-arg">alternative</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">greater</code><code class="variable-quote">'</code></span>,
+        <span class="summary-sig-arg">pValue</span>=<span class="summary-sig-default">0.95</span>,
+        <span class="summary-sig-arg">iterations</span>=<span class="summary-sig-default">100000</span>,
+        <span class="summary-sig-arg">useStoppingRule</span>=<span class="summary-sig-default">True</span>,
+        <span class="summary-sig-arg">maxExactN</span>=<span class="summary-sig-default">7</span>)</span><br />
+      Perform a Permutation or Monte Carlo rank test on a measure 
+      (similarity or 1-CDF) for the match between the each sequence and the
+      reference seq.</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">float</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="InversionTest.InversionAnalysis.GradedPosetSequence-class.html#signTest" class="summary-sig-name">signTest</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">sequences</span>,
+        <span class="summary-sig-arg">sequences2</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">isGraded</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">measure</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">similarity</code><code class="variable-quote">'</code></span>,
+        <span class="summary-sig-arg">mu</span>=<span class="summary-sig-default">0.5</span>,
+        <span class="summary-sig-arg">alternative</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">greater</code><code class="variable-quote">'</code></span>)</span><br />
+      Perform a Sign test on either the similarity or the complements of 
+      the CDF values, which are a measure of the match between the each 
+      sequence and the reference seq.</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">float</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="InversionTest.InversionAnalysis.GradedPosetSequence-class.html#similarity" class="summary-sig-name">similarity</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">sequence</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">isGraded</span>=<span class="summary-sig-default">False</span>)</span><br />
+      The similarity of the reference sequence to a comparison sequence.</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">int</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="InversionTest.InversionAnalysis.GradedPosetSequence-class.html#stdDev" class="summary-sig-name">stdDev</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">sequence</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">isGraded</span>=<span class="summary-sig-default">False</span>)</span><br />
+      The standard deviation of inversions across permutations, given the 
+      elements and the number sharing each grade (e.g.</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="validate"></a><span class="summary-sig-name">validate</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Check that this sequence is valid, so that it has no repeated 
+      elements, that elements are hashable if sequence is hashable, and 
+      that a graded sequence contains iterated grades.</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">int</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="InversionTest.InversionAnalysis.GradedPosetSequence-class.html#variance" class="summary-sig-name">variance</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">sequence</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">isGraded</span>=<span class="summary-sig-default">False</span>)</span><br />
+      The variance of inversions across permutations, given the number of 
+      elements and the number sharing each grade (e.g.</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">float</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="InversionTest.InversionAnalysis.GradedPosetSequence-class.html#wilcoxonTest" class="summary-sig-name">wilcoxonTest</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">sequences</span>,
+        <span class="summary-sig-arg">sequences2</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">isGraded</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">cdfType</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">adaptive</code><code class="variable-quote">'</code></span>,
+        <span class="summary-sig-arg">alternative</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">greater</code><code class="variable-quote">'</code></span>)</span><br />
+      Perform a Wilcoxon Rank Sum test on the complements of the CDF 
+      values, which are a measure of the match between the each sequence 
+      and the reference seq Mu cannot be set on this test, as it would 
+      violate the assumption of symmetry.</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__delattr__</code>,
+      <code>__format__</code>,
+      <code>__getattribute__</code>,
+      <code>__hash__</code>,
+      <code>__new__</code>,
+      <code>__reduce__</code>,
+      <code>__reduce_ex__</code>,
+      <code>__repr__</code>,
+      <code>__setattr__</code>,
+      <code>__sizeof__</code>,
+      <code>__str__</code>,
+      <code>__subclasshook__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS METHODS ==================== -->
+<a name="section-ClassMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Class Methods</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-ClassMethods"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">bool</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="InversionTest.InversionAnalysis.GradedPosetSequence-class.html#_calcNumElements" class="summary-sig-name" onclick="show_private();">_calcNumElements</a>(<span class="summary-sig-arg">cls</span>,
+        <span class="summary-sig-arg">sequence</span>,
+        <span class="summary-sig-arg">isGraded</span>)</span><br />
+      Calculate the number of elements in the sequence.</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="validateSequence"></a><span class="summary-sig-name">validateSequence</span>(<span class="summary-sig-arg">cls</span>,
+        <span class="summary-sig-arg">sequence</span>,
+        <span class="summary-sig-arg">isGraded</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">hashableElements</span>=<span class="summary-sig-default">True</span>)</span><br />
+      Check that a sequence is valid, so that it has no repeated elements, 
+      and that elements are hashable if sequence is hashable.</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS VARIABLES ==================== -->
+<a name="section-ClassVariables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Class Variables</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-ClassVariables"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="APPROXIMATION_RANKS_BOUND"></a><span class="summary-name">APPROXIMATION_RANKS_BOUND</span> = <code title="100">100</code>
+    </td>
+  </tr>
+</table>
+<!-- ==================== PROPERTIES ==================== -->
+<a name="section-Properties"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Properties</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-Properties"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__class__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Method Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-MethodDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="__init__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">sequence</span>,
+        <span class="sig-arg">isGraded</span>=<span class="sig-default">False</span>,
+        <span class="sig-arg">hashableElements</span>=<span class="sig-default">True</span>,
+        <span class="sig-arg">validate</span>=<span class="sig-default">False</span>,
+        <span class="sig-arg">defaultGrade</span>=<span class="sig-default">None</span>)</span>
+    <br /><em class="fname">(Constructor)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Initialize the reference sequence</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>sequence</code></strong> (list of object or list of list of object) - Reference sequence, for comparing permutations against</li>
+        <li><strong class="pname"><code>isGraded</code></strong> (bool) - If true, sequence consists of subsequences containing each grade.
+          Else, flat list.</li>
+        <li><strong class="pname"><code>hashableElements</code></strong> (bool) - If True, elements can be hashed (allowing slightly faster 
+          performance)</li>
+        <li><strong class="pname"><code>validate</code></strong> (bool) - If True, run basic validation on the sequence inside</li>
+    </ul></dd>
+    <dt>Overrides:
+        object.__init__
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="__iter__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__iter__</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Iterate over the grades/elements</p>
+  <dl class="fields">
+    <dt>Returns: list of object or object</dt>
+        <dd>If nested, yield a grade (and all elements in it).  If flat, 
+          yield an element.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="__len__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__len__</span>(<span class="sig-arg">self</span>)</span>
+    <br /><em class="fname">(Length operator)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Get the number of grades in the sequence</p>
+  <dl class="fields">
+    <dt>Returns: int</dt>
+        <dd>Number of grades</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="_calcGradedStatistic"></a>
+<div class="private">
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">_calcGradedStatistic</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">operation</span>,
+        <span class="sig-arg">sequence</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">isGraded</span>=<span class="sig-default">False</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Calculate a series length statistic, adjusting for incomparable 
+  elements. This assumes that the operation can be evaluated on the total 
+  number of elements, then the operation is evaluated on the subsets of 
+  incomparable elements, which are subtracted off from the full-set 
+  operation value.  If the 'sequence' param is provided, the grades for 
+  this sequence is subtracted off also (without double-counting). The max, 
+  mean, and variance can all be calculated using this approach.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>operation</code></strong> (callable) - The operation to evaluate, in the form 'numeric = f(int)'</li>
+        <li><strong class="pname"><code>sequence</code></strong> (list of list of object or list of object) - A comparison sequence to evaluate grades for also.  If None, 
+          ignored.</li>
+        <li><strong class="pname"><code>isGraded</code></strong> (bool) - If True, sequence is nested (where nested elements share a grade)</li>
+    </ul></dd>
+    <dt>Returns: int or float</dt>
+        <dd>Value of the graded statistic</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="_calcNumElements"></a>
+<div class="private">
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">_calcNumElements</span>(<span class="sig-arg">cls</span>,
+        <span class="sig-arg">sequence</span>,
+        <span class="sig-arg">isGraded</span>)</span>
+    <br /><em class="fname">Class Method</em>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Calculate the number of elements in the sequence. This is trivial for 
+  a flat sequence and quick for a graded one.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>sequence</code></strong> (list of list of object or list of object) - The sequence to count elements in</li>
+        <li><strong class="pname"><code>isGraded</code></strong> (bool) - If True, sequence is nested (where nested elements share a grade)</li>
+    </ul></dd>
+    <dt>Returns: bool</dt>
+        <dd>The number of elements in the sequence (N)</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="_calcOverloadedRanks"></a>
+<div class="private">
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">_calcOverloadedRanks</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">sequence</span>,
+        <span class="sig-arg">isGraded</span>,
+        <span class="sig-arg">otherSequence</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">isOtherGraded</span>=<span class="sig-default">False</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Calculate the grades with more than one element (overloaded grades). 
+  If two sequences are provided, this only calculates overloaded ranks for 
+  elements that are contained in both sequences (in case one is missing 
+  elements) Note: If a sequence is not nested, it has no overloaded ranks 
+  by definition Note 2: The 'otherSequence' is only needed to handle 
+  missing elements</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>sequence</code></strong> (list of list of object or list of object) - Sequence to calculate the overloaded grades</li>
+        <li><strong class="pname"><code>isGraded</code></strong> (bool) - If True, sequence is nested (where nested elements share a grade)</li>
+        <li><strong class="pname"><code>otherSequence</code></strong> (list of list of object or list of object) - Optionally, a reference sequence to only count elements in both 
+          sequences</li>
+        <li><strong class="pname"><code>isOtherGraded</code></strong> (bool) - If True, sequence is nested (where nested elements share a grade)</li>
+    </ul></dd>
+    <dt>Returns: List of list of object</dt>
+        <dd>List of subsets of elements that cannot be compared against each 
+          other</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="_calcRankIntersections"></a>
+<div class="private">
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">_calcRankIntersections</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">overloadedRanks</span>,
+        <span class="sig-arg">overloadedRanks2</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Calculate the intersection of overloaded ranks between sequences. This
+  basically calculates &quot;overloaded overloads&quot; of ranks.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>overloadedRanks</code></strong> (list of list of object param overloadedRanks2: Second set of 
+          overloaded (len &gt; 1) ranks) - First set of overloaded (len &gt; 1) ranks</li>
+        <li><strong class="pname"><code>overloadedRanks2</code></strong> (list of list of object)</li>
+    </ul></dd>
+    <dt>Returns: list of list of object</dt>
+        <dd>List of intersections between overloaded grades</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="_comparisonTest"></a>
+<div class="private">
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">_comparisonTest</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">test</span>,
+        <span class="sig-arg">sequences</span>,
+        <span class="sig-arg">sequences2</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">isGraded</span>=<span class="sig-default">False</span>,
+        <span class="sig-arg">measure</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string">similarity</code><code class="variable-quote">'</code></span>,
+        <span class="sig-arg">**kwds</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Perform a hypothesis test on either the similarity or the complements 
+  of the CDF values, which are a measure of the match between the each 
+  sequence and the reference seq. If two sequences are provided, this 
+  performs a two sample test of an appropriate type.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>test</code></strong> (callable) - The hypothesis test function, in the form: f(sample1, 
+          sample1=None, **kwds)</li>
+        <li><strong class="pname"><code>sequences</code></strong> (list of list of object or list of list of list of object) - Multiple sequences that are permutations of the elements of this 
+          sequence</li>
+        <li><strong class="pname"><code>sequences2</code></strong> (list of list of object or list of list of list of object) - Multiple sequences that are permutations (second sample)</li>
+        <li><strong class="pname"><code>isGraded</code></strong> (bool) - If True, each sequence is nested (where nested elements share a 
+          grade)</li>
+        <li><strong class="pname"><code>measure</code></strong> (str) - The measure to calculate for each sequence, either 
+          SIMILARITY_METRIC or from CDF_TYPES set</li>
+        <li><strong class="pname"><code>kwds</code></strong> (dict) - Additional test-specific parameters passed to the test</li>
+    </ul></dd>
+    <dt>Returns: float</dt>
+        <dd>Probability of the null hypothesis</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="_getElementIndex"></a>
+<div class="private">
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">_getElementIndex</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">element</span>,
+        <span class="sig-arg">sequence</span>,
+        <span class="sig-arg">isGraded</span>=<span class="sig-default">False</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Get the index of the given value in the sequence Note: This hashes 
+  element indices, if possible</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>element</code></strong> (object) - Value to get the position for</li>
+        <li><strong class="pname"><code>sequence</code></strong> (list of list of object) - Nested sequence which is used to determine sorting value of 
+          elements</li>
+        <li><strong class="pname"><code>isGraded</code></strong> (bool) - If True, sequence is graded (nested).  Else, flat sequence.</li>
+    </ul></dd>
+    <dt>Returns: int</dt>
+        <dd>Sorting key for the value</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="_populateHashRanks"></a>
+<div class="private">
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">_populateHashRanks</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Populate hash table that reports the grade of any element. Slight hit 
+  to memory, but significant boost in speed for comparisons.</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="cdf"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">cdf</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">sequence</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">isGraded</span>=<span class="sig-default">False</span>,
+        <span class="sig-arg">cdfType</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string">adaptive</code><code class="variable-quote">'</code></span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Calculate a CDF value for inversions between the reference sequence 
+  abd a comparison sequence.  If the 'sequence' param is None, the 
+  comparison sequence is a fully sorted form of the reference sequence.  
+  This can use either an exact distribution or a normal approximation.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>sequence</code></strong> (list of list of object or list of object or None) - Comparison sequence (If None, equivalent to a sorted reference 
+          sequence)</li>
+        <li><strong class="pname"><code>isGraded</code></strong> (bool) - If true, sequence consists of subsequences containing each grade.
+          Else, flat list.</li>
+        <li><strong class="pname"><code>cdfType</code></strong> (str) - The CDF function to use.  If ADAPTIVE_CDF, automatically switches
+          to a normal approximation when the # of elements exceeds a bound.
+          If EXACT_CDF, calculates the PDF exactly and sums over it.  This 
+          gets slow and is seldom necessary after about 100 elements.  If 
+          NORMAL_CDF, uses the mean and variance to generate a normal 
+          distribution.  Except for small numbers of elements or very large
+          grades, this is advised.</li>
+    </ul></dd>
+    <dt>Returns: float</dt>
+        <dd>P(x&lt;=X) where x is a random variable for permutation 
+          inversions and X is the number of inversions between the 
+          reference and comparison sequences.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="correlation"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">correlation</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">sequence</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">isGraded</span>=<span class="sig-default">False</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>The correlation of the reference sequence to a comparison sequence.  
+  If the 'sequence' param is None, the comparison sequence is a fully 
+  sorted form of the reference sequence.  This is just a rescaled form of 
+  similarity. This should also be equivalent to a Kendall's Tau correlation
+  under standard conditions.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>sequence</code></strong> (list of list of object or list of object or None) - Comparison sequence (If None, equivalent to a sorted reference 
+          sequence)</li>
+        <li><strong class="pname"><code>isGraded</code></strong> (bool) - If true, sequence consists of subsequences containing each grade.
+          Else, flat list.</li>
+    </ul></dd>
+    <dt>Returns: float</dt>
+        <dd>The correlation of the reference sequence to the comparison 
+          sequence, in [-1,1]</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="exactCDF"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">exactCDF</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">sequence</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">isGraded</span>=<span class="sig-default">False</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Calculate an exact CDF value for inversions between the reference 
+  sequence abd a comparison sequence.  If the 'sequence' param is None, the
+  comparison sequence is a fully sorted form of the reference sequence. 
+  Note: The exact CDF calculation works very slowly as N gets greater than 
+  100 elements.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>sequence</code></strong> (list of list of object or list of object or None) - Comparison sequence (If None, equivalent to a sorted reference 
+          sequence)</li>
+        <li><strong class="pname"><code>isGraded</code></strong> (bool) - If true, sequence consists of subsequences containing each grade.
+          Else, flat list.</li>
+    </ul></dd>
+    <dt>Returns: float</dt>
+        <dd>P(x&lt;=X) where x is a random variable for permutation 
+          inversions and X is the number of inversions between the 
+          reference and comparison sequences.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="getNumElements"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getNumElements</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Get the number of elements in this sequence</p>
+  <dl class="fields">
+    <dt>Returns: int</dt>
+        <dd>Number of elements</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="getOverloadedRanks"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getOverloadedRanks</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Get the elements in grades with more than one element</p>
+  <dl class="fields">
+    <dt>Returns: list of list of object</dt>
+        <dd>List of grades with their elements</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="inversions"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">inversions</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">sequence</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">isGraded</span>=<span class="sig-default">False</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>The inversions between the reference sequence and the comparison 
+  sequence. If the 'sequence' param is None, the comparison sequence is a 
+  fully sorted form of the reference sequence.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>sequence</code></strong> (list of list of object or list of object or None) - Comparison sequence (If None, equivalent to a sorted reference 
+          sequence)</li>
+        <li><strong class="pname"><code>isGraded</code></strong> (bool) - If true, sequence consists of subsequences containing each grade.
+          Else, flat list.</li>
+    </ul></dd>
+    <dt>Returns: int</dt>
+        <dd>If 'sequence' given, number of inversions to turn it into 
+          reference sequence. Else, the number of inversions to sort the 
+          reference sequence.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="isGraded"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">isGraded</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return if this is a graded poset.  If True, is graded.</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="iterElements"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">iterElements</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Iterate over the elements (flat iteration over grades)</p>
+  <dl class="fields">
+    <dt>Returns: list of object or object</dt>
+        <dd>Yield all the elements in the poset</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="maxInversions"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">maxInversions</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">sequence</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">isGraded</span>=<span class="sig-default">False</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>The maximum possible inversions, given the number of elements and the 
+  number sharing each grade (e.g. ties).  If sequence param is given, the 
+  structure of the comparison sequence is considered also.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>sequence</code></strong> (list of list of object or list of object or None) - Comparison sequence</li>
+        <li><strong class="pname"><code>isGraded</code></strong> (bool) - If true, sequence consists of subsequences containing each grade.
+          Else, flat list.</li>
+    </ul></dd>
+    <dt>Returns: int</dt>
+        <dd>Maximum possible number of inversions</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="mean"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">mean</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">sequence</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">isGraded</span>=<span class="sig-default">False</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>The mean of inversion across permutations, given the number of 
+  elements and the number sharing each grade (e.g. ties).  If sequence 
+  param is given, the structure of the comparison sequence is considered 
+  also.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>sequence</code></strong> (list of list of object or list of object  or None) - Comparison sequence</li>
+        <li><strong class="pname"><code>isGraded</code></strong> (bool) - If true, sequence consists of subsequences containing each grade.
+          Else, flat list.</li>
+    </ul></dd>
+    <dt>Returns: int</dt>
+        <dd>Mean number of inversions across possible permutations</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="normalCDF"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">normalCDF</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">sequence</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">isGraded</span>=<span class="sig-default">False</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Calculate an approximate CDF value for inversions between the 
+  reference sequence abd a comparison sequence.  If the 'sequence' param is
+  None, the comparison sequence is a fully sorted form of the reference 
+  sequence. Note: The normal distribution gets quite accurate by N &gt; 20 
+  and should be used for larger sequences.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>sequence</code></strong> (list of list of object or list of object or None) - Comparison sequence (If None, equivalent to a sorted reference 
+          sequence)</li>
+        <li><strong class="pname"><code>isGraded</code></strong> (bool) - If true, sequence consists of subsequences containing each grade.
+          Else, flat list.</li>
+    </ul></dd>
+    <dt>Returns: float</dt>
+        <dd>P(x&lt;=X) where x is a random variable for permutation 
+          inversions and X is the number of inversions between the 
+          reference and comparison sequences.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="permutationMeanTest"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">permutationMeanTest</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">sequences</span>,
+        <span class="sig-arg">sequences2</span>,
+        <span class="sig-arg">isGraded</span>=<span class="sig-default">False</span>,
+        <span class="sig-arg">measure</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string">adaptive</code><code class="variable-quote">'</code></span>,
+        <span class="sig-arg">alternative</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string">greater</code><code class="variable-quote">'</code></span>,
+        <span class="sig-arg">pValue</span>=<span class="sig-default">0.95</span>,
+        <span class="sig-arg">iterations</span>=<span class="sig-default">100000</span>,
+        <span class="sig-arg">useStoppingRule</span>=<span class="sig-default">True</span>,
+        <span class="sig-arg">maxExactN</span>=<span class="sig-default">7</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Perform a Permutation or Monte Carlo Mean Difference test on some 
+  measure (similarity or 1-CDF) for the match between the each sequence and
+  the reference seq. This requires two samples, as these are shuffled for 
+  form the permutations.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>sequences</code></strong> (list of list of object or list of list of list of object) - Multiple sequences that are permutations of the elements of this 
+          sequence</li>
+        <li><strong class="pname"><code>sequences2</code></strong> (list of list of object or list of list of list of object) - Multiple sequences that are permutations (second sample)</li>
+        <li><strong class="pname"><code>isGraded</code></strong> (bool) - If True, each sequence is nested (where nested elements share a 
+          grade)</li>
+        <li><strong class="pname"><code>measure</code></strong> (str) - The type of CDF to calculate for the inversion counts, from 
+          CDF_TYPES set</li>
+        <li><strong class="pname"><code>alternative</code></strong> (str) - Alternative hypothesis for the test, from 
+          StatisticalTests.TEST_HYPOTHESES set</li>
+        <li><strong class="pname"><code>pValue</code></strong> (float) - The p-Value for the test to confirm, used for Monte Carlo early 
+          termination</li>
+        <li><strong class="pname"><code>iterations</code></strong> (int) - The max number of iterations to run for Monte Carlo</li>
+        <li><strong class="pname"><code>useStoppingRule</code></strong> (bool) - If True, use version of MonteCarlo with an unbiased early 
+          stopping rule</li>
+        <li><strong class="pname"><code>maxExactN</code></strong> (int) - The largest N=len(x)+len(y) to calculate an exact test value. For
+          values higher than this, use a Monte Carlo approximation.</li>
+    </ul></dd>
+    <dt>Returns: float</dt>
+        <dd>Probability of the null hypothesis</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="permutationRankTest"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">permutationRankTest</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">sequences</span>,
+        <span class="sig-arg">sequences2</span>,
+        <span class="sig-arg">isGraded</span>=<span class="sig-default">False</span>,
+        <span class="sig-arg">measure</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string">adaptive</code><code class="variable-quote">'</code></span>,
+        <span class="sig-arg">alternative</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string">greater</code><code class="variable-quote">'</code></span>,
+        <span class="sig-arg">pValue</span>=<span class="sig-default">0.95</span>,
+        <span class="sig-arg">iterations</span>=<span class="sig-default">100000</span>,
+        <span class="sig-arg">useStoppingRule</span>=<span class="sig-default">True</span>,
+        <span class="sig-arg">maxExactN</span>=<span class="sig-default">7</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Perform a Permutation or Monte Carlo rank test on a measure 
+  (similarity or 1-CDF) for the match between the each sequence and the 
+  reference seq. This requires two samples, as these are shuffled for form 
+  the permutations.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>sequences</code></strong> (list of list of object or list of list of list of object) - Multiple sequences that are permutations of the elements of this 
+          sequence</li>
+        <li><strong class="pname"><code>sequences2</code></strong> (list of list of object or list of list of list of object) - Multiple sequences that are permutations (second sample)</li>
+        <li><strong class="pname"><code>isGraded</code></strong> (bool) - If True, each sequence is nested (where nested elements share a 
+          grade)</li>
+        <li><strong class="pname"><code>measure</code></strong> (str) - The type of CDF to calculate for the inversion counts, from 
+          CDF_TYPES set</li>
+        <li><strong class="pname"><code>alternative</code></strong> (str) - Alternative hypothesis for the test, from 
+          StatisticalTests.TEST_HYPOTHESES set</li>
+        <li><strong class="pname"><code>pValue</code></strong> (float) - The p-Value for the test to confirm, used for Monte Carlo early 
+          termination</li>
+        <li><strong class="pname"><code>iterations</code></strong> (int) - The max number of iterations to run for Monte Carlo</li>
+        <li><strong class="pname"><code>useStoppingRule</code></strong> (bool) - If True, use version of MonteCarlo with an unbiased early 
+          stopping rule</li>
+        <li><strong class="pname"><code>maxExactN</code></strong> (int) - The largest N=len(x)+len(y) to calculate an exact test value. For
+          values higher than this, use a Monte Carlo approximation.</li>
+    </ul></dd>
+    <dt>Returns: float</dt>
+        <dd>Probability of the null hypothesis</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="signTest"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">signTest</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">sequences</span>,
+        <span class="sig-arg">sequences2</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">isGraded</span>=<span class="sig-default">False</span>,
+        <span class="sig-arg">measure</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string">similarity</code><code class="variable-quote">'</code></span>,
+        <span class="sig-arg">mu</span>=<span class="sig-default">0.5</span>,
+        <span class="sig-arg">alternative</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string">greater</code><code class="variable-quote">'</code></span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Perform a Sign test on either the similarity or the complements of the
+  CDF values, which are a measure of the match between the each sequence 
+  and the reference seq. This has the advantage of calculating based on the
+  similarity, which is quicker than calculating the CDF probability of a 
+  particular inversion counts.  If two sequences are provided, this 
+  performs a two sample paired test.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>sequences</code></strong> (list of list of object or list of list of list of object) - Multiple sequences that are permutations of the elements of this 
+          sequence</li>
+        <li><strong class="pname"><code>sequences2</code></strong> (list of list of object or list of list of list of object) - Multiple sequences that are permutations (second sample)</li>
+        <li><strong class="pname"><code>isGraded</code></strong> (bool) - If True, each sequence is nested (where nested elements share a 
+          grade)</li>
+        <li><strong class="pname"><code>measure</code></strong> (str) - The measure to calculate for each sequence, either 
+          SIMILARITY_METRIC or from CDF_TYPES set</li>
+        <li><strong class="pname"><code>mu</code></strong> (float) - Assumed mean of the sign test, to allow assymetric testing</li>
+        <li><strong class="pname"><code>alternative</code></strong> (str) - Alternate hypothesis for the test, from 
+          StatisticalTests.TEST_HYPOTHESES set</li>
+    </ul></dd>
+    <dt>Returns: float</dt>
+        <dd>Probability of the null hypothesis</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="similarity"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">similarity</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">sequence</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">isGraded</span>=<span class="sig-default">False</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>The similarity of the reference sequence to a comparison sequence.  If
+  the 'sequence' param is None, the comparison sequence is a fully sorted 
+  form of the reference sequence.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>sequence</code></strong> (list of list of object or list of object or None) - Comparison sequence (If None, equivalent to a sorted reference 
+          sequence)</li>
+        <li><strong class="pname"><code>isGraded</code></strong> (bool) - If true, sequence consists of subsequences containing each grade.
+          Else, flat list.</li>
+    </ul></dd>
+    <dt>Returns: float</dt>
+        <dd>The similarity of the reference sequence to the comparison 
+          sequence, in [0,1]</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="stdDev"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">stdDev</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">sequence</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">isGraded</span>=<span class="sig-default">False</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>The standard deviation of inversions across permutations, given the 
+  elements and the number sharing each grade (e.g. ties).  If sequence 
+  param is not given, the structure of the comparison sequence is 
+  considered also.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>sequence</code></strong> (list of list of object or list of object or None) - Comparison sequence</li>
+        <li><strong class="pname"><code>isGraded</code></strong> (bool) - If true, sequence consists of subsequences containing each grade.
+          Else, flat list.</li>
+    </ul></dd>
+    <dt>Returns: int</dt>
+        <dd>Standard deviation of inversions across possible permutations</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="variance"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">variance</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">sequence</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">isGraded</span>=<span class="sig-default">False</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>The variance of inversions across permutations, given the number of 
+  elements and the number sharing each grade (e.g. ties).  If sequence 
+  param is given, the structure of the comparison sequence is considered 
+  also.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>sequence</code></strong> (list of list of object or list of object or None) - Comparison sequence</li>
+        <li><strong class="pname"><code>isGraded</code></strong> (bool) - If true, sequence consists of subsequences containing each grade.
+          Else, flat list.</li>
+    </ul></dd>
+    <dt>Returns: int</dt>
+        <dd>Variance of inversions across possible permutations</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="wilcoxonTest"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">wilcoxonTest</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">sequences</span>,
+        <span class="sig-arg">sequences2</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">isGraded</span>=<span class="sig-default">False</span>,
+        <span class="sig-arg">cdfType</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string">adaptive</code><code class="variable-quote">'</code></span>,
+        <span class="sig-arg">alternative</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string">greater</code><code class="variable-quote">'</code></span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Perform a Wilcoxon Rank Sum test on the complements of the CDF values,
+  which are a measure of the match between the each sequence and the 
+  reference seq Mu cannot be set on this test, as it would violate the 
+  assumption of symmetry. If two sequences are provided, this performs a 
+  two-sample paired test.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>sequences</code></strong> (list of list of object or list of list of list of object) - Multiple sequences that are permutations of the elements of this 
+          sequence</li>
+        <li><strong class="pname"><code>sequences2</code></strong> (list of list of object or list of list of list of object) - Multiple sequences that are permutations (second sample)</li>
+        <li><strong class="pname"><code>isGraded</code></strong> (bool) - If True, each sequence is nested (where nested elements share a 
+          grade)</li>
+        <li><strong class="pname"><code>cdfType</code></strong> (str) - The type of CDF to calculate for the inversion counts, from 
+          CDF_TYPES set</li>
+        <li><strong class="pname"><code>alternative</code></strong> (str) - Alternative hypothesis for the test, from 
+          StatisticalTests.TEST_HYPOTHESES set</li>
+    </ul></dd>
+    <dt>Returns: float</dt>
+        <dd>Probability of the null hypothesis</dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >InversionTest</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Sun Sep 07 17:01:43 2014
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

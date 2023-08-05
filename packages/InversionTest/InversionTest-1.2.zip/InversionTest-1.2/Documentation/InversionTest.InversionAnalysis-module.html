@@ -1,0 +1,1559 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>InversionTest.InversionAnalysis</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >InversionTest</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        Package&nbsp;InversionTest ::
+        Module&nbsp;InversionAnalysis
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="InversionTest.InversionAnalysis-module.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== MODULE DESCRIPTION ==================== -->
+<h1 class="epydoc">Module InversionAnalysis</h1><p class="nomargin-top"></p>
+<p>Main module for inversion counting, hypothesis tests, and sequence 
+  transformations.  The exposed API of the package relies on the 
+  implementations contained in this module.</p>
+  <p>Author: Benjamin D. Nye License: Apache License V2.0</p>
+
+<!-- ==================== CLASSES ==================== -->
+<a name="section-Classes"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Classes</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-Classes"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="InversionTest.InversionAnalysis.GradedPosetSequence-class.html" class="summary-name">GradedPosetSequence</a><br />
+      An analysis of the inversion distribution of a graded poset This 
+        can be used to analyze the reference sequence against a sorted 
+        version of itself or against permutations of these elements in a 
+        sequence passed in (which may be graded or not).
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="InversionTest.InversionAnalysis.InvalidGradedPosetError-class.html" class="summary-name">InvalidGradedPosetError</a>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="InversionTest.InversionAnalysis.MissingElementError-class.html" class="summary-name">MissingElementError</a>
+    </td>
+  </tr>
+</table>
+<!-- ==================== FUNCTIONS ==================== -->
+<a name="section-Functions"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Functions</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-Functions"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">float</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="InversionTest.InversionAnalysis-module.html#_inversionComparisonTest" class="summary-sig-name" onclick="show_private();">_inversionComparisonTest</a>(<span class="summary-sig-arg">test</span>,
+        <span class="summary-sig-arg">classTest</span>,
+        <span class="summary-sig-arg">orderings</span>,
+        <span class="summary-sig-arg">orderings2</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">seq</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">isGraded</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">hashableElements</span>=<span class="summary-sig-default">True</span>,
+        <span class="summary-sig-arg">measure</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">adaptive</code><code class="variable-quote">'</code></span>,
+        <span class="summary-sig-arg">**kwds</span>)</span><br />
+      A hypothesis test for comparing the similarity of some orderings 
+      based on some test function (test) and its equivalent in the 
+      GradedPosetSequence class (classTest).</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">list of object or list of list of object</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="InversionTest.InversionAnalysis-module.html#filterElements" class="summary-sig-name">filterElements</a>(<span class="summary-sig-arg">sequence</span>,
+        <span class="summary-sig-arg">excludedElements</span>,
+        <span class="summary-sig-arg">isGraded</span>=<span class="summary-sig-default">False</span>)</span><br />
+      Remove elements from a nested list, if they are part of the excluded 
+      elements.</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">int</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="InversionTest.InversionAnalysis-module.html#getDefaultIndex" class="summary-sig-name">getDefaultIndex</a>(<span class="summary-sig-arg">element</span>,
+        <span class="summary-sig-arg">maxIndex</span>,
+        <span class="summary-sig-arg">defaultGrade</span>=<span class="summary-sig-default">None</span>)</span><br />
+      Get a default index for a missing element.</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">object</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="InversionTest.InversionAnalysis-module.html#getMedianValue" class="summary-sig-name">getMedianValue</a>(<span class="summary-sig-arg">values</span>)</span><br />
+      Get the median of a sequence Each element of the sequence must be 
+      able to be averaged (added and divided by a number)</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">int</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="InversionTest.InversionAnalysis-module.html#getValueIndex" class="summary-sig-name">getValueIndex</a>(<span class="summary-sig-arg">value</span>,
+        <span class="summary-sig-arg">sequence</span>,
+        <span class="summary-sig-arg">isGraded</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">defaultGrade</span>=<span class="summary-sig-default">None</span>)</span><br />
+      Get the index of the given value in the sequence</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">int</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="InversionTest.InversionAnalysis-module.html#inversionCount" class="summary-sig-name">inversionCount</a>(<span class="summary-sig-arg">seq</span>,
+        <span class="summary-sig-arg">seq2</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">isGraded</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">hashableElements</span>=<span class="summary-sig-default">True</span>)</span><br />
+      Calculate the inversions between seq and seq2.</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">float</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="InversionTest.InversionAnalysis-module.html#inversionCountCDF" class="summary-sig-name">inversionCountCDF</a>(<span class="summary-sig-arg">seq</span>,
+        <span class="summary-sig-arg">seq2</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">isGraded</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">hashableElements</span>=<span class="summary-sig-default">True</span>,
+        <span class="summary-sig-arg">cdfType</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">adaptive</code><code class="variable-quote">'</code></span>)</span><br />
+      Get the cummulative distribution function probability for the number 
+      of inversions between seq and seq2.</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">int</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="InversionTest.InversionAnalysis-module.html#inversionCountMax" class="summary-sig-name">inversionCountMax</a>(<span class="summary-sig-arg">seq</span>,
+        <span class="summary-sig-arg">seq2</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">isGraded</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">hashableElements</span>=<span class="summary-sig-default">True</span>)</span><br />
+      Calculate the maximum possible number of inversions, based on the 
+      sequence (# of elements and grade structure).</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">float</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="InversionTest.InversionAnalysis-module.html#inversionCountMean" class="summary-sig-name">inversionCountMean</a>(<span class="summary-sig-arg">seq</span>,
+        <span class="summary-sig-arg">seq2</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">isGraded</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">hashableElements</span>=<span class="summary-sig-default">True</span>)</span><br />
+      Calculate the mean inversions across permutations, based on the 
+      sequence (# of elements and grade structure).</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">float</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="InversionTest.InversionAnalysis-module.html#inversionCountVariance" class="summary-sig-name">inversionCountVariance</a>(<span class="summary-sig-arg">seq</span>,
+        <span class="summary-sig-arg">seq2</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">isGraded</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">hashableElements</span>=<span class="summary-sig-default">True</span>)</span><br />
+      Calculate the variance of inversions across permutations, based on 
+      the sequence (# of elements and grade structure).</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">float</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="InversionTest.InversionAnalysis-module.html#inversionPermutationMeanTest" class="summary-sig-name">inversionPermutationMeanTest</a>(<span class="summary-sig-arg">orderings</span>,
+        <span class="summary-sig-arg">orderings2</span>,
+        <span class="summary-sig-arg">seq</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">isGraded</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">hashableElements</span>=<span class="summary-sig-default">True</span>,
+        <span class="summary-sig-arg">measure</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">adaptive</code><code class="variable-quote">'</code></span>,
+        <span class="summary-sig-arg">alternative</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">greater</code><code class="variable-quote">'</code></span>,
+        <span class="summary-sig-arg">pValue</span>=<span class="summary-sig-default">0.95</span>,
+        <span class="summary-sig-arg">iterations</span>=<span class="summary-sig-default">100000</span>,
+        <span class="summary-sig-arg">useStoppingRule</span>=<span class="summary-sig-default">True</span>,
+        <span class="summary-sig-arg">maxExactN</span>=<span class="summary-sig-default">7</span>)</span><br />
+      Perform a Permutation or Monte Carlo Mean Difference Test on some 
+      measure (similarity or 1-CDF) for the match between the each sequence
+      and the reference seq.</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">float</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="InversionTest.InversionAnalysis-module.html#inversionPermutationRankTest" class="summary-sig-name">inversionPermutationRankTest</a>(<span class="summary-sig-arg">orderings</span>,
+        <span class="summary-sig-arg">orderings2</span>,
+        <span class="summary-sig-arg">seq</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">isGraded</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">hashableElements</span>=<span class="summary-sig-default">True</span>,
+        <span class="summary-sig-arg">measure</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">adaptive</code><code class="variable-quote">'</code></span>,
+        <span class="summary-sig-arg">alternative</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">greater</code><code class="variable-quote">'</code></span>,
+        <span class="summary-sig-arg">pValue</span>=<span class="summary-sig-default">0.95</span>,
+        <span class="summary-sig-arg">iterations</span>=<span class="summary-sig-default">100000</span>,
+        <span class="summary-sig-arg">useStoppingRule</span>=<span class="summary-sig-default">True</span>,
+        <span class="summary-sig-arg">maxExactN</span>=<span class="summary-sig-default">7</span>)</span><br />
+      Perform a Permutation or Monte Carlo Rank on some measure (similarity
+      or 1-CDF) for the match between the each sequence and the reference 
+      seq.</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">float</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="InversionTest.InversionAnalysis-module.html#inversionSignTest" class="summary-sig-name">inversionSignTest</a>(<span class="summary-sig-arg">orderings</span>,
+        <span class="summary-sig-arg">orderings2</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">seq</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">isGraded</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">hashableElements</span>=<span class="summary-sig-default">True</span>,
+        <span class="summary-sig-arg">measure</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">similarity</code><code class="variable-quote">'</code></span>,
+        <span class="summary-sig-arg">alternative</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">greater</code><code class="variable-quote">'</code></span>,
+        <span class="summary-sig-arg">mu</span>=<span class="summary-sig-default">0.5</span>)</span><br />
+      A sign test based on the values of some measure.</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">float</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="InversionTest.InversionAnalysis-module.html#inversionSimilarity" class="summary-sig-name">inversionSimilarity</a>(<span class="summary-sig-arg">seq</span>,
+        <span class="summary-sig-arg">seq2</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">isGraded</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">hashableElements</span>=<span class="summary-sig-default">True</span>)</span><br />
+      Calculate the similarity between sequences: 
+      1-inversions/maxInversions If seq2 is None, this works equivalently 
+      to seq2 being a sorted version of seq</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">float</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="InversionTest.InversionAnalysis-module.html#inversionWilcoxonTest" class="summary-sig-name">inversionWilcoxonTest</a>(<span class="summary-sig-arg">orderings</span>,
+        <span class="summary-sig-arg">orderings2</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">seq</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">isGraded</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">hashableElements</span>=<span class="summary-sig-default">True</span>,
+        <span class="summary-sig-arg">cdfType</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">adaptive</code><code class="variable-quote">'</code></span>,
+        <span class="summary-sig-arg">alternative</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">greater</code><code class="variable-quote">'</code></span>)</span><br />
+      A Wilcoxon rank sum test based on the complement of the CDF (1-cdf).</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">list of int</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="InversionTest.InversionAnalysis-module.html#makeFlatIndexSequence" class="summary-sig-name">makeFlatIndexSequence</a>(<span class="summary-sig-arg">sequence</span>,
+        <span class="summary-sig-arg">referenceSequence</span>,
+        <span class="summary-sig-arg">isSeqNested</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">isRefNested</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">tieFunction</span>=<span class="summary-sig-default">&lt;built-in function sorted&gt;</span>,
+        <span class="summary-sig-arg">indexFunction</span>=<span class="summary-sig-default">&lt;function getValueIndex at 0x05143FB0&gt;</span>)</span><br />
+      Convert 'sequence' into a sequence of indices from the reference 
+      sequence, Note: This flattens the sequence, if it was nested, for 
+      inversion counting.</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">list of list of int or list of int</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="InversionTest.InversionAnalysis-module.html#makeIndexSequence" class="summary-sig-name">makeIndexSequence</a>(<span class="summary-sig-arg">sequence</span>,
+        <span class="summary-sig-arg">referenceSequence</span>,
+        <span class="summary-sig-arg">isSeqNested</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">isRefNested</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">tieFunction</span>=<span class="summary-sig-default">&lt;built-in function sorted&gt;</span>,
+        <span class="summary-sig-arg">indexFunction</span>=<span class="summary-sig-default">&lt;function getValueIndex at 0x05143FB0&gt;</span>)</span><br />
+      Convert 'sequence' into a sequence of indices from the reference 
+      sequence, rather than objects Note: This retains the original 
+      sequence structure (so if the sequence was nested, it remains nested)</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">list of list of object</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="InversionTest.InversionAnalysis-module.html#medianSequence" class="summary-sig-name">medianSequence</a>(<span class="summary-sig-arg">permutations</span>,
+        <span class="summary-sig-arg">isGraded</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">hashableElements</span>=<span class="summary-sig-default">True</span>)</span><br />
+      From the given permutations, make a sequence ordered by the median 
+      rank of each element.</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">int, list</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="InversionTest.InversionAnalysis-module.html#mergeSortInversionCount" class="summary-sig-name">mergeSortInversionCount</a>(<span class="summary-sig-arg">sequence</span>)</span><br />
+      Calculate the number of inversions requried to sort sequence via 
+      mergesort.</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="pairwiseGroupComparison"></a><span class="summary-sig-name">pairwiseGroupComparison</span>(<span class="summary-sig-arg">orderings</span>,
+        <span class="summary-sig-arg">orderings2</span>,
+        <span class="summary-sig-arg">isGraded</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">hashableElements</span>=<span class="summary-sig-default">True</span>,
+        <span class="summary-sig-arg">cdfType</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">adaptive</code><code class="variable-quote">'</code></span>,
+        <span class="summary-sig-arg">alternative</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">greater</code><code class="variable-quote">'</code></span>)</span></td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+</table>
+<!-- ==================== VARIABLES ==================== -->
+<a name="section-Variables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Variables</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-Variables"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="ADAPTIVE_CDF"></a><span class="summary-name">ADAPTIVE_CDF</span> = <code title="'adaptive'"><code class="variable-quote">'</code><code class="variable-string">adaptive</code><code class="variable-quote">'</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="CDF_TYPES"></a><span class="summary-name">CDF_TYPES</span> = <code title="frozenset(['adaptive', 'exact', 'normal'])"><code class="variable-group">frozenset([</code><code class="variable-quote">'</code><code class="variable-string">adaptive</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">exact</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">normal</code><code class="variable-quote">'</code><code class="variable-group">])</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="InversionTest.InversionAnalysis-module.html#DEFAULT_GRADES" class="summary-name">DEFAULT_GRADES</a> = <code title="frozenset(['Left', 'Max', 'Mean', 'Right', 'Zero'])"><code class="variable-group">frozenset([</code><code class="variable-quote">'</code><code class="variable-string">Left</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">Max</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">Mean</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">Right</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">Z</code><code class="variable-ellipsis">...</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="EXACT_CDF"></a><span class="summary-name">EXACT_CDF</span> = <code title="'exact'"><code class="variable-quote">'</code><code class="variable-string">exact</code><code class="variable-quote">'</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="GREATER_THAN_HYPOTHESIS"></a><span class="summary-name">GREATER_THAN_HYPOTHESIS</span> = <code title="'greater'"><code class="variable-quote">'</code><code class="variable-string">greater</code><code class="variable-quote">'</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="LEFT_GRADE"></a><span class="summary-name">LEFT_GRADE</span> = <code title="'Left'"><code class="variable-quote">'</code><code class="variable-string">Left</code><code class="variable-quote">'</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="MAX_GRADE"></a><span class="summary-name">MAX_GRADE</span> = <code title="'Max'"><code class="variable-quote">'</code><code class="variable-string">Max</code><code class="variable-quote">'</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="MEAN_GRADE"></a><span class="summary-name">MEAN_GRADE</span> = <code title="'Mean'"><code class="variable-quote">'</code><code class="variable-string">Mean</code><code class="variable-quote">'</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="NORMAL_CDF"></a><span class="summary-name">NORMAL_CDF</span> = <code title="'normal'"><code class="variable-quote">'</code><code class="variable-string">normal</code><code class="variable-quote">'</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="RIGHT_GRADE"></a><span class="summary-name">RIGHT_GRADE</span> = <code title="'Right'"><code class="variable-quote">'</code><code class="variable-string">Right</code><code class="variable-quote">'</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="SIMILARITY_METRIC"></a><span class="summary-name">SIMILARITY_METRIC</span> = <code title="'similarity'"><code class="variable-quote">'</code><code class="variable-string">similarity</code><code class="variable-quote">'</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="InversionTest.InversionAnalysis-module.html#VALID_GRADE_CONTAINERS" class="summary-name">VALID_GRADE_CONTAINERS</a> = <code title="(&lt;type 'list'&gt;, &lt;type 'tuple'&gt;, &lt;type 'set'&gt;)"><code class="variable-group">(</code>&lt;type 'list'&gt;<code class="variable-op">, </code>&lt;type 'tuple'&gt;<code class="variable-op">, </code>&lt;type<code class="variable-ellipsis">...</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="ZERO_GRADE"></a><span class="summary-name">ZERO_GRADE</span> = <code title="'Zero'"><code class="variable-quote">'</code><code class="variable-string">Zero</code><code class="variable-quote">'</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="InversionTest.InversionAnalysis-module.html#__loader__" class="summary-name">__loader__</a> = <code title="&lt;zipimporter object &quot;C:\Python27\lib\site-packages\inversiontest-1.1-p\
+y2.7.egg\InversionTest\&quot;&gt;">&lt;zipimporter object &quot;C:\Python27\lib\site-package<code class="variable-ellipsis">...</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="__package__"></a><span class="summary-name">__package__</span> = <code title="'InversionTest'"><code class="variable-quote">'</code><code class="variable-string">InversionTest</code><code class="variable-quote">'</code></code>
+    </td>
+  </tr>
+</table>
+<!-- ==================== FUNCTION DETAILS ==================== -->
+<a name="section-FunctionDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Function Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-FunctionDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="_inversionComparisonTest"></a>
+<div class="private">
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">_inversionComparisonTest</span>(<span class="sig-arg">test</span>,
+        <span class="sig-arg">classTest</span>,
+        <span class="sig-arg">orderings</span>,
+        <span class="sig-arg">orderings2</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">seq</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">isGraded</span>=<span class="sig-default">False</span>,
+        <span class="sig-arg">hashableElements</span>=<span class="sig-default">True</span>,
+        <span class="sig-arg">measure</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string">adaptive</code><code class="variable-quote">'</code></span>,
+        <span class="sig-arg">**kwds</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>A hypothesis test for comparing the similarity of some orderings based
+  on some test function (test) and its equivalent in the 
+  GradedPosetSequence class (classTest).</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>test</code></strong> (callable) - A test function, in the form, f(orderings, orderings2, **kwds)</li>
+        <li><strong class="pname"><code>classTest</code></strong> (callable) - An unbound method for the GradedPosetSequence class, in the form 
+          f(self, orderings, orderings2, isGraded, measure, **kwds)</li>
+        <li><strong class="pname"><code>orderings</code></strong> (list of list of object or list of list of list of object) - One or more comparison sequences (first sample)</li>
+        <li><strong class="pname"><code>orderings2</code></strong> (list of list of object or list of list of list of object) - One or more comparison sequences (second sample)</li>
+        <li><strong class="pname"><code>seq</code></strong> (list of object or list of list of object) - Sequence to calculate the number of inversions</li>
+        <li><strong class="pname"><code>isGraded</code></strong> (bool) - If True, both 'seq' and sequences in 'orderings' are nested 
+          (where nested elements share a grade)</li>
+        <li><strong class="pname"><code>hashableElements</code></strong> (bool) - If True, elements can be hashed (improves speed)</li>
+        <li><strong class="pname"><code>measure</code></strong> (str) - The type of CDF or similarity to calculate for the inversion 
+          counts</li>
+    </ul></dd>
+    <dt>Returns: float</dt>
+        <dd>Probability of the null hypothesis</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="filterElements"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">filterElements</span>(<span class="sig-arg">sequence</span>,
+        <span class="sig-arg">excludedElements</span>,
+        <span class="sig-arg">isGraded</span>=<span class="sig-default">False</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Remove elements from a nested list, if they are part of the excluded 
+  elements. Returns a copy of the list, in all cases</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>sequence</code></strong> (list of object or list of list of object) - Standard sequence ([x,y,...]) or nested sequence ([[x,..], 
+          [y,..],..])</li>
+        <li><strong class="pname"><code>excludedElements</code></strong> (list of object) - List of elements to be removed from the sequence</li>
+    </ul></dd>
+    <dt>Returns: list of object or list of list of object</dt>
+        <dd>Sequence (in same structure) with excluded elements removed</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="getDefaultIndex"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getDefaultIndex</span>(<span class="sig-arg">element</span>,
+        <span class="sig-arg">maxIndex</span>,
+        <span class="sig-arg">defaultGrade</span>=<span class="sig-default">None</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Get a default index for a missing element. Default grades are: 
+  LEFT_GRADE - Always -1, ranked before the lowest existing element(s) 
+  ZERO_GRADE - Always 0, ranked equal to the lowest element(s) MEAN_GRADE -
+  Always half of the maximum grade MAX_GRADE - Always equal to the maximum 
+  grade, ranked equal to highest element(s) RIGHT_GRADE - Always maximum 
+  grade +1 than the maximum grade, after the highest element(s)</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>maxIndex</code></strong> (int) - Maximum possible grade for sequence</li>
+        <li><strong class="pname"><code>defaultGrade</code></strong> (str) - The type of default grade to use, from DEFAULT_GRADES set</li>
+    </ul></dd>
+    <dt>Returns: int</dt>
+        <dd>Ranking for a default element</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="getMedianValue"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getMedianValue</span>(<span class="sig-arg">values</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Get the median of a sequence Each element of the sequence must be able
+  to be averaged (added and divided by a number)</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>values</code></strong> (list of object) - A list of values</li>
+    </ul></dd>
+    <dt>Returns: object</dt>
+        <dd>Median value of the list</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="getValueIndex"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getValueIndex</span>(<span class="sig-arg">value</span>,
+        <span class="sig-arg">sequence</span>,
+        <span class="sig-arg">isGraded</span>=<span class="sig-default">False</span>,
+        <span class="sig-arg">defaultGrade</span>=<span class="sig-default">None</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Get the index of the given value in the sequence</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>value</code></strong> (object) - Value to get the position for</li>
+        <li><strong class="pname"><code>sequence</code></strong> (list of list of object) - Nested sequence which is used to determine sorting value of 
+          elements</li>
+    </ul></dd>
+    <dt>Returns: int</dt>
+        <dd>Sorting key for the value</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="inversionCount"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">inversionCount</span>(<span class="sig-arg">seq</span>,
+        <span class="sig-arg">seq2</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">isGraded</span>=<span class="sig-default">False</span>,
+        <span class="sig-arg">hashableElements</span>=<span class="sig-default">True</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Calculate the inversions between seq and seq2.  If seq2 is None, this 
+  works equivalently to seq2 being a sorted version of seq</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>seq</code></strong> (list of object or list of list of object) - Sequence to calculate the inversions for</li>
+        <li><strong class="pname"><code>seq2</code></strong> (list of object or list of list of object) - A comparison sequence for the sequence 'seq'</li>
+        <li><strong class="pname"><code>isGraded</code></strong> (bool) - If True, both seq and seq2 are nested (where nested elements 
+          share a grade)</li>
+        <li><strong class="pname"><code>hashableElements</code></strong> (bool) - If True, elements can be hashed (improves speed)</li>
+    </ul></dd>
+    <dt>Returns: int</dt>
+        <dd>Number of inversions</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="inversionCountCDF"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">inversionCountCDF</span>(<span class="sig-arg">seq</span>,
+        <span class="sig-arg">seq2</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">isGraded</span>=<span class="sig-default">False</span>,
+        <span class="sig-arg">hashableElements</span>=<span class="sig-default">True</span>,
+        <span class="sig-arg">cdfType</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string">adaptive</code><code class="variable-quote">'</code></span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Get the cummulative distribution function probability for the number 
+  of inversions between seq and seq2.  If seq2 is None, this works 
+  equivalently to seq2 being a sorted version of seq</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>seq</code></strong> (list of object or list of list of object) - Sequence to calculate the number of inversions</li>
+        <li><strong class="pname"><code>seq2</code></strong> (list of object or list of list of object) - A comparison sequence for the sequence 'seq'</li>
+        <li><strong class="pname"><code>isGraded</code></strong> (bool) - If True, both seq and seq2 are nested (where nested elements 
+          share a grade)</li>
+        <li><strong class="pname"><code>hashableElements</code></strong> (bool) - If True, elements can be hashed (improves speed)</li>
+    </ul></dd>
+    <dt>Returns: float</dt>
+        <dd>P(X&lt;=x) where X is a R.V. based on all permutations and x is 
+          the actual number of inversions between seq and seq2</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="inversionCountMax"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">inversionCountMax</span>(<span class="sig-arg">seq</span>,
+        <span class="sig-arg">seq2</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">isGraded</span>=<span class="sig-default">False</span>,
+        <span class="sig-arg">hashableElements</span>=<span class="sig-default">True</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Calculate the maximum possible number of inversions, based on the 
+  sequence (# of elements and grade structure).  If the second optional 
+  sequence is provided, its grade structure is also considered. Note: This 
+  only depends on the structure of the sequence(s), not their order</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>seq</code></strong> (list of object or list of list of object) - Sequence to get the maximum possible inversions for any 
+          permutation</li>
+        <li><strong class="pname"><code>seq2</code></strong> (list of object or list of list of object) - A comparison sequence for the sequence 'seq'</li>
+        <li><strong class="pname"><code>isGraded</code></strong> (bool) - If True, both seq and seq2 are nested (where nested elements 
+          share a grade)</li>
+        <li><strong class="pname"><code>hashableElements</code></strong> (bool) - If True, elements can be hashed (improves speed)</li>
+    </ul></dd>
+    <dt>Returns: int</dt>
+        <dd>Maximum inversions</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="inversionCountMean"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">inversionCountMean</span>(<span class="sig-arg">seq</span>,
+        <span class="sig-arg">seq2</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">isGraded</span>=<span class="sig-default">False</span>,
+        <span class="sig-arg">hashableElements</span>=<span class="sig-default">True</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Calculate the mean inversions across permutations, based on the 
+  sequence (# of elements and grade structure).  If the second optional 
+  sequence is provided, its grade structure is also considered. Note: This 
+  only depends on the structure of the sequence(s), not their order</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>seq</code></strong> (list of object or list of list of object) - Sequence to get the mean inversions for all possible permutations</li>
+        <li><strong class="pname"><code>seq2</code></strong> (list of object or list of list of object) - A comparison sequence for the sequence 'seq'</li>
+        <li><strong class="pname"><code>isGraded</code></strong> (bool) - If True, both seq and seq2 are nested (where nested elements 
+          share a grade)</li>
+        <li><strong class="pname"><code>hashableElements</code></strong> (bool) - If True, elements can be hashed (improves speed)</li>
+    </ul></dd>
+    <dt>Returns: float</dt>
+        <dd>Mean inversions</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="inversionCountVariance"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">inversionCountVariance</span>(<span class="sig-arg">seq</span>,
+        <span class="sig-arg">seq2</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">isGraded</span>=<span class="sig-default">False</span>,
+        <span class="sig-arg">hashableElements</span>=<span class="sig-default">True</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Calculate the variance of inversions across permutations, based on the
+  sequence (# of elements and grade structure).  If the second optional 
+  sequence is provided, its grade structure is also considered. Note: This 
+  only depends on the structure of the sequence(s), not their order</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>seq</code></strong> (list of object or list of list of object) - Sequence to get the variance of inversions for all possible 
+          permutations</li>
+        <li><strong class="pname"><code>seq2</code></strong> (list of object or list of list of object) - A comparison sequence for the sequence 'seq'</li>
+        <li><strong class="pname"><code>isGraded</code></strong> (bool) - If True, both seq and seq2 are nested (where nested elements 
+          share a grade)</li>
+        <li><strong class="pname"><code>hashableElements</code></strong> (bool) - If True, elements can be hashed (improves speed)</li>
+    </ul></dd>
+    <dt>Returns: float</dt>
+        <dd>Variance of inversions</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="inversionPermutationMeanTest"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">inversionPermutationMeanTest</span>(<span class="sig-arg">orderings</span>,
+        <span class="sig-arg">orderings2</span>,
+        <span class="sig-arg">seq</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">isGraded</span>=<span class="sig-default">False</span>,
+        <span class="sig-arg">hashableElements</span>=<span class="sig-default">True</span>,
+        <span class="sig-arg">measure</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string">adaptive</code><code class="variable-quote">'</code></span>,
+        <span class="sig-arg">alternative</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string">greater</code><code class="variable-quote">'</code></span>,
+        <span class="sig-arg">pValue</span>=<span class="sig-default">0.95</span>,
+        <span class="sig-arg">iterations</span>=<span class="sig-default">100000</span>,
+        <span class="sig-arg">useStoppingRule</span>=<span class="sig-default">True</span>,
+        <span class="sig-arg">maxExactN</span>=<span class="sig-default">7</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Perform a Permutation or Monte Carlo Mean Difference Test on some 
+  measure (similarity or 1-CDF) for the match between the each sequence and
+  the reference seq. This requires two samples, as these are shuffled for 
+  form the permutations.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>orderings</code></strong> (list of list of object or list of list of list of object) - One or more comparison sequences (first sample)</li>
+        <li><strong class="pname"><code>orderings2</code></strong> (list of list of object or list of list of list of object) - One or more comparison sequences (second sample)</li>
+        <li><strong class="pname"><code>seq</code></strong> (list of object or list of list of object) - Sequence to calculate the number of inversions</li>
+        <li><strong class="pname"><code>isGraded</code></strong> (bool) - If True, both 'seq' and sequences in 'orderings' are nested 
+          (where nested elements share a grade)</li>
+        <li><strong class="pname"><code>hashableElements</code></strong> (bool) - If True, elements can be hashed (improves speed)</li>
+        <li><strong class="pname"><code>measure</code></strong> (str) - The type of CDF to calculate for the inversion counts, from 
+          CDF_TYPES set</li>
+        <li><strong class="pname"><code>alternative</code></strong> (str) - Alternative hypothesis for the test, from 
+          StatisticalTests.TEST_HYPOTHESES set</li>
+        <li><strong class="pname"><code>pValue</code></strong> (float) - The p-Value for the test to confirm, used for Monte Carlo early 
+          termination</li>
+        <li><strong class="pname"><code>iterations</code></strong> (int) - The max number of iterations to run for Monte Carlo</li>
+        <li><strong class="pname"><code>useStoppingRule</code></strong> (bool) - If True, use version of MonteCarlo with an unbiased early 
+          stopping rule</li>
+        <li><strong class="pname"><code>maxExactN</code></strong> (int) - The largest N=len(x)+len(y) to calculate an exact test value. For
+          values higher than this, use a Monte Carlo approximation.</li>
+    </ul></dd>
+    <dt>Returns: float</dt>
+        <dd>Probability of the null hypothesis</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="inversionPermutationRankTest"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">inversionPermutationRankTest</span>(<span class="sig-arg">orderings</span>,
+        <span class="sig-arg">orderings2</span>,
+        <span class="sig-arg">seq</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">isGraded</span>=<span class="sig-default">False</span>,
+        <span class="sig-arg">hashableElements</span>=<span class="sig-default">True</span>,
+        <span class="sig-arg">measure</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string">adaptive</code><code class="variable-quote">'</code></span>,
+        <span class="sig-arg">alternative</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string">greater</code><code class="variable-quote">'</code></span>,
+        <span class="sig-arg">pValue</span>=<span class="sig-default">0.95</span>,
+        <span class="sig-arg">iterations</span>=<span class="sig-default">100000</span>,
+        <span class="sig-arg">useStoppingRule</span>=<span class="sig-default">True</span>,
+        <span class="sig-arg">maxExactN</span>=<span class="sig-default">7</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Perform a Permutation or Monte Carlo Rank on some measure (similarity 
+  or 1-CDF) for the match between the each sequence and the reference seq. 
+  This requires two samples, as these are shuffled for form the 
+  permutations.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>orderings</code></strong> (list of list of object or list of list of list of object) - One or more comparison sequences (first sample)</li>
+        <li><strong class="pname"><code>orderings2</code></strong> (list of list of object or list of list of list of object) - One or more comparison sequences (second sample)</li>
+        <li><strong class="pname"><code>seq</code></strong> (list of object or list of list of object) - Sequence to calculate the number of inversions</li>
+        <li><strong class="pname"><code>isGraded</code></strong> (bool) - If True, both 'seq' and sequences in 'orderings' are nested 
+          (where nested elements share a grade)</li>
+        <li><strong class="pname"><code>hashableElements</code></strong> (bool) - If True, elements can be hashed (improves speed)</li>
+        <li><strong class="pname"><code>measure</code></strong> (str) - The type of CDF to calculate for the inversion counts, from 
+          CDF_TYPES set</li>
+        <li><strong class="pname"><code>alternative</code></strong> (str) - Alternative hypothesis for the test, from 
+          StatisticalTests.TEST_HYPOTHESES set</li>
+        <li><strong class="pname"><code>pValue</code></strong> (float) - The p-Value for the test to confirm, used for Monte Carlo early 
+          termination</li>
+        <li><strong class="pname"><code>useStoppingRule</code></strong> (bool) - If True, use version of MonteCarlo with an unbiased early 
+          stopping rule</li>
+        <li><strong class="pname"><code>iterations</code></strong> (int) - The max number of iterations to run for Monte Carlo</li>
+        <li><strong class="pname"><code>maxExactN</code></strong> (int) - The largest N=len(x)+len(y) to calculate an exact test value. For
+          values higher than this, use a Monte Carlo approximation.</li>
+    </ul></dd>
+    <dt>Returns: float</dt>
+        <dd>Probability of the null hypothesis</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="inversionSignTest"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">inversionSignTest</span>(<span class="sig-arg">orderings</span>,
+        <span class="sig-arg">orderings2</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">seq</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">isGraded</span>=<span class="sig-default">False</span>,
+        <span class="sig-arg">hashableElements</span>=<span class="sig-default">True</span>,
+        <span class="sig-arg">measure</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string">similarity</code><code class="variable-quote">'</code></span>,
+        <span class="sig-arg">alternative</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string">greater</code><code class="variable-quote">'</code></span>,
+        <span class="sig-arg">mu</span>=<span class="sig-default">0.5</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>A sign test based on the values of some measure.  This measure can be 
+  either similarity or the complement of the cdf (1-cdf), both of which are
+  in the range [0,1] where 0 is the worst match and 1 is the best match.  
+  For each sequence in 'orderings', the measure is calculated comparing seq
+  against the permutation.  This creates a list of measure values that the 
+  sign test can be applied to.  If two sets of orderings are provided, this
+  runs a two-sample test and ignores mu. Note: A calculation based on 
+  similarity will provide different results than one based on CDF if 
+  mu!=0.5.  When mu=0.5, both are identical.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>orderings</code></strong> (list of list of object or list of list of list of object) - One or more comparison sequences (first sample)</li>
+        <li><strong class="pname"><code>orderings2</code></strong> (list of list of object or list of list of list of object) - One or more comparison sequences (second sample)</li>
+        <li><strong class="pname"><code>seq</code></strong> (list of object or list of list of object) - Reference sequence to calculate the number of inversions against</li>
+        <li><strong class="pname"><code>isGraded</code></strong> (bool) - If True, both 'seq' and sequences in 'orderings' are nested 
+          (where nested elements share a grade)</li>
+        <li><strong class="pname"><code>hashableElements</code></strong> (bool) - If True, elements can be hashed (improves speed)</li>
+        <li><strong class="pname"><code>measure</code></strong> (str) - The measure to calculate for each sequence, either 
+          SIMILARITY_METRIC or from CDF_TYPES set</li>
+        <li><strong class="pname"><code>mu</code></strong> (float) - Assumed mean of the sign test, to allow assymetric testing</li>
+        <li><strong class="pname"><code>alternative</code></strong> (str) - Alternate hypothesis for the test, from the TEST_HYPOTHESES set 
+          ('greater', 'less', 'two.sided')</li>
+    </ul></dd>
+    <dt>Returns: float</dt>
+        <dd>Probability of the null hypothesis</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="inversionSimilarity"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">inversionSimilarity</span>(<span class="sig-arg">seq</span>,
+        <span class="sig-arg">seq2</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">isGraded</span>=<span class="sig-default">False</span>,
+        <span class="sig-arg">hashableElements</span>=<span class="sig-default">True</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Calculate the similarity between sequences: 1-inversions/maxInversions
+  If seq2 is None, this works equivalently to seq2 being a sorted version 
+  of seq</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>seq</code></strong> (list of object or list of list of object) - Sequence to get the similarity for</li>
+        <li><strong class="pname"><code>seq2</code></strong> (list of object or list of list of object) - A comparison sequence for the sequence 'seq'</li>
+        <li><strong class="pname"><code>isGraded</code></strong> (bool) - If True, both seq and seq2 are nested (where nested elements 
+          share a grade)</li>
+        <li><strong class="pname"><code>hashableElements</code></strong> (bool) - If True, elements can be hashed (improves speed)</li>
+    </ul></dd>
+    <dt>Returns: float</dt>
+        <dd>Similarity of sequences by inversion counts, in [0,1], where 1 is
+          a perfect match</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="inversionWilcoxonTest"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">inversionWilcoxonTest</span>(<span class="sig-arg">orderings</span>,
+        <span class="sig-arg">orderings2</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">seq</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">isGraded</span>=<span class="sig-default">False</span>,
+        <span class="sig-arg">hashableElements</span>=<span class="sig-default">True</span>,
+        <span class="sig-arg">cdfType</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string">adaptive</code><code class="variable-quote">'</code></span>,
+        <span class="sig-arg">alternative</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string">greater</code><code class="variable-quote">'</code></span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>A Wilcoxon rank sum test based on the complement of the CDF (1-cdf). 
+  For each ordering in 'orderings', 1-cdf is calculated comparing seq 
+  against the permutation.  This creates a list of probabilities of getting
+  a worse match by chance (one probability for each comparison 
+  sequence).</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>orderings</code></strong> (list of list of object or list of list of list of object) - One or more comparison sequences (first sample)</li>
+        <li><strong class="pname"><code>orderings2</code></strong> (list of list of object or list of list of list of object) - One or more comparison sequences (second sample)</li>
+        <li><strong class="pname"><code>seq</code></strong> (list of object or list of list of object) - Sequence to calculate the number of inversions</li>
+        <li><strong class="pname"><code>isGraded</code></strong> (bool) - If True, both 'seq' and sequences in 'orderings' are nested 
+          (where nested elements share a grade)</li>
+        <li><strong class="pname"><code>hashableElements</code></strong> (bool) - If True, elements can be hashed (improves speed)</li>
+        <li><strong class="pname"><code>cdfType</code></strong> (str) - The type of CDF to calculate for the inversion counts, from 
+          CDF_TYPES set</li>
+        <li><strong class="pname"><code>alternative</code></strong> (str) - Alternate hypothesis for the test, from the TEST_HYPOTHESES set 
+          ('greater', 'less', 'two.sided')</li>
+    </ul></dd>
+    <dt>Returns: float</dt>
+        <dd>Probability of the null hypothesis</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="makeFlatIndexSequence"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">makeFlatIndexSequence</span>(<span class="sig-arg">sequence</span>,
+        <span class="sig-arg">referenceSequence</span>,
+        <span class="sig-arg">isSeqNested</span>=<span class="sig-default">False</span>,
+        <span class="sig-arg">isRefNested</span>=<span class="sig-default">False</span>,
+        <span class="sig-arg">tieFunction</span>=<span class="sig-default">&lt;built-in function sorted&gt;</span>,
+        <span class="sig-arg">indexFunction</span>=<span class="sig-default">&lt;function getValueIndex at 0x05143FB0&gt;</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Convert 'sequence' into a sequence of indices from the reference 
+  sequence, Note: This flattens the sequence, if it was nested, for 
+  inversion counting. rather than objects, then flatten.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>sequence</code></strong> (list of list of object or list of object) - Sequence to convert into indices</li>
+        <li><strong class="pname"><code>referenceSequence</code></strong> (list of list of object or list of object) - Sequence with &quot;true ordering&quot; used to collect element 
+          indices</li>
+        <li><strong class="pname"><code>isSeqNested</code></strong> (bool) - If True, sequence is nested (where nested elements share a grade)</li>
+        <li><strong class="pname"><code>isRefNested</code></strong> (bool) - If True, reference is nested (where nested elements share a 
+          grade)</li>
+        <li><strong class="pname"><code>indexFunction</code></strong> (callable) - Function for calculating the index of an element, as f(element, 
+          referenceSequence, isRefNested)</li>
+    </ul></dd>
+    <dt>Returns: list of int</dt>
+        <dd>Flat sequence of indices, where an element's index is its grade 
+          in the reference sequence</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="makeIndexSequence"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">makeIndexSequence</span>(<span class="sig-arg">sequence</span>,
+        <span class="sig-arg">referenceSequence</span>,
+        <span class="sig-arg">isSeqNested</span>=<span class="sig-default">False</span>,
+        <span class="sig-arg">isRefNested</span>=<span class="sig-default">False</span>,
+        <span class="sig-arg">tieFunction</span>=<span class="sig-default">&lt;built-in function sorted&gt;</span>,
+        <span class="sig-arg">indexFunction</span>=<span class="sig-default">&lt;function getValueIndex at 0x05143FB0&gt;</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Convert 'sequence' into a sequence of indices from the reference 
+  sequence, rather than objects Note: This retains the original sequence 
+  structure (so if the sequence was nested, it remains nested)</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>sequence</code></strong> (list of list of object or list of object) - Sequence to convert into indices</li>
+        <li><strong class="pname"><code>referenceSequence</code></strong> (list of list of object or list of object) - Sequence with &quot;true ordering&quot; used to collect element 
+          indices</li>
+        <li><strong class="pname"><code>isSeqNested</code></strong> (bool) - If True, sequence is nested (where nested elements share a grade)</li>
+        <li><strong class="pname"><code>isRefNested</code></strong> (bool) - If True, reference is nested (where nested elements share a 
+          grade)</li>
+        <li><strong class="pname"><code>tieFunction</code></strong> (callable) - How to sort elements within the same grade (after applying 
+          indices), in form seq = f(seq) The 'sorted' function assumes they
+          are incomparable and removes any inversions. By comparison, a 
+          reversed sort would apply an inversion penalty to elements in a 
+          grade.</li>
+        <li><strong class="pname"><code>indexFunction</code></strong> (callable) - Function for calculating the index of an element, as f(element, 
+          referenceSequence, isRefNested)</li>
+    </ul></dd>
+    <dt>Returns: list of list of int or list of int</dt>
+        <dd>The 'sequence' parameter tranformed into integer indices, based 
+          on the reference sequence ordering.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="medianSequence"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">medianSequence</span>(<span class="sig-arg">permutations</span>,
+        <span class="sig-arg">isGraded</span>=<span class="sig-default">False</span>,
+        <span class="sig-arg">hashableElements</span>=<span class="sig-default">True</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>From the given permutations, make a sequence ordered by the median 
+  rank of each element.  Note: This requires that all permutations contain 
+  the same set of elements.  If this condition does not hold, then 
+  permutations with less elements would by definition have lower median 
+  ranks.  As such, this raises a KeyError if this case occurs.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>permutations</code></strong> (list of list of object or list of list of list of object) - Permutations to gather the ranks for</li>
+        <li><strong class="pname"><code>isGraded</code></strong> (bool) - If True, both seq and seq2 are nested (where nested elements 
+          share a grade)</li>
+        <li><strong class="pname"><code>hashableElements</code></strong> (bool) - If True, elements can be hashed (improves speed)</li>
+    </ul></dd>
+    <dt>Returns: list of list of object</dt>
+        <dd>A graded sequence based on the median ranks of elements. Grades 
+          occur if elements share the same median rank.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="mergeSortInversionCount"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">mergeSortInversionCount</span>(<span class="sig-arg">sequence</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Calculate the number of inversions requried to sort sequence via 
+  mergesort. This function only works on a flat list. Note: Relies on 
+  python sort to do actual merging (but not the counting). More efficient 
+  this way, as the Python version is in C.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>sequence</code></strong> (list) - Sequence to sort and count inversions</li>
+    </ul></dd>
+    <dt>Returns: int, list</dt>
+        <dd>Number of inversions, sorted list</dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== VARIABLES DETAILS ==================== -->
+<a name="section-VariablesDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Variables Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-VariablesDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="DEFAULT_GRADES"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">DEFAULT_GRADES</h3>
+  
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+<code class="variable-group">frozenset([</code><code class="variable-quote">'</code><code class="variable-string">Left</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">Max</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">Mean</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">Right</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">Zero</code><code class="variable-quote">'</code><code class="variable-group">])</code>
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="VALID_GRADE_CONTAINERS"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">VALID_GRADE_CONTAINERS</h3>
+  
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+<code class="variable-group">(</code>&lt;type 'list'&gt;<code class="variable-op">, </code>&lt;type 'tuple'&gt;<code class="variable-op">, </code>&lt;type 'set'&gt;<code class="variable-group">)</code>
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="__loader__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">__loader__</h3>
+  
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+&lt;zipimporter object &quot;C:\Python27\lib\site-packages\inversiontest-1.1-p<span class="variable-linewrap"><img src="crarr.png" alt="\" /></span>
+y2.7.egg\InversionTest\&quot;&gt;
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >InversionTest</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Sun Sep 07 17:01:43 2014
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>
