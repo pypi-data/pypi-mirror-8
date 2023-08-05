@@ -1,0 +1,30 @@
+{
+    "version": 1,
+    "disable_existing_loggers": false,
+    "formatters": {
+        "standard": {
+            "format": "%(asctime)s [%(levelname)s] %(name)s: %(message)s"
+        }
+    },
+    "handlers": {
+        "console": {
+            "level":"INFO",
+            "class":"logging.StreamHandler",
+            "formatter": "standard"
+        },
+        "disk": {
+            "level": "INFO",
+            "class": "logging.FileHandler",
+            "filename": "history.log",
+            "formatter": "standard"
+        }
+    },
+    "loggers": {
+        "": {
+            "handlers": ["console", "disk"],
+            "level": "INFO",
+            "propagate": true
+        }
+    }
+}
+
