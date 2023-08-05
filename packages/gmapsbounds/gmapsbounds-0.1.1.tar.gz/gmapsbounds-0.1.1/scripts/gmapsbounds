@@ -1,0 +1,38 @@
+#!/usr/bin/python3
+
+import os
+import argparse
+import json
+import shutil
+from gmapsbounds import obj
+from gmapsbounds import utils
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("input_file", help="file name containing geographic locations")
+    parser.add_argument('-o', "--output_dir", help="directory for program output", default=os.getcwd())
+    args = parser.parse_args()
+    if not os.path.exists(args.output_dir):
+        os.makedirs(args.output_dir)
+    with open(args.input_file) as f:
+        location_list = f.readlines()
+    if location_list:
+        driver = utils.launch_driver()
+        try:
+            for location_name in location_list:
+                location_name = location_name.rstrip('\n')
+                location = obj.Location(driver, location_name)
+                try:
+                    location.download_center_map()
+                    location.center, location.zoom = utils.parse_url(location.driver.current_url)
+                    location.calculate_coordinates()
+                    with open(os.path.join(args.output_dir, '{}.json'.format(location_name)), 'w') as f:
+                        f.write(json.dumps(location.as_dict(), indent=4))
+                finally:
+                    if os.path.exists(location.save_dir):
+                        shutil.rmtree(location.save_dir)
+        finally:
+            driver.close()
+
+if __name__ == '__main__':
+    main()
