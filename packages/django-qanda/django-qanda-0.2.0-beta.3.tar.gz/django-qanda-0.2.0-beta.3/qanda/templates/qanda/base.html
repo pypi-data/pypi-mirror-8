@@ -1,0 +1,242 @@
+<html>
+  <head>
+    <title>{% block title %}{% endblock %} - Django Qanda Demo</title>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300,400italic,800italic,400,800' rel='stylesheet' type='text/css'>
+    <style>
+      /*! Typebase.less v0.1.0 | MIT License */
+      /* Setup */
+      html {
+        /* Change default typefaces here */
+        font-family: 'Open Sans', 'Helvetica', 'Ariel', sans-serif;
+        font-size: 100%;
+        -webkit-font-smoothing: antialiased;
+        color: #555;
+        }
+      body {
+        padding-left: 10%;
+        padding-right: 10%;
+        margin: 0px auto;
+        }
+      /* Copy & Lists */
+      p {
+        line-height: 1.5rem;
+        margin-top: 1.5rem;
+        margin-bottom: 0;
+        }
+      ul,
+      ol {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+        }
+      ul li,
+      ol li {
+        line-height: 1.5rem;
+        }
+      ul ul,
+      ol ul,
+      ul ol,
+      ol ol {
+        margin-top: 0;
+        margin-bottom: 0;
+        }
+      blockquote {
+        line-height: 1.5rem;
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+        }
+      /* Headings */
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6 {
+        /* Change heading typefaces here */
+        margin-top: 1.5rem;
+        margin-bottom: 0;
+        line-height: 1.5rem;
+        }
+      h1 {
+        font-weight: 300;
+        font-size: 2.828rem;
+        line-height: 3rem;
+        margin-top: 3rem;
+        letter-spacing: -0.05rem;
+        }
+      h2 {
+        font-weight: 300;
+        font-size: 1.414rem;
+        letter-spacing: -0.05rem;
+        }
+      h3 {
+        font-size: 0.707rem;
+        }
+      h4 {
+        font-size: 0.4713333333333333rem;
+        }
+      h5 {
+        font-size: 0.3535rem;
+        }
+      /* Tables */
+      table {
+        margin-top: 1.5rem;
+        border-spacing: 0px;
+        border-collapse: collapse;
+        }
+      table td,
+      table th {
+        padding: 0;
+        line-height: 33px;
+        }
+      /* Code blocks */
+      code {
+        vertical-align: bottom;
+        }
+      /* Leading paragraph text */
+      .lead {
+        font-size: 1.414rem;
+        }
+      /* Hug a the block above you */
+      .hug {
+        margin-top: 0;
+        }
+
+      .no-bullet {
+        list-style-type: none;
+        padding-left: 0;
+        }
+      a { 
+        text-decoration: none;
+        color: #007895;
+        }
+      a:hover {
+        color: #00b6e1;
+        }
+      dd.subtext a {
+        color: #999;
+        }
+      dd.subtext a:hover {
+        color: #555;
+        }
+      dt {
+        margin-top: 1rem;
+        font-weight: 300;
+        }
+      dd {
+        margin-left: 0;
+        }
+      .subtext {
+        font-size:small;
+        }
+      dd.answer {
+        margin-top: 0.5rem;
+        margin-bottom: 2rem;
+        padding-bottom: 2rem;
+        border-bottom: 1px solid #eee;
+        }
+      ul.sidebar li {
+        border-bottom: 1px solid #eee; 
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+        }
+      ul.sidebar {
+        font-size: small;
+        }
+      ul.bar li {
+        border-bottom: 1px solid #eee; 
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+        }
+      ul.bar li p { 
+        margin: 0;
+        font-size: small;
+        }
+      ul.bar li.last,
+      ul.sidebar li.last,
+      dd.last {
+        border: none;
+        }
+      .feint {
+        color: #999;
+        }
+      .text-small {
+        font-size: small;
+        }
+      .secondary { 
+        padding-top: 1rem;
+        margin-top: 3rem;
+        }
+      .highlight {
+        border-top: 1px solid #eee;
+        font-style: italic;
+        padding: 1rem 0 2rem 0;
+        margin-top: 1rem;
+        color: #999;
+        }
+      .highlight p {
+        padding: 0;
+        margin: 0;
+        }
+      footer { 
+        font-size: x-small;
+        color: #999;
+        border-top: 1px solid #eee;
+        }
+      footer p {
+        margin-top: 0.5rem;
+        margin-bottom: 0.5rem;
+        }
+      h1.with-subtext {
+        margin-bottom: 0;
+        }
+      p.subtext {
+        margin-top: 0.5rem;
+        }
+      ul.breadcrumbs { 
+        list-style-type: none;
+        padding-left: 0;
+        }
+      ul.breadcrumbs li {
+        display: inline;
+        font-size: small;
+        }
+      ul.breadcrumbs li:after {
+        content: ' / ';
+        margin-left: 0.2em;
+        margin-right: 0.2em;
+        color: #ccc;
+        }
+      ul.breadcrumbs li.active:after {
+        content: '';
+        margin-left:0;
+        margin-right:0;
+        }
+      ul.breadcrumbs li.active {
+        color: #999;
+        }
+      .indicator { 
+        text-transform:uppercase;
+        font-size: x-small;
+        }
+      .indicator-members {
+        color: green;
+        }
+      .indicator-staff {
+        color: orange;
+        }
+    </style>
+  </head>
+  <body>
+    <div id="wrap">
+      <div>{% block breadcrumbs %}{% endblock %}</div>
+      <div class="header">{% block header %}{% endblock %}</div>
+      <div class="primary">{% block primary %}{% endblock %}</div>
+      <div class="secondary">{% block secondary %}{% endblock %}</div>
+    </div>
+    <div>
+      <footer>
+        <p><a href="https://bitbucket.org/mhurt/django-qanda">django-qanda</a> &copy; 2014, Mike Hurt &middot; Style sheet based on <a href="http://devinhunt.github.io/typebase.css/">typebase.css</a></p>
+      </footer>
+    </div>
+  </body>
+</html>

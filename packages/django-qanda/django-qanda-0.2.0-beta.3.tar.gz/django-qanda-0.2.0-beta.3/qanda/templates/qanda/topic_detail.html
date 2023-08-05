@@ -1,0 +1,62 @@
+{% extends 'qanda/base.html' %}
+
+
+{% block breadcrumbs %}
+
+  <ul class="breadcrumbs">
+    <li><a href="../">FAQ</a></li>
+    <li class="active">{{ object }}</li>
+  </ul>
+
+{% endblock %}
+
+
+{% block header %}
+
+  <h1 class="with-subtext">{% block title %}{{ object }}{% endblock %}</h1>
+
+{% endblock %}
+
+
+{% block primary %}
+
+  {% if object.description %}
+
+    <div class="highlight">
+      {{ object.description|linebreaks }}
+    </div>
+
+  {% endif %}
+
+  {% if question_list %}
+
+    <dl>
+
+      {% for question in question_list %}
+
+      <dt id="q{{ forloop.counter }}">
+        <a href="{{ question.get_absolute_url }}">{{ question }}</a>
+      </dt>
+      <dd class="subtext">
+        <span class="feint">{{ question.modified|date }}</span>
+        {% ifnotequal question.access question.PUBLIC %}
+          <span class="indicator indicator-{{ question.get_access_display.lower }}">
+            {{ question.get_access_display }} only
+          </span>
+        {% endifnotequal %}
+        </dd>
+      <dd class="answer subtext{% if forloop.last %} last{% endif %}">
+        {{ question.answer|truncatewords:20 }}
+      </dd>
+
+      {% endfor %}
+
+    </dl>
+
+  {% else %}
+
+    <p>I'm sorry, we currently have no frequently asked questions for this topic.</p>
+
+  {% endif %}
+
+{% endblock %}
