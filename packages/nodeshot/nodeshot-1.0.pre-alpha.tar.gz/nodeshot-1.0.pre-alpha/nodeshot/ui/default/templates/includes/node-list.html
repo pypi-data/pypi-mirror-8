@@ -1,0 +1,143 @@
+{% load i18n %}
+<div class="row-ns">
+    <h2 class="pull-left title">
+        {% trans 'Nodes' %}
+    </h2>
+    <span class="status pull-left">
+        <%= total %> total
+    </span>
+    <% _.each(Nodeshot.statuses, function(s, key){ %>
+        <span class="status pull-left <%= key %>"
+              data-slug="<%= key %>">
+            <%= s.nodes_count %>
+            <%= s.name.toLowerCase() %>
+        </span>
+    <% }) %>
+    <div class="clearfix"></div>
+</div>
+
+<div class="row-ns">
+    <form action="" id="js-search" class="input-group width30 marginright">
+            <input type="text" class="form-control" placeholder="{% trans 'Quick search' %}" value="<%= collection.searchTerm %>">
+            <span class="input-group-addon icon-search"></span>
+    </form>
+    
+    <div class="dropdown input-group width30 marginright">
+        <button class="btn dropdown-toggle" type="button" id="js-open-filter-panel">
+            {% trans 'Filter' %}
+            <span class="caret input-group-addon"></span>
+        </button>
+        <div class="dropdown-menu filter-panel" id="js-filter-panel">
+            <div class="group">
+                <label>{% trans 'Layer' %}</label>
+                <select id="layer-filter" class="selectpicker">
+                    <option>{% trans 'All' %}</option>
+                    {% for layer in layers %}
+                    <option value="{{ layer.slug }}">{{ layer.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="group">
+                <label>{% trans 'Status' %}</label>
+                <select id="status-filter" class="selectpicker">
+                    <option>{% trans 'All' %}</option>
+                    <% _.each(Nodeshot.statuses, function(status, key){ %>
+                        <option value="<%=  key %>"><%= status.name %></option>
+                    <% }) %>
+                </select>
+            </div>
+            
+            <div class="group">
+                <label>{% trans 'User' %}</label>
+                <div class="input-group nput-group-sm">
+                    <input type="text" class="form-control" placeholder="{% trans 'Any user' %}">
+                    <span class="input-group-addon icon-search"></span>
+                </div>
+            </div>
+            
+            <div class="group">
+                <label>{% trans 'Created on' %}</label>
+                <select class="selectpicker">
+                    <option>{% trans 'Any date' %}</option>
+                    <option>{% trans 'Today' %}</option>
+                    <option>{% trans 'Past 7 days' %}</option>
+                    <option>{% trans 'This month' %}</option>
+                    <option>{% trans 'This year' %}</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    
+    <% if(collection.searchTerm){ %>
+    <div class="pull-left filter-status slimtip boldtip">
+        <%= collection.count %> {% trans 'results' %}
+        <span id="js-reset-filter"
+              class="icon-close static hastip"
+              title="{% trans 'reset filter settings' %}">
+        </span>
+    </div>
+    <% } %>
+    
+    <button class="btn btn-light icon-plus pull-right" id="js-add-node">{% trans 'Add node' %}</button>
+    
+    <div class="clearfix"></div>
+</div>
+
+<div class="padding-bottom">
+    <table class="table table-striped columns">
+        <thead>
+            <tr>
+                <th>{% trans 'Name' %}</th>
+                <th class="status-column">{% trans 'Status' %}</th>
+                <th>{% trans 'Layer' %}</th>
+                <th>{% trans 'User' %}</th>
+                <th>{% trans 'Created' %}</th>
+                <th>{% trans 'Updated' %}</th>
+            </tr>
+        </thead>
+        <tbody id="js-rows">
+        </tbody>
+    </table>
+</div>
+
+<footer class="fixedbottom dark">
+    <div class="center-stage">
+        <div class="pull-left pagination-links">
+            <% if(collection.hasPreviousPage()){ %>
+                <a href="#" class="btn btn-default" id="js-previous-page">&laquo; {% trans 'previous' %}</a>
+            <% } %>
+            <% if(collection.hasNextPage()){ %>
+                <a href="#" class="btn btn-default" id="js-next-page">{% trans 'next' %} &raquo;</a>
+            <% } %>
+            <%= collection.state.currentPage %> {% trans 'of' %} <%= collection.getNumberOfPages() %>
+        </div>
+        <div class="pull-left pagination-select" id="js-page-size">
+            <select class="selectpicker">
+                <% [25, 50, 100, 200, 500, 1000].forEach(function(n){ %>
+                    <option value="<%= n %>" <% if(collection.state.pageSize === n){ %>selected<% } %>>
+                        <%= n %>
+                    </option>
+                <% }) %>
+            </select>
+        </div>
+        
+        <div class="pull-right list-actions not-implemented">
+            <select class="selectpicker">
+                <option>{% trans 'Choose action' %}</option>
+                <option>do something</option>
+            </select>
+        </div>
+        
+        <div class="pull-right select-all not-implemented">
+            <span class="custom-checkbox">
+                <input type="checkbox" id="select-all-checkbox" />
+                <label for="select-all-checkbox"></label>
+            </span>
+            
+            <label for="select-all-checkbox">{% trans 'Select all' %}</label>
+        </div>
+        
+        <br class="clearfix">
+    </div>
+</footer>

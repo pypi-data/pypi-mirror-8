@@ -1,0 +1,31 @@
+{% extends "open311.html" %}
+{% load staticfiles %}
+{% block container %}
+<div class="container">
+
+    <div id="MainPage" class="row ">
+        <div class="col-md-3 ">
+            <div id="nodelistContainer">
+                <p class="intest">Service requests list</p>
+                <select id="selectLayer" onchange=createNodeList() class="layerList">
+                    <option value=" ">Choose layer</option>
+                </select>
+                <div id="nodelist"></div>
+            </div>
+        </div>
+        <div class="col-md-9">
+            <div id="mapContainer">
+                <div class="intest">Map</div>
+                <p style="text-align: center;font-weight: bold;">Click on map to insert a new service request</p>
+                <div id="map" style="width: 100%; height: 600px">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /container -->
+{% endblock container %}
+{% block scripts%}
+
+{% endblock scripts%}

@@ -1,0 +1,321 @@
+{% load staticfiles %}
+
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title>Nodeshot Open311 Service requests</title>
+        <meta name="description" content="">
+	  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+	<link rel="stylesheet" href="{% static 'open311/css/bootstrap.css' %}" />
+
+
+
+       <style>
+            body {
+                padding-top: 60px;
+                padding-bottom: 40px;
+            }
+        </style>
+
+	<link rel="stylesheet" href="{% static 'open311/css/main.css' %}" />
+        <link rel="stylesheet" href="{% static 'open311/css/leaflet.css' %}" />
+
+
+        <script src="{% static 'open311/js/vendor/modernizr-2.6.2-respond-1.1.0.min.js' %}"></script>
+    </head>
+
+
+       
+<!-- Templates -->
+
+<script id="tmplLogin" type="text/template">
+<input id="user" class="span2" type="text" placeholder="Email">
+<input id="password" class="span2" type="password" placeholder="Password">
+<button id="loginButton" type="button" onclick=login() class="btn">Sign in</button>
+<a href="{% url "socialauth_begin" "facebook" %}" class="btn btn-success">Facebook</a>
+<a href="{% url "socialauth_begin" "google" %}" class="btn btn-success">Google</a>
+<a href="{% url "socialauth_begin" "github" %}" class="btn btn-success">Github</a>
+</script>
+
+	
+<script id="tmplLogout" type="text/template">
+<span class="userLogged">Hello <%= user %> </span>
+<button id="logoutButton" type="button" onclick=logout() class="btn">Sign out</button>
+</script>
+
+
+<script id="tmplConfirmPos" type="text/template">
+<strong>Is position correct ?</strong><br>
+<button id="confirm" class="confirm_marker" onclick=markerConfirm(markerLocation)>Confirm</button>&nbsp;
+<button class="remove_marker" onclick=markerDelete(marker)>Delete</b>
+</script>
+
+<script id="tmplInsertNode" type="text/template">
+<h3><strong>Insert request details</strong></h3>
+
+<form id="requestForm" role="form" >
+  <input type="hidden" name="service_code" value="node">
+    <div class="form-group">
+	<label for="layerToInsert" >Layer</label>
+
+	<select class="form-control" name="layer" >
+	  <% for (var i = 0; i < layers.length; i++) { %>
+      <% var layer = layers[i]; %>
+	 <option value="<%= layer.slug %>"> <%= layer.name %>
+	     <% }
+	      %>
+	</select>
+	</div>
+	<div class="form-group">	  
+	<label for="nodeToInsertName" >Name</label>
+	<input class="form-control" name="name">
+	</div>
+	<div class="form-group">
+	<label for="nodeToInsertName" >Description</label>
+	<textarea class="form-control" name="description"></textarea>
+	</div>
+	<div class="form-group">
+	<label for="nodeToInsertAddress" >Address <br>(from Open Street Map)</label>
+	<div id="loadingAddress" class="loading" ></div>
+	<textarea id="requestAddress" class="form-control" name="address"></textarea>	
+	</div>
+	<div class="form-group">
+	<label for="nodeToInsertLat">Lat</label>   
+	<input id="requestLat" class="form-control" name="lat">
+	</div>
+	<div class="form-group">
+	<label for="nodeToInsertLng">Long</label>   
+	<input id="requestLng" class="form-control" name="long">
+	</div>
+	<div class="form-group">
+	    <label for="imageToInsert">Image</label>   
+	 <input type="file" name="image" id="photoimg" >
+	</div>
+	  <input type=submit value="Insert request">
+	</form>
+<div id="request_messages" class="error_messages"></div>
+</script>
+
+
+<script id="tmplLayerList" type="text/template">
+<option value="<%= layer.slug %>"> <%= layer.name %>
+</option>
+</script>
+
+<script id="tmplNodelist" type="text/template">
+  Requests found: <strong><%= nodes.length %></strong> 
+   <table class="table table-condensed small"> <% for (var i = 0; i < nodes.length; i++) { %>
+      <% var node = nodes[i]; %>
+      <tr>
+      <td class="active" style="width:35%">
+	<a href="#" class="list-link" data-id='<%= node.service_request_id %>'>
+	<%= node.service_request_id %>
+      </a>
+      </td>
+      <td> <%= node.name %></td>
+      </tr>
+    <% } %>
+  </table>
+</script>
+
+<script id="tmplOpen311Popup" type="text/template">
+<strong>Request ID: </strong><%= service_request_id %><br>
+<strong>Status: </strong><%= status %><br>
+<button class="btn btn-success">View details</button>
+</script>
+
+<script id="tmplOpen311RequestBox" type="text/template">
+<div class="row">
+<div id="left" class="col-md-6" >
+            <div id="requestContainer"></div>
+            
+        </div>
+        <div id="right" class="col-md-6" >
+	  <div id="votesContainer"></div>
+            <div id="ratingContainer"></div>
+            <div id="commentsContainer"></div>
+        </div>
+</div>
+</script>
+
+<script id="tmplOpen311Request" type="text/template">
+<div id="request" class="requestSubBox" >
+<div class="intest">Request</div>
+<table class="table table-condensed">
+  <tr>
+<td class="active strong">Request_id</td><td>
+<%= requestID %></td>
+</tr><tr>
+<td class="active strong">Layer</td><td>
+<%= request.layer %></td>
+</tr><tr>
+<td class="active strong">Name</td><td>
+<%= request.name %></td>
+</tr><tr>
+<td class="active strong">Description</td><td>
+<%= request.description %></td>
+</tr><tr>
+<td class="active strong">Status</td><td>
+<%= request.status %></td>
+</tr><tr>
+<td class="active strong">Status detail</td><td>
+<%= request.detailed_status %></td>
+</tr><tr>
+<td class="active strong">Address</td><td>
+<%= request.address %></td>
+</tr><tr>
+<td class="active strong">Requested on</td><td>
+<%= request.requested_datetime %></td>
+</tr><tr>
+<td class="active strong">Updated on</td><td>
+<%= request.updated_datetime %></td></tr>
+  <tr>
+<td class="active strong">Image</td><td>
+<img class="thumbnail" src="<%= request.image_urls[0] %>"</td></tr>
+</table>
+</div>
+</script>
+
+<script id="tmplOpen311Votes" type="text/template">
+<div id="votes" class="requestSubBox">
+<div class="intest">Vote</div>
+<table class="table table-condensed text-center strong">
+<tr>
+<td class="active " style="width:15%"><img id="likeButton" src="{% static 'open311/img/ok.png' %}" />
+</td>
+<td style="width:15%"><%= likes %></td>
+</tr>
+<tr><td class="active " style="width:15%"><img id="unlikeButton" src="{% static 'open311/img/ko.png' %}" />
+</td>
+<td style="width:15%"><%= dislikes %></td>
+<td></td></tr>
+</table>
+<div id="vote_messages" class="thanks_messages"></div>
+<div id="vote_error_messages" class="error_messages"></div>
+</div>
+</script>
+
+<script id="tmplNodePopupRating" type="text/template">
+  <div id="rating" class="requestSubBox">
+    <div class="intest">Rate it</div>
+<div style="background-color:#f5f5f5;padding:5px">
+Rated <strong><%= rating%>/10 </strong> out of <strong><%= votes %></strong> votes </strong></div>
+<div id="star" style="padding:5px;"></div>
+<div id="rating_messages" class="thanks_messages"></div>
+<div id="rating_error_messages" class="error_messages"></div>
+</div>
+</script>
+
+<script id="tmplComments" type="text/template">
+ 
+<div id="comments" class="requestSubBox" >
+ <div class="intest">Add comments</div>
+<textarea id="commentText" class="your_comment"></textarea><br>
+<button id="post_comments" style="margin:5px;">Post comment</button>
+<div id="comment_messages" class="thanks_messages"></div>
+<div id="comment_error_messages" class="error_messages"></div>
+<br>  
+	<div id="comment_list" >
+	  <p><strong>Comments (<%= comments_count%>) :</strong></p> 
+    <% for (var i = 0; i < comments.length; i++) { %>
+      <% var comment = comments[i]; %>
+		<div  class="comment_div">
+		<span class="comment_user">
+		    <%= comment.username %>
+		</span>
+		<div class="comment_text">
+		<%- comment.text %>
+		</div>
+		<span class="comment_date"><%= comment.added %></span>	
+		</div>
+		
+    <% }
+    
+    %>
+  </div>
+</div> 	
+</script>
+
+
+
+<!-- End of Templates -->
+<body>
+  <div id='loading'><img src= {% static 'open311/img/ajax-loader.gif' %}>Loading data.. </div>
+  <div class="overlay" id="overlay" style="display:none;"></div>
+
+<div id="RequestDetails" style="display: none;">
+</div>
+<div id="serviceRequestForm" style="display: none;">
+
+</div>
+
+        <!--[if lt IE 7]>
+            <p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a> to improve your experience.</p>
+        <![endif]-->
+        <div class="navbar navbar-inverse navbar-fixed-top">
+            
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <a class="navbar-brand" href="#">
+		      <img src="{% static 'open311/css/images/nodeshot-311-logo.png' %}" />
+		    </a>
+                    <div class="navbar-collapse collapse">
+                        
+                        <form id="userForm" class="navbar-form pull-right">
+			 {% if not user.is_authenticated %}
+                         <input id="user" class="span2" type="text" placeholder="Email">
+                         <input id="password" class="span2" type="password" placeholder="Password">
+                         <button id="loginButton" type="button" onclick=login() class="btn">Sign in</button>
+			 <a href="{% url "socialauth_begin" "facebook" %}" class="btn btn-success">Facebook</a>
+			 <a href="{% url "socialauth_begin" "google" %}" class="btn btn-success">Google</a>
+			 <a href="{% url "socialauth_begin" "github" %}" class="btn btn-success">Github</a>
+			  {% else %}
+			   <span class="userLogged">Hello  {{ user }}  </span>
+			    <button id="logoutButton" type="button" onclick=logout() class="btn">Sign out</button>
+			 {% endif %}  
+                        </form>
+                    </div><!--/.nav-collapse -->
+                </div>
+           
+        </div>
+{% block container %}
+
+{% endblock container %}
+
+<script>window.__BASEURL__ = '{% url 'api_root_endpoint' %}'</script>
+<script src="{% static 'open311/js/vendor/underscore-min.js' %}"></script>
+<script src="{% static 'open311/js/vendor/jquery-1.9.1.min.js' %}"></script>
+<script src="{% static 'open311/js/vendor/bootstrap.min.js' %}"></script>
+<script src="{% static 'open311/js/vendor/leaflet.js' %}"></script>
+<script src="https://maps.google.com/maps/api/js?v=3.2&sensor=false"></script>
+<script src="{% static 'open311/js/vendor/Google.js' %}"></script>
+<script src="{% static 'open311/js/vendor/leaflet.markercluster.js' %}"></script>
+<script src="{% static 'open311/js/vendor/jquery.raty.js' %}"></script>
+<script type="text/javascript">
+    var NS_311 = {}
+    NS_311.__BASEURL__ = '{% url 'api_root_endpoint' %}'
+    NS_311.TILESERVER_URL = '{{ TILESERVER_URL }}';
+    //console.log(NS_311.TILESERVER_URL)
+    $.myproject = {} // namespace
+    $.myproject.STATIC_URL = '{{ STATIC_URL }}';
+</script>
+<script src="{% static 'open311/js/utils.js' %}"></script>
+<script src="{% static 'open311/js/json2geojson.js' %}"></script>
+<script src="{% static 'open311/js/functions.js' %}"></script>
+<script src="{% static 'open311/js/main.js' %}"></script>
+{% block scripts%}
+
+{% endblock scripts%}	
+
+
+
+    </body>
+</html>
