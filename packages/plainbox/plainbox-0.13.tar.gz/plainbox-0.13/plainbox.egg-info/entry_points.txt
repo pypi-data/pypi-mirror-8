@@ -1,0 +1,24 @@
+[console_scripts]
+plainbox = plainbox.public:main
+plainbox-trusted-launcher-1 = plainbox.impl.secure.launcher1:main
+
+[plainbox.buildsystem]
+make = plainbox.impl.buildsystems:MakefileBuildSystem
+autotools = plainbox.impl.buildsystems:AutotoolsBuildSystem
+go = plainbox.impl.buildsystems:GoBuildSystem
+
+[plainbox.unit]
+template = plainbox.impl.unit.template:TemplateUnit
+test plan = plainbox.impl.unit.testplan:TestPlanUnit
+unit = plainbox.impl.unit.unit:Unit
+job = plainbox.impl.unit.job:JobDefinition
+category = plainbox.impl.unit.category:CategoryUnit
+
+[plainbox.exporter]
+html = plainbox.impl.exporter.html:HTMLSessionStateExporter
+xlsx = plainbox.impl.exporter.xlsx:XLSXSessionStateExporter [xlsx]
+xml = plainbox.impl.exporter.xml:XMLSessionStateExporter
+json = plainbox.impl.exporter.json:JSONSessionStateExporter
+rfc822 = plainbox.impl.exporter.rfc822:RFC822SessionStateExporter
+text = plainbox.impl.exporter.text:TextSessionStateExporter
+
