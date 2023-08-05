@@ -1,0 +1,58 @@
+<div ui-view="plugins">
+    <!-- Breadcrumb -->
+    <div ncy-breadcrumb></div>
+    <!-- /Breadcrumb -->
+
+    <table ng-table="tablePlugins" show-filter="true" class="table ng-table">
+        <thead>
+            <tr>
+                <th class="sortable" ng-class="{
+                    'sort-asc': tableParams.isSortBy('name', 'asc'),
+                    'sort-desc': tableParams.isSortBy('name', 'desc')
+                  }"
+                    ng-click="tableParams.sorting({'name' : tablePlugins.isSortBy('name', 'asc') ? 'desc' : 'asc'})" translate>
+                    Name
+                </th>
+                <th translate>Description</th>
+                <th translate>Version</th>
+                <th translate>Enabled</th>
+                <th translate>Lang</th>
+                <th translate>Author</th>
+                <th translate>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="plugin in plugins">
+                <td data-title="'Name'" sortable="'name'" filter="{ 'name': 'text' }"><b>{{ plugin.name }}</b></td>
+                <td>
+                    <div ng-repeat="oDescription in plugin.description" ng-if="oDescription.lang == configuration.lang">
+                        {{ oDescription.description }}
+                    </div>
+                </td>
+                <td>{{ plugin.version }}</td>
+                <td>
+                    <div ng-if="plugin.enabled == true" translate>
+                        Yes
+                    </div>
+                    <div ng-if="plugin.enabled == false" translate>
+                        No
+                    </div>
+                </td>
+                <td>
+                    <span ng-repeat="lang in plugin.lang"> <span flag="'{{ lang }}'" flag-size="f16"></span></span>
+                </td>
+                <td>{{ plugin.author }}</td>
+                <td>
+                    <div ng-if="plugin.enabled == true">
+                        <button class="btn btn-primary btn-xs" ng-click="disable(plugin.id)" translate> Disable</button>
+                    </div>
+                    <div ng-if="plugin.enabled == false">
+                        <button class="btn btn-primary btn-xs" ng-click="enable(plugin.id)" translate> Enable</button>
+                    </div>
+                    <button class="btn btn-primary btn-xs fa fa-code" ng-click="editConfiguration(plugin)" translate> Configuration</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+</div>

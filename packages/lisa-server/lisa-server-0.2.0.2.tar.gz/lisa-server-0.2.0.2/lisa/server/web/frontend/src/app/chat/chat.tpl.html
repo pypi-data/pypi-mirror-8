@@ -1,0 +1,27 @@
+<section class="chatmodule" ng-controller="ChatCtrl">
+    <header class="top-bar">
+      <div class="left"  ng-click="isopen=!isopen">
+        <span class="message"></span>
+        <h1 translate>L.I.S.A Chat</h1>
+      </div>
+
+      <div class="right">
+        <i ng-class="{true:'fa-bell-o', false:'fa-bell-slash-o'}[sound]" class="fa" ng-click="sound=!sound"></i>
+        <i ng-class="{true:'fa-minus', false:'fa-plus'}[isopen]" class="fa"  ng-click="isopen=!isopen"></i>
+      </div>
+
+    </header>
+
+    <ol ng-show="isopen" class="discussion" scroll-glue>
+        <li ng-repeat="message in messages" class="{{ message.class }}">
+            <img class="avatar" />
+            <div class="messages">
+                <p ng-bind-html="message.body"></p>
+            </div>
+        </li>
+    </ol>
+
+    <form ng-show="isopen" ng-submit="sendMessage()">
+        <input type="text" ng-model="messageText" />
+    </form
+</section>

@@ -1,0 +1,31 @@
+<div ui-view="upgrade">
+    <!-- Breadcrumb -->
+    <div ncy-breadcrumb></div>
+    <!-- /Breadcrumb -->
+
+
+    <div ng-if="LisaServerVersion.should_upgrade == true" class="panel-container">
+        <span class="panel-title" translate>You should upgrade your version of L.I.S.A Server</span>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th translate>Local version</th>
+                    <th translate>Remote version</th>
+                    <th translate>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{ LisaServerVersion.local_version }}</td>
+                    <td>{{ LisaServerVersion.remote_version }}</td>
+                    <td>
+                        <button class="btn btn-primary btn-xs" ng-click="upgrade()" translate>Upgrade</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div ng-if="LisaServerVersion.should_upgrade == false" class="panel-container">
+        <span class="panel-title"  translate>You already have the last version of L.I.S.A Server</span>
+    </div>
+</div>

@@ -1,0 +1,50 @@
+<div class="profile">
+    <h1 translate>{{ Session.User.username }}'s profile</h1>
+
+    <form name="profile_form" class="form-horizontal" role="form" novalidate>
+      <div class="form-group">
+        <label for="inputUsername" class="col-sm-2 control-label" translate>Username</label>
+        <div class="col-sm-10">
+          <input type="text" name="username" class="form-control" id="inputUsername" data-ng-model="Session.User.username" required>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="inputFirstname" class="col-sm-2 control-label" translate>Firstname</label>
+        <div class="col-sm-4">
+          <input type="text" name="firstname" class="form-control" id="inputFirstname" data-ng-model="Session.User.first_name">
+        </div>
+
+        <label for="inputLastname" class="col-sm-2 control-label" translate>Lastname</label>
+        <div class="col-sm-4">
+          <input type="text" name="lastname" class="form-control" id="inputLastname" data-ng-model="Session.User.last_name">
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="inputEmail" class="col-sm-2 control-label" translate>Email</label>
+        <div class="col-sm-10">
+          <input type="email" name="email" class="form-control" id="inputEmail" data-ng-model="Session.User.email">
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="inputPassword" class="col-sm-2 control-label" translate>Password</label>
+        <div class="col-sm-10">
+          <input type="password" name="password" class="form-control" id="inputPassword">
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="inputLastname" class="col-sm-2 control-label" translate>API Key</label>
+        <div class="col-sm-7">
+          <input type="text" name="apikey" class="form-control" readonly id="inputAPIKey" data-ng-model="Session.User.apikey">
+        </div>
+        <div class="col-sm-3">
+          <button ng-click="regenerateAPIKey()" class="btn btn-primary" translate>Regenerate</button>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10 action-bar">
+          <button ng-click="submit()" ng-disabled="profile_form.$invalid" type="submit" class="btn btn-success" translate>Submit</button>
+          <button ng-click="cancel()" class="btn btn-danger" translate>Cancel</button>
+        </div>
+      </div>
+    </form>
+</div>
