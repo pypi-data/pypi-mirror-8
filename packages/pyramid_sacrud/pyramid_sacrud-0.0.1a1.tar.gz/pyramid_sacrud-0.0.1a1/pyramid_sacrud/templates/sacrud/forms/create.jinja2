@@ -1,0 +1,62 @@
+{% set obj=sa_crud['obj'] %}
+{% set obj_cls=sa_crud['table'] %}
+{% set visible_columns=sa_crud['col'] %}
+{% set fk_template = "sacrud/types/ForeignKey.jinja2" %}
+
+{# generate form action in view #}
+<form method="POST" accept-charset="utf-8" enctype="multipart/form-data"
+    {% if sa_crud %}
+        {% if not obj %}
+            action="{{ request.route_url('sa_create', table=obj_cls.__tablename__) }}"
+        {% else %}
+            action="{{ request.route_url('sa_update', table=obj_cls.__tablename__,
+                       pk=pk_to_list(obj)) }}"
+        {% endif %}
+    {% endif %}>
+
+
+    {% if sa_crud %}
+        <div class="sacrud-grid">
+            <div class="sacrud-grid__title">Add a new {{ sa_crud['table'].__tablename__ }}</div>
+            <div class="sacrud-grid__toolbar">
+                <div class="toolbar clear-fix">
+                    <div class="toolbar-button">
+                        <div class="toolbar-button__item">
+                             <button type="submit" name="form.submitted" class="toolbar-button__item-button">Save</button>
+                        </div>
+                        {% if obj %}
+                            <div class="action_button toolbar-button__item toolbar-button__item_type_red">
+                                <div class="toolbar-button__item-name">Delete</div>
+                            </div>
+                        {% endif %}
+                        <div class="toolbar-button__item">
+                            <a href="{{ request.route_url('sa_list', table=obj_cls.__tablename__) }}" class="toolbar-button__item-link">Cancel</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{ form|safe }}
+
+            <div class="sacrud-grid__toolbar">
+                <div class="toolbar clear-fix">
+                    <div class="toolbar-button">
+                        <div class="toolbar-button__item">
+                             <button type="submit" name="form.submitted" class="toolbar-button__item-button">Save</button>
+                        </div>
+                        {% if obj %}
+                            <div class="toolbar-button__item toolbar-button__item_type_red">
+                                <a href="{{ request.route_url('sa_delete', table=obj_cls.__tablename__,
+                                            pk=pk_to_list(obj)) }}"
+                                   class="toolbar-button__item-link">Delete</a>
+                            </div>
+                        {% endif %}
+                        <div class="toolbar-button__item">
+                            <a href="{{ request.route_url('sa_list', table=obj_cls.__tablename__) }}" class="toolbar-button__item-link">Cancel</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</form>
