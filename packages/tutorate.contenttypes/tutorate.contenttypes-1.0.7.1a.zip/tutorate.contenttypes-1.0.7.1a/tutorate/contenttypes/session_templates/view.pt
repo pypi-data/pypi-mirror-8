@@ -1,0 +1,132 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      lang="en"
+      metal:use-macro="context/main_template/macros/master"
+      i18n:domain="tutorate.contenttypes">
+<body>
+  <metal:main fill-slot="main">
+
+    <div class="w-container">
+      <h2 class="section-title" tal:content="context/Title">The Technology Behind Online Marketing</h2>
+      <p class="section-subtitle" tal:content="context/Description">Send it to your best friends and your grandma. It’ll work on their computers and phones.</p>
+      <div tal:condition="context/google_form_key|nothing" class="button-group center">
+        <a  class="button sign-up" data-ix="show-form" href="javascript:;" onclick="return false;">Sign up</a>
+      </div>
+      <div class="w-row">
+        <div class="w-col w-col-6 center">
+          <div data-ix="hide-on-load" width="760" class="sign-up-form">
+            <iframe tal:attributes="src view/google_form_url;
+              height context/google_form_height|string:1301"
+               width="760"  frameborder="0" marginheight="0" marginwidth="0">Loading...</iframe>
+
+          </div>
+        </div>
+      </div>
+
+      <div class="w-row">
+        <div class="w-col w-col-6 center">
+          <!-- render the image -->
+        <tal:img tal:define="image nocall:context/image"
+          >
+          <img tal:condition="image|nothing" tal:define="images context/@@images"
+     tal:replace="structure python: images.scale('image',
+                  scale='large').tag()" />
+          <p tal:condition="not:image|nothing">Oops.. this session has no image yet! Pardon us</p>
+        </tal:img>
+        <br /><a tal:condition="view/can_edit" 
+        tal:attributes="href string:${context/absolute_url}/@@croppingeditor">crop image</a>
+
+        </div>
+        <div class="w-col w-col-6 content-column">
+          <tal:block tal:condition="context/topics|nothing">
+            <h3>What you’ll learn</h3>
+            <tal:topics tal:content="structure context/topics/output">
+            <p>- All major browsers are supported
+            <br>- including Internet Explorer.
+            <br>– Send it to your best friends and your grandma.
+            <br>- It’ll work on their computers and phones.
+            <br>– Send it to your best friends and your grandma. It’ll work on their – computers and phones.</p>
+            </tal:topics>
+          </tal:block>
+          <tal:block tal:condition="context/audience|nothing">
+          <h3>Intended Audience</h3>
+          <div tal:content="structure context/audience/output">Startups
+            <br>Small Business Owners
+            <br>Marketing Managers
+            <br>Marketers</div>
+          
+          </tal:block> 
+        </div>
+      </div>
+    </div>
+
+  
+    <div class="w-container grey content-column" tal:condition="context/details|nothing">
+      <h2 class="section-title">Additional information on the session</h2>
+      
+      <div class="w-row">
+        <div class="w-col w-col-12">
+          
+          <p  tal:replace="structure context/details/output">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros elementum tristique.</p>
+        </div>
+       
+      </div>
+    </div>
+ 
+  <div tal:condition="nothing" class="section">
+    <div class="w-container">
+      <h2 class="section-title">Back to our Course Catalog</h2>
+      <p class="section-subtitle">Send it to your best friends and your grandma. It’ll work on their computers and phones.</p>
+      <div class="w-row">
+        <div class="w-col w-col-4 w-col-small-4">
+          <div class="icons">
+            <img src="images/9-icon2-brush.png" width="25" alt="60e99974-e829-4dc1-accd-daf1e7fdf1c1_9-icon2-brush.png">
+          </div>
+          <h3>Brush</h3>
+          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros elementum tristique. .</p>
+        </div>
+        <div class="w-col w-col-4 w-col-small-4">
+          <div class="icons">
+            <img src="images/9-icon2-chat.png" width="25" alt="3ac4f3ae-7b57-4c26-930b-fbaed24601b3_9-icon2-chat.png">
+          </div>
+          <h3>Chat</h3>
+          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros elementum tristique. Duis cursus, mi quis viverra ornare, eros dolor</p>
+        </div>
+        <div class="w-col w-col-4 w-col-small-4">
+          <div class="icons">
+            <img src="images/9-icon2-drops.png" width="25" alt="5b9ab216-8502-4c2a-9d0d-13f712a8d7c9_9-icon2-drops.png">
+          </div>
+          <h3>Styles</h3>
+          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros elementum tristique.</p>
+        </div>
+      </div>
+      <div class="w-row">
+        <div class="w-col w-col-4 w-col-small-4">
+          <div class="icons">
+            <img src="images/9-icon2-eye.png" width="25" alt="a42359b6-c5c1-4aab-914c-968266ab740e_9-icon2-eye.png">
+          </div>
+          <h3>See</h3>
+          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros elementum tristique. Duis cursus, mi quis viverra ornare, eros dolor</p>
+        </div>
+        <div class="w-col w-col-4 w-col-small-4">
+          <div class="icons">
+            <img src="images/9-icon2-phone.png" width="25" alt="da9ffb16-4e62-4c4e-aa8e-33932f9ccf71_9-icon2-phone.png">
+          </div>
+          <h3>Responsive</h3>
+          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros elementum tristique. Duis cursus, mi quis viverra ornare, eros dolor</p>
+        </div>
+        <div class="w-col w-col-4 w-col-small-4">
+          <div class="icons">
+            <img src="images/9-icon2-video.png" width="25" alt="0a33fa10-b61c-421d-92ee-2e926c2fc717_9-icon2-video.png">
+          </div>
+          <h3>Videos</h3>
+          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros elementum tristique.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  </metal:main>
+</body>
+</html>

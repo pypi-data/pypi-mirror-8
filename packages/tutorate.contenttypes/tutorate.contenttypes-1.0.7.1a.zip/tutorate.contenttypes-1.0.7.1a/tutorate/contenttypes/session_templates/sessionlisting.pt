@@ -1,0 +1,79 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      lang="en"
+      metal:use-macro="context/main_template/macros/master">
+<body>
+  <metal:css-slot fill-slot="style_slot">
+        <!-- <style type="text/css" media="screen" 
+        tal:content="string: @import url(${context/@@plone_portal_state/portal_url }/++resource++tutorate.contenttypes/style.css);">
+        </style> -->
+  </metal:css-slot>    
+  <metal:js-slot fill-slot="javascript_head_slot">
+    <!-- <script type="text/javascript" src=""
+       tal:attributes="src string:${context/@@plone_portal_state/portal_url }/++resource++tutorate.contenttypes/script.js"></script>
+   -->
+  </metal:js-slot>
+  <metal:content-title fill-slot="content-title">
+  <h2 tal:condition="context/Title|nothing" tal:content="context/Title" class="section-title">stuff here</h2>
+</metal:content-title>
+<metal:content-description fill-slot="content-description">
+  <p tal:condition="context/Description|nothing" tal:content="context/Description" class="section-subtitle">stuff here</p>
+</metal:content-description>
+  <metal:content-core fill-slot="content-core">
+    <metal:content-core define-macro="content-core">
+
+      <p tal:condition="not: context/@@folderListing">
+        No session added to this folder yet!
+      </p>
+      <tal:listing 
+          tal:condition="context/@@folderListing"
+          tal:define="toLocalizedTime nocall:context/@@plone/toLocalizedTime;                      
+             ">
+
+
+        <tal:batch tal:define="
+           Batch python:modules['Products.CMFPlone'].Batch;
+           b_size python:int(request.get('b_size', 6));
+           b_start python:int(request.get('b_start', 0));
+           results python:context.restrictedTraverse('@@folderListing')(batch=True,sort_order='ascending', sort_on='getObjPositionInParent', b_size=b_size, b_start=b_start);
+           batch python:Batch(results, b_size, b_start);">
+
+
+            <div class="w-row">
+            	<tal:items tal:repeat="item results"               
+      tal:attributes="id  item/id;">
+      			<div class="w-col w-col-4">
+            		<div class="session-item" tal:define="item_object item/getObject;">
+            	    <a tal:condition="item_object/image | nothing" 
+                        tal:attributes="href item/getURL">
+                        <img 
+            	    tal:define="scales item_object/@@images"
+     				tal:replace="structure python: scales.tag('image',css_class='session-image', scale='large')"
+     			    /></a>
+            		<!--	<img src="" alt=""
+                             tal:replace="structure python: path('nocall:item_object/tag')(scale='large')" /> -->
+            				<div class="session-data">
+            					<h4 tal:content="item/Title">Google App Engine Primer for Python</h4>
+            					<a class="button learn-more" href="#"
+            						tal:attributes="href item/getURL">Learn more</a>
+            					<div class="session-description" tal:content="item/Description">Google App Engine is designed for building web-based applications. Out of the box it solves a lot of the problems that developers would otherwise be trying to solve themselves. It doesn't hurt that it's built on Google's infrastructure and experience. This session focuses on using Python to begin development on Google App Engine.
+            					</div>
+            				</div>
+            		</div>
+            	</div>
+            	</tal:items>
+            </div>
+            
+            
+          
+           <div metal:use-macro="here/batch_macros/macros/navigation" />
+        </tal:batch>
+
+      </tal:listing>
+      
+      </metal:content-core>
+    </metal:content-core>
+
+</body>
+</html>
