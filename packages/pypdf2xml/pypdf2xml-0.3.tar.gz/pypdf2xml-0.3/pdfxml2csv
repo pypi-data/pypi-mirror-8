@@ -1,0 +1,180 @@
+#!/usr/bin/python
+# *-* coding: utf-8 *-*
+import csv
+import re
+import sys
+import urllib
+import HTMLParser
+import argparse
+import operator
+import numpy
+
+from StringIO import StringIO
+import lxml.etree, lxml.html
+from pprint import pprint as pprint_orig
+
+def pprint(obj, *args, **kwargs):
+    width = kwargs.pop('width', 120)
+    pprint_orig(obj, *args, width=width, **kwargs)
+
+def parse_xml(filename):
+    h = HTMLParser.HTMLParser()
+
+    pdfxml = open(filename, 'r').read()
+    root = lxml.etree.fromstring(pdfxml)
+
+    pages = []
+    for pagenum, page in enumerate(root):
+        assert page.tag == 'page'
+        pageinfo = {
+            'pagenumber': page.attrib.get('number'),
+            'width': page.attrib.get('width'),
+            'height': page.attrib.get('height'),
+        }
+        textboxes = []
+        for v in page:
+            if v.tag == 'text':
+                left = int(v.attrib.get('left'))
+                top  = int(v.attrib.get('top'))
+                width  = int(v.attrib.get('width'))
+                height  = int(v.attrib.get('height'))
+                info = {
+                    'left': left,
+                    'top': top,
+                    'width': width,
+                    'height': height,
+                    'text': v.text,
+                    }
+                textboxes.append(info)
+        pages.append((pageinfo, textboxes))
+    return pages
+
+def pages2lines(pages):
+    rows = []
+    # first create lines from given XML
+    for pagenum, page in enumerate(pages):
+        pagelines = {}
+        for item in page[1]:
+            top = item['top']
+            # fix some off-by-one placement issues, which make some text span over two lines where it should be in one
+            if pagelines.has_key(top-1):
+                top = top - 1
+            elif pagelines.has_key(top+1):
+                top = top + 1
+            line = pagelines.setdefault(top, [])
+            line.append(item)
+
+        ordered = list(sorted([(k, sorted(v, key=operator.itemgetter('left'))) for k,v in pagelines.iteritems()]))
+        rows.extend(ordered)
+
+    return rows
+
+def lines2cols(rows, splits, header=-1, footer=-1, verbose=False):
+    records = []
+    # splits must containt catchall zero
+    if 0 not in [i[0] for i in splits]:
+        splits = [(0, 'left')] + splits
+    splits = list(sorted(splits))
+    
+    for topoffset, line in rows:
+        if footer != -1 and topoffset > footer:
+            continue
+        if header != -1 and topoffset < header:
+            continue
+        linerec = [[] for i in xrange(len(splits))]
+        split = splits[-1]
+        
+        for item in sorted(line, reverse=True):
+            left = item['left']
+            text = item['text']
+            idx = len(splits)-1
+            while splits[idx][0] > left:
+                idx = idx - 1
+            linerec[idx].insert(0, (left, item))
+        if verbose:
+            pprint(linerec)
+
+        ordered = [sorted(i) for i in linerec]
+        records.append(ordered)
+    return records
+
+def records2csv(table, csv_filename, csv_sep):
+    csvfd = open(csv_filename, 'wb')
+    csvw = csv.writer(csvfd)
+    for row in table:
+        row2 = []
+        for r in row:
+            row2.append(csv_sep.join([i[1]['text'] for i in r]))
+        csvw.writerow([i.encode('utf-8') for i in row2])
+    csvfd.close()
+
+def find_gaps(array):
+    gap_start = 0
+    prev = None
+    n = 0
+    gaps = []
+    while n < len(array):
+        cur = array[n]
+        if prev is None:
+            prev = cur
+            continue
+        if prev != 0 and cur == 0:
+            gap_start = n
+
+        if prev == 0 and cur != 0:
+            # end gap
+            gaps.append((gap_start, n-gap_start))
+        prev = cur
+        n += 1
+
+    if cur == 0 and prev == 0:
+        gaps.append((gap_start, n-gap_start))
+    return gaps
+
+def estimate_cell_vertical(pages, wlen=6):
+    pagegaps = []
+    for pageinfo, page in pages:
+        #pagepoints = [0]*(int(float(pageinfo['height']))+1)
+        pagepoints = numpy.zeros(int(float(pageinfo['height']))+1)
+        for item in page:
+            for idx in xrange(item['top'], item['top'] + item['height']):
+                pagepoints[idx] += len(item['text'])
+        window = numpy.hamming(wlen)
+        smoothed = numpy.convolve(pagepoints, window)
+        gaps = find_gaps(smoothed)
+        pagegaps.append(gaps)
+    return pagegaps
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='Parse PDF XML into a CSV')
+    parser.add_argument('filename', metavar='filename.xml', type=str, nargs=1, help='input XML')
+    parser.add_argument('--verbose', dest='verbose', action='store_true', default=False, help='verbose output')
+    parser.add_argument('--header', dest='header', type=int, nargs='?', default=-1, help='exclude all content on each page above this')
+    parser.add_argument('--footer', dest='footer', type=int, nargs='?', default=-1, help='exclude all content on each page below this')
+    parser.add_argument('--left', dest='left', type=str, nargs='?', help='position of a new cell split')
+    parser.add_argument('--estimate-vcell', dest='estimate_vcell', action='store_true', help='perform a vertical cell estimation')
+    parser.add_argument('--csv', dest='output', type=str, nargs='?', help='output CSV file name')
+    parser.add_argument('--csv-textbox-separator', dest='csv_sep', type=str, default=u' ', nargs='?', help='output CSV separator for joining PDF TextBox elements')
+
+    args = parser.parse_args()
+    verbose = args.verbose
+    if args.left:
+        leftsplits = list(sorted([(int(i.strip()), 'left') for i in args.left.split(',')]))
+    else:
+        leftsplits = [(0, 'left')]
+    
+    pages = parse_xml(args.filename[0])
+    rows = pages2lines(pages)
+    table = lines2cols(rows,
+        header=args.header,
+        footer=args.footer,
+        splits=leftsplits,
+        verbose=verbose)
+
+    if args.estimate_vcell:
+        gaps = estimate_cell_vertical(pages)
+    
+    if args.output:
+        records2csv(table, args.output, args.csv_sep)
+    
+    #[(500, 'left'), (96, 'left'), (89, 'left'), (82, 'left'), (76, 'left'), (74, 'left'), (64, 'left'), (66, 'left'),])
