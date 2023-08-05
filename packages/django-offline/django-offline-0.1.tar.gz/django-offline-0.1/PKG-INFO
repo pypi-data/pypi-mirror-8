@@ -1,0 +1,55 @@
+Metadata-Version: 1.1
+Name: django-offline
+Version: 0.1
+Summary: A simple Django app to swith your Django project between offline/online mode and display a 503 error page, while your django site is offline (under maintenance)
+Home-page: https://github.com/ankitjaiswal07/django-offline
+Author: Ankit Jaiswal
+Author-email: ankit.jaiswal07@gmail.com
+License: BSD License
+Description: =====
+        Offline
+        =====
+        
+        Offline is a simple Django app to put a Django Web application under 
+        maintenance/offline using a simple interface under admin role.
+        
+        Quick start
+        -----------
+        
+        1. Add "offline" to your INSTALLED_APPS setting like this:
+        
+              INSTALLED_APPS = (
+                  ...
+                  'offline',
+              )
+        
+        2. Add the OfflineMiddleware to MIDDLEWARE_CLASSES list 
+           (after SessionMiddleware and AuthenticationMiddleware) in settings.py 
+           file of your project:
+        
+           MIDDLEWARE_CLASSES = (
+            ...
+            'offline.middleware.OfflineMiddleware',
+        )
+        
+        
+        3. Run `python manage.py syncdb` to create the polls models.
+        
+        4. Visit the admin site to set your Web application to offline mode by 
+           setting offline flag (you'll need the Admin app enabled).
+        
+        5. You can customize the message shown on the website.
+        
+        
+        
+Platform: UNKNOWN
+Classifier: Environment :: Web Environment
+Classifier: Framework :: Django
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 2.6
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Topic :: Internet :: WWW/HTTP
+Classifier: Topic :: Internet :: WWW/HTTP :: Dynamic Content
