@@ -1,0 +1,154 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Installation &mdash; django-qanda 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="django-qanda 1.0 documentation" href="../index.html" />
+    <link rel="prev" title="Welcome to django-qanda’s documentation!" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../index.html" title="Welcome to django-qanda’s documentation!"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">django-qanda 1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="installation">
+<span id="install"></span><h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<p>This part of the documentation covers the installation of Qanda.</p>
+<div class="section" id="distribute-pip">
+<h2>Distribute &amp; Pip<a class="headerlink" href="#distribute-pip" title="Permalink to this headline">¶</a></h2>
+<p>Installing Qanda is simple with <a class="reference external" href="https//:pip.pypa.io">pip</a>, just run this in your terminal:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ pip install django-qanda
+</pre></div>
+</div>
+<p>or, with <a class="reference external" href="http://pypi.python.org/pypi/setuptools">easy_install</a>:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ easy_install django-qanda
+</pre></div>
+</div>
+<p>Using <a class="reference external" href="https://stackoverflow.com/questions/3220404/why-use-pip-over-easy-install">pip is the recommended method</a>.</p>
+</div>
+<div class="section" id="get-the-code">
+<h2>Get the code<a class="headerlink" href="#get-the-code" title="Permalink to this headline">¶</a></h2>
+<p>Qanda is actively developed on Bitbucket, where the code is
+<a class="reference external" href="https://bitbucket.org/mhurt/django-qanda">always available</a>.</p>
+<p>You can either clone the repository:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ hg clone https://bitbucket.org/mhurt/django-qanda
+</pre></div>
+</div>
+<p>or download the <a class="reference external" href="https://bitbucket.org/mhurt/django-qanda/downloads">tar-ball or zip-ball of your choice</a>.</p>
+<p>Once you have a copy of the source, you can install it into
+your site packages easily:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ python setup.py install
+</pre></div>
+</div>
+</div>
+<div class="section" id="configuring-your-project">
+<h2>Configuring your project<a class="headerlink" href="#configuring-your-project" title="Permalink to this headline">¶</a></h2>
+<p>In your Django project&#8217;s settings, add Qanda to your <tt class="docutils literal"><span class="pre">INSTALLED_APPS</span></tt> setting:</p>
+<div class="highlight-python"><div class="highlight"><pre>INSTALLED_APPS = {
+  ...
+  &#39;qanda&#39;
+}
+</pre></div>
+</div>
+<p>Include the qanda URLconf in your project urls.py like this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">url</span><span class="p">(</span><span class="s">r&#39;^faq/&#39;</span><span class="p">,</span> <span class="n">include</span><span class="p">(</span><span class="s">&#39;qanda.urls&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>In Django 1.7 run <tt class="docutils literal"><span class="pre">python</span> <span class="pre">manage.py</span> <span class="pre">migrate</span> <span class="pre">qanda</span></tt>.
+Otherwise, just run <tt class="docutils literal"><span class="pre">python</span> <span class="pre">manage.py</span> <span class="pre">syncdb</span></tt>.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Installation</a><ul>
+<li><a class="reference internal" href="#distribute-pip">Distribute &amp; Pip</a></li>
+<li><a class="reference internal" href="#get-the-code">Get the code</a></li>
+<li><a class="reference internal" href="#configuring-your-project">Configuring your project</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../index.html"
+                        title="previous chapter">Welcome to django-qanda&#8217;s documentation!</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/user/install.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../index.html" title="Welcome to django-qanda’s documentation!"
+             >previous</a> |</li>
+        <li><a href="../index.html">django-qanda 1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Mike Hurt.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>
