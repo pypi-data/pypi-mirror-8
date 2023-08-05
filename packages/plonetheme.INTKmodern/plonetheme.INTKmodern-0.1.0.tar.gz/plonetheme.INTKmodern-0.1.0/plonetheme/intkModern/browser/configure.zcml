@@ -1,0 +1,30 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:zcml="http://namespaces.zope.org/zcml"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:plone="http://namespaces.plone.org/plone"
+    xmlns:five="http://namespaces.zope.org/five"
+    xmlns:cmf="http://namespaces.zope.org/cmf"
+    i18n_domain="plonetheme.intkModern">
+
+    <!-- Viewlets -->
+    <browser:viewlet
+      name="plonetheme.INTKmodern.footer"
+      manager="plone.app.layout.viewlets.interfaces.IPortalFooter"
+      layer=".interfaces.IThemeSpecific"
+      class=".views.FooterView"
+      template="templates/footer.pt"
+      permission="zope2.View"
+    />
+
+    <!-- Pages -->
+    <browser:page
+        name="collection_custom"
+        for="plone.app.collection.interfaces.ICollection"
+        class=".views.FolderListing"
+        template="templates/collection_custom.pt"
+        layer=".interfaces.IThemeSpecific"
+        permission="zope2.View"
+    />
+
+</configure>
