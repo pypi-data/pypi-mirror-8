@@ -1,0 +1,729 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+# Primitivus: a SAT frontend
+# Copyright (C) 2009, 2010, 2011, 2012, 2013, 2014 Jérôme Poisson (goffi@goffi.org)
+
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+
+# You should have received a copy of the GNU Affero General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+from sat.core.i18n import _
+from sat_frontends.primitivus.constants import Const as C
+from sat.core import log_config
+log_config.satConfigure(C.LOG_BACKEND_STANDARD, C)
+from sat.core import log as logging
+log = logging.getLogger(__name__)
+import urwid
+from urwid_satext import sat_widgets
+from urwid_satext.files_management import FileDialog
+from sat_frontends.quick_frontend.quick_app import QuickApp
+from sat_frontends.quick_frontend.quick_chat_list import QuickChatList
+from sat_frontends.quick_frontend.quick_utils import getNewPath, unescapePrivate
+from sat_frontends.primitivus.profile_manager import ProfileManager
+from sat_frontends.primitivus.contact_list import ContactList
+from sat_frontends.primitivus.chat import Chat
+from sat_frontends.primitivus import xmlui
+from sat_frontends.primitivus.progress import Progress
+from sat_frontends.primitivus.notify import Notify
+from sat_frontends.primitivus.keys import action_key_map as a_key
+from sat_frontends.primitivus import config
+from sat_frontends.tools.misc import InputHistory
+from sat_frontends.constants import Const as commonConst # FIXME
+from sat_frontends.tools.jid import JID
+from os.path import join
+import signal
+
+
+class ChatList(QuickChatList):
+    """This class manage the list of chat windows"""
+
+    def createChat(self, target):
+        return Chat(target, self.host)
+
+
+class EditBar(sat_widgets.ModalEdit):
+    """
+    The modal edit bar where you would enter messages and commands.
+    """
+
+    def __init__(self, app):
+        modes = {None: ('NORMAL', u''),
+                 a_key['MODE_INSERTION']: ('INSERTION', u'> '),
+                 a_key['MODE_COMMAND']: ('COMMAND', u':')} #XXX: captions *MUST* be unicode
+        super(EditBar, self).__init__(modes)
+        self.app = app
+        self.setCompletionMethod(self._text_completion)
+        urwid.connect_signal(self, 'click', self.onTextEntered)
+
+    def _text_completion(self, text, completion_data, mode):
+        if mode == 'INSERTION':
+            return self._nick_completion(text, completion_data)
+        else:
+            return text
+
+    def _nick_completion(self, text, completion_data):
+        """Completion method which complete pseudo in group chat
+        for params, see AdvancedEdit"""
+        contact = self.app.contact_list.getContact() ###Based on the fact that there is currently only one contact selectable at once
+        if contact:
+            chat = self.app.chat_wins[contact]
+            if chat.type != "group":
+                return text
+            space = text.rfind(" ")
+            start = text[space+1:]
+            nicks = list(chat.occupants)
+            nicks.sort()
+            try:
+                start_idx=nicks.index(completion_data['last_nick'])+1
+                if start_idx == len(nicks):
+                    start_idx = 0
+            except (KeyError,ValueError):
+                start_idx = 0
+            for idx in range(start_idx,len(nicks)) + range(0,start_idx):
+                if nicks[idx].lower().startswith(start.lower()):
+                    completion_data['last_nick'] = nicks[idx]
+                    return text[:space+1] + nicks[idx] + (': ' if space < 0 else '')
+        return text
+
+    def onTextEntered(self, editBar):
+        """Called when text is entered in the main edit bar"""
+        if self.mode == 'INSERTION':
+            contact = self.app.contact_list.getContact() ###Based on the fact that there is currently only one contact selectableat once
+            if contact:
+                chat = self.app.chat_wins[contact]
+                self.app.sendMessage(contact,
+                                     editBar.get_edit_text(),
+                                     mess_type = "groupchat" if chat.type == 'group' else "chat",
+                                     errback=lambda failure: self.app.notify(_("Error while sending message (%s)") % failure),
+                                     profile_key=self.app.profile
+                                    )
+                editBar.set_edit_text('')
+        elif self.mode == 'COMMAND':
+            self.commandHandler()
+
+    def commandHandler(self):
+        #TODO: separate class with auto documentation (with introspection)
+        #      and completion method
+        tokens = self.get_edit_text().split(' ')
+        command, args = tokens[0], tokens[1:]
+        if command == 'quit':
+            self.app.onExit()
+            raise urwid.ExitMainLoop()
+        elif command == 'messages':
+            wid = sat_widgets.GenericList(logging.memoryGet())
+            self.app.addWindow(wid)
+        elif command == 'presence':
+            values = [value for value in commonConst.PRESENCE.keys()]
+            values = [value if value else 'online' for value in values]  # the empty value actually means 'online'
+            if args and args[0] in values:
+                presence = '' if args[0] == 'online' else args[0]
+                self.app.status_bar.onChange(user_data=sat_widgets.ClickableText(commonConst.PRESENCE[presence]))
+            else:
+                self.app.status_bar.onPresenceClick()
+        elif command == 'status':
+            if args:
+                self.app.status_bar.onChange(user_data=sat_widgets.AdvancedEdit(args[0]))
+            else:
+                self.app.status_bar.onStatusClick()
+        elif command == 'history':
+            try:
+                limit = int(args[0])
+            except (IndexError, ValueError):
+                limit = 50
+            win = self.app.chat_wins[JID(self.app.contact_list.selected).bare]
+            win.clearHistory()
+            if limit > 0:
+                win.historyPrint(size=limit, profile=self.app.profile)
+        else:
+            return
+        self.set_edit_text('')
+
+    def _historyCb(self, text):
+        self.set_edit_text(text)
+        self.set_edit_pos(len(text))
+
+    def keypress(self, size, key):
+        """Callback when a key is pressed. Send "composing" states
+        and move the index of the temporary history stack."""
+        if key == a_key['MODAL_ESCAPE']:
+            # first save the text to the current mode, then change to NORMAL
+            self.app._updateInputHistory(self.get_edit_text(), mode=self.mode)
+            self.app._updateInputHistory(mode='NORMAL')
+        if self._mode == 'NORMAL' and key in self._modes:
+            self.app._updateInputHistory(mode=self._modes[key][0])
+        if key == a_key['HISTORY_PREV']:
+            self.app._updateInputHistory(self.get_edit_text(), -1, self._historyCb, self.mode)
+            return
+        elif key == a_key['HISTORY_NEXT']:
+            self.app._updateInputHistory(self.get_edit_text(), +1, self._historyCb, self.mode)
+            return
+        elif key == a_key['EDIT_ENTER']:
+            self.app._updateInputHistory(self.get_edit_text(), mode=self.mode)
+        else:
+            contact = self.app.contact_list.getContact()
+            if contact:
+                self.app.bridge.chatStateComposing(unescapePrivate(contact), self.app.profile)
+        return super(EditBar, self).keypress(size, key)
+
+
+class PrimitivusTopWidget(sat_widgets.FocusPile):
+    """Top most widget used in Primitivus"""
+    _focus_inversed = True
+    positions = ('menu', 'body', 'notif_bar', 'edit_bar')
+    can_hide = ('menu', 'notif_bar')
+
+    def __init__(self, body, menu, notif_bar, edit_bar):
+        self._body = body
+        self._menu = menu
+        self._notif_bar = notif_bar
+        self._edit_bar = edit_bar
+        self._hidden = {'notif_bar'}
+        self._focus_extra = False
+        super(PrimitivusTopWidget, self).__init__([('pack', self._menu), self._body, ('pack', self._edit_bar)])
+        for position in self.positions:
+            setattr(self,
+                    position,
+                    property(lambda: self, self.widgetGet(position=position),
+                             lambda pos, new_wid: self.widgetSet(new_wid, position=pos))
+                   )
+        self.focus_position = len(self.contents)-1
+
+    def getVisiblePositions(self, keep=None):
+        """Return positions that are not hidden in the right order
+
+        @param keep: if not None, this position will be keep in the right order, even if it's hidden
+                    (can be useful to find its index)
+        @return (list): list of visible positions
+        """
+        return [pos for pos in self.positions if (keep and pos == keep) or pos not in self._hidden]
+
+    def keypress(self, size, key):
+        """Manage FOCUS keys that focus directly a main part (one of self.positions)
+
+        To avoid key conflicts, a combinaison must be made with FOCUS_EXTRA then an other key
+        """
+        if key == a_key['FOCUS_EXTRA']:
+            self._focus_extra = True
+            return
+        if self._focus_extra:
+            self._focus_extra = False
+            if key in ('m', '1'):
+                focus = 'menu'
+            elif key in ('b', '2'):
+                focus = 'body'
+            elif key in ('n', '3'):
+                focus = 'notif_bar'
+            elif key in ('e', '4'):
+                focus = 'edit_bar'
+            else:
+                return super(PrimitivusTopWidget, self).keypress(size, key)
+
+            if focus in self._hidden:
+                return
+
+            self.focus_position = self.getVisiblePositions().index(focus)
+            return
+
+        return super(PrimitivusTopWidget, self).keypress(size, key)
+
+    def widgetGet(self,  position):
+        if not position in self.positions:
+            raise ValueError("Unknown position {}".format(position))
+        return getattr(self, "_{}".format(position))
+
+    def widgetSet(self,  widget, position):
+        if not position in self.positions:
+            raise ValueError("Unknown position {}".format(position))
+        return setattr(self, "_{}".format(position), widget)
+
+    def hideSwitch(self, position):
+        if not position in self.can_hide:
+            raise ValueError("Can't switch position {}".format(position))
+        hide = not position in self._hidden
+        widget = self.widgetGet(position)
+        idx = self.getVisiblePositions(position).index(position)
+        if hide:
+            del self.contents[idx]
+            self._hidden.add(position)
+        else:
+            self.contents.insert(idx, (widget, ('pack', None)))
+            self._hidden.remove(position)
+
+    def show(self, position):
+        if position in self._hidden:
+            self.hideSwitch(position)
+
+    def hide(self, position):
+        if not position in self._hidden:
+            self.hideSwitch(position)
+
+
+class PrimitivusApp(QuickApp, InputHistory):
+
+    def __init__(self):
+        QuickApp.__init__(self)
+
+        ## main loop setup ##
+        self.main_widget = ProfileManager(self)
+        self.loop = urwid.MainLoop(self.main_widget, C.PALETTE, event_loop=urwid.GLibEventLoop(), input_filter=self.inputFilter, unhandled_input=self.keyHandler)
+
+        ##misc setup##
+        self.chat_wins = ChatList(self)
+        self.notif_bar = sat_widgets.NotificationBar()
+        urwid.connect_signal(self.notif_bar, 'change', self.onNotification)
+        self.progress_wid = Progress(self)
+        urwid.connect_signal(self.notif_bar.progress, 'click', lambda x: self.addWindow(self.progress_wid))
+        self.__saved_overlay = None
+
+        self.x_notify = Notify()
+
+        # we already manage exit with a_key['APP_QUIT'], so we don't want C-c
+        signal.signal(signal.SIGINT, signal.SIG_IGN)
+
+    @property
+    def mode(self):
+        return self.editBar.mode
+
+    @mode.setter
+    def mode(self, value):
+        self.editBar.mode = value
+
+    def modeHint(self, value):
+        """Change mode if make sens (i.e.: if there is nothing in the editBar)"""
+        if not self.editBar.get_edit_text():
+            self.mode = value
+
+    def debug(self):
+        """convenient method to reset screen and launch (i)p(u)db"""
+        log.info('Entered debug mode')
+        try:
+            import pudb
+            pudb.set_trace()
+        except ImportError:
+            import os
+            os.system('reset')
+            try:
+                import ipdb
+                ipdb.set_trace()
+            except ImportError:
+                import pdb
+                pdb.set_trace()
+
+    def redraw(self):
+        """redraw the screen"""
+        try:
+            self.loop.draw_screen()
+        except AttributeError:
+            pass
+
+    def start(self):
+        self.i = 0
+        self.loop.set_alarm_in(0,lambda a,b: self.postInit())
+        self.loop.run()
+
+    def postInit(self):
+        try:
+            config.applyConfig(self)
+        except Exception as e:
+            log.error("configuration error: {}".format(e))
+            popup = sat_widgets.Alert(_("Configuration Error"), _("Something went wrong while reading the configuration, please check :messages"), ok_cb=self.removePopUp)
+            if self.options.profile:
+                self._early_popup = popup
+            else:
+                self.showPopUp(popup)
+        super(PrimitivusApp, self).postInit()
+
+    def inputFilter(self, input_, raw):
+        if self.__saved_overlay and input_ != a_key['OVERLAY_HIDE']:
+            return
+        for i in input_:
+            if isinstance(i,tuple):
+                if i[0] == 'mouse press':
+                    if i[1] == 4: #Mouse wheel up
+                        input_[input_.index(i)] = a_key['HISTORY_PREV']
+                    if i[1] == 5: #Mouse wheel down
+                        input_[input_.index(i)] = a_key['HISTORY_NEXT']
+        return input_
+
+    def keyHandler(self, input_):
+        if input_ == a_key['MENU_HIDE']:
+            """User want to (un)hide the menu roller"""
+            try:
+                self.main_widget.hideSwitch('menu')
+            except AttributeError:
+                pass
+        elif input_ == a_key['NOTIFICATION_NEXT']:
+            """User wants to see next notification"""
+            self.notif_bar.showNext()
+        elif input_ == a_key['OVERLAY_HIDE']:
+            """User wants to (un)hide overlay window"""
+            if isinstance(self.loop.widget,urwid.Overlay):
+                self.__saved_overlay = self.loop.widget
+                self.loop.widget = self.main_widget
+            else:
+                if self.__saved_overlay:
+                    self.loop.widget = self.__saved_overlay
+                    self.__saved_overlay = None
+
+        elif input_ == a_key['DEBUG'] and 'D' in self.bridge.getVersion(): #Debug only for dev versions
+            self.debug()
+        elif input_ == a_key['CONTACTS_HIDE']: #user wants to (un)hide the contact_list
+            try:
+                for wid, options in self.center_part.contents:
+                    if self.contact_list is wid:
+                        self.center_part.contents.remove((wid, options))
+                        break
+                else:
+                    self.center_part.contents.insert(0, (self.contact_list, ('weight', 2, False)))
+            except AttributeError:
+                #The main widget is not built (probably in Profile Manager)
+                pass
+        elif input_ == 'window resize':
+            width,height = self.loop.screen_size
+            if height<=5 and width<=35:
+                if not 'save_main_widget' in dir(self):
+                    self.save_main_widget = self.loop.widget
+                    self.loop.widget = urwid.Filler(urwid.Text(_("Pleeeeasse, I can't even breathe !")))
+            else:
+                if 'save_main_widget' in dir(self):
+                    self.loop.widget = self.save_main_widget
+                    del self.save_main_widget
+        try:
+            return self.menu_roller.checkShortcuts(input_)
+        except AttributeError:
+            return input_
+
+    def addMenus(self, menu, type_, menu_data=None):
+        """Add cached menus to instance
+        @param menu: sat_widgets.Menu instance
+        @param type_: menu type like is sat.core.sat_main.importMenu
+        @param menu_data: data to send with these menus
+
+        """
+        menus = self.profiles[self.profile]['menus'].get(type_,[])
+        def add_menu_cb(callback_id):
+            self.launchAction(callback_id, menu_data, profile_key = self.profile)
+        for id_, path, path_i18n  in menus:
+            if len(path) != 2:
+                raise NotImplementedError("Menu with a path != 2 are not implemented yet")
+            menu.addMenu(path_i18n[0], path_i18n[1], lambda dummy,id_=id_: add_menu_cb(id_))
+
+
+    def _buildMenuRoller(self):
+        menu = sat_widgets.Menu(self.loop)
+        general = _("General")
+        menu.addMenu(general, _("Connect"), self.onConnectRequest)
+        menu.addMenu(general, _("Disconnect"), self.onDisconnectRequest)
+        menu.addMenu(general, _("Parameters"), self.onParam)
+        menu.addMenu(general, _("About"), self.onAboutRequest)
+        menu.addMenu(general, _("Exit"), self.onExitRequest, a_key['APP_QUIT'])
+        contact = _("Contacts")
+        menu.addMenu(contact)
+        communication = _("Communication")
+        menu.addMenu(communication, _("Join room"), self.onJoinRoomRequest, a_key['ROOM_JOIN'])
+        #additionals menus
+        #FIXME: do this in a more generic way (in quickapp)
+        self.addMenus(menu, C.MENU_GLOBAL)
+
+        menu_roller = sat_widgets.MenuRoller([(_('Main menu'),menu)])
+        return menu_roller
+
+    def _buildMainWidget(self):
+        self.contact_list = ContactList(self, on_click=self.contactSelected, on_change=lambda w: self.redraw())
+        #self.center_part = urwid.Columns([('weight',2,self.contact_list),('weight',8,Chat('',self))])
+        self.center_part = urwid.Columns([('weight', 2, self.contact_list), ('weight', 8, urwid.Filler(urwid.Text('')))])
+
+        self.editBar = EditBar(self)
+        self.menu_roller = self._buildMenuRoller()
+        self.main_widget = PrimitivusTopWidget(self.center_part, self.menu_roller, self.notif_bar, self.editBar)
+        return self.main_widget
+
+    def plug_profile_1(self, profile_key='@DEFAULT@'):
+        self.loop.widget = self._buildMainWidget()
+        self.redraw()
+        QuickApp.plug_profile_1(self, profile_key)
+        try:
+            # if a popup arrived before main widget is build, we need to show it now
+            self.showPopUp(self._early_popup)
+        except AttributeError:
+            pass
+        else:
+            del self._early_popup
+
+    def removePopUp(self, widget=None):
+        "Remove current pop-up, and if there is other in queue, show it"
+        self.loop.widget = self.main_widget
+        next_popup = self.notif_bar.getNextPopup()
+        if next_popup:
+            #we still have popup to show, we display it
+            self.showPopUp(next_popup)
+
+    def showPopUp(self, pop_up_widget, perc_width=40, perc_height=40, align='center', valign='middle'):
+        "Show a pop-up window if possible, else put it in queue"
+        if not isinstance(self.loop.widget, urwid.Overlay):
+            display_widget = urwid.Overlay(pop_up_widget, self.main_widget, align, ('relative', perc_width), valign, ('relative', perc_height))
+            self.loop.widget = display_widget
+            self.redraw()
+        else:
+            self.notif_bar.addPopUp(pop_up_widget)
+
+    def notify(self, message):
+        """"Notify message to user via notification bar"""
+        self.notif_bar.addMessage(message)
+        self.redraw()
+
+    def addWindow(self, widget):
+        """Display a window if possible,
+        else add it in the notification bar queue
+        @param widget: BoxWidget"""
+        assert(len(self.center_part.widget_list)<=2)
+        wid_idx = len(self.center_part.widget_list)-1
+        self.center_part.widget_list[wid_idx] = widget
+        self.menu_roller.removeMenu(_('Chat menu'))
+        self.contact_list.unselectAll()
+        self.redraw()
+
+    def removeWindow(self):
+        """Remove window showed on the right column"""
+        #TODO: to a better Window management than this crappy hack
+        assert(len(self.center_part.widget_list)<=2)
+        wid_idx = len(self.center_part.widget_list)-1
+        self.center_part.widget_list[wid_idx] = urwid.Filler(urwid.Text(''))
+        self.center_part.focus_position = 0
+        self.redraw()
+
+    def addProgress (self, id, message):
+        """Follow a SàT progress bar
+        @param id: SàT id of the progression
+        @param message: message to show to identify the progression"""
+        self.progress_wid.addProgress(id, message)
+
+    def setProgress(self, percentage):
+        """Set the progression shown in notification bar"""
+        self.notif_bar.setProgress(percentage)
+
+    def contactSelected(self, contact_list):
+        contact = contact_list.getContact()
+        if contact:
+            assert(len(self.center_part.widget_list)==2)
+            self.center_part.widget_list[1] = self.chat_wins[contact]
+            self.menu_roller.addMenu(_('Chat menu'), self.chat_wins[contact].getMenu())
+
+    def newMessageHandler(self, from_jid, to_jid, msg, _type, extra, profile):
+        QuickApp.newMessageHandler(self, from_jid, to_jid, msg, _type, extra, profile)
+
+        if not from_jid in self.contact_list and from_jid.bare != self.profiles[profile]['whoami'].bare:
+            #XXX: needed to show entities which haven't sent any
+            #     presence information and which are not in roster
+            self.contact_list.replace(from_jid, [C.GROUP_NOT_IN_ROSTER])
+
+        if self.contact_list.selected is None or JID(self.contact_list.selected).bare != from_jid.bare:
+            self.contact_list.putAlert(from_jid)
+
+    def _dialogOkCb(self, widget, data):
+        self.removePopUp()
+        answer_cb = data[0]
+        answer_data = [data[1]] if data[1] else []
+        answer_cb(True, *answer_data)
+
+    def _dialogCancelCb(self, widget, data):
+        self.removePopUp()
+        answer_cb = data[0]
+        answer_data = [data[1]] if data[1] else []
+        answer_cb(False, *answer_data)
+
+
+    def showDialog(self, message, title="", type_="info", answer_cb = None, answer_data = None):
+        if type_ == 'info':
+            popup = sat_widgets.Alert(unicode(title), unicode(message), ok_cb=answer_cb or self.removePopUp) #FIXME: remove unicode here when DBus Bridge will no return dbus.String anymore
+        elif type_ == 'error':
+            popup = sat_widgets.Alert(unicode(title), unicode(message), ok_cb=answer_cb or self.removePopUp) #FIXME: remove unicode here when DBus Bridge will no return dbus.String anymore
+        elif type_ == 'yes/no':
+            popup = sat_widgets.ConfirmDialog(unicode(message),
+                    yes_cb=self._dialogOkCb, yes_value = (answer_cb, answer_data),
+                    no_cb=self._dialogCancelCb, no_value = (answer_cb, answer_data))
+        else:
+            popup = sat_widgets.Alert(unicode(title), unicode(message), ok_cb=answer_cb or self.removePopUp) #FIXME: remove unicode here when DBus Bridge will no return dbus.String anymore
+            log.error(_('unmanaged dialog type: %s'), type_)
+        self.showPopUp(popup)
+
+    def onNotification(self, notif_bar):
+        """Called when a new notification has been received"""
+        if not isinstance(self.main_widget, PrimitivusTopWidget):
+            #if we are not in the main configuration, we ignore the notifications bar
+            return
+        if self.notif_bar.canHide():
+                #No notification left, we can hide the bar
+                self.main_widget.hide('notif_bar')
+        else:
+            self.main_widget.show('notif_bar')
+
+    def launchAction(self, callback_id, data=None, profile_key="@NONE@"):
+        """ Launch a dynamic action
+        @param callback_id: id of the action to launch
+        @param data: data needed only for certain actions
+        @param profile_key: %(doc_profile_key)s
+
+        """
+        if data is None:
+            data = dict()
+
+        def action_cb(data):
+            if not data:
+                # action was a one shot, nothing to do
+                pass
+            elif "xmlui" in data:
+                ui = xmlui.create(self, xml_data=data['xmlui'])
+                ui.show()
+            elif "authenticated_profile" in data:
+                assert("caller" in data)
+                if data["caller"] == "profile_manager":
+                    assert(isinstance(self.main_widget, ProfileManager))
+                    self.main_widget.getXMPPParams(data['authenticated_profile'])
+                elif data["caller"] == "plug_profile":
+                    self.plug_profile_1(data['authenticated_profile'])
+                else:
+                    raise NotImplementedError
+            else:
+                self.showPopUp(sat_widgets.Alert(_("Error"), _(u"Unmanaged action result"), ok_cb=self.removePopUp))
+
+        def action_eb(failure):
+            self.showPopUp(sat_widgets.Alert(failure.fullname, failure.message, ok_cb=self.removePopUp))
+
+        self.bridge.launchAction(callback_id, data, profile_key, callback=action_cb, errback=action_eb)
+
+    def askConfirmationHandler(self, confirmation_id, confirmation_type, data, profile):
+        answer_data={}
+
+        def dir_selected_cb(path):
+            dest_path = join(path, data['filename'])
+            answer_data["dest_path"] = getNewPath(dest_path)
+            self.addProgress(confirmation_id, dest_path)
+            accept_cb(None)
+
+        def accept_file_transfer_cb(widget):
+            self.removePopUp()
+            pop_up_widget = FileDialog(dir_selected_cb, refuse_cb, title=_(u"Where do you want to save the file ?"), style=['dir'])
+            self.showPopUp(pop_up_widget)
+
+        def accept_cb(widget):
+            self.removePopUp()
+            self.bridge.confirmationAnswer(confirmation_id, True, answer_data, profile)
+
+        def refuse_cb(widget):
+            self.removePopUp()
+            self.bridge.confirmationAnswer(confirmation_id, False, answer_data, profile)
+
+        if confirmation_type == "FILE_TRANSFER":
+            pop_up_widget = sat_widgets.ConfirmDialog(_("The contact %(jid)s wants to send you the file %(filename)s\nDo you accept ?") % {'jid':data["from"], 'filename':data["filename"]}, no_cb=refuse_cb, yes_cb=accept_file_transfer_cb)
+            self.showPopUp(pop_up_widget)
+
+        elif confirmation_type == "YES/NO":
+            pop_up_widget = sat_widgets.ConfirmDialog(data["message"], no_cb=refuse_cb, yes_cb=accept_cb)
+            self.showPopUp(pop_up_widget)
+
+    def actionResultHandler(self, type_, id, data, profile):
+        # FIXME: to be removed
+
+        if not id in self.current_action_ids:
+            log.debug (_('unknown id, ignoring'))
+            return
+        if type_ == "SUPPRESS":
+            self.current_action_ids.remove(id)
+        elif type_ == "XMLUI":
+            self.current_action_ids.remove(id)
+            log.debug (_("XML user interface received"))
+            misc = {}
+            #FIXME FIXME FIXME: must clean all this crap !
+            title = _('Form')
+            if data['type'] == 'registration':
+                title = _('Registration')
+                misc['target'] = data['target']
+                misc['action_back'] = self.bridge.gatewayRegister
+            ui = xmlui.create(self, title=title, xml_data = data['xml'], misc = misc)
+            if data['type'] == 'registration':
+                ui.show('popup')
+            else:
+                ui.show('window')
+        elif type_ == "ERROR":
+            self.current_action_ids.remove(id)
+            self.showPopUp(sat_widgets.Alert(_("Error"), unicode(data["message"]), ok_cb=self.removePopUp)) #FIXME: remove unicode here when DBus Bridge will no return dbus.String anymore
+        elif type_ == "RESULT":
+            self.current_action_ids.remove(id)
+            if self.current_action_ids_cb.has_key(id):
+                callback = self.current_action_ids_cb[id]
+                del self.current_action_ids_cb[id]
+                callback(data)
+        elif type_ == "DICT_DICT":
+            self.current_action_ids.remove(id)
+            if self.current_action_ids_cb.has_key(id):
+                callback = self.current_action_ids_cb[id]
+                del self.current_action_ids_cb[id]
+                callback(data)
+        else:
+            log.error (_("FIXME FIXME FIXME: type [%s] not implemented") % type_)
+            raise NotImplementedError
+
+    ##DIALOGS CALLBACKS##
+    def onJoinRoom(self, button, edit):
+        self.removePopUp()
+        room_jid = JID(edit.get_edit_text())
+        if room_jid.is_valid():
+            self.bridge.joinMUC(room_jid, self.profiles[self.profile]['whoami'].node, {}, self.profile)
+        else:
+            message = _("'%s' is an invalid JID !") % room_jid
+            log.error (message)
+            self.showPopUp(sat_widgets.Alert(_("Error"), message, ok_cb=self.removePopUp))
+
+    #MENU EVENTS#
+    def onConnectRequest(self, menu):
+        QuickApp.asyncConnect(self, self.profile)
+
+    def onDisconnectRequest(self, menu):
+        self.bridge.disconnect(self.profile)
+
+    def onParam(self, menu):
+        def success(params):
+            ui = xmlui.create(self, xml_data=params)
+            ui.show()
+
+        def failure(error):
+            self.showPopUp(sat_widgets.Alert(_("Error"), _("Can't get parameters (%s)") % error, ok_cb=self.removePopUp))
+        self.bridge.getParamsUI(app=C.APP_NAME, profile_key=self.profile, callback=success, errback=failure)
+
+    def onExitRequest(self, menu):
+        QuickApp.onExit(self)
+        raise urwid.ExitMainLoop()
+
+    def onJoinRoomRequest(self, menu):
+        """User wants to join a MUC room"""
+        pop_up_widget = sat_widgets.InputDialog(_("Entering a MUC room"), _("Please enter MUC's JID"), default_txt = 'room@muc_service.server.tld', cancel_cb=self.removePopUp, ok_cb=self.onJoinRoom)
+        self.showPopUp(pop_up_widget)
+
+    def onAboutRequest(self, menu):
+        self.showPopUp(sat_widgets.Alert(_("About"), C.APP_NAME + " v" + self.bridge.getVersion(), ok_cb=self.removePopUp))
+
+    #MISC CALLBACKS#
+
+    def setStatusOnline(self, online=True, show="", statuses={}):
+        if not online or not statuses:
+            self.status_bar.setPresenceStatus(show if online else 'unavailable', '')
+            return
+        try:
+            self.status_bar.setPresenceStatus(show, statuses['default'])
+        except (KeyError, TypeError):
+            pass
+
+sat = PrimitivusApp()
+sat.start()
