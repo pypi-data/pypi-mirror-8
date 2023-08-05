@@ -1,0 +1,24 @@
+metadata:
+   author: James Horey
+   version: 0.2.0
+   description: The Apache Cassandra database is the right choice when you need scalability and high availability without compromising performance. Linear scalability and proven fault-tolerance on commodity hardware or cloud infrastructure make it the perfect platform for mission-critical data. Cassandra's data model offers the convenience of column indexes with the performance of log-structured updates, strong support for denormalization and materialized views, and powerful built-in caching.
+   icon: cassandra.png
+   tags: [infrastructure,big data,nosql,cassandra]
+   url: http://cassandra.apache.org
+params:
+   resolver: ferry.docker.resolve.DefaultResolver
+questions:
+   - question: Number of instances for cassandra
+     param: "{instances}"
+backend:
+   - storage:
+        personality: "cassandra"
+        instances: "{instances}"
+        layers: 
+           - "titan"
+        args: 
+           db: "users"
+connectors:
+   - personality: "ferry/cassandra-client"
+     args: 
+        db: "users"
