@@ -1,0 +1,39 @@
+<article>
+  <h1><a href="{% url 'quintet.blog.views.view_post' section=post.section.slug post=post.slug %}">{{ post.title }}</a></h1>
+
+  <div class="meta text-muted">
+    <a class="text-muted" href="/date/{{ post.date_published|date:'b-Y' }}">{{ post.date_published|date:"j M Y" }}</a> in <a class="text-muted" href="{% url 'quintet.blog.views.list_posts' section=post.section.slug %}">{{ post.section }}</a><br />
+    by
+    {% for author in post.authors %}
+      {% if forloop.last and post.authors|length > 1 %}and{% endif %}
+      <a class="text-muted" href="{% url 'quintet.blog.views.list_posts' contributor=author.user.username %}">{{ author.user.get_full_name }}</a>{% if not forloop.last %}, {% endif %}
+    {% endfor %}
+  </div>
+
+  {{ post.html|safe }}
+
+  <ul class="contributors list-unstyled">
+  {% for contributor in post.contributors.all %}
+    <li style="margin: 0 10px 10px 0; display: inline-flex;">
+      <a style="display: block; float: left; width: 50px; margin-right: 10px;" href="{{ contributor.user.profile.get_photo_url }}" class="photo">
+        {% include 'quintet/misc/user_photo.html' with user=contributor.user %}
+      </a>
+      <p><a href="{% url 'quintet.blog.views.list_posts' contributor=contributor.user.username %}">{{ contributor.user.get_full_name }}</a><br />
+      <small class="text-muted">
+        {% for role in contributor.role.all %}
+        {{ role }}{% if not forloop.last %}, {% endif %}
+        {% endfor %}
+      </small></p>
+      <div class="clearfix"></div>
+    </li>
+  {% endfor %}
+  </ul>
+
+  {% if post.tags.all %}
+  <div class="tags text-muted">Tags:
+    {% for tag in post.tags.all %}
+    <a class="text-muted" href="{% url 'quintet.blog.views.list_posts' tag=tag.slug %}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
+    {% endfor %}
+  </div>
+  {% endif %}
+</article>

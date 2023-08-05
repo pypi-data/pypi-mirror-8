@@ -1,0 +1,49 @@
+{% extends 'quintet/dashboard.html' %}
+{% load humanize %}
+
+{% block title %}Pages{% endblock %}
+
+{% block active_nav %}Pages{% endblock %}
+
+{% block content %}
+<div class="toolbar" style="margin-bottom: 20px;">
+  {% if perms.quintet.add_page %}
+  <a href="{% url 'create_page' %}" class="btn btn-primary pull-right"><span class="glyphicon glyphicon-plus"></span> Create Page</a>
+  {% endif %}
+  <div class="clearfix"></div>
+</div>
+
+<table class="table table-hover">
+  <tr>
+    <th>Title</th>
+    <th class="text-center">Status</th>
+    <th class="text-center">Updated</th>
+  </tr>
+
+  {% for page in pages %}
+  <tr>
+    <td><a href="{% url 'edit_page' pk=page.pk %}">{{ page.title }}</a></td>
+    <td class="text-muted text-center">
+    {% if page.status == 'D' %}
+    <span class="glyphicon glyphicon-minus-sign" title="Draft"></span>
+    {% elif page.status == 'R' %}
+    <span class="glyphicon glyphicon-ok-sign" title="Ready for Review"></span>
+    {% elif page.status == 'S' %}
+    <span class="text-success glyphicon glyphicon-calendar" title="Scheduled"></span>
+    {% elif page.status == 'P' %}
+    <span class="text-success glyphicon glyphicon-ok-sign" title="Published"></span>
+    {% elif page.status == 'H' %}
+    <span class="text-danger glyphicon glyphicon-eye-close" title="Hidden"></span>
+    {% elif page.status == 'A' %}
+    <span class="text-danger glyphicon glyphicon-trash" title="Archived"></span>
+    {% endif %}
+    </td>
+    <td class="text-center">{{ page.date_updated|naturalday|capfirst }}</td>
+  </tr>
+  {% empty %}
+  <tr>
+    <td colspan="5" class="text-muted text-center"><em>No pages to display.</em></td>
+  </tr>
+  {% endfor %}
+</table>
+{% endblock %}

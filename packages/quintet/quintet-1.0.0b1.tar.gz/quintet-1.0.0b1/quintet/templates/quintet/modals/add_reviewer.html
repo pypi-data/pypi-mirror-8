@@ -1,0 +1,55 @@
+<div class="modal fade" id="reviewer-modal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">Add Reviewer</h4>
+      </div>
+      <form action="{% url 'add_reviewer' pk=post.pk %}" method="post" id="reviewer-form">{% csrf_token %}
+        <div class="modal-body">
+          {% for field in form %}
+          <div class="form-group">
+            {{ field.errors }}
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+          </div>
+          {% endfor %}
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary">Add Reviewer</button>
+        </div>
+      </form>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<script type="text/javascript">
+$(document).ready(function() {
+  $('#reviewer-form').ajaxForm({
+    'dataType': 'json',
+    'resetForm': true,
+    'success': function(data) {
+      if(data.success) {
+        // Hide Modal
+        $('#reviewer-modal').modal('hide');
+
+        // Add reviewer icon and tooltip
+        if(!data.thumbnail) {
+          data.thumbnail = "http://upload.wikimedia.org/wikipedia/commons/f/f5/Django_Reinhardt_(Gottlieb_07301).jpg";
+        }
+        $('#reviewer-list .add').before('\
+          <div class="reviewer" onclick="event.preventDefault();" data-toggle="tooltip" data-placement="bottom" title="' + data.full_name + '" style=" width: 34px; height: 34px; float: left; margin-right: 10px;" data-pk="' + data.pk + '">\
+            <img src="' + data.thumbnail + '" alt="' + data.full_name + '" class="img-circle img-responsive">\
+            <a href="#" class="label label-danger remove-reviewer">&times;</a>\
+          </div>\
+        ');
+      } else {
+        alert("Sorry, an error occored: " + data.error);
+      }
+    }
+  });
+})
+</script>
+
+{{ form.media }}

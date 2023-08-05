@@ -1,0 +1,151 @@
+{% load humanize %}
+
+{% if post.status != 'D' %}
+<hr />
+
+<div class="row">
+  <div class="col-sm-7">
+    <form id="comment-form" method="post" action="{% url 'add_comment' pk=post.pk %}">
+      {% csrf_token %}
+      <div class="form-group">
+        {{ comment_form.comment.errors }}
+        {{ comment_form.comment }}
+      </div>
+      {{ comment_form.excerpt }}
+
+      <button type="submit" class="btn btn-primary pull-right">Leave Feedback</button>
+      <div class="clearfix"></div>
+    </form>
+  </div>
+
+  <div class="col-sm-5 excerpt-views">
+    <div class="add-excerpt-view">
+      <button type="button" class="btn btn-default add-excerpt-btn" style="display: block; margin: 50px auto;">Add Selection to Comment</button>
+    </div>
+
+    <div class="view-excerpt-view" style="display: none;">
+      <blockquote>
+        ... <mark></mark> ...
+      </blockquote>
+
+      <button type="button" class="remove-excerpt-btn btn btn-link pull-right">Remove Excerpt</button>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<div class="comments">
+  {% for comment in post.comments.all %}
+  <div class="row comment">
+    <hr />
+    <div class="col-sm-7">
+      <p class="lead">{{ comment.user.get_full_name }}</p>
+      <p>{{ comment }}</p>
+    </div>
+
+    {% if comment.excerpt %}
+    <div class="col-sm-5">
+      <blockquote>
+        ... <mark>{{ comment.excerpt }}</mark> ...
+      </blockquote>
+    </div>
+    {% endif %}
+
+    <div class="col-sm-12">
+      {% if comment.user == user %}
+      <a href="#" class="delete-comment-link pull-right" data-pk="{{ comment.pk }}">delete comment</a>
+      {% endif %}
+
+      <p class="text-muted">{{ comment.date_created|naturaltime }}</p>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<script type="text/javascript">
+$(document).ready(function() {
+  $('#comment-form').ajaxForm({
+    'dataType': 'json',
+    'resetForm': true,
+    'success': function(response) {
+      if ( response.success ) {
+        var markup = '\
+    <div class="row comment">\
+      <hr />\
+      <div class="col-sm-7">\
+        <p class="lead">' + response.comment.user + '</p>\
+        <p>' + response.comment.comment + '</p>\
+      </div>';
+        if ( response.comment.excerpt ) {
+          markup += '\
+      <div class="col-sm-5">\
+        <blockquote>\
+          ... <mark>' + response.comment.excerpt + '</mark> ...\
+        </blockquote>\
+      </div>';
+        }
+        markup += '\
+      <div class="col-sm-12">\
+        <a href="#" class="delete-comment-link pull-right" data-pk="' + response.comment.pk + '">delete comment</a>\
+        <p class="text-muted">Just now</p>\
+      </div>\
+    </div>';
+        $('.comments').prepend(markup);
+        $.scrollTo('.comments', 500);
+
+        $('#id_excerpt').val('');
+
+        $('.excerpt-views').children('.add-excerpt-view').show();
+        $('.excerpt-views').children('.view-excerpt-view').hide();
+      }
+    }
+  });
+
+  $('.comments').on('click', '.delete-comment-link', function(e) {
+    e.preventDefault();
+
+    var self = this;
+    var pk = $(this).attr('data-pk');
+
+    $.getJSON("{% url 'delete_comment' pk=post.pk %}" + pk, function(response) {
+      if ( response.success ) {
+        $(self).parent().parent().remove();
+      }
+    });
+  });
+
+  $('.add-excerpt-btn').click(function() {
+    var selected = $.selection() ? $.selection() : $('textarea').selection();
+    $('.excerpt-views mark').text(selected);
+    $('#id_excerpt').val(selected);
+
+    $('.excerpt-views').children('.add-excerpt-view').hide();
+    $('.excerpt-views').children('.view-excerpt-view').show();
+  });
+
+  $('.remove-excerpt-btn').click(function() {
+    $('#id_excerpt').val('');
+
+    $('.excerpt-views').children('.add-excerpt-view').show();
+    $('.excerpt-views').children('.view-excerpt-view').hide();
+  });
+
+  $('.comments, .excerpt-views').on('click', 'mark', function() {
+    $('.preview mark').replaceWith( $('.preview mark').text() );
+    clearTimeout(window.highlight_timeout);
+
+    var needle = $(this).text(),
+    haystack = $('.preview').html();
+
+    result = haystack.replace(needle, '<mark>' + needle + '</mark>');
+    if( haystack != result ) {
+      $('.preview').html( result );
+      $.scrollTo('.preview', 500);
+      $('.preview').scrollTo('mark');
+      window.highlight_timeout = setTimeout(function() {
+        $('.preview mark').replaceWith( $('.preview mark').text() );
+      }, 5 * 1000);
+    }
+  });
+});
+</script>

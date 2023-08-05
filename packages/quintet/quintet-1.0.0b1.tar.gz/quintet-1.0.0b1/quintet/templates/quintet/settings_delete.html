@@ -1,0 +1,8 @@
+{% extends 'quintet/settings.html' %}
+{% load bootstrap_tags %}
+
+{% block inner_content %}
+<p><span class="lead">Are you sure you want to delete this account?</span><br />This is a permanent action and can not be undone.</p>
+
+<a href="{% url 'delete_user' pk=subject.pk %}?confirm=1" class="btn btn-danger pull-right">Yes, I'm sure</a>
+{% endblock %}

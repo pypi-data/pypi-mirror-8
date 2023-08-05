@@ -1,0 +1,67 @@
+{% extends 'quintet/settings.html' %}
+{% load bootstrap_tags %}
+
+{% block inner_content %}
+<form method="POST">{% csrf_token %}
+  <table class="table table-hover">
+    <tr>
+      <th></th>
+      <th class="text-center">Can Add</th>
+      <th class="text-center">Can Edit</th>
+      <th class="text-center">Can Delete</th>
+      <th class="text-center">Can Publish</th>
+    </tr>
+
+    <tr>
+      <th class="text-right">Posts</th>
+      <td class="text-center">{{ form.add_post }}</td>
+      <td class="text-center">{{ form.change_post }}</td>
+      <td class="text-center">{{ form.delete_post }}</td>
+      <td class="text-center">{{ form.publish_post }}</td>
+    </tr>
+
+    <tr>
+      <th class="text-right">Pages</th>
+      <td class="text-center">{{ form.add_page }}</td>
+      <td class="text-center">{{ form.change_page }}</td>
+      <td class="text-center">{{ form.delete_page }}</td>
+      <td class="text-center">{{ form.publish_page }}</td>
+    </tr>
+
+    <tr>
+      <th class="text-right">Sections</th>
+      <td class="text-center">{{ form.add_section }}</td>
+      <td></td>
+      <td class="text-center">{{ form.delete_section }}</td>
+      <td></td>
+    </tr>
+
+    <tr>
+      <th></th>
+      <th class="text-center">Can Add</th>
+      <th class="text-center">Can Edit</th>
+      <th class="text-center">Can Delete</th>
+      <th class="text-center">Set Permissions</th>
+    </tr>
+
+    <tr>
+      <th class="text-right">Users</th>
+      <td class="text-center">{{ form.add_user }}</td>
+      <td class="text-center">{{ form.change_user }}</td>
+      <td class="text-center">{{ form.delete_user }}</td>
+      <td class="text-center">{{ form.set_perms }}</td>
+    </tr>
+  </table>
+
+  <button type="submit" class="btn btn-primary pull-right">Save Changes</button>
+</form>
+
+<script type="text/javascript">
+  $('#id_add_post, #id_change_post').on('change', function() {
+    $('#id_add_post, #id_change_post').prop('checked', $(this).is(':checked'));
+  });
+  $('#id_add_page, #id_change_page').on('change', function() {
+    $('#id_add_page, #id_change_page').prop('checked', $(this).is(':checked'));
+  });
+</script>
+{% endblock %}

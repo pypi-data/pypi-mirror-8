@@ -1,0 +1,93 @@
+{% extends 'quintet/dashboard.html' %}
+
+{% block title %}Edit User{% endblock %}
+
+{% block active_nav %}Users{% endblock %}
+
+{% block content %}
+<h1>Edit User <small>{{ subject.get_full_name }}</h1>
+
+<div class="row">
+  <div class="col-sm-3">
+    <ul class="nav nav-pills nav-stacked">
+      <li{% if page == 'general' %} class="active"{% endif %}><a href="{% url 'edit_user' pk=subject.pk %}">General</a></li>
+
+      {% if subject == user %}
+      <li{% if page == 'password' %} class="active"{% endif %}><a href="{% url 'change_password' pk=subject.pk %}">Password</a></li>
+      {% endif %}
+
+      {% if perms.quintet.set_perms and subject != user and not subject.is_superuser %}
+      <li{% if page == 'permissions' %} class="active"{% endif %}><a href="{% url 'edit_permissions' pk=subject.pk %}">Permissions</a></li>
+      {% endif %}
+
+      {% if subject == user or perms.auth.delete_user and not subject.is_superuser %}
+      <li{% if page == 'delete' %} class="active"{% endif %}><a href="{% url 'delete_user' pk=subject.pk %}">Delete</a></li>
+      {% endif %}
+    </ul>
+  </div>
+
+  <div class="col-sm-9 col-lg-8">
+    {% block inner_content %}
+    <form enctype="multipart/form-data" method="post">{% csrf_token %}
+      <div class="row">
+        <div class="col-sm-3 col-sm-offset-0 col-xs-6 col-xs-offset-3 text-center">
+          {% include 'quintet/misc/user_photo.html' with user=subject %}
+          <button type="button" class="btn btn-link btn-sm" data-toggle="modal" data-target="#change-photo-modal">Change Photo</button>
+        </div>
+
+        <div class="col-sm-9">
+          <div class="row">
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label for="{{ form.first_name.id_for_label }}" class="sr-only">{{ form.first_name.label }}</label>
+                {{ form.first_name }}
+                {{ form.first_name.errors }}
+              </div>
+            </div>
+
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label for="{{ form.last_name.id_for_label }}" class="sr-only">{{ form.last_name.label }}</label>
+                {{ form.last_name }}
+                {{ form.last_name.errors }}
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="{{ form.email.id_for_label }}" class="sr-only">{{ form.email.label }}</label>
+            {{ form.email }}
+            {{ form.email.errors }}
+          </div>
+
+          <div class="form-group">
+            <label for="{{ form.twitter.id_for_label }}" class="sr-only">{{ form.twitter.label }}</label>
+            <div class="input-group">
+              <span class="input-group-addon">@</span>
+              {{ form.twitter }}
+            </div>
+            {{ form.twitter.errors }}
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="{{ form.bio.id_for_label }}">{{ form.bio.label }}</label>
+        {{ form.bio }}
+        {{ form.bio.errors }}
+      </div>
+
+      <button type="submit" class="btn btn-primary pull-right">
+        <span class="glyphicon glyphicon-floppy-disk"></span> Save Changes
+      </button>
+    </form>
+    {% endblock %}
+  </div>
+</div>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery.form/3.49/jquery.form.min.js"></script>
+
+{% include 'quintet/modals/change_photo.html' %}
+{% include 'quintet/modals/change_password.html' %}
+
+{% endblock %}

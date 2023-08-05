@@ -1,0 +1,45 @@
+{% extends 'quintet/dashboard.html' %}
+
+{% block title %}Users{% endblock %}
+
+{% block active_nav %}Users{% endblock %}
+
+{% block content %}
+<div class="toolbar">
+  {% if perms.auth.add_user %}
+  <a href="{% url 'add_user' %}" class="btn btn-primary pull-right" style="margin-bottom: 20px;">
+    <span class="glyphicon glyphicon-plus"></span> Add User
+  </a>
+  {% endif %}
+</div>
+
+<table class="table table-hover">
+  <tr>
+    <th>Name</th>
+    <th>Username</th>
+    <th>Email</th>
+    <th>Twitter</th>
+  </tr>
+
+  {% for u in users %}
+  <tr>
+    <td>
+      {% if perms.auth.change_user or u == user %}<a href="{% url 'edit_user' pk=u.pk %}">{% endif %}
+        {{ u.get_full_name }}
+      {% if perms.auth.change_user or u == user %}</a>{% endif %}
+    </td>
+    <td>{{ u.username }}</td>
+    <td>{{ u.email }}</td>
+    <td>
+      {% if u.profile.twitter %}
+      <a href="http://twitter.com/{{ u.profile.twitter }}" target="_blank">@{{ u.profile.twitter }}</a>
+      {% endif %}
+    </td>
+  </tr>
+  {% empty %}
+  <tr>
+    <td colspan="4" class="text-muted text-center"><em>No Users to display.</em></td>
+  </tr>
+  {% endfor %}
+</table>
+{% endblock %}

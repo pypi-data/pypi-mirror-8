@@ -1,0 +1,81 @@
+<div class="btn-group reviewer-list" style="border-left: 1px solid #ccc; padding-left: 15px;" id="reviewer-list">
+  {% for reviewer in post.reviewers.all %}
+  <div class="reviewer" onclick="event.preventDefault();" data-toggle="tooltip" data-placement="bottom" title="{{ reviewer.get_full_name }}" style="width: 34px; height: 34px; float: left; margin-right: 10px;" data-pk="{{ reviewer.pk }}">
+    <img src="{{ reviewer.profile.get_thumbnail_url }}" alt="{{ reviewer.get_full_name }}" class="img-circle img-responsive" />
+    <a href="#" class="label label-danger remove-reviewer">&times;</a>
+
+    {% if reviewer in post.approved_by.all %}
+    <span class="stamp label label-success glyphicon glyphicon-ok"></span>
+    {% endif %}
+  </div>
+  {% endfor %}
+  {% for reviewer in post.approved_by.all %}{% if reviewer not in post.reviewers.all %}
+  <div class="reviewer" onclick="event.preventDefault();" data-toggle="tooltip" data-placement="bottom" title="{{ reviewer.get_full_name }}" style="width: 34px; height: 34px; float: left; margin-right: 10px;" data-pk="{{ reviewer.pk }}">
+    <img src="{{ reviewer.profile.get_thumbnail_url }}" alt="{{ reviewer.get_full_name }}" class="img-circle img-responsive" />
+    <span class="stamp label label-success glyphicon glyphicon-ok"></span>
+  </div>
+  {% endif %}{% endfor %}
+  <a href="#" onclick="event.preventDefault();" rel="tooltip" data-placement="bottom" title="Add Reviewer" style="display: block; width: 34px; height: 34px; float: left; margin-right: 10px;" class="add" data-toggle="modal" data-target="#reviewer-modal">
+    <span class="img-circle img-responsive text-center" style="background-color: #ccc; height: 100%;"><span class="glyphicon glyphicon-plus" style="margin-top: 8px; color: #fff;"></span></span>
+  </a>
+</div>
+
+<script type="text/javascript">
+$(document).ready(function() {
+  $('.approve-btn').click( function() {
+    var $btn = $(this),
+    approveURL = "{% url 'approve_post' pk=post.pk %}",
+    unapproveURL = "{% url 'unapprove_post' pk=post.pk %}",
+    url = approveURL;
+
+    if( $btn.attr('data-approved') == 'true') {
+      url = unapproveURL;
+    }
+
+    $btn.button('loading');
+
+    $.getJSON(url, function(response) {
+      if( response.success ) {
+        if( $btn.attr('data-approved') == 'true') {
+          $btn.attr('data-approved', 'false');
+          $btn.button('reset');
+          $btn.children('.btn-label').text('Approve');
+
+          $reviewer = $('.reviewer[data-pk=' + response.user.pk + ']');
+          $reviewer.children('.stamp').remove();
+        } else {
+          $btn.attr('data-approved', 'true');
+          $btn.button('reset');
+          $btn.children('.btn-label').text('Unapprove');
+
+          $reviewer = $('.reviewer[data-pk=' + response.user.pk + ']')
+          if( $reviewer.length > 0 ) {
+            $reviewer.append('<span class="stamp label label-success glyphicon glyphicon-ok"></span>');
+          } else {
+            $('.reviewer-list .add').before('\
+              <div class="reviewer" onclick="event.preventDefault();" data-toggle="tooltip" data-placement="bottom" title="' + response.user.full_name + '" style="width: 34px; height: 34px; float: left; margin-right: 10px;" data-pk="' + response.user.pk + '">\
+                <img src="' + response.user.thumbnail + '" alt="' + response.user.full_name + '" class="img-circle img-responsive" />\
+                <span class="stamp label label-success glyphicon glyphicon-ok"></span>\
+              </div>\
+            ');
+          }
+        }
+      }
+    }).fail(function() {
+      $btn.button('reset');
+    });
+  });
+
+  $('.reviewer-list').on('click', '.remove-reviewer', function(e) {
+    e.preventDefault();
+    var self = this;
+    var pk = $(this).parent().attr('data-pk');
+    $.getJSON("{% url 'remove_reviewer' pk=post.pk %}" + pk, function(response) {
+      if( response.success ) {
+        $(self).parent().tooltip('destroy');
+        $(self).parent().remove();
+      }
+    });
+  });
+});
+</script>

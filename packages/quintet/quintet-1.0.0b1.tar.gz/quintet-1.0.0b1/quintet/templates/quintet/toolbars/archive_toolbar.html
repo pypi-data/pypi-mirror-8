@@ -1,0 +1,9 @@
+<div class="btn-group pull-right">
+  <a href="{{ post.get_set_draft_url }}" class="btn btn-default"> Unarchive</a>
+  {% if perms.quintet.delete_post %}
+  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></button>
+  <ul class="dropdown-menu" role="menu">
+    <li><a href="#" data-toggle="modal" data-target="#confirm-delete-modal">Delete</a></li>
+  </ul>
+  {% endif %}
+</div>
