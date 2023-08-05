@@ -1,0 +1,45 @@
+{% extends 'admin/change_list.html' %}
+{% load admin_static %}
+{% load setmagic %}
+
+
+{% block extrastyle %}
+{{ block.super }}
+	<link rel="stylesheet" href="{% static 'admin/setmagic.css' %}">
+
+{% endblock extrastyle %}
+
+
+{% block result_list %}
+
+	{{ cl.formset.management_form }}
+
+	{% organize_settings_formset cl.formset as formset %}
+	{% for group_label, forms in formset %}
+		<section class="module" data-settings-formset>
+			<h2>{{ group_label }}</h2>
+			<table>
+				<tbody>
+				{% for form in forms %}
+					<tr class="{% cycle 'row1' 'row2' %}">
+						<td>
+							<h4>{{ form.instance.label }}</h4>
+							<p>{{ form.instance.help_text }}</p>
+							<p>(<em data-setting-name>{{ form.instance.name }}</em>)</p>
+
+							{# Hidden ID field #}
+							{{ form.id }}
+						</td>
+						<td>
+							{{ form.errors }}
+							{{ form.media }}
+							{{ form.current_value }}
+						</td>
+					</tr>
+				{% endfor %}
+				</tbody>
+			</table>
+		</section>
+	{% endfor %}
+
+{% endblock result_list %}
