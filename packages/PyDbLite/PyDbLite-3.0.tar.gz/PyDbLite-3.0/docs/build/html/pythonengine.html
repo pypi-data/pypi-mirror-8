@@ -1,0 +1,364 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Moteur pur-Python &mdash; documentation PyDbLite 3.0</title>
+    
+    <link rel="stylesheet" href="_static/cloud.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Noticia+Text|Open+Sans|Droid+Sans+Mono" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '3.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/translations.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/jquery.cookie.js"></script>
+    <script type="text/javascript" src="_static/cloud.js"></script>
+    <link rel="top" title="documentation PyDbLite 3.0" href="index.html" />
+    <link rel="next" title="Adapteur SQLite" href="sqliteengine.html" />
+    <link rel="prev" title="PyDbLite" href="index.html" /> 
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head>
+  <body>
+    <div class="relbar-top">
+        
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="Index général"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Index des modules Python"
+             >modules</a> &nbsp; &nbsp;</li>
+        <li class="right" >
+          <a href="sqliteengine.html" title="Adapteur SQLite"
+             accesskey="N">suivant</a> &nbsp; &nbsp;</li>
+        <li class="right" >
+          <a href="index.html" title="PyDbLite"
+             accesskey="P">précédent</a> &nbsp; &nbsp;</li>
+        <li class="right" >
+          <a href="contents.html" title="Table Of Contents"
+             accesskey="C">toc</a> &nbsp; &nbsp;</li>
+    <li><a href="index.html">documentation PyDbLite 3.0</a> &raquo;</li>
+ 
+      </ul>
+    </div>
+    </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="pure-python-engine">
+<span id="id1"></span><h1>Moteur pur-Python<a class="headerlink" href="#pure-python-engine" title="Lien permanent vers ce titre">¶</a></h1>
+<p>Le moteur pur-Python consiste en un module unique, pydblite.py. Pour l&#8217;utiliser, importer la classe <a class="reference internal" href="api.html#pydblite.pydblite._Base" title="pydblite.pydblite._Base"><tt class="xref py py-class docutils literal">Base</tt></a> depuis ce module:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">pydblite.pydblite</span> <span class="kn">import</span> <span class="n">Base</span>
+</pre></div>
+</div>
+<div class="section" id="create-or-open-a-database">
+<h2>Create or open a database<a class="headerlink" href="#create-or-open-a-database" title="Lien permanent vers ce titre">¶</a></h2>
+<p>créer une instance de base de données, en donnant un nom de fichier comme argument</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">db</span> <span class="o">=</span> <span class="n">Base</span><span class="p">(</span><span class="s">&#39;test.pdl&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Pour une nouvelle base, définissez les noms des champs</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">db</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s">&#39;name&#39;</span><span class="p">,</span> <span class="s">&#39;age&#39;</span><span class="p">,</span> <span class="s">&#39;size&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Vous n&#8217;avez pas à définir le type des champs. PyDbLite accepte toute valeur qui peut être sérialisée par le module cPickle</p>
+<ul class="simple">
+<li>strings</li>
+<li>Unicode strings</li>
+<li>integers</li>
+<li>floats</li>
+<li>dates and datetimes (instances of the date and datetime classes in the datetime module)</li>
+<li>user-defined classes</li>
+</ul>
+<p><a class="reference internal" href="api.html#pydblite.pydblite._Base.exists" title="pydblite.pydblite._Base.exists"><tt class="xref py py-func docutils literal">db.exists()</tt></a> indique si la base existe exists.</p>
+<p>si la base existe déjà, pour l&#8217;ouvrir</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">if</span> <span class="n">db</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">open</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>on peut passer un paramètre &#8220;mode&#8221; à la méthode :func:<a href="#id1"><span class="problematic" id="id2">`</span></a>create() &lt;pydblite.pydblite._Base.create&gt;`pour indiquer ce qu&#8217;il faut faire si la base existe déjà sur le disque</p>
+<ul class="simple">
+<li><p class="first">mode = &#8220;open&#8221; : <code class="code python py docutils literal highlight highlight-py"><span class="n">db</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s">&#39;name&#39;</span><span class="p">,</span> <span class="s">&#39;age&#39;</span><span class="p">,</span> <span class="s">&#39;size&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s">&quot;open&quot;</span><span class="p">)</span></code> ouvre la base en ignorant la définition des champs</p>
+</li>
+<li><p class="first">mode = &#8220;override&#8221; : <code class="code python py docutils literal highlight highlight-py"><span class="n">db</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s">&#39;name&#39;</span><span class="p">,</span> <span class="s">&#39;age&#39;</span><span class="p">,</span> <span class="s">&#39;size&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s">&quot;override&quot;</span><span class="p">)</span></code>  efface la base existante et en crée une nouvelle avec les définitions de champs</p>
+</li>
+<li><p class="first">si le <code class="code python py docutils literal highlight highlight-py"><span class="n">mode</span></code> n&#8217;est pas précisé et que la base existe déjà, une exception <code class="code python py docutils literal highlight highlight-py"><span class="ne">IOError</span></code> est déclenchée</p>
+</li>
+</ul>
+</div>
+<div class="section" id="insert-update-delete-a-record">
+<h2>Insert, update, delete a record<a class="headerlink" href="#insert-update-delete-a-record" title="Lien permanent vers ce titre">¶</a></h2>
+<div class="section" id="insert-a-new-record">
+<h3>insert a new record<a class="headerlink" href="#insert-a-new-record" title="Lien permanent vers ce titre">¶</a></h3>
+<div class="section" id="by-keywords">
+<h4>par mots-clés<a class="headerlink" href="#by-keywords" title="Lien permanent vers ce titre">¶</a></h4>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">db</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">&#39;homer&#39;</span><span class="p">,</span> <span class="n">age</span><span class="o">=</span><span class="mi">23</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mf">1.84</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Si certains champs manquent, ils sont initialisés à la valeur None</p>
+</div>
+<div class="section" id="by-positional-arguments">
+<h4>par arguments positionnels<a class="headerlink" href="#by-positional-arguments" title="Lien permanent vers ce titre">¶</a></h4>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">db</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s">&#39;homer&#39;</span><span class="p">,</span> <span class="mi">23</span><span class="p">,</span> <span class="mf">1.84</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Les arguments doivent être fournis dans le même ordre que dans la méthode <code class="code python py docutils literal highlight highlight-py"><span class="n">create</span><span class="p">()</span></code></p>
+</div>
+<div class="section" id="save-the-changes-on-disk">
+<h4>pour sauvegarder les changements sur le disque<a class="headerlink" href="#save-the-changes-on-disk" title="Lien permanent vers ce titre">¶</a></h4>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Si vous ne confirmez pas les changements, les opérations d&#8217;insertion, de suppression et de mise à jour ne seront pas sauvegardés sur le disque</p>
+</div>
+<div class="section" id="delete-a-record">
+<h4>pour supprimer un enregistrement<a class="headerlink" href="#delete-a-record" title="Lien permanent vers ce titre">¶</a></h4>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">db</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">record</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>ou, si vous connaissez l&#8217;identifiant</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">del</span> <span class="n">db</span><span class="p">[</span><span class="n">rec_id</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="to-delete-a-list-of-records">
+<h4>pour supprimer une liste d&#8217;enregistrements<a class="headerlink" href="#to-delete-a-list-of-records" title="Lien permanent vers ce titre">¶</a></h4>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">db</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">list_of_records</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>liste_d_enregistrements peut être n&#8217;importe quel itérable (liste, tuple, set, etc) qui produit des enregistrements</p>
+</div>
+<div class="section" id="to-update-a-record">
+<h4>to update a record<a class="headerlink" href="#to-update-a-record" title="Lien permanent vers ce titre">¶</a></h4>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">db</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">record</span><span class="p">,</span> <span class="n">age</span><span class="o">=</span><span class="mi">24</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p class="first">En plus des champs passés à la méthode <code class="code python py docutils literal highlight highlight-py"><span class="n">create</span><span class="p">()</span></code>, un champ interne appelé __id__ est ajouté. C&#8217;est un entier, unique et inchangé pour chaque enregistrement, il peut donc être utilisé comme identifiant pour l&#8217;enregistrement</p>
+</li>
+<li><p class="first">un autre champ interne appelé <code class="code python py docutils literal highlight highlight-py"><span class="n">__version__</span></code> est également géré par le moteur de base de données. Il s&#8217;agit d&#8217;un entier qui est initialisé à 0 quand l&#8217;enregistrement est créé, et incrémenté de 1 à chaque fois que l&#8217;enregistrement est mis à jour. Ceci sert pour la détection des accès concurrents, par exemple dans une application web dans laquelle deux utilisateurs veulent mettre à jour le même enregistrement en même temps.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="section" id="selection">
+<h2>Sélection<a class="headerlink" href="#selection" title="Lien permanent vers ce titre">¶</a></h2>
+<p>L&#8217;instance de Base est un itérateur sur les enregistrements</p>
+<div class="section" id="to-iterate-on-all-the-records">
+<h3>Pour itérer sur tous les enregistrements<a class="headerlink" href="#to-iterate-on-all-the-records" title="Lien permanent vers ce titre">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">db</span><span class="p">:</span>
+    <span class="n">do_something_with</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="direct-access">
+<h3>Accès direct<a class="headerlink" href="#direct-access" title="Lien permanent vers ce titre">¶</a></h3>
+<p>On peut accéder directement à un enregistrement par son identifiant</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">record</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="n">rec_id</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>retourne l&#8217;enregistrement tel que <code class="code python py docutils literal highlight highlight-py"><span class="n">record</span><span class="p">[</span><span class="s">&#39;__id__&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">rec_id</span></code></p>
+</div>
+<div class="section" id="simple-selections">
+<h3>Sélection simples<a class="headerlink" href="#simple-selections" title="Lien permanent vers ce titre">¶</a></h3>
+<ul class="simple">
+<li><p class="first"><code class="code python py docutils literal highlight highlight-py"><span class="n">db</span><span class="p">(</span><span class="n">key1</span><span class="o">=</span><span class="n">val1</span><span class="p">,</span> <span class="n">key2</span><span class="o">=</span><span class="n">val2</span><span class="p">)</span></code> renvoie la liste des enregistrements dont les clés ont les valeurs données</p>
+</li>
+<li><p class="first"><code class="code python py docutils literal highlight highlight-py"><span class="n">db</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">val</span></code> retourne un itérateur sur tous les enregistrements pour lesquels la val du champ cle est supérieure ou égale à val.</p>
+</li>
+</ul>
+<p>Exemple</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">for</span> <span class="n">rec</span> <span class="ow">in</span> <span class="p">(</span><span class="n">db</span><span class="p">(</span><span class="s">&quot;age&quot;</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">30</span><span class="p">):</span>
+     <span class="k">print</span> <span class="n">rec</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>ces &#8220;comparaisons riches&#8221; peuvent être combinées avec des &amp; (et) et des | (ou)</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">for</span> <span class="n">rec</span> <span class="ow">in</span> <span class="p">(</span><span class="n">db</span><span class="p">(</span><span class="s">&quot;age&quot;</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">30</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">db</span><span class="p">(</span><span class="s">&quot;country&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s">&quot;France&quot;</span><span class="p">):</span>
+    <span class="k">print</span> <span class="n">rec</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="list-comprehension">
+<h2>Listes en intension<a class="headerlink" href="#list-comprehension" title="Lien permanent vers ce titre">¶</a></h2>
+<p>la sélection d&#8217;enregistrements peut utiliser la syntaxe des listes en intension (&#8220;list comprehensions&#8221;) de Python</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">recs</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">db</span> <span class="k">if</span> <span class="mi">30</span> <span class="o">&gt;</span> <span class="n">r</span><span class="p">[</span><span class="s">&#39;age&#39;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">18</span> <span class="ow">and</span> <span class="n">r</span><span class="p">[</span><span class="s">&#39;size&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>retourne les enregistrements de la base pour lesquels l&#8217;âge est compris entre 18 et 30 ans, et la taille est inférieure à 2 mètres. L&#8217;enregistrement est un dictionnaire, où la clé est le nom de champ et la valeur est la valeur de ce champ</p>
+<p>la syntaxe des générateurs d&#8217;expression Python peut aussi être utilisée</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="p">(</span><span class="n">r</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">db</span> <span class="k">if</span> <span class="n">r</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span> <span class="ow">in</span> <span class="p">(</span><span class="s">&#39;homer&#39;</span><span class="p">,</span> <span class="s">&#39;marge&#39;</span><span class="p">)):</span>
+    <span class="n">do_something_with</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>itère sur les enregistrements dont le nom est &#8216;homer&#8217; ou &#8216;marge&#8217;</p>
+</div>
+<div class="section" id="index">
+<h2>Index<a class="headerlink" href="#index" title="Lien permanent vers ce titre">¶</a></h2>
+<p>Pour accélérer les sélections, un index peut être créé sur un champ <a class="reference internal" href="api.html#pydblite.pydblite._Base.create_index" title="pydblite.pydblite._Base.create_index"><tt class="xref py py-func docutils literal">create_index('field')</tt></a></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">db</span><span class="o">.</span><span class="n">create_index</span><span class="p">(</span><span class="s">&#39;age&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Quand un index est créé, l&#8217;instance de la base de données a un attribut (ici _age : noter le signe de soulignement initial, pour éviter les conflits de noms avec des noms internes). Cet attribut est un objet de type dictionnaire, où les clés sont les valeurs prises par le champ, et les valeurs sont les enregistrements dont le champ a la même valeur que la clé :</p>
+<p><code class="code python py docutils literal highlight highlight-py"><span class="n">records</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">_age</span><span class="p">[</span><span class="mi">23</span><span class="p">]</span></code> retourne la liste des enregistrements avec <code class="code python py docutils literal highlight highlight-py"><span class="n">age</span> <span class="o">==</span> <span class="mi">23</span></code></p>
+<p>Si aucun enregistrement n&#8217;a cette valeur, la recherche par cette valeur retourne une liste vide</p>
+<p>L&#8217;index supporte l&#8217;itération sur les valeurs du champ, et la méthode <code class="code python py docutils literal highlight highlight-py"><span class="n">keys</span><span class="p">()</span></code> retourne toutes les valeurs existantes pour le champ</p>
+</div>
+<div class="section" id="other-attributes-and-methods">
+<h2>Autres attributs et méthodes<a class="headerlink" href="#other-attributes-and-methods" title="Lien permanent vers ce titre">¶</a></h2>
+<ul class="simple">
+<li><p class="first"><a class="reference internal" href="api.html#pydblite.pydblite._Base.add_field" title="pydblite.pydblite._Base.add_field"><tt class="xref py py-func docutils literal">add_field('new_field'[,default=v])</tt></a>: ajoute un nouveau champ à la base de données. <code class="code python py docutils literal highlight highlight-py"><span class="n">default</span></code> est une valeur par défaut ; elle vaut <code class="code python py docutils literal highlight highlight-py"><span class="bp">None</span></code> si elle n&#8217;est pas précisée</p>
+</li>
+<li><p class="first"><a class="reference internal" href="api.html#pydblite.pydblite._Base.drop_field" title="pydblite.pydblite._Base.drop_field"><tt class="xref py py-func docutils literal">drop_field('field')</tt></a>: supprime un champ existant</p>
+</li>
+<li><p class="first"><a class="reference internal" href="api.html#pydblite.pydblite._Base.path" title="pydblite.pydblite._Base.path"><tt class="xref py py-attr docutils literal">db.path</tt></a>: the chemin de la base de données dans le système de fichiers</p>
+</li>
+<li><p class="first"><a class="reference internal" href="api.html#pydblite.pydblite._Base.name" title="pydblite.pydblite._Base.name"><tt class="xref py py-attr docutils literal">db.name</tt></a>: le nom de la base de données : le nom de base du chemin (sans le répertoire), auquel on a enlevé l&#8217;extension</p>
+</li>
+<li><p class="first"><a class="reference internal" href="api.html#pydblite.pydblite._Base.fields" title="pydblite.pydblite._Base.fields"><tt class="xref py py-attr docutils literal">db.fields</tt></a>: la liste des champs (n&#8217;inclut pas les champs internes <code class="code python py docutils literal highlight highlight-py"><span class="n">__id__</span></code> et <code class="code python py docutils literal highlight highlight-py"><span class="n">__version__</span></code>)</p>
+</li>
+<li><p class="first"><code class="code python py docutils literal highlight highlight-py"><span class="nb">len</span><span class="p">(</span><span class="n">db</span><span class="p">)</span></code> : nombre d&#8217;enregistrements dans la base</p>
+</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+        <p class="logo"><a href="index.html" title="index">
+          <img class="logo" src="_static/banniere.jpg" alt="Logo"/>
+        </a></p>
+<div class="sphinxglobaltoc">
+<h3><a href="index.html">Table des Matières</a></h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="">Moteur pur-Python</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#create-or-open-a-database">Create or open a database</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#insert-update-delete-a-record">Insert, update, delete a record</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#insert-a-new-record">insert a new record</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#by-keywords">par mots-clés</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#by-positional-arguments">par arguments positionnels</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#save-the-changes-on-disk">pour sauvegarder les changements sur le disque</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#delete-a-record">pour supprimer un enregistrement</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#to-delete-a-list-of-records">pour supprimer une liste d&#8217;enregistrements</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#to-update-a-record">to update a record</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#selection">Sélection</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#to-iterate-on-all-the-records">Pour itérer sur tous les enregistrements</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#direct-access">Accès direct</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#simple-selections">Sélection simples</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#list-comprehension">Listes en intension</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#index">Index</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#other-attributes-and-methods">Autres attributs et méthodes</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="sqliteengine.html">Adapteur SQLite</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Example code</a></li>
+</ul>
+</div><h4>Code</h4>
+<p class="topless">
+  <ul class="this-page-menu">
+	<li><a href="http://sourceforge.net/project/platformdownload.php?group_id=210258" title="Téléchargement">Téléchargement</a></li>
+	<li><a href="https://github.com/PierreQuentel/PyDbLite" title="Browse source">Browse source on Github</a></li>
+	<li><a href="changelog.html" title="Changelog">Changelog</a></li>
+	<li><a href="license.html" title="License">License</a></li>
+  </ul>
+</p><h4>Tests and Documentation</h4>
+<p class="topless">
+  <ul class="this-page-menu">
+	<li><a href="unittests.html" title="Unit tests">Unit tests</a></li>
+	<li><a href="http://PierreQuentel.github.io/PyDbLite/" title="Unit tests coverage">Unit tests coverage</a></li>
+	<li><a href="benchmarks.html" title="Benchmarks">Benchmarks</a></li>
+	<li><a href="doccoverage.html" title="Documentation coverage">Documentation coverage</a></li>
+	<li><a href="https://media.readthedocs.org/pdf/pydblite/latest/pydblite.pdf" title="Documention as PDF">Documention as PDF</a></li>
+  </ul>
+</p><h4>Contact</h4>
+<p class="topless">
+  <ul class="this-page-menu">
+	<li><a href="http://groups.google.com/group/pydblite" title="Mailing list">Mailing list</a></li>
+	<li><a href="contact.html" title="Authors">Authors</a></li>
+  </ul>
+</p>
+<div id="searchbox" style="display: none">
+  <h3>Recherche rapide</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Saisissez un mot clef ou un nom de module, classe ou fonction.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="relbar-bottom">
+        
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="Index général"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Index des modules Python"
+             >modules</a> &nbsp; &nbsp;</li>
+        <li class="right" >
+          <a href="sqliteengine.html" title="Adapteur SQLite"
+             >suivant</a> &nbsp; &nbsp;</li>
+        <li class="right" >
+          <a href="index.html" title="PyDbLite"
+             >précédent</a> &nbsp; &nbsp;</li>
+        <li class="right" >
+          <a href="contents.html" title="Table Of Contents"
+             >toc</a> &nbsp; &nbsp;</li>
+    <li><a href="index.html">documentation PyDbLite 3.0</a> &raquo;</li>
+ 
+      </ul>
+    </div>
+    </div>
+
+    <div class="footer">
+        &copy; Copyright 2014, Pierre Quentel, Bendik Rønning Opstad.
+      Créé avec <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+    <!-- cloud_sptheme 1.4 -->
+  </body>
+</html>

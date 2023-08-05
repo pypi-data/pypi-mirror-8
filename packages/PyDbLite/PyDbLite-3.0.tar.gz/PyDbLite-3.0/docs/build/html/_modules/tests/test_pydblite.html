@@ -1,0 +1,179 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>tests.test_pydblite &mdash; documentation PyDbLite 3.0</title>
+    
+    <link rel="stylesheet" href="../../_static/cloud.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Noticia+Text|Open+Sans|Droid+Sans+Mono" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '3.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/translations.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../_static/jquery.cookie.js"></script>
+    <script type="text/javascript" src="../../_static/cloud.js"></script>
+    <link rel="top" title="documentation PyDbLite 3.0" href="../../index.html" />
+    <link rel="up" title="Code du module" href="../index.html" /> 
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head>
+  <body>
+    <div class="relbar-top">
+        
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="Index général"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Index des modules Python"
+             >modules</a> &nbsp; &nbsp;</li>
+        <li class="right" >
+          <a href="../../contents.html" title="Table Of Contents"
+             accesskey="C">toc</a> &nbsp; &nbsp;</li>
+    <li><a href="../../index.html">documentation PyDbLite 3.0</a> &raquo;</li>
+
+          <li><a href="../index.html" accesskey="U">Code du module</a> &raquo;</li> 
+      </ul>
+    </div>
+    </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Code source de tests.test_pydblite</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">unittest</span>
+
+<span class="kn">from</span> <span class="nn">.common_tests</span> <span class="kn">import</span> <span class="n">Generic</span>
+
+
+<div class="viewcode-block" id="PyDbLiteTestCase"><a class="viewcode-back" href="../../unittests.html#tests.test_pydblite.PyDbLiteTestCase">[docs]</a><span class="k">class</span> <span class="nc">PyDbLiteTestCase</span><span class="p">(</span><span class="n">Generic</span><span class="p">,</span> <span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+
+<div class="viewcode-block" id="PyDbLiteTestCase.setUp"><a class="viewcode-back" href="../../unittests.html#tests.test_pydblite.PyDbLiteTestCase.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>  <span class="c"># NOQA</span>
+        <span class="kn">from</span> <span class="nn">pydblite.pydblite</span> <span class="kn">import</span> <span class="n">Base</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">first_record_id</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">filter_db</span> <span class="o">=</span> <span class="n">Base</span><span class="p">(</span><span class="s">&#39;test_database&#39;</span><span class="p">,</span> <span class="n">save_to_file</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+        <span class="n">filter_db</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s">&#39;unique_id&#39;</span><span class="p">,</span> <span class="s">&#39;name&#39;</span><span class="p">,</span> <span class="s">&quot;active&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s">&quot;override&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filter_db</span> <span class="o">=</span> <span class="n">filter_db</span>
+</div>
+<div class="viewcode-block" id="PyDbLiteTestCase.tearDown"><a class="viewcode-back" href="../../unittests.html#tests.test_pydblite.PyDbLiteTestCase.tearDown">[docs]</a>    <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>  <span class="c"># NOQA</span>
+        <span class="k">pass</span>
+
+</div></div>
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span>
+    <span class="n">suite</span> <span class="o">=</span> <span class="n">unittest</span><span class="o">.</span><span class="n">TestSuite</span><span class="p">()</span>
+    <span class="n">suite</span><span class="o">.</span><span class="n">addTest</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">makeSuite</span><span class="p">(</span><span class="n">PyDbLiteTestCase</span><span class="p">))</span>
+    <span class="n">unittest</span><span class="o">.</span><span class="n">TextTestRunner</span><span class="p">()</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">suite</span><span class="p">)</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+        <p class="logo"><a href="../../index.html" title="index">
+          <img class="logo" src="../../_static/banniere.jpg" alt="Logo"/>
+        </a></p>
+<div class="sphinxglobaltoc">
+<h3><a href="../../index.html">Table des Matières</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../pythonengine.html">Moteur pur-Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sqliteengine.html">Adapteur SQLite</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples.html">Example code</a></li>
+</ul>
+</div><h4>Code</h4>
+<p class="topless">
+  <ul class="this-page-menu">
+	<li><a href="http://sourceforge.net/project/platformdownload.php?group_id=210258" title="Téléchargement">Téléchargement</a></li>
+	<li><a href="https://github.com/PierreQuentel/PyDbLite" title="Browse source">Browse source on Github</a></li>
+	<li><a href="changelog.html" title="Changelog">Changelog</a></li>
+	<li><a href="license.html" title="License">License</a></li>
+  </ul>
+</p><h4>Tests and Documentation</h4>
+<p class="topless">
+  <ul class="this-page-menu">
+	<li><a href="unittests.html" title="Unit tests">Unit tests</a></li>
+	<li><a href="http://PierreQuentel.github.io/PyDbLite/" title="Unit tests coverage">Unit tests coverage</a></li>
+	<li><a href="benchmarks.html" title="Benchmarks">Benchmarks</a></li>
+	<li><a href="doccoverage.html" title="Documentation coverage">Documentation coverage</a></li>
+	<li><a href="https://media.readthedocs.org/pdf/pydblite/latest/pydblite.pdf" title="Documention as PDF">Documention as PDF</a></li>
+  </ul>
+</p><h4>Contact</h4>
+<p class="topless">
+  <ul class="this-page-menu">
+	<li><a href="http://groups.google.com/group/pydblite" title="Mailing list">Mailing list</a></li>
+	<li><a href="contact.html" title="Authors">Authors</a></li>
+  </ul>
+</p>
+<div id="searchbox" style="display: none">
+  <h3>Recherche rapide</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Saisissez un mot clef ou un nom de module, classe ou fonction.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="relbar-bottom">
+        
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="Index général"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Index des modules Python"
+             >modules</a> &nbsp; &nbsp;</li>
+        <li class="right" >
+          <a href="../../contents.html" title="Table Of Contents"
+             >toc</a> &nbsp; &nbsp;</li>
+    <li><a href="../../index.html">documentation PyDbLite 3.0</a> &raquo;</li>
+
+          <li><a href="../index.html" >Code du module</a> &raquo;</li> 
+      </ul>
+    </div>
+    </div>
+
+    <div class="footer">
+        &copy; Copyright 2014, Pierre Quentel, Bendik Rønning Opstad.
+      Créé avec <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+    <!-- cloud_sptheme 1.4 -->
+  </body>
+</html>
