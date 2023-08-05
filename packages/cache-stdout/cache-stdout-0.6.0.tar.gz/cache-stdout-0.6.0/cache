@@ -1,0 +1,115 @@
+#!/usr/bin/env python
+
+import os
+import sys
+import argparse
+
+
+class CacheException(Exception):
+    pass
+
+
+def warning(msg):
+    print >> sys.stderr, msg
+
+
+def join(config, *args):
+    return os.path.join(config.cache_dir, *args)
+
+
+def get_cache_filename(config):
+    return join(config, config.name)
+
+
+def cache_exists(config):
+    return config.name in list_caches(config)
+
+
+def get_cache(config):
+    if not cache_exists(config):
+        msg = "Couldn't find %s cache file" % config.name
+        raise CacheException(msg)
+
+    filename = get_cache_filename(config)
+    with open(filename) as fp:
+        for line in fp:
+            print line,
+
+
+def create_cache(config):
+    from tempfile import NamedTemporaryFile as TempFile
+    tempfile = TempFile(delete=False)
+    for line in sys.stdin:
+        tempfile.write(line)
+        print line,
+    os.rename(tempfile.name, get_cache_filename(config))
+
+
+def prepare(config):
+    # expand cache dirs like: ~/.cache
+    cache_dir = os.path.expanduser(config.cache_dir)
+    config.cache_dir = cache_dir
+    if not os.path.exists(cache_dir):
+        os.makedirs(cache_dir)
+
+
+def list_caches(config):
+    caches = []
+    for entry in os.listdir(config.cache_dir):
+        path = join(config, entry)
+        if os.path.isfile(path):
+            caches.append(entry)
+    return caches
+
+
+def print_caches(config):
+    for entry in list_caches(config):
+        print entry
+
+
+def delete_cache(config):
+    if not cache_exists(config):
+        warning("Could find cached file")
+
+    filename = get_cache_filename(config)
+    os.unlink(filename)
+
+
+def manage(config):
+    prepare(config)
+
+    if config.list:
+        print_caches(config)
+        return
+
+    delete_name = config.delete
+    if delete_name:
+        delete_cache(config)
+        return
+
+    is_stdin = not sys.stdin.isatty()
+    if is_stdin:
+        create_cache(config)
+    else:
+        get_cache(config)
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        prog="cache",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument('-c', '--cache-dir', default='~/.cache/stdout',
+                        help="Folder to store cached stdout")
+    parser.add_argument('name', nargs='?', default='1',
+                        help="Name of cached file to work with")
+    parser.add_argument('-l', '--list', action='store_true',
+                        help="List existing caches")
+    parser.add_argument('-d', '--delete', action="store", default="",
+                        help="Delete existing cache", metavar="NAME")
+    config = parser.parse_args()
+
+    try:
+        manage(config)
+    except CacheException, e:
+        warning("Something went wrong: %s" % e)
+        sys.exit(1)
