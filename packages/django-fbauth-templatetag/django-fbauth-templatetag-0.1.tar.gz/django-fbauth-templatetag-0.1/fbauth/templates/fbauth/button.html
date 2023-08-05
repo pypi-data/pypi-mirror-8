@@ -1,0 +1,9 @@
+{% load static %}
+{% load i18n %}
+<div id="fb-root"></div>
+<div class="social-connect">
+    <button class="facebook">{% trans 'Login with Facebook' %}</button>
+</div>
+<script type="text/javascript" id="id_fbauth_check_jquery" src="{% static 'fbauth/js/check-jquery.js' %}" jquery-required-version="{{ JQUERY_REQUIRED_VERSION }}" jquery-cdn="{{ JQUERY_CDN }}"></script>
+<script type="text/javascript" src="{% static 'fbauth/js/utils.js' %}"></script>
+<script type="text/javascript" id="id_fbauth" facebook-api="{{ FACEBOOK_API }}" app-id="{{ FACEBOOK_APP_ID }}" channel-url="{% static 'fbauth/html/channel.html' %}" redirect-url="{{ FBAUTH_REDIRECT_URL }}" src="{% static 'fbauth/js/fbauth.js' %}"></script>
