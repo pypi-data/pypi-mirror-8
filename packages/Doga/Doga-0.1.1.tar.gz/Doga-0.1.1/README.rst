@@ -1,0 +1,52 @@
+Doga
+====
+
+    HTTP log monitoring console for Humans
+
+-  watch and log all HTTP traffic of system
+-  generate log in w3c log format
+-  show status about total requests, maximum hits, requests in a
+   timespan
+-  alert when traffic is above a customizable threshold
+-  can log in a custom log file also
+
+How to let Doga watch for your traffic
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    wait is over and Doga is on pypi now :
+    `Doga <https://pypi.python.org/pypi/Doga>`__
+
+-  use either ``pip`` or ``easy_install`` to install ``Doga``
+-  for ``pip`` : ``sudo pip install doga``
+-  run it with ``sudo doga`` (as it require higher privilege than a
+   regular user have)
+-  change between logs and history section in application using
+   ``Ctrl+N``
+-  exit of application by selecting ``cancel``
+-  write logs to a custom log file using ``sudo doga -f filename.txt``
+
+
+    Doga's GUI is not responsive yet so it will raise exceptions on
+    smaller screen size.
+
+How it's made
+~~~~~~~~~~~~~
+
+-  Doga's GUI is built on top of
+   `npyscreen <https://pypi.python.org/pypi/npyscreen>`__
+-  Doga uses Python's `socket
+   interface <https://docs.python.org/2/library/socket.html>`__ library
+   to deal with all TCP/IP/Packets and *Bla Bla Bla* things
+
+--------------
+
+What?
+~~~~~
+
+    don't you know
+    `Doga <http://en.wikipedia.org/wiki/Doga_(comics)>`__? watch out
+    then, **He is after you.**
+
+--------------
+
+    made with Muzi and Appy by `Pravendra Singh <https://pravj.github.io>`__
