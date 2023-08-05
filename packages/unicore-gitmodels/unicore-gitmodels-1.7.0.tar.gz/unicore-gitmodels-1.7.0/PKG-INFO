@@ -1,0 +1,115 @@
+Metadata-Version: 1.1
+Name: unicore-gitmodels
+Version: 1.7.0
+Summary: Definition of models used for python-gitmodel
+Home-page: http://github.com/praekelt/unicore-gitmodels
+Author: Praekelt Foundation
+Author-email: dev@praekelt.com
+License: BSD
+Description: Unicore Gitmodels
+        =================
+        
+        Definition of models used for python-gitmodel
+        
+        .. image:: https://travis-ci.org/praekelt/unicore-gitmodels.svg
+            :target: https://travis-ci.org/praekelt/unicore-gitmodels
+        
+        Installation
+        ------------
+        
+        ::
+        
+          $ pip install unicore-gitmodels
+        
+        
+        
+        Usage
+        -----
+        
+        ::
+        
+          # models.py
+        
+          from unicore_gitmodels.models import GitPageModel, GitCategoryModel
+        
+          ws = Workspace('/path/to/repo/.git')
+          GitPage = ws.register_model(GitPageModel)
+          GitCategory = ws.register_model(GitCategoryModel)
+        
+        ::
+        
+          # views.py
+        
+          page = GitPage(title='a title', slug='a-title', content='some sample content')
+          page.save(True, message="sample git commit")
+        Authors
+        =======
+        
+        Praekelt Foundation
+        -------------------
+        
+        * Milton Madanda
+        * Simon de Haan
+        Changelog
+        =========
+        
+        1.7.0
+        -----
+        
+        #. Add default sorting to `all()` using position field on GitPageModel
+        
+        1.6.0
+        -----
+        
+        #. Add default sorting to `all()` using position field
+        
+        1.5.0
+        -----
+        
+        #. Add `related_pages` and ListField() type.
+        
+        1.4.0
+        -----
+        #. Feature category in navbar
+        
+        1.3.1
+        -----
+        #. Ensure language is returned in dto.
+        
+        1.3.0
+        -----
+        
+        #. Added featured boolean field.
+        
+        1.2.0
+        -----
+        
+        #. Added featured_in_category boolean field.
+        
+        1.1.0
+        -----
+        #. Added language and source fields.
+        
+        1.0.3
+        -----
+        #. Add slugify to page model.
+        
+        1.0.2
+        -----
+        #. Add slugify to model for cases when no slug is provided.
+        
+        1.0.1
+        -----
+        #. Ensure all files included in pypi package.
+        
+        1.0.0
+        -----
+        #. Initial version from unicore-cms/unicore-cms-django.
+        
+Platform: UNKNOWN
+Classifier: Programming Language :: Python
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Development Status :: 4 - Beta
+Classifier: Operating System :: OS Independent
+Classifier: Intended Audience :: Developers
+Classifier: Topic :: Internet :: WWW/HTTP :: Dynamic Content
