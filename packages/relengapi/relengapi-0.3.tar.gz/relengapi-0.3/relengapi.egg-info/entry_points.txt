@@ -1,0 +1,18 @@
+[relengapi.auth.mechanisms]
+external = relengapi.lib.auth.external:init_app
+browserid = relengapi.lib.auth.browserid:init_app
+
+[relengapi.blueprints]
+docs = relengapi.blueprints.docs:bp
+base = relengapi.blueprints.base:bp
+tokenauth = relengapi.blueprints.tokenauth:bp
+auth = relengapi.blueprints.auth:bp
+badpenny = relengapi.blueprints.badpenny:bp
+
+[console_scripts]
+relengapi = relengapi.lib.subcommands:main
+
+[relengapi.perms.mechanisms]
+static = relengapi.lib.auth.static_authz:init_app
+ldap-groups = relengapi.lib.auth.ldap_group_authz:init_app
+
