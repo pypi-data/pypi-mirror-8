@@ -1,0 +1,81 @@
+Metadata-Version: 1.0
+Name: ansiblator
+Version: 0.5-4-28-09-2014
+Summary: Ansiblator - make ansible api more pythonic and usefull
+Home-page: http://www.pripravto.cz
+Author: Zdenek Dlauhy, Michal Dlauhy
+Author-email: test@dlauhy.cz
+License: MIT
+Description: 
+            Ansiblator
+            ==========
+        
+            This wrapper allows more quicker and easier way to use ansible in python
+            ansible without playbooks, so more like fabric.
+        
+            Ansible is then more powerfull and it will allow to chain commands with
+            python commands.
+        
+            Get started
+            ===========
+        
+            For instalation you can download package and then just unpack and use
+        
+                python setup.py install
+        
+            or
+        
+                pip install ansiblator
+        
+        
+            Quick use case
+            ==============
+        
+            For most quickest example you can just create your ansible file named
+            ansible_hosts inside your home directory or full path.
+        
+            Ansiblater is mainly using file such as in ~/ansible_hosts
+        
+            code::
+        
+                from ansiblator.api import Ansiblator
+                ans = Ansiblator()
+                ret = ans.local("uname -a", now=True, use_shell=True)
+                ans.run("uname -a", now=True)
+                ans.runner("uptime")
+                ans.run_all()
+                ans.copy(src="/tmp/aabc.csv", dest="/tmp/",pattern="pc",now=True)
+        
+            use dictionary::
+        
+                inv = {'pc':[{'ssh_host':'192.168.0.10', 'ssh_user':'test_user', 'su_user':'root'}}
+                ans = Ansiblator(inventory=inv)
+                ans.run("uname -a", now=True)
+        
+        
+            More useable way
+            ================
+        
+            Ansiblator automatically save return json values for actuall runs, so
+            you can use them for testing and conditions. For example
+        
+            testing::
+        
+                return_code = ans.run("uname -a", now=True, use_shell=True)
+                return_code['contacted']
+        
+                or
+        
+                return_code = ans.run(["uname", "-a"], now=True, use_shell=False)
+                return_code['contacted']
+        
+            Info
+            ====
+            For more information consult functions or ansible documentation.
+            more information can be also used on www.pripravto.cz. You can also
+            contact us there.
+        
+        
+            
+Keywords: ansible,wrapper,automatization
+Platform: UNKNOWN
