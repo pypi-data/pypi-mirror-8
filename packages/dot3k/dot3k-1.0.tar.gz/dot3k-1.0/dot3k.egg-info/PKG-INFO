@@ -1,0 +1,67 @@
+Metadata-Version: 1.1
+Name: dot3k
+Version: 1.0
+Summary: Display-o-Tron 3000 Driver
+Home-page: http://www.pimoroni.com
+Author: Philip Howard
+Author-email: phil@pimoroni.com
+License: MIT
+Description: dot3k
+        =====
+        
+        Requirements
+        ------------
+        
+        You should install python-smbus first via apt:
+        
+            sudo apt-get install python-smbus
+        
+        And pip, if you don't have it:
+        
+            sudo apt-get install python-pip
+        
+        Then install st7036 and sn3218 using pip:
+        
+            sudo pip install st7036 sn3218
+        
+        Usage
+        =====
+        
+        LCD
+        ---
+        
+            import dot3k.lcd as lcd
+            lcd.write('Hello World!')
+        
+        
+        Backlight
+        ---------
+        
+            import dot3k.backlight as backlight
+            backlight.sweep(0.5)
+            backlight.update()
+        
+        Joystick
+        --------
+        
+            import dot3k.joystick as joystick
+            @joystick.on(joystick.UP)
+            def handle_joystick_up(pin):
+                print("Joystick up!")
+        
+        1.0dev
+        ------
+        
+        * Initial Release
+        
+Keywords: Raspberry Pi ST7036 SN3218 LCD
+Platform: UNKNOWN
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Operating System :: POSIX :: Linux
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Intended Audience :: Developers
+Classifier: Programming Language :: Python :: 2.6
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Programming Language :: Python :: 3
+Classifier: Topic :: Software Development
+Classifier: Topic :: System :: Hardware
