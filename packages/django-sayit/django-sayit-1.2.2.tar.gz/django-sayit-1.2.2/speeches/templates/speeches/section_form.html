@@ -1,0 +1,32 @@
+{% extends 'speeches/base_form.html' %}
+{% load staticfiles %}
+{% load i18n %}
+
+{% block title %}
+{% if object %}
+    {% trans 'Edit section' %}
+{% else %}
+    {% trans 'Add a section' %}
+{% endif %}
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+  {% if object %}
+    <h1>{% trans "Edit section" %}</h1>
+  {% else %}
+    <h1>{% trans "Add a section" %}</h1>
+  {% endif %}
+</div>
+
+<form id="section-form" class="form-horizontal" method="post">
+    {% if object %}
+        {% trans "Update section" as submit %}
+    {% else %}
+        {% trans "Add section" as submit %}
+    {% endif %}
+    {% include 'speeches/form.html' with type="section" submit=submit %}
+</form>
+
+{% endblock %}
