@@ -1,0 +1,59 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      lang="en"
+      metal:use-macro="context/main_template/macros/master"
+      i18n:domain="shop.vitrine">
+<body>
+
+<metal:main fill-slot="main">
+    <tal:main-macro metal:define-macro="main" tal:define="isAnon context/@@plone_portal_state/anonymous">
+
+        <div tal:replace="structure provider:plone.abovecontenttitle" />
+
+        <h1 class="documentFirstHeading" tal:content="context/title" />
+
+        <div tal:replace="structure provider:plone.belowcontenttitle" />
+
+        <p class="documentDescription" tal:content="context/description" />
+
+        <div tal:replace="structure provider:plone.abovecontentbody" />
+
+        <div class="vitrine-page" tal:define="imagem context/imagem" >
+	        <img tal:condition="imagem" class="img-left-home" tal:attributes="src python:context.absolute_url() + '/' + imagem + '/image_preview'" />
+	        <img tal:condition="not:imagem" class="img-left-home" src="/semfoto/image_preview" title="" />
+	        <div class="content-text" tal:content="structure context/detalhes/output"></div>
+		</div>
+		
+        <div class="vitrine-images">
+            <tal:block repeat="img view/getImagens">
+                <div class="vitrine-image">
+                    <img tal:attributes="src python:img.absolute_url() + '/image_tile'; title img/Title" />
+                </div>
+            </tal:block>
+        </div>
+        
+		<div class="vitrine-sizes">
+        	<h2 i18n:translate="heading_sessions">Tamanhos</h2>
+            <tal:block repeat="obj view/getTamanhos">
+		        <div class="vitrine-size">
+	                <h1 tal:content="obj/title"></h1>
+	                <h2 tal:content="obj/Price"></h2>
+		        </div>
+	        </tal:block>
+        </div>
+
+		<div>
+			<tal:block repeat="obj view/getGroupsFromUser">
+				<div tal:content="obj/title"></div>
+			</tal:block>
+		</div>
+        <div tal:replace="structure provider:plone.belowcontentbody" />
+
+    </tal:main-macro>
+</metal:main>
+
+</body>
+</html>
+
