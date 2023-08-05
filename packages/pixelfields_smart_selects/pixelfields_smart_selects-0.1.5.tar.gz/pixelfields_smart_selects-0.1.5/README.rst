@@ -1,0 +1,22 @@
+=====
+pixelfields smart selects
+=====
+
+Smart selects for django.
+
+Forked from https://github.com/digi604/django-smart-selects and fixed for Django >= 1.7.
+
+Quick start
+-----------
+1. Install it by pip:
+
+    pip install https://bitbucket.org/pixelfields/smart-selects/get/v0.1.5.tar.gz
+
+1. Add "pixelfields_smart_selects" to INSTALLED_APPS:
+    INSTALLED_APPS = {
+        ...
+        'pixelfields_smart_selects'
+    }
+2. Bind the smart_selects urls.py into your main urls.py with something like: url(r'^chaining/', include('pixelfields_smart_selects.urls')), This is needed for the chained-selects.
+3. Profit
+
