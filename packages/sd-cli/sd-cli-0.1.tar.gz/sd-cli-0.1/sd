@@ -1,0 +1,47 @@
+#!/usr/bin/env python
+
+"""CLI for Serer Density.
+
+Usage:
+    sd auth <token>
+    sd auth <account> <user> <password>
+    sd device list
+    sd service list
+    sd metrics <name>
+    sd alerts
+    sd -h | --help
+    sd -v | --version
+
+Options:
+    -d --dry-run   Dry run mode
+    -q --quite     Quiet mode
+    -v --version   Show version
+    -h --help      Show this help
+"""
+2
+import sys
+import docopt
+import sdclient
+import requests
+
+
+if __name__ == '__main__':
+    arguments = docopt.docopt(__doc__, version='SD client 0.1')
+
+    if arguments['auth']:
+        if arguments['<account>']:
+            sdclient.auth_user(arguments['<account>'],
+                               arguments['<user>'],
+                               arguments['<password>'])
+        elif arguments['<token>']:
+            sdclient.auth_token(arguments['<token>'])
+    elif arguments['device']:
+        if arguments['list']:
+            sdclient.device_list()
+    elif arguments['service']:
+        if arguments['list']:
+            sdclient.service_list()
+    elif arguments['alerts']:
+        sdclient.alerts_list()
+    elif arguments['metrics']:
+        sdclient.get_metrics(arguments['<name>'])
