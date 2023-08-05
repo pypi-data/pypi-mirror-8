@@ -1,0 +1,25 @@
+<tool id="sampleinfo" name="Retrieve Sample Information">
+  <description>for supported data formats.</description>
+  <command>
+    mimodd info $ifile -o $outputfile --verbose
+  </command>
+
+  <inputs>
+    <param name="ifile" type="data" format="bam,sam,vcf,tabular" label="input file" />
+  </inputs>
+
+  <outputs>
+    <data name="outputfile" format="txt" label="Sample Info on ${on_string}"/>
+  </outputs>
+
+<help>
+.. class:: infomark
+
+   **What it does**
+
+The tool inspects the input file and writes a report about the samples (and read groups) encoded in it.
+
+It works with all file formats used and supported by MiModD that contain sample metadata, i.e. headered SAM/BAM files, vcf files with sample information and the cov files produced during Coverage Analysis.
+
+</help>
+</tool>
