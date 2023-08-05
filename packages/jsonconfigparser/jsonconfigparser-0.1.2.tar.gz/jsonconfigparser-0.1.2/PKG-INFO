@@ -1,0 +1,163 @@
+Metadata-Version: 1.1
+Name: jsonconfigparser
+Version: 0.1.2
+Summary: Quick and easy editting of JSON files.
+Home-page: https://github.com/justanr/JSONConfigParser
+Author: Alec Nikolas Reiter
+Author-email: alecreiter@gmail.com
+License: MIT
+Description: .. :readme:
+        
+        JSONConfigParser
+        ================
+        
+        A JSON config editor built on top of
+        `jsonpath-rw. <https://github.com/kennknowles/python-jsonpath-rw/>`__.
+        
+        Installation
+        ------------
+        
+        Simple as ``pip install --user jsonconfigparser``
+        
+        Use
+        ---
+        
+        Right now there is an example of building a CLI utility in the examples
+        directory.
+        
+        It can also be used programmatically as well by importing the
+        ``JSONConfigParser`` class and the commands modules.
+        
+        CLI App
+        ~~~~~~~
+        
+        This is built with argparse. Using it is as simple as:
+        
+        ::
+        
+            jsonconf path/to/conf.json view -p $
+        
+        That command will view the entire JSON file. Other actions include:
+        
+        +------------+-----------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+        | command    | description                                                                                                                             |                                                                                                                                                                                                                          |
+        +============+=========================================================================================================================================+==========================================================================================================================================================================================================================+
+        | addfile    | Concatenates a second JSON file onto the current. Warning: This will overwrite any shared keys.                                         | ``jsonconf conf.json addfile -o path/to/other.json``                                                                                                                                                                     |
+        +------------+-----------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+        | addfield   | Adds a key and value to a specified JSONPath                                                                                            | ``jsonconf conf.json addfield -p $.name -v jsonconfigparser``                                                                                                                                                            |
+        +------------+-----------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+        | append     | Appends a value to the specified JSONPath. Optionally, converts the field to another type. Optionally, apply to every found endpoint.   | ``jsonconf conf.json append -p $.things.[0] -v "Star bellied sneeches"`` ``jsonconf conf.json append -p $.products.hats -v "23.44" -t float`` ``jsonconf conf.json append -p $.products.[*].descript -v "A thing" -m``   |
+        +------------+-----------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+        | delete     | Deletes an item from the specific JSONPath.                                                                                             | ``jsonconf conf.json delete $.products.hats``                                                                                                                                                                            |
+        +------------+-----------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+        | edit       | Reset the value at the endpoint of the JSONPath                                                                                         | ``jsonconf conf.json edit -p $.products.hats.descript -v "A really cool hat."``                                                                                                                                          |
+        +------------+-----------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+        | shell      | Drop into the interactive prompt.                                                                                                       | ``jsonconf conf.json shell``                                                                                                                                                                                             |
+        +------------+-----------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+        
+        Arguments:
+        
+        +----------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+        | flags          | description                                                                                                                                                                                              |
+        +================+==========================================================================================================================================================================================================+
+        | -p/--path      | The path flag the only acceptable value is a JSONPath string                                                                                                                                             |
+        +----------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+        | -o/--other     | The other file flag, used with addfile to concatenate files together                                                                                                                                     |
+        +----------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+        | -v/--value     | The value flag, used with any action that requires a value                                                                                                                                               |
+        +----------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+        | -m/--multi     | The multi boolean flag. Currently only used with append action. Defaults to false, if True append will add the value to every path found                                                                 |
+        +----------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+        | -c/--convert   | The conversion flag. Currently only used with append. Defaults to False. If passed, a value must be provided of ``int``, ``float``, ``list``, ``dict``, ``bool``,\ ``str`` or some combination of them   |
+        +----------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+        
+        Interactive Shell Prompt
+        ~~~~~~~~~~~~~~~~~~~~~~~~
+        
+        This is built with readlines. To enter it, simply run
+        ``jsonconf path/to/conf.json shell``
+        
+        Executing commands is exactly the same as on the command line, except
+        the shell can't be reinstantiated inside itself.
+        
+        To exit, two consecutive keyboard interrupts are needed. If a command is
+        run between them, then the exit flag is reset.
+        
+        There is also an extra method available in the shell ``write`` which
+        saves the current state of the file.
+        
+        Todo:
+        -----
+        
+        There are several things that I want to do, small and big:
+        
+        -  Apply the multiflag where needed.
+        -  Clean up the whole package up and turn what I can into
+           classes/objects.
+        -  Ability to write to a different file for CLI and Shell.
+        
+        .. :changelog:
+        
+        0.1.2 (2014-10-13)
+        +++++++++++++++++
+        
+        * Fixed nested dictionary shim.
+        * More robust error handling in shell (still pretty fragile though)
+        
+        0.1.0 (2014-10-12)
+        ++++++++++++++++++
+        
+        * PyPI Launch (holy crap: `pip3 install jsonconfigparser`)
+        * Minimum viable package (still plenty of errors and features to touch though)
+        * CLI functionality moved into main app
+        * Interactive Prompt functionality merged into master
+        * Several Bug Fixes:
+            - Shim for nesting dictionaries.
+            - Consolidated string for root node in several modules
+        
+        0.0.7 (2014-10-12)
+        ++++++++++++++++++
+        
+        * Basic interactive prompt
+            - Tab complete for commands
+            - Added write command for prompt use
+            - Handle exiting script with ^C followed by ^C again.
+        * Better type conversion support
+        * Moved CLI into package
+        * Improved docstrings on functions
+        
+        0.0.5 (2014-11-12)
+        ++++++++++++++++++
+        
+        * Cleaned up commands module
+        * Added `act_on_path` and `set_on_path` functions
+        * Added initialization options on ``JSONConfigParser``
+            - `storage`: A filepath to write to
+            - `source`: Initial file to read from
+        * Replaced fragile, custom value parsing with more robust ``shlex.split``
+        * Tests added!
+        * Sorted out some imports
+        * Initial implementation of conversion functionality
+        * Updated CLI example
+        
+        0.0.3 (2014-10-08)
+        ++++++++++++++++++
+        
+        * Added JSONpath support
+        * Added function registry with `command` and `call` support
+        
+        0.0.1 (2014-10-07)
+        ++++++++++++++++++
+        
+        * Initial concept
+        
+Keywords: CLI json config
+Platform: UNKNOWN
+Classifier: Development Status :: 3 - Alpha
+Classifier: Environment :: Console
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Topic :: Text Processing
+Classifier: Programming Language :: Python :: 3.4
+Classifier: Operating System :: POSIX :: Linux
+Classifier: Natural Language :: English
