@@ -1,0 +1,12 @@
+{% extends "newscenter/base.html" %}
+
+{% block title %}Newsrooms{% endblock %}
+{% block appcontent %}
+
+<h1>Newsrooms</h1>
+{% for object in object_list %}
+{% if object.articles.count %}
+<h2><a href="{{ object.get_absolute_url }}">{{ object.name }}</a></h2>
+{% endif %}
+{% endfor %}
+{% endblock %}
