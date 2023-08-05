@@ -1,0 +1,28 @@
+{% load i18n static cms_tags menu_tags sekizai_tags  %}
+
+{% if step == 1%}
+<li id="tab_li_{{instance.pk}}" ><a href="#tabs-{{instance.pk}}">{{instance.title}}</a></li>
+
+{%else%}
+<div id="tabs-{{instance.pk}}" class="tab_div_{{instance.pk}}">
+	    {% for pg in instance.child_plugin_instances %}			    
+			{% with forloop as parentloop %}{% render_plugin pg %}{% endwith %}
+	    {% endfor %} 
+</div>
+{%endif%}
+
+{%addtoblock "css" %}
+<style>
+	{%if instance.title_color%}
+	#tab_li_{{instance.pk}}{
+		background-color: {{instance.title_color}};
+	}
+	{%endif%}
+	{%if instance.background_color%}
+	#tabs-{{instance.pk}}{
+		background-color: {{instance.background_color}};
+	}
+	{%endif%}
+	
+</style>
+{%endaddtoblock%}
