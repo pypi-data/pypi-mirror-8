@@ -1,0 +1,36 @@
+
+<div class="scroll-table-container">
+  <div class="infinite-scroll">
+    <div class="table-handler prompt" style="position: absolute"
+         ng-click="minimizeToggle($event)">
+    </div>
+    <div class="table-handler"/>
+    <table class="table table-condensed table-striped table-hover">
+      <thead>
+        <tr>
+          <th ng-repeat="column in headers" no-watch style="font-size: 90%">
+            <span bo-text="column.name"></span>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="row in rows" ng-if="row.visible">
+            <td ng-repeat="item in row.data" no-watch style="font-size: 90%" >
+              <span bo-if="item.tree" style="margin-left: {{row.depth}}em"
+                    class="rekall-tree">
+                <span bo-if="!row.branch" style="margin-left: 15px"/>
+                <a bo-if="row.branch"
+                   ng-click="toggleTreeNode(row)" >
+                  <span ng-class="{'glyphicon-expand': !row.opened,
+                                   'glyphicon-collapse-down': row.opened}"
+                        class="glyphicon" />
+                </a>
+              </span>
+              <rekall-object object="item.data" />
+            </td>
+          </span>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
