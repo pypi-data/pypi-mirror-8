@@ -1,0 +1,57 @@
+<div>
+    <style type = "text/css" scoped>
+.git-content div {
+    padding: 0;
+    margin: 0;
+}
+
+.git-content .git-file {
+    border: 1px solid #DEDEDE;
+    margin-bottom: 1em;
+}
+
+.git-content .git-file .git-meta {
+    background-color: #EAEAEA;
+    color: #666666;
+    font-size: 85%;
+    overflow: hidden;
+    padding: 0.5em;
+}
+
+.git-content .git-file .git-meta a {
+    color: #336699;
+}
+
+.git-content .git-file .git-meta a:visited {
+    color: #773377;
+}
+
+.git-content .git-file {
+    background-color: #F8F8FF;
+    border-bottom: 1px solid #DDDDDD;
+    font-size: 100%;
+    overflow: auto;
+    word-wrap: normal;
+}
+
+.git-content .git-file pre {
+    background: none repeat scroll 0 0 transparent !important;
+    border: medium none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+    </style>
+    <div class="git-content">
+        <div class="git-file">
+            {{ code }}
+            <div class="git-meta">
+                {% if footer != 'minimal' %}
+                <span>Brought to you by <a href="{{ base }}">pelican_git</a>.</span>
+                {% endif %}
+                <span style="float: right; color: #369;"><a href="{{ url }}">view original</a></span>
+                <span style="float: right; margin-right: 8px;">
+                    <a style="color: rgb(102, 102, 102);" href="{{ url }}">{{ filename }}</a></span>
+            </div>
+        </div>
+    </div>
+</div>
