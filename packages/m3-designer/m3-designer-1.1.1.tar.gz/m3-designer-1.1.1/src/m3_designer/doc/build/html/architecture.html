@@ -1,0 +1,208 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Архитектура клиентского приложения &mdash; М3 дизайнер 1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="М3 дизайнер 1 documentation" href="index.html" />
+    <link rel="next" title="Добавление и измененение компонентов в дизайнере" href="components.html" />
+    <link rel="prev" title="Дизайнер" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="components.html" title="Добавление и измененение компонентов в дизайнере"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Дизайнер"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">М3 дизайнер 1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Архитектура клиентского приложения</a><ul>
+<li><a class="reference internal" href="#id2">Общий обзор</a></li>
+<li><a class="reference internal" href="#m3designer-urlmap">M3Designer.UrlMap</a></li>
+<li><a class="reference internal" href="#m3desginer-ide">M3Desginer.ide</a></li>
+<li><a class="reference internal" href="#ui-designer">UI Designer</a></li>
+<li><a class="reference internal" href="#code-editor">Code editor</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Дизайнер</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="components.html"
+                        title="next chapter">Добавление и измененение компонентов в дизайнере</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/architecture.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="id1">
+<h1>Архитектура клиентского приложения<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="id2">
+<h2>Общий обзор<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<img alt="_images/top-class-view.png" src="_images/top-class-view.png" />
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Оригинальный файл с диаграммами классов(проект Enterprise Architect) лежит в репозитарии /m3_designer/doc/m3-ide.eap</p>
+</div>
+</div>
+<div class="section" id="m3designer-urlmap">
+<h2>M3Designer.UrlMap<a class="headerlink" href="#m3designer-urlmap" title="Permalink to this headline">¶</a></h2>
+<p>Контейнер для серверных адресов, необходим для работы(если какой-то из адресов не задан - будут выкидываться ошибки).
+Поэтому нужно сконфигурировать адреса таким образом(в отдельном js файле или в самой html страниче - главное до запросов на сервер):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">M3Designer</span><span class="o">.</span><span class="n">UrlMap</span><span class="o">.</span><span class="n">addUrls</span><span class="p">({</span>
+                <span class="s">&#39;save-file-content&#39;</span><span class="p">:</span><span class="s">&#39;/designer/file-content/save&#39;</span><span class="p">,</span>
+                <span class="s">&#39;get-file-content&#39;</span><span class="p">:</span><span class="s">&#39;/designer/file-content&#39;</span><span class="p">,</span>
+                <span class="s">&#39;get-template-global&#39;</span><span class="p">:</span><span class="s">&#39;/designer/project-global-template&#39;</span><span class="p">,</span>
+                <span class="s">&#39;manipulation&#39;</span><span class="p">:</span><span class="s">&#39;/designer/project-manipulation&#39;</span><span class="p">,</span>
+                <span class="s">&#39;data&#39;</span><span class="p">:</span><span class="s">&#39;/designer/data&#39;</span><span class="p">,</span>
+                <span class="s">&#39;save&#39;</span><span class="p">:</span><span class="s">&#39;/designer/save&#39;</span><span class="p">,</span>
+                <span class="s">&#39;preview&#39;</span><span class="p">:</span><span class="s">&#39;/designer/preview&#39;</span><span class="p">,</span>
+                <span class="s">&#39;upload-code&#39;</span><span class="p">:</span><span class="s">&#39;/designer/upload-code&#39;</span><span class="p">,</span>
+                <span class="s">&#39;code-assist&#39;</span><span class="p">:</span><span class="s">&#39;/designer/codeassist&#39;</span><span class="p">,</span>
+                <span class="s">&#39;create-autogen-function&#39;</span> <span class="p">:</span> <span class="s">&#39;create-autogen-function&#39;</span><span class="p">,</span>
+                <span class="s">&#39;create-function&#39;</span><span class="p">:</span> <span class="s">&#39;/create-function&#39;</span><span class="p">,</span>
+                <span class="s">&#39;create-new-class&#39;</span><span class="p">:</span> <span class="s">&#39;/create-new-class&#39;</span><span class="p">,</span>
+                <span class="s">&#39;project-files&#39;</span><span class="p">:</span> <span class="s">&#39;/project-files&#39;</span>
+<span class="p">});</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="m3desginer-ide">
+<h2>M3Desginer.ide<a class="headerlink" href="#m3desginer-ide" title="Permalink to this headline">¶</a></h2>
+<img alt="_images/M3Designer.ide.png" src="_images/M3Designer.ide.png" />
+<p>Код в этом пространстве имен рисует дерево структуры проекта, панель с вкладками, обрабатывает данные с сервера, и производит
+все манипуляции с проектом. Основные классы:</p>
+<p><strong>ProjectExplorer</strong> - наследник экстового дерева. Отображает структуру проекта.</p>
+<p><strong>Controller</strong> - контроллер приложения. Фактически, точка входа. В качестве параметров конструктора принимает интерфейсные объекты (дерево проекта, табпанель),
+на события которых начинает реагировать.</p>
+<p><strong>ComnmandDispatcher</strong> - диспетчер комманд. Вся логика работы над проектом описывается с помощью классов комманд.
+Более подробно можно посмотреть в комментариях в файлах /ide/controller.js и /ide/commands.js. Именно там нужно смотреть,
+если требуется добавить в IDE часть дизайнера новый функционал. Обратное взаимодействие с интерфейсом осуществляется
+через обращения к экземпляру контроллера.</p>
+<p><strong>CommandsConfig</strong> - настройка соответствия типов вершин в структуре проекта и возможных действий над ними.</p>
+<p><strong>Requests</strong> - запросы к серверу плюс часть логики работы. Это устаревший код, и должен быть исправлен(логика должна быть
+перенесена в комманды)</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Логика работы со структурой проекта основывается на типах вершин. Когда с сервера передаются данные, у каждой вершины указывается атрибут type, например &#8220;type&#8221;:&#8221;file&#8221;</p>
+</div>
+</div>
+<div class="section" id="ui-designer">
+<h2>UI Designer<a class="headerlink" href="#ui-designer" title="Permalink to this headline">¶</a></h2>
+<p>Общая диаграмма классов</p>
+<img alt="_images/ui-designer.png" src="_images/ui-designer.png" />
+<p>Общая концепция строения это MVC. Модель представляет собой дерево с вершинами. Контроллер - объект реагирующий на пользовательские события и обновляющий модель.
+Представления - два класса, что синхронизированы с моделью. Под синхронизацией понимается обработка событий обновления модели(добавление, удаление, измнение узлов дерева)</p>
+<p><strong>Важно:</strong> Контроллер не обновляет экранное представление. Экранное представление обновляется само по себе при изменениях модели.</p>
+<p>Структура поведения подсистемы:</p>
+<img alt="_images/control-flow.png" src="_images/control-flow.png" />
+<p>Описание основных классов, подробнее - смотреть комментарии в коде:</p>
+<p><strong>AppController</strong> - контроллер обрабатывающий действия пользователя</p>
+<p><strong>FormModel и ComponentModel</strong> - древовидная модель и ее узлы</p>
+<p><strong>ModelTypeLibrary</strong> - содержит &#8220;бизнесс&#8221; логику по работе с моделями</p>
+<p><strong>BaseView</strong> - базовый класс представления, синхронизирующийся с моделью</p>
+<p><strong>ComponentView</strong> - структура формы - отображает модель в TreePanel на экране</p>
+<p><strong>DesignView</strong> - визуальный просмотр модели на экране. Принцип перерисовки заключается в очистке содержимого экстовой панели и пересоздание JavaScript компонентов</p>
+<p><strong>ModelUIPresentationBuilder</strong> - отвечает за формирование конфигов ExtJS из объектов модели, для работы DesignView</p>
+<p><strong>PropertyEditorManager</strong> - управляет редактированием моделей. Фактически это тоже контроллер, что создает окна и гриды для редактирования, и потом обновляет модель</p>
+<p><strong>QuickPropertyWindow</strong> - окошко быстрого редактирования</p>
+<p><strong>PropertyWindow</strong> - окошко обычного редактирования</p>
+<p><strong>InlinePropertyGrid</strong> - грид редактирования модели, встраиваемый в аккардеон панель</p>
+<p><strong>ModelTransfer</strong> - класс для сериализации и десериализации модели в транспортный JSON</p>
+<p><strong>ServerStorage</strong> - взаимодействие с сервером</p>
+</div>
+<div class="section" id="code-editor">
+<h2>Code editor<a class="headerlink" href="#code-editor" title="Permalink to this headline">¶</a></h2>
+<p>Наиболее очевидный блок системы</p>
+<p><strong>ExtendedCodeEditor</strong> - Экстовая панель с CodeMirror редактором</p>
+<p><strong>CodeAssistPlugin</strong> - Плагин в терминах ExtJS. Присоединяется к панели ExtendedCodeEditor, слущает нажатие клавиш с
+клавиатуры, передает на сервер текущий файл в текущем состоянии(целиком) и положение курсора. Если сервер возвращает предложения о дополнении кода,
+создает меню с дополнениями</p>
+<p><strong>CompletionMenu</strong> - меню дополнений</p>
+<p><strong>PyCodeWindow</strong> - Legacy код. Окошко с эдитором питоновского кода, используется для предпросмотра кода генерируемого UI-Designer&#8217;ом.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="components.html" title="Добавление и измененение компонентов в дизайнере"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Дизайнер"
+             >previous</a> |</li>
+        <li><a href="index.html">М3 дизайнер 1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, ZIgi.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.2.
+    </div>
+  </body>
+</html>
