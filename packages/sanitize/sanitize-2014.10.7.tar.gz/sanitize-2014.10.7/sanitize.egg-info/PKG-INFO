@@ -1,0 +1,131 @@
+Metadata-Version: 1.1
+Name: sanitize
+Version: 2014.10.7
+Summary: Bringing sanitiy to world of messed-up data
+Home-page: http://www.aaronsw.com/2002/sanitize/
+Author: Alireza Savand
+Author-email: alireza.savand@gmail.com
+License: Redistribution and use in source and binary forms, with or without modification,
+are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice,
+  this list of conditions and the following disclaimer.
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 'AS IS'
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+Description: # Sanitize
+        
+        [![Build Status](https://secure.travis-ci.org/Alir3z4/python-sanitize.png)](http://travis-ci.org/Alir3z4/python-sanitize)
+        [![Coverage Status](https://coveralls.io/repos/Alir3z4/python-sanitize/badge.png)](https://coveralls.io/r/Alir3z4/python-sanitize)
+        [![Downloads](https://pypip.in/d/sanitize/badge.png)](https://pypi.python.org/pypi/sanitize/)
+        [![Version](https://pypip.in/v/sanitize/badge.png)](https://pypi.python.org/pypi/sanitize/)
+        [![Egg?](https://pypip.in/egg/sanitize/badge.png)](https://pypi.python.org/pypi/sanitize/)
+        [![Wheel?](https://pypip.in/wheel/sanitize/badge.png)](https://pypi.python.org/pypi/sanitize/)
+        [![Format](https://pypip.in/format/sanitize/badge.png)](https://pypi.python.org/pypi/sanitize/)
+        [![License](https://pypip.in/license/sanitize/badge.png)](https://pypi.python.org/pypi/sanitize/)
+        
+        `sanitize` is a Python module for making sure various things (e.g. HTML) are safe to use. 
+        It was originally written by Mark Pilgrim and is distributed under the BSD license.
+        
+        Usage
+        =====
+        ```
+        >>> from sanitize import HTML
+        >>> HTML('<b>hello')
+        '<b>hello</b>'
+        >>> HTML('<img>')
+        '<img />'
+        >>> HTML(("<b><b><b>hello")
+        ... )
+        '<b><b><b>hello</b></b></b>'
+        >>> HTML('<img src="foo"/')
+        ''
+        >>> HTML('<input type="checkbox" checked>')
+        '<input type="checkbox" checked="checked" />'
+        >>> # dangerous tags (a small sample)
+        ... 
+        >>> HTML('safe<applet code="foo.class" codebase="http://example.com/"></applet> <b>description</b>')
+        'safe <b>description</b>'
+        >>> HTML('safe<frameset rows="*"><frame src="http://example.com/"></frameset> <b>description</b>')
+        'safe <b>description</b>'
+        >>> # bad protocols (a small sample)
+        >>> HTML('<a href="java' + chr(1) + 'script:foo">bar</a>')
+        '<a href="#foo">bar</a>'
+        >>> HTML('<a href="vbscript:foo">bar</a>')
+        '<a href="#foo">bar</a>'
+        >>> 
+        ```
+        To see more usage examples see `tests/test_sanitize_html.py`.
+        
+        
+        Installation
+        ============
+        
+        `python-sanitize` is available on pypi
+        
+        http://pypi.python.org/pypi/python-sanitize
+        
+        So easily install it by `pip`:
+        
+        ```
+        pip install sanitize
+        ```
+        
+        Or by `easy_install`:
+        
+        ```
+        $ easy_install sanitize
+        ```
+        
+        Another way is by cloning `python-sanitize`'s git repository
+        
+        ```
+        $ git clone git://github.com/Alir3z4/python-sanitize.git
+        ```
+        
+        Then install it by running
+        
+        ```
+        $ python setup.py install
+        ```
+        
+        Tests
+        =====
+        
+        To run unit tests:
+        
+        ```
+        $ python setup.py test
+        ```
+        
+        
+        License
+        =======
+        
+        `Sanitize` is distributed under BSD license.
+        
+Platform: UNKNOWN
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Intended Audience :: Developers
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 2
+Classifier: Programming Language :: Python :: 2.3
+Classifier: Programming Language :: Python :: 2.4
+Classifier: Programming Language :: Python :: 2.5
+Classifier: Programming Language :: Python :: 2.6
+Classifier: Programming Language :: Python :: 2.7
