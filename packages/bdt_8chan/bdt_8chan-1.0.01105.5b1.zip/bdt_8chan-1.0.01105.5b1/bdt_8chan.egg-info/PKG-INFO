@@ -1,0 +1,55 @@
+Metadata-Version: 1.1
+Name: bdt-8chan
+Version: 1.0.01105.5b1
+Summary: 8Chan Thread Archiver - Downloads a thread; images, webms and all.
+Home-page: http://github.com/xenmen/bdt_8chan
+Author: Daniel Tadeuszow
+Author-email: dtadeuszow@gmail.com
+License: AGPL3+
+Description: ======
+        b8 - The BDT 8Chan Thread Archiver
+        ======
+        
+        This is the BDT 8chan thread archiving tool, or b8 for short. It's a pip-installable, resumable python script you can use to save all the comments and images in a thread. The master b8 branch is stable for all boards :]
+        
+        Presently, the script will:
+        
+        1.) Ask you for a link to the thread, such as: https://8chan.co/co/res/14684.html
+        
+        2.) Download the html for that thread; first creating a folder for the board, and then a folder for the thread and its contents.
+        
+        3.) Image and Thumbnail links are harvested, and the html links are redirected to act as local links (that means when the thread dies, the images will still appear in the thread when you open it).
+        
+        4.) The Thumbnails are downloaded to a subfolder 'thumbs' in the thread's folder, and the images are downloaded directly to the thread's folder.
+        
+        5.) You're done! The script closes and you can browse away with your own personal archive.
+        
+        NOTE: If the tool is interrupted, it will recognize which images have already been downloaded, and skip them. That also means if the thread has been updated since you archived it, you can run this tool again and only download the updated html and new images. That saves you time, and saves 8chan bandwidth.
+        
+        Requirements
+        ============
+        
+        b8 is a python script designed to be run with Python 2.6+. If you have Python3, it may run, but I have not done any testing on Python3 yet. b8's only 3rd party requirement is bs4 (Beautiful Soup 4), for html parsing. If you install b8 through pip, then bs4 will be installed automatically.
+        
+        Usage
+        =====
+        
+        Open a shell window, and navigate to the directory where you want your archive. In this first version, b8 does not support any arguments.
+        
+        Run the script with a simple 'b8', and you will be prompted to enter a url for the thread you want to archive. Paste the thread link, press Return, and bingo! The thread is downloading.
+        
+        The current version does not have any status messages. Please leave the shell open while your thread downloads. You can open your file manager and see the images as they download. The html will be saved last.
+        
+Platform: UNKNOWN
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)
+Classifier: Operating System :: POSIX
+Classifier: Operating System :: Microsoft :: Windows
+Classifier: Operating System :: MacOS :: MacOS X
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: System Administrators
+Classifier: Topic :: Internet :: WWW/HTTP
+Classifier: Topic :: Text Processing :: Indexing
+Classifier: Topic :: Text Processing :: Markup :: HTML
+Classifier: Topic :: Utilities
