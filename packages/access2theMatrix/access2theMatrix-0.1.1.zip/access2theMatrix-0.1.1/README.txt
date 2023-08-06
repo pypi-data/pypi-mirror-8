@@ -1,0 +1,77 @@
+
+access2theMatrix is a Python library for accessing Omicron NanoTechnology's
+MATRIX Control System result files. Only topography image data will be accessed
+by this library.
+
+The library access2theMatrix has the package access2thematrix which in turn
+contains the module access2thematrix. The class MtrxData in the access2thematrix
+module has the methods to open result files and to select one out of the four
+traces (forward/up, backward/up, forward/down and backward/down).
+
+Dependencies
+------------
+access2theMatrix requires the NumPy library (http://www.numpy.org). You must
+install it manually.
+
+Installation
+------------
+Using pip::
+
+	C:\Python27\Scripts>pip install access2theMatrix
+
+Example usage
+-------------
+In this example the MATRIX Control System has stored the acquired data in the
+folder ``c:\data``. In addition to the result data files the folder must also
+contain the result file chain, see the MATRIX Application Manual for SPM.
+The file ``20140325-092702_AFM_NonContact_QPlus--51_1.Z_mtrx`` will be opened
+and the ``backward/up`` trace will be selected.
+
+::
+
+	>>> import access2thematrix
+	>>> mtrx_data = access2thematrix.MtrxData()
+	>>> data_file = r'c:\data\20140325-092702_AFM_NonContact_QPlus--51_1.Z_mtrx'
+	>>> traces, message = mtrx_data.open(data_file)
+	>>> print message
+	Successfully opened and processed data file 20140325-092702_AFM_NonContact_QPlus
+	--51_1.Z_mtrx.
+	>>> traces
+	{0: 'forward/up', 1: 'backward/up', 2: 'forward/down', 3: 'backward/down'}
+	>>> im, message = mtrx_data.select_image(traces[1])
+	>>> print message
+	Trace backward/up selected.
+	>>> im.data
+	array([[ -1.80605572e-08,  -1.80625201e-08,  -1.80663057e-08, ...,
+         -1.82079808e-08,  -1.82142887e-08,  -1.82174186e-08],
+       [ -1.80587456e-08,  -1.80613477e-08,  -1.80623131e-08, ...,
+         -1.82091517e-08,  -1.82156607e-08,  -1.82195526e-08],
+       [ -1.80513618e-08,  -1.80510353e-08,  -1.80531660e-08, ...,
+         -1.82131799e-08,  -1.82177880e-08,  -1.82229330e-08],
+       ..., 
+       [ -1.79789472e-08,  -1.79819920e-08,  -1.79856806e-08, ...,
+         -1.81261956e-08,  -1.81293811e-08,  -1.81332706e-08],
+       [ -1.79804649e-08,  -1.79810591e-08,  -1.79850527e-08, ...,
+         -1.81223942e-08,  -1.81250894e-08,  -1.81293146e-08],
+       [ -1.79775549e-08,  -1.79791702e-08,  -1.79830948e-08, ...,
+         -1.81149155e-08,  -1.81181441e-08,  -1.81199908e-08]])
+	>>> im.data.shape
+	(240, 320)
+	>>> im.angle
+	122
+	>>> im.height
+	3.0000000000000004e-09
+	>>> im.width
+	4e-09
+	>>> im.x_offset
+	-8.7804110391206612e-08
+	>>> im.y_offset
+	1.86005503318584e-07
+	>>> 
+
+Authors & affiliation
+---------------------
+Stephan J. M. Zevenhuizen [#]_
+
+..	[#] Condensed Matter and Interfaces, Debye Institute for Nanomaterials
+	Science, Utrecht University, Utrecht, The Netherlands.
