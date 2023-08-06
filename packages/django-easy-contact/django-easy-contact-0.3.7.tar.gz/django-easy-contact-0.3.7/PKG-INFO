@@ -1,0 +1,122 @@
+Metadata-Version: 1.1
+Name: django-easy-contact
+Version: 0.3.7
+Summary: A simple contact form application.
+Home-page: https://bitbucket.org/catapela/django-easy-contact
+Author: Andreas Fritz, digital.elements.li
+Author-email: easy-contact@bitzeit.eu
+License: BSD
+Download-URL: https://pypi.python.org/pypi/django-easy-contact
+Description: 
+        ===========
+        Description
+        ===========
+        
+        A simple contact form application.
+        
+        **License**
+        
+            New BSD license
+        
+        **Notes**
+        
+            * It's tested with Django 1.2
+        
+        ========
+        Features
+        ========
+        
+            * You can use ervery outsite email host (the application will auto configure itself).
+            * You can clearly see from witch sender and domain the email was sent.
+            * optionally it works together with django-easy-contact-setup.
+        
+        **It lacks**
+        
+            * Any spam protection
+            * Mail sending to more then one reciver.
+        
+        ============
+        Installation
+        ============
+        
+        **Dependences**
+        
+            * This app
+            * Django itself
+        
+        **Installation**
+        
+            *Manual Installation*
+        
+                * Download the file and unzip it.
+                * Copy the folder in your project root.
+        
+            *Installation with pip*
+        
+                * Type in your terminal:
+        
+                ::
+                
+                :~$ pip install django-easy-contact
+        
+        
+                * With pip you can also uninstall it:
+        
+                ::
+        
+                :~$ pip uninstall django-easy-contact
+        
+        **test your installation**
+        
+            Go to console and type:
+        
+            ::
+        
+            :~$ python
+            >>> import easy_contact
+            >>> easy_contact.VERSION
+        
+        =====
+        Setup
+        =====
+        
+            * Add "easy_contact" to you installed apps in the settings file.
+            * Either install and configure django-contact-form-setup ...
+            * or make sure that your mail server settings in settigs.py are correct:
+                - DEFAULT_FROM_EMAIL
+                - EMAIL_HOST
+                - EMAIL_HOST_PASSWORD
+                - EMAIL_HOST_USER
+            * Add the following to your urls.py:
+                -   (r'^feedback/', include('easy_contact.urls')),
+            * Finally run:
+        
+            ::
+        
+            :~$ python manage.py syncdb
+            :~$ python manage.py runserver
+        
+        =====
+        Usage
+        =====
+        
+        Open a Browser and go to "http://127.0.0.1:8000/feedback/contact/". That's all.
+        
+        **Hints**
+        
+            * The mailform needs at minimum 5 words as input.
+        
+Keywords: django mail configuration setup mailform
+Platform: UNKNOWN
+Classifier: Development Status :: 4 - Beta
+Classifier: Framework :: Django
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Environment :: Console
+Classifier: Natural Language :: English
+Classifier: Natural Language :: German
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: Information Technology
+Classifier: Topic :: Internet
+Classifier: Topic :: Utilities

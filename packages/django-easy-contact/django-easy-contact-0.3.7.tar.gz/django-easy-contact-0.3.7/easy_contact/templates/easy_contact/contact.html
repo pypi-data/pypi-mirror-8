@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}
+    {% trans "Contact us" %}
+{% endblock %}
+
+{% block content_uncache_tail %}
+
+<div class="main_container_line">
+{% if form.errors %}
+    <div class="errornote">
+    <p>
+    {% blocktrans count form.errors.items|length as counter %}
+    Please correct the error below.
+    {% plural %}
+    Please correct the errors below.
+    {% endblocktrans %}
+    </p>
+    </div>
+{% endif %}
+
+<div class="accounts_container">
+
+<form action="" method="post">{% csrf_token %}
+    <p>
+        {{ form.email.errors }}
+        <label for="id_e-mail">{% trans "Your e-mail address" %}: </label>
+        {{ form.email }}
+    </p>
+    <p>
+        {{ form.subject.errors }}
+        <label for="id_subject">{% trans "Subject" %}: </label>
+        {{ form.subject }}
+    </p>
+    <p>
+        {{ form.message.errors }}
+        <label for="id_message">{% trans "Message" %}: </label>
+        {{ form.message }}
+    </p>
+
+    <p class="submit"><input type="submit" value="{% trans "Submit" %}" /></p>
+</form>
+</div>
+</div>
+{% endblock %}
