@@ -1,0 +1,63 @@
+@startuml
+participant "AMQP User" as User
+participant Calibredaemon.py << (C, #ADD1B2) >>
+participant reactToAMQPMessage << (F, red) >>
+participant calibre.py << (M, green) >>
+participant econvert as "ebook-convert" << (P, white) >>
+
+box "edeposit.amqp"
+    participant Calibredaemon.py
+end box
+
+box "edeposit.amqp.calibre"
+    participant reactToAMQPMessage
+    participant calibre.py
+end box
+
+box "Calibre"
+    participant econvert
+end box
+
+User -> Calibredaemon.py: <<JSON Request>>
+activate Calibredaemon.py
+
+note right of User
+  AMQP message with data
+  serialized using
+  edeposit.amqp.serializers.
+end note
+
+Calibredaemon.py -> reactToAMQPMessage: <<ConversionRequest>>
+activate reactToAMQPMessage
+
+reactToAMQPMessage -> calibre.py: in/out format, b64 data
+activate calibre.py
+
+activate econvert
+calibre.py -> econvert: commandline switches
+
+note left of econvert
+  Create temporary file
+  and convert it to the
+  output format.
+end note
+
+econvert --> calibre.py: /tmp/outputfile
+deactivate econvert
+
+calibre.py -> reactToAMQPMessage: <<ConversionResponse>>
+deactivate calibre.py
+
+reactToAMQPMessage -> Calibredaemon.py: <<ConversionResponse>>
+deactivate reactToAMQPMessage
+
+Calibredaemon.py --> User: <<Response class in JSON>>
+Calibredaemon.py --> User: <<Exception in AMQP>>
+deactivate Calibredaemon.py
+
+note right of User
+  Exceptions have all
+  information stored
+  in headers.
+end note
+@enduml
