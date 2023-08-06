@@ -1,0 +1,64 @@
+Metadata-Version: 1.1
+Name: systemlookup
+Version: 0.0.3
+Summary: Command line tool to get info about filenames, clsid etc, from SystemLookup.com
+Home-page: http://github.com/katjahahn/SystemLookup
+Author: Katja Hahn
+Author-email: struppigel@googlemail.com
+License: Apache License 2.0
+Download-URL: https://github.com/katjahahn/systemlookup/tarball/0.0.3
+Description: ## SystemLookup
+        
+        Get results from SystemLookup.com via command line.
+        
+        ### Installation:
+        
+        ```
+        pip install systemlookup
+        ```
+        
+        ### Usage:
+        
+        ```
+        usage: systemlookup.py [-h] [-l SL_LIST] -t SEARCHTYPE searchitem
+        
+        SystemLookup.com Command Line Tool
+        
+        positional arguments:
+          searchitem
+        
+        optional arguments:
+          -h, --help            show this help message and exit
+          -l SL_LIST, --list SL_LIST
+                                The list that is used to lookup the entry. Possible
+                                values: SEH, O16, FF, FIREFOX, O9, R3, O21, DRIVERS,
+                                O10, STARTUP, O23, O20, O18, ACTIVE, CLSID, SERVICES,
+                                O4, O3, O2, O22, LSP
+          -t SEARCHTYPE, --type SEARCHTYPE
+                                The type of the search item. Possible values: name,
+                                clsid, filename
+        ```
+        
+        Example command for global search:
+        
+        ```
+        systemlookup -t name lsasss
+        ```
+        
+        Example command for search in startup list:
+        
+        ```
+        systemlookup --list O2 --type filename "explore.exe"
+        ```
+        
+Keywords: systemlookup,malware research,malware,file info
+Platform: any
+Classifier: Development Status :: 4 - Beta
+Classifier: Environment :: Console
+Classifier: Intended Audience :: System Administrators
+Classifier: Intended Audience :: Science/Research
+Classifier: Natural Language :: English
+Classifier: Operating System :: OS Independent
+Classifier: Topic :: Internet :: Log Analysis
+Classifier: Topic :: System
+Classifier: Programming Language :: Python
