@@ -1,0 +1,80 @@
+Metadata-Version: 1.1
+Name: CodeHarvester
+Version: 0.0.2
+Summary: A tool to merge an input file and all of its requirements into a single output file. Similar to Sprockets.
+Home-page: http://packages.python.org/codeharvester
+Author: Denis Gonsiorovsky
+Author-email: dns.gnsr@gmail.com
+License: BSD
+Description: CodeHarvester
+        =============
+        
+        CodeHarvester is a lightweight tool for merging different files respecting the requirements which are stated
+        in those files. It would be useful in Web development for concatenating multiple files together. Currently it
+        supports only JS like requirement definitions, but it is easily extensible.
+        
+        Installation
+        ------------
+        
+        To install CodeHarvester simply do:
+        
+            pip install codeharvester
+            
+        This will install CodeHarvester package and the runner script (`harvester.py`) into `/bin` directory.
+        
+        Usage
+        -----
+        
+        CodeHarvester can concatenate any type of files but currently understands only JS like notating.
+        To specify a requirement just write in the file:
+        
+            //= require anoter_file.js
+            
+        `another_file.js` will be included in the same place it was defined. If the same requirement will appear anywhere else
+        it will be skipped because it is already included.
+        
+        For command line options run:
+        
+            harvester.py --help
+        
+        Example
+        -------
+        
+        fileA.js:
+          
+            //= require fileB.js
+            
+            // this will be skipped because fileC.js will be already loaded as a requirement of fileB.js 
+            //= require fileC.js
+            
+            ... fileA.js stuff ...
+            
+        fileB.js
+            
+            //= require fileC.js
+            
+            ... fileB.js stuff ...
+            
+        fileC.js
+            
+            ... fileC.js stuff ...
+             
+        output_file.js
+            
+            ... fileC.js stuff ...
+            ... fileB.js stuff ...
+            ... fileA.js stuff ...
+            
+Keywords: python js sprockets requirements dependencies merge join
+Platform: UNKNOWN
+Classifier: Development Status :: 3 - Alpha
+Classifier: Environment :: Console
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 2
+Classifier: Programming Language :: Python :: 3
+Classifier: Topic :: Software Development :: Build Tools
+Classifier: Topic :: Software Development :: Code Generators
+Classifier: Topic :: Software Development :: Pre-processors
+Classifier: Topic :: Utilities
