@@ -1,0 +1,140 @@
+#summary ChangeLog for fookebox
+#labels Featured,Phase-Deploy
+
+== 0.7.1 (03 Nov 2014) ==
+
+ * Ported classic theme to jquery
+ * Make sure to include i18n directory in release tarball
+ * Upgraded the prototype library to version 1.7.2
+ * Include full jquery-ui library rather than just one effect
+ * Removed minimized versions of Javascript/CSS files
+ * Removed prototype and scriptaculous
+ * Never show credits
+ * Added example config files for apache 2.4
+
+== 0.7.0 (30 Oct 2014) ==
+
+ * Added support for themes and new mobile-friendly default theme
+ * Fixed communication issues with MPD
+ * Fixed a potential infinite loop in the autoqueue code
+ * MPD's 'consume' mode is now optional
+ * We no longer manually remove old songs, MPD should do that for us
+ * Playlist handling for auto-queuing should be a bit more robust now
+ * Removed all non-jukebox features
+ * Moved to github, updated copyright notices etc. accordingly
+ * Unit test cleanup
+
+== 0.6.1 (17 Apr 2012) ==
+
+ * Use python's json module instead of simplejson
+ * Use mpd's "setvol" command instead of the deprecated "volume". Thanks to
+   Jan Hruban for reporting this and sending a patch.
+ * Skipping the current song would lead to interruptions in the audio stream
+   if it was the last entry in the playlist. Fixed this by auto-queuing before
+   skipping tracks. Thanks to Artem Savkov for noticing this and providing a
+   patch.
+ * Pulsate the time display when playback is paused.
+ * Added an example configuration file for using fookebox through fcgi/flup
+
+== 0.6.0 (30 Apr 2011) ==
+
+ * Cleaned up the configuration options regarding cover art
+ * Show a proper error message when the connection to MPD fails
+ * Properly report errors during template rendering
+ * Show artists in search result pages again
+ * Added an option to hide the credits
+ * Tracks with artist featuring others no longer trigger compilation mode
+ * Genre/artist links can now be opened in a new browser tab
+ * (Hopefully) fixed an encoding issue that would cause errors in search
+ * Reduced the number of HTTP requests when the current song has no cover art
+ * Generally reduced the number of requests to mpd
+ * Fixed an issue that could cause errors when modwsgi reloaded the application
+ * Rewrote/reorganized most of the javascript code
+ * Added special CSS for mobile devices
+ * Fixed compatibility with python-mpd 0.3.0
+ * Updated the included libraries to scriptaculous 1.9.0 / prototype 1.7
+ * Updated example config files for apache
+ * Added a proper favicon
+ * Some API changes
+
+== 0.5.2 (02 Dec 2010) ==
+
+ * Use mpd's "consume" command if available (versions >= 0.15)
+ * Added support for in-directory cover art
+ * Cover art can now be cached
+ * Auto-queuing can now be limited to a specific genre
+ * Albums are now properly sorted on the search result page
+ * The current track's time display should be updated much more smoothly now
+
+== 0.5.1 (07 Jul 2010) ==
+
+ * Catch some more exceptions and properly close all connections if they occur
+ * Added classifiers to setup.py
+ * fookebox' version information is now read from the package meta data
+
+== 0.5.0 (01 Jul 2010) ==
+
+ * Re-implemented fookebox in Python (using Pylons)
+ * Added support for rhythmbox' covert art file naming scheme
+ * Added German translation
+
+== 0.4.3 (21 Jun 2010) ==
+
+ * Fixed a possible race-condition where a song would get played twice in a row
+ * Synchronized javascript with upcoming 0.5 release
+ * Artist, genre names and cover paths are now base64 encoded
+
+== 0.4.2 (24 May 2010) ==
+
+ * Database rebuild was broken, fixed
+ * Fixed typo in README
+
+== 0.4.1 (23 Mar 2010) ==
+
+ * Thanks to Gavin Cameron for his contributions
+ * Can now pick the auto-queued songs from a predefined playlist
+ * Some internal code cleanup
+ * Changed license to GPLv3
+ * Set the default time zone to UTC to get PHP to shut up (Gavin)
+ * Replaced calls to split (deprecated) with explode (Gavin)
+ * Added support for cover art for compilations (Gavin again, also: see README)
+ * Added the ability to auto queue songs before the playlist is empty
+
+== 0.4.0 (4 Feb 2010) ==
+
+ * Fixed queuing of full albums
+ * Added support for cover art
+ * Minor CSS changes
+ * Some internal code cleanup
+ * We now need at least PHP 5.1.0
+ * Updated smarty to version 2.6.26
+ * Updated prototype to version 1.6.1
+ * Updated scriptaculous to version 1.8.3
+
+== 0.3.0 (11 May 2009) ==
+
+ * Dropped php4 compatibility
+ * Albums in search results are now automatically expanded
+ * Added support for forward/back buttons
+ * Fixed filename/any search
+ * Updated smarty
+ * Code cleanup
+
+== 0.2.0 (1 Dec 2008) ==
+
+ * Added the ability to auto-queue songs when the playlist gets empty
+ * Fixed some issues when running fookebox in a sub directory
+ * Switched to using prototype for JSON data transport
+ * Updated smarty, scriptaculous and prototype to their latest versions
+
+== 0.1.1 (12 Jun 2008) ==
+
+ * Made the right part scrollable without scrolling the whole window
+ * Made sure all clients are informed on playlist updates
+ * Updated smarty to version 2.6.19
+ * Updated the JavaScript JSON library
+ * Minor documentation updates
+
+== 0.1.0 (11 Jun 2008) ==
+
+ * Initial public release
