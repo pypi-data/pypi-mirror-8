@@ -1,0 +1,213 @@
+<html ng-app="lisa-frontend" ng-controller="LisaCtrl">
+  <head>
+    <title ng-bind="pageTitle"></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+    <meta name="format-detection" content="telephone=no">
+    <meta charset="UTF-8">
+    <!-- compiled CSS -->
+    <link rel="stylesheet" type="text/css" href="assets/lisa-frontend-0.1.0.css" />
+
+    <!-- font awesome from BootstrapCDN -->
+    <link href="assets/css/font-awesome.css" rel="stylesheet">
+    <link href="assets/css/flags16.css" rel="stylesheet">
+    <link href="assets/css/animate.min.css" rel="stylesheet">
+    <link href="assets/css/microphone.min.css" rel="stylesheet">
+    <link href="assets/css/media.css" rel="stylesheet">
+
+    <!-- compiled JavaScript -->
+    <script type="text/javascript" src="vendor/angular/angular.js"></script>
+    <script type="text/javascript" src="vendor/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
+    <script type="text/javascript" src="vendor/placeholders/angular-placeholders-0.0.1-SNAPSHOT.min.js"></script>
+    <script type="text/javascript" src="vendor/angular-ui-router/release/angular-ui-router.js"></script>
+    <script type="text/javascript" src="vendor/lodash/dist/lodash.min.js"></script>
+    <script type="text/javascript" src="vendor/restangular/dist/restangular.min.js"></script>
+    <script type="text/javascript" src="vendor/angular-http-auth/src/http-auth-interceptor.js"></script>
+    <script type="text/javascript" src="vendor/lscache/lscache.min.js"></script>
+    <script type="text/javascript" src="vendor/angular-sanitize/angular-sanitize.js"></script>
+    <script type="text/javascript" src="vendor/angular-growl-notifications/dist/growl-notifications.min.js"></script>
+    <script type="text/javascript" src="vendor/angular-breadcrumb/release/angular-breadcrumb.min.js"></script>
+    <script type="text/javascript" src="vendor/ace-builds/src-min-noconflict/ace.js"></script>
+    <script type="text/javascript" src="vendor/ace-builds/src-min-noconflict/theme-clouds_midnight.js"></script>
+    <script type="text/javascript" src="vendor/ace-builds/src-min-noconflict/mode-json.js"></script>
+    <script type="text/javascript" src="vendor/ace-builds/src-min-noconflict/worker-json.js"></script>
+    <script type="text/javascript" src="vendor/ace-builds/src-min-noconflict/mode-python.js"></script>
+    <script type="text/javascript" src="vendor/ace-builds/src-min-noconflict/mode-django.js"></script>
+    <script type="text/javascript" src="vendor/ace-builds/src-min-noconflict/mode-css.js"></script>
+    <script type="text/javascript" src="vendor/ace-builds/src-min-noconflict/worker-css.js"></script>
+    <script type="text/javascript" src="vendor/ace-builds/src-min-noconflict/mode-html.js"></script>
+    <script type="text/javascript" src="vendor/ace-builds/src-min-noconflict/worker-html.js"></script>
+    <script type="text/javascript" src="vendor/ace-builds/src-min-noconflict/mode-javascript.js"></script>
+    <script type="text/javascript" src="vendor/ace-builds/src-min-noconflict/worker-javascript.js"></script>
+    <script type="text/javascript" src="vendor/ace-builds/src-min-noconflict/mode-xml.js"></script>
+    <script type="text/javascript" src="vendor/angular-ui-ace/ui-ace.min.js"></script>
+    <script type="text/javascript" src="vendor/angular-gettext/dist/angular-gettext.min.js"></script>
+    <script type="text/javascript" src="vendor/angular-scroll-glue/scrollglue.js"></script>
+    <script type="text/javascript" src="vendor/ng-flags/src/directives/ng-flags.js"></script>
+    <script type="text/javascript" src="vendor/ng-table/ng-table.js"></script>
+    <script type="text/javascript" src="vendor/angular-sockjs/socket.js"></script>
+    <script type="text/javascript" src="src/app/app.js"></script>
+    <script type="text/javascript" src="src/app/chat/chat.js"></script>
+    <script type="text/javascript" src="src/app/dashboard/dashboard.js"></script>
+    <script type="text/javascript" src="src/app/interface/interface.js"></script>
+    <script type="text/javascript" src="src/app/plugins/plugins.js"></script>
+    <script type="text/javascript" src="src/common/factories/configuration.js"></script>
+    <script type="text/javascript" src="src/common/factories/session.js"></script>
+    <script type="text/javascript" src="templates-common.js"></script>
+    <script type="text/javascript" src="templates-app.js"></script>
+
+    <!-- External JavaScript -->
+    <script type="text/javascript" src="assets/js/sockjs-0.3.min.js"></script>
+    <script type="text/javascript" src="assets/js/beautify.js"></script>
+    <script type="text/javascript" src="assets/js/microphone.min.js"></script>
+    <script type="text/javascript" src="assets/js/translations.js"></script>
+
+  </head>
+    <body ui-view="login" id="skin-blue">
+    <noscript>
+      <div class="container">
+        <h3 translate>You must enable javascript to use LISA</h3>
+      </div>
+    </noscript>
+    <div growl-notifications class="growl-notifications fading"></div>
+
+        <header id="header" class="media">
+            <a href="" id="menu-toggle" class="fa fa-navicon fa-2x" ng-click="MenuisCollapsed = !MenuisCollapsed"></a>
+            <a class="logo pull-left" href="index.html">L.I.S.A</a>
+
+            <div class="media-body">
+                <div class="media" id="top-menu">
+                    <div class="pull-left tm-icon">
+                        <microphone></microphone>
+                    </div>
+                    <div class="pull-left tm-icon">
+                        <canvas id="lisa-canvas" style="height: 1px; width: 1px;"></canvas>
+                    </div>
+                    <div id="time" class="pull-right" ng-controller="ClockController">
+                        <span id="hours">{{date.getHours() | pad}}</span>
+                        :
+                        <span id="min">{{date.getMinutes() | pad}}</span>
+                        :
+                        <span id="sec">{{date.getSeconds() | pad}}</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="clearfix"></div>
+
+        <section id="main" class="p-relative" role="main" ng-class="{true:'menu-active', false:''}[MenuisCollapsed]">
+
+            <!-- Sidebar -->
+            <aside id="sidebar" ng-class="{true:'toggled', false:''}[MenuisCollapsed]" ng-controller="UserDropdownCtrl">
+
+                <!-- Sidbar Widgets -->
+                <div class="side-widgets overflow">
+                    <!-- Profile Menu -->
+                    <div class="text-center s-widget m-b-25" id="profile-menu">
+                        <h4 class="m-0">{{ Session.User.username }}</h4>
+                        <ul class="dropdown-menu profile-menu">
+                            <li><a href ng-click="profile()" translate><i class="fa fa-user m-l-n20 m-t-3"></i> My Profile</a></li>
+                            <li><a href="/backend/api/docs/" target="_blank" translate><i class="fa fa-flask m-l-n20 m-t-3"></i>API Docs</a></li>
+                            <li><a href="http://lisa.readthedocs.org/{{ Configuration.lang }}/latest/" target="_blank" translate><i class="fa fa-book m-l-n20 m-t-3"></i> Documentation</a></li>
+                            <li><a href="https://github.com/Seraf/LISA/issues" target="_blank" translate><i class="fa fa-bug m-l-n20 m-t-3"></i> L.I.S.A Issues</a></li>
+                            <li><a href ng-click="Session.logout()" translate><i class="fa fa-power-off m-l-n20 m-t-3"></i> Log Out</a></li>
+                        </ul>
+                    </div>
+
+                    <!-- Feeds -->
+                    <div class="s-widget m-b-25">
+                        <h2 class="tile-title">
+                           Widget 1
+                        </h2>
+
+                        <div class="s-widget-body">
+                            <div id="news-feed"></div>
+                        </div>
+                    </div>
+
+                    <!-- Projects -->
+                    <div class="s-widget m-b-25">
+                        <h2 class="tile-title">
+                            Widget 2
+                        </h2>
+
+                        <div class="s-widget-body">
+                            <div class="side-border">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Side Menu -->
+                <ul class="list-unstyled side-menu">
+                    <li ui-sref-active="active">
+                        <a class="sa-side-dashboard" href ui-sref="dashboard">
+                            <span class="menu-item" ng-mouseenter="hovered = true" ng-mouseleave="hovered = false" translate>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="dropdown" ng-class="{'hovered': pagehovered, 'active': $state.includes('plugins')}">
+                        <a class="sa-side-plugin" href>
+                            <span class="menu-item" ng-mouseenter="pagehovered = true" ng-mouseleave="pagehovered = false" translate>Plugins</span>
+                        </a>
+                        <ul class="list-unstyled menu-item" ng-mouseenter="pagehovered = true" ng-mouseleave="pagehovered = false">
+                            <li><a href ui-sref="plugins" translate><i class="fa fa-fw fa-plug"></i> List</a></li>
+                            <li><a href ui-sref="plugins.create" translate><i class="fa fa-fw fa-flask"></i> Create</a></li>
+                        </ul>
+                    </li>
+                    <li ui-sref-active="active">
+                        <a class="sa-side-upgrade" href ui-sref="upgrade">
+                            <span class="menu-item" ng-mouseenter="hovered = true" ng-mouseleave="hovered = false" translate>Upgrade</span>
+                        </a>
+                    </li>
+                </ul>
+
+            </aside>
+
+            <!-- Content -->
+            <div ng-cloak ng-view></div>
+            <section id="content" class="container" ui-view="main">
+            </section>
+            <lisa-chat></lisa-chat>
+            <!-- Older IE Message -->
+            <!--[if lt IE 9]>
+                <div class="ie-block">
+                    <h1 class="Ops">Ooops!</h1>
+                    <p>You are using an outdated version of Internet Explorer, upgrade to any of the following web browser in order to access the maximum functionality of this website. </p>
+                    <ul class="browsers">
+                        <li>
+                            <a href="https://www.google.com/intl/en/chrome/browser/">
+                                <img src="img/browsers/chrome.png" alt="">
+                                <div>Google Chrome</div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="http://www.mozilla.org/en-US/firefox/new/">
+                                <img src="img/browsers/firefox.png" alt="">
+                                <div>Mozilla Firefox</div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="http://www.opera.com/computer/windows">
+                                <img src="img/browsers/opera.png" alt="">
+                                <div>Opera</div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="http://safari.en.softonic.com/">
+                                <img src="img/browsers/safari.png" alt="">
+                                <div>Safari</div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="http://windows.microsoft.com/en-us/internet-explorer/downloads/ie-10/worldwide-languages">
+                                <img src="img/browsers/ie.png" alt="">
+                                <div>Internet Explorer(New)</div>
+                            </a>
+                        </li>
+                    </ul>
+                    <p>Upgrade your browser for a Safer and Faster web experience. <br/>Thank you for your patience...</p>
+                </div>
+            <![endif]-->
+        </section>
+    </body>
+</html>
