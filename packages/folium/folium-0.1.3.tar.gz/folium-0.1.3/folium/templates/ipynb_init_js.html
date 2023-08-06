@@ -1,0 +1,64 @@
+<script>
+
+  var folium_event = new CustomEvent(
+    "folium_libs_loaded",
+    {bubbles: true, cancelable: true}
+  );
+
+  var load_folium_charts = function(){
+    window.dispatchEvent(folium_event);
+  };
+
+ var load_folium_libs = function(){
+    console.log('Loading all Folium libraries...')
+    $.getScript("http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.js", function(){
+      $.getScript('https://wrobstory.github.io/leaflet-dvf/leaflet-dvf.markers.min.js', function(){
+          if (window['vg'] === undefined){
+            $.getScript("http://wrobstory.github.io/vega/vega.v1.3.3.js", function(){
+              load_folium_charts();
+          });
+        } else {
+          load_folium_charts();
+        }
+      });
+    });
+  };
+
+ if(typeof define === "function" && define.amd){
+      var load_paths = {
+        paths: {
+          topojson:'http://d3js.org/topojson.v1.min',
+          queue: 'http://d3js.org/queue.v1.min',
+          d3: 'http://d3js.org/d3.v3.min'
+        }
+      };
+      var libs = ['d3', 'queue', 'topojson'];
+      for (var i=0; i < libs.length; i++){
+        lib = libs[i]
+        if (window[lib] !== undefined){
+          delete load_paths.paths[lib]
+        };
+      };
+      if (Object.keys(load_paths.paths).length != 0){
+        require.config(load_paths);
+        require(["queue"], function(queue){
+          window.queue = queue;
+        });
+        require(["d3"], function(d3){
+            console.log('Loading from require.js...')
+            window.d3 = d3;
+            require(["topojson"], function(topojson){
+                window.topojson = topojson;
+                load_folium_libs();
+            });
+        });
+      } else {
+        load_folium_libs();
+      }
+
+ }else{
+      console.log('Require.js not found!');
+      throw "Require.js not found!"
+ };
+
+</script>
