@@ -1,0 +1,121 @@
+#!python
+
+# zetup.py
+#
+# Zimmermann's Python package setup.
+#
+# Copyright (C) 2014 Stefan Zimmermann <zimmermann.code@gmail.com>
+#
+# zetup.py is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# zetup.py is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with zetup.py. If not, see <http://www.gnu.org/licenses/>.
+
+from __future__ import print_function
+
+import sys
+import os
+from textwrap import dedent
+from argparse import ArgumentParser
+from subprocess import call
+import distutils.command
+
+from path import path as Path
+
+import zetup
+import zetup.commands
+from zetup.commands import ZetupCommandError
+
+
+COMMANDS = zetup.commands.__all__
+
+EXTERNAL_COMMANDS = []
+
+COMMANDS += distutils.command.__all__
+COMMANDS += zetup.Zetup.COMMANDS
+COMMANDS += EXTERNAL_COMMANDS
+
+ap = ArgumentParser()
+ap.add_argument(
+  'cmd', choices=COMMANDS,
+  help="command",
+  )
+
+args = ap.parse_args()
+
+# Generate setup.py if not existing
+# (and delete after running commands in that case):
+setup_py = Path('setup.py')
+create_setup_py = not setup_py.exists()
+if create_setup_py:
+    setup_py.write_text(dedent("""
+      try:
+          from setuptools import setup
+      except ImportError:
+          from distutils.core import setup
+
+
+      setup(
+        setup_requires=['zetup'],
+        use_zetup=True,
+        )
+      """))
+
+exit_status = 0 # exit status of this script
+try:
+    cmdfunc = getattr(zetup, args.cmd)
+except AttributeError:
+    if args.cmd in EXTERNAL_COMMANDS:
+        exit_status = call([args.cmd])
+    else:
+        zetup = zetup.Zetup()
+        if zetup.ZETUP_CONFIG_PACKAGE:
+            version_file = Path('VERSION')
+            create_version_file = not version_file.exists()
+            if create_version_file:
+                version_file.write_text(zetup.VERSION)
+            init_py = Path('__init__.py')
+            create_init_py = not init_py.exists()
+            if create_init_py:
+                init_py.write_text(dedent("""
+                  import sys
+
+                  from zetup.config import load_zetup_config
+
+
+                  load_zetup_config(__path__[0], sys.modules[__name__])
+                  """))
+        if args.cmd in zetup.COMMANDS:
+            try:
+                exit_status = getattr(zetup, args.cmd)()
+            except ZetupCommandError as e:
+                print("Error: %s" % e, file=sys.stderr)
+                exit_status = 1
+            else:
+                try: # return value can be more than just a status number
+                    exit_status = exit_status.status
+                except AttributeError:
+                    pass
+        else: # ==> standard setup command
+            zetup()
+        if zetup.ZETUP_CONFIG_PACKAGE:
+            if create_init_py:
+                init_py.remove()
+            if create_version_file:
+                version_file.remove()
+else:
+    exit_status = cmdfunc()
+
+# Delete setup.py if generated before:
+if create_setup_py:
+    setup_py.remove()
+
+sys.exit(exit_status or 0)
