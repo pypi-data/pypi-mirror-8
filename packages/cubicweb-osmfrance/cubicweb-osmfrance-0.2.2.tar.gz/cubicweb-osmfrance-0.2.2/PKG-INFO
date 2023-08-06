@@ -1,0 +1,90 @@
+Metadata-Version: 1.1
+Name: cubicweb-osmfrance
+Version: 0.2.2
+Summary: Shapefiles (french regions, departements, cantons, communes) from OpenStreetMap
+Home-page: http://www.cubicweb.org/project/cubicweb-osmfrance
+Author: LOGILAB S.A. (Paris, FRANCE)
+Author-email: contact@logilab.fr
+License: LGPL
+Description: Summary
+        -------
+        
+        Manipulating french regions, départements, communes, etc. polygons from
+        OpenStreetMap or IGN, for display on maps using leaflet.
+        
+        
+        Data import from OSM
+        --------------------
+        
+        Shapefiles are taken from http://osm13.openstreetmap.fr/~cquest/openfla/export/
+        (also shared on https://www.data.gouv.fr/fr/organization/openstreetmap)
+        
+        Different resolution (from 5 meters to 100 meters can be used depending
+        on the scale of maps to display).
+        
+        
+        The following example imports shapes for regions, departements,
+        arrondissements, epci and communes:
+        
+        .. code:: console
+        
+          $ cubicweb/bin/cubicweb-ctl osmfrance_import_shp <myinstance> \
+          > --regions=path/to/regions-20140306-100m-shp.zip \
+          > --departements=path/to/departements-20140306-100m-shp.zip \
+          > --arrondissements=path/to/arrondissements-20140306-100m-shp.zip \
+          > --epci=path/to/epci-20140306-100m-shp.zip \
+          > --communes=path/to/communes-20140306-100m-shp.zip
+        
+        
+        Data import from IGN
+        --------------------
+        
+        Shapefiles are taken from GEOFLA version 1.1:
+        
+        http://www.data.gouv.fr/en/dataset/geofla-communes
+        http://www.data.gouv.fr/fr/dataset/geoflar-arrondissements
+        http://www.data.gouv.fr/en/dataset/geofla-departements-30383060
+        
+        .. code:: console
+        
+          $ cubicweb/bin/cubicweb-ctl ign_import_shp <myinstance> 
+          > --departements=path/to/DEPARTEMENT.SHP \
+          > --arrondissements=path/to/ARRONDISSEMENT.SHP \
+          > --communes=path/to/COMMUNE.SHP
+        
+        
+        Queries on data
+        ---------------
+        
+        The following query returns the polygon corners (as latitude, longitude
+        coordinates) for Communes (cities) only::
+        
+          Any DISPLAY(G, 4326) LIMIT 10 WHERE X geometry G, X is Commune
+        
+        The following returns all types::
+        
+          Any DISPLAY(G, 4326) LIMIT 10 WHERE X geometry G
+        
+        
+        Displaying data
+        ---------------
+        
+        The leaflet cube can be used for displaying these polygons on a map; the
+        CW view used for that is *leaflet-geojson*
+        
+        For example, the query::
+        
+          Any DISPLAY(G, 4326),X LIMIT 20 WHERE X geometry G, X is Departement
+        
+        should display 20 departements, using X (the Departement eid) as Z
+        value (color value) using a yellow-red colormap.
+        
+        The corresponding URL using the leaflet view is::
+        
+          http://<server>/view?rql=Any+DISPLAY%28G%2C+4326%29%2CX+LIMIT+20+WHERE+X+geometry+G%2C+X+is+Departement&vid=leaflet-geojson
+        
+Platform: UNKNOWN
+Classifier: Environment :: Web Environment
+Classifier: Framework :: CubicWeb
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: JavaScript
