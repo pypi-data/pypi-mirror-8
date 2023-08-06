@@ -1,0 +1,71 @@
+Metadata-Version: 1.1
+Name: pulsus
+Version: 0.1.0
+Summary: Push Notification Service handling Apple Push Notification Service (APNS), and Google Cloud Messaging (GCM).
+Home-page: https://github.com/pennersr/pulsus
+Author: Raymond Penners
+Author-email: raymond.penners@intenct.nl
+License: UNKNOWN
+Description: ==================
+        Welcome to pulsus!
+        ==================
+        
+        A Push Notification Service, written in Python, handling Apple APNS,
+        and Google GCM.
+        
+        Installation
+        ============
+        
+        Pulsus configuration file over at `/home/example/etc/pulsus/pulsus.conf`::
+        
+            [server]
+            address = 127.0.0.1
+            port = 8321
+        
+            [apns:sandbox]
+            cert_file_pem = /home/example/etc/pulsus/apns-dev.pem
+        
+            [apns]
+            cert_file_pem = /home/example/etc/pulsus/apns.pem
+        
+            [gcm]
+            api_key=AIzaSyATHISISSECRET
+        
+        A `logging.conf` file is required to be present in the same directory.
+        Then, start as follows::
+        
+            /home/example/virtualenv/bin/python -m pulsus.server.serve /home/example/etc/pulsus/
+        
+        
+        Usage
+        =====
+        
+        Client::
+        
+            from pulsus.client import Client
+            from pulsus.services.apns import APNSNotification
+            from pulsus.services.gcm import GCMJSONMessage
+        
+            android_message = GCMJSONMessage(
+                registration_ids=['APA91bF....zLnytKBQ'],
+                data={'message': 'Hello World!'})
+        
+            ios_message = APNSNotification(
+                token='676be1c77...',
+                sandbox=True,
+                alert='Helo World!')])
+        
+            client = Client('127.0.0.1', 8321)
+            client.push([android_message, ios_message])
+        
+Keywords: push notifications apns gcm
+Platform: UNKNOWN
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: Environment :: Web Environment
+Classifier: Topic :: Internet
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 2.7
