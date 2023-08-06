@@ -1,0 +1,73 @@
+
+---
+- hosts: localhost
+  connection: local
+  gather_facts: False
+  vars:
+    cloud: mordred
+    volumes:
+    - display_name: foo
+      size: 5
+      mount: /mnt/foo
+    - display_name: bar
+      size: 10
+      mount: /mnt/bar
+  tasks: 
+  - name: Add Launch Keypair
+    os_keypair:
+        cloud: "{{ cloud }}"
+        name: "launch_keypair"
+        public_key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+  - name: Add volume
+    os_volume:
+        cloud: "{{ cloud }}"
+        display_name: "{{ item.display_name }}"
+        size: "{{ item.size }}"
+    with_items: volumes|default(dict())
+  - name: Launch Node
+    os_compute:
+        cloud: "{{ cloud }}"
+        name: "test-ansible"
+        key_name: "launch_keypair"
+        image_name: "Ubuntu Server 14.04.1 LTS (amd64 20140927) - Partner Image"
+        flavor_ram: 1024
+        meta:
+            group: "test-group"
+    register: node
+  - name: Wait for SSH to work
+    wait_for: host={{ node.openstack.interface_ip }} port=22
+    when: node.changed == True
+  - name: Attach volumes
+    os_compute_volume:
+        cloud: "{{ cloud }}"
+        server_id: "{{ node.id }}"
+        volume_name: "{{ item.display_name }}"
+    with_items: volumes
+  - name: Get updated server info
+    os_compute_facts:
+        cloud: "{{ cloud }}"
+        id: "{{ node.id }}"
+        mounts: "{{ volumes }}"
+  - name: Add all instance public IPs to host group
+    add_host:
+        hostname: "{{ node.openstack.interface_ip }}"
+        groupname: added
+        openstack: "{{ openstack }}"
+- hosts: added
+  gather_facts: False
+  remote_user: ubuntu
+  sudo: yes
+  tasks: 
+  - debug: var=openstack
+  - name: Make filesystem
+    filesystem:
+        fstype: ext4 
+        dev: "{{ item['attachments'][0]['device'] }}"
+    with_items: openstack.volumes
+  - name: Mount volume
+    mount:
+        src: "{{ item['attachments'][0]['device'] }}"
+        name: "{{ item.mount }}"
+        fstype: ext4
+        state: mounted
+    with_items: openstack.volumes
