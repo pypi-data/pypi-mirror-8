@@ -1,0 +1,85 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:five="http://namespaces.zope.org/five"
+    xmlns:browser="http://namespaces.zope.org/browser">
+
+  <permission id="plone.app.controlpanel.TinyMCE"
+              title="Plone Site Setup: TinyMCE">
+    <role name="Manager"/>
+    <role name="Site Administrator"/>
+  </permission>
+
+  <!-- Editing Control Panel -->
+  <browser:page
+    name="editing-controlpanel"
+    for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+    class=".editing.EditingControlPanel"
+    permission="plone.app.controlpanel.Editing"
+    />
+
+  <!-- TinyMCE Control Panel -->
+  <browser:page
+    name="tinymce-controlpanel"
+    for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+    class=".tinymce.TinyMCEControlPanel"
+    permission="plone.app.controlpanel.TinyMCE"
+    />
+
+  <!-- Maintenance Control Panel -->
+  <browser:page
+    name="maintenance-controlpanel"
+    for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+    class=".maintenance.MaintenanceControlPanel"
+    permission="cmf.ManagePortal"
+    />
+
+  <!-- Navigation Control Panel -->
+  <browser:page
+    name="navigation-controlpanel"
+    for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+    class=".navigation.NavigationControlPanel"
+    permission="plone.app.controlpanel.Navigation"
+    />
+
+  <!-- Search Control Panel -->
+  <browser:page
+    name="search-controlpanel"
+    for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+    class=".search.SearchControlPanel"
+    permission="plone.app.controlpanel.Search"
+    />
+
+  <!-- Site Control Panel -->
+  <browser:page
+    name="site-controlpanel"
+    for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+    class=".site.SiteControlPanel"
+    permission="plone.app.controlpanel.Site"
+    />
+
+  <!-- Date and Time Control panel -->
+  <browser:page
+    name="dateandtime-controlpanel"
+    for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+    class=".dateandtime.DateAndTimeControlPanel"
+    permission="plone.app.controlpanel.Site"
+    />
+
+  <!-- Types Control panel -->
+  <browser:page
+    name="types-controlpanel"
+    for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+    class=".types.TypesControlPanel"
+    permission="plone.app.controlpanel.Types"
+    />
+
+  <!-- Resource Registry -->
+  <browser:page
+    name="resourceregistry-controlpanel"
+    for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+    class=".resourceregistry.ResourceRegistryControlPanelView"
+    permission="plone.app.controlpanel.Site"
+    template="resourceregistry.pt"
+    />
+
+</configure>
