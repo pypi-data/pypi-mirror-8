@@ -1,0 +1,1 @@
+(function(){$(document).ready(function(){$("#new-navbar").insertBefore(".box.review-request");$("#new-navbar").show();$(".editable").inlineEditor("disable");$("#draft-banner").click(function(){window.location=SITE_ROOT+"rbmozui/commits/"+gReviewRequest.id})})}).call(this);
