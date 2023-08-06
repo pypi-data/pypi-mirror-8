@@ -1,0 +1,23 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    i18n_domain="collective.wysiwyg_biografy">
+
+  <include package="plone.app.users" />
+
+  <browser:page
+    for="Products.CMFPlone.Portal.PloneSite"
+    name="personal-information"
+    class=".personal_information.CustomizedUserDataPanel"
+    permission="cmf.SetOwnProperties"
+    layer="..interfaces.IWYSIWYGBioLayer"
+    />
+
+  <browser:page
+      for="plone.app.layout.navigation.interfaces.INavigationRoot"
+      name="user-information"
+      class=".personal_information.CustomizedUserDataConfiglet"
+      layer="..interfaces.IWYSIWYGBioLayer"
+      permission="plone.app.controlpanel.UsersAndGroups"
+      />
+</configure>
