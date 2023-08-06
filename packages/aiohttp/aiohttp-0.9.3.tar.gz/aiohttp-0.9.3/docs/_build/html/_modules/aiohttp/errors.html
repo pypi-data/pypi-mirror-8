@@ -1,0 +1,219 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>aiohttp.errors &mdash; aiohttp 0.9.2- documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.9.2-',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="aiohttp 0.9.2- documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">aiohttp 0.9.2- documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for aiohttp.errors</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;http related errors.&quot;&quot;&quot;</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;HttpException&#39;</span><span class="p">,</span> <span class="s">&#39;HttpErrorException&#39;</span><span class="p">,</span>
+           <span class="s">&#39;HttpBadRequest&#39;</span><span class="p">,</span> <span class="s">&#39;HttpMethodNotAllowed&#39;</span><span class="p">,</span>
+           <span class="s">&#39;IncompleteRead&#39;</span><span class="p">,</span> <span class="s">&#39;BadStatusLine&#39;</span><span class="p">,</span> <span class="s">&#39;LineTooLong&#39;</span><span class="p">,</span> <span class="s">&#39;InvalidHeader&#39;</span><span class="p">,</span>
+           <span class="s">&#39;ConnectionError&#39;</span><span class="p">,</span> <span class="s">&#39;OsConnectionError&#39;</span><span class="p">,</span> <span class="s">&#39;ClientConnectionError&#39;</span><span class="p">,</span>
+           <span class="s">&#39;TimeoutError&#39;</span><span class="p">,</span> <span class="s">&#39;ProxyConnectionError&#39;</span><span class="p">,</span> <span class="s">&#39;HttpProxyError&#39;</span><span class="p">]</span>
+
+<span class="kn">from</span> <span class="nn">asyncio</span> <span class="kn">import</span> <span class="n">TimeoutError</span>
+
+
+<div class="viewcode-block" id="ConnectionError"><a class="viewcode-back" href="../../api.html#aiohttp.errors.ConnectionError">[docs]</a><span class="k">class</span> <span class="nc">ConnectionError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;http connection error.&quot;&quot;&quot;</span>
+
+</div>
+<div class="viewcode-block" id="OsConnectionError"><a class="viewcode-back" href="../../api.html#aiohttp.errors.OsConnectionError">[docs]</a><span class="k">class</span> <span class="nc">OsConnectionError</span><span class="p">(</span><span class="n">ConnectionError</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;OSError error.&quot;&quot;&quot;</span>
+
+</div>
+<div class="viewcode-block" id="ClientConnectionError"><a class="viewcode-back" href="../../api.html#aiohttp.errors.ClientConnectionError">[docs]</a><span class="k">class</span> <span class="nc">ClientConnectionError</span><span class="p">(</span><span class="n">ConnectionError</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;BadStatusLine error.&quot;&quot;&quot;</span>  <span class="c"># ???</span>
+
+</div>
+<div class="viewcode-block" id="ProxyConnectionError"><a class="viewcode-back" href="../../api.html#aiohttp.errors.ProxyConnectionError">[docs]</a><span class="k">class</span> <span class="nc">ProxyConnectionError</span><span class="p">(</span><span class="n">ClientConnectionError</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Proxy connection error.</span>
+
+<span class="sd">    Raised in :class:`aiohttp.connector.ProxyConnector` if</span>
+<span class="sd">    connection to proxy can not be established.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+</div>
+<div class="viewcode-block" id="HttpException"><a class="viewcode-back" href="../../api.html#aiohttp.errors.HttpException">[docs]</a><span class="k">class</span> <span class="nc">HttpException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Base http exception class.&quot;&quot;&quot;</span>
+
+    <span class="n">code</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">headers</span> <span class="o">=</span> <span class="p">()</span>
+    <span class="n">message</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+
+</div>
+<div class="viewcode-block" id="HttpErrorException"><a class="viewcode-back" href="../../api.html#aiohttp.errors.HttpErrorException">[docs]</a><span class="k">class</span> <span class="nc">HttpErrorException</span><span class="p">(</span><span class="n">HttpException</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Http error.</span>
+
+<span class="sd">    Shortcut for raising http errors with custom code, message and headers.</span>
+
+<span class="sd">    :param int code: HTTP Error code.</span>
+<span class="sd">    :param str message: (optional) Error message.</span>
+<span class="sd">    :param list of [tuple] headers: (optional) Headers to be sent in response.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">code</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">code</span> <span class="o">=</span> <span class="n">code</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">headers</span> <span class="o">=</span> <span class="n">headers</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">message</span>
+
+</div>
+<div class="viewcode-block" id="HttpProxyError"><a class="viewcode-back" href="../../api.html#aiohttp.errors.HttpProxyError">[docs]</a><span class="k">class</span> <span class="nc">HttpProxyError</span><span class="p">(</span><span class="n">HttpErrorException</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Http proxy error.</span>
+
+<span class="sd">    Raised in :class:`aiohttp.connector.ProxyConnector` if</span>
+<span class="sd">    proxy responds with status other than ``200 OK``</span>
+<span class="sd">    on ``CONNECT`` request.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+</div>
+<div class="viewcode-block" id="HttpBadRequest"><a class="viewcode-back" href="../../api.html#aiohttp.errors.HttpBadRequest">[docs]</a><span class="k">class</span> <span class="nc">HttpBadRequest</span><span class="p">(</span><span class="n">HttpException</span><span class="p">):</span>
+
+    <span class="n">code</span> <span class="o">=</span> <span class="mi">400</span>
+    <span class="n">message</span> <span class="o">=</span> <span class="s">&#39;Bad Request&#39;</span>
+
+</div>
+<div class="viewcode-block" id="HttpMethodNotAllowed"><a class="viewcode-back" href="../../api.html#aiohttp.errors.HttpMethodNotAllowed">[docs]</a><span class="k">class</span> <span class="nc">HttpMethodNotAllowed</span><span class="p">(</span><span class="n">HttpException</span><span class="p">):</span>
+
+    <span class="n">code</span> <span class="o">=</span> <span class="mi">405</span>
+    <span class="n">message</span> <span class="o">=</span> <span class="s">&#39;Method Not Allowed&#39;</span>
+
+</div>
+<div class="viewcode-block" id="LineTooLong"><a class="viewcode-back" href="../../api.html#aiohttp.errors.LineTooLong">[docs]</a><span class="k">class</span> <span class="nc">LineTooLong</span><span class="p">(</span><span class="n">HttpBadRequest</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="s">&#39;Unknown&#39;</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span>
+            <span class="s">&quot;got more than </span><span class="si">%s</span><span class="s"> bytes when reading </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">limit</span><span class="p">,</span> <span class="n">line</span><span class="p">))</span>
+
+</div>
+<div class="viewcode-block" id="InvalidHeader"><a class="viewcode-back" href="../../api.html#aiohttp.errors.InvalidHeader">[docs]</a><span class="k">class</span> <span class="nc">InvalidHeader</span><span class="p">(</span><span class="n">HttpBadRequest</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hdr</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="s">&#39;Invalid HTTP Header: {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">hdr</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hdr</span> <span class="o">=</span> <span class="n">hdr</span>
+
+</div>
+<div class="viewcode-block" id="IncompleteRead"><a class="viewcode-back" href="../../api.html#aiohttp.errors.IncompleteRead">[docs]</a><span class="k">class</span> <span class="nc">IncompleteRead</span><span class="p">(</span><span class="n">ConnectionError</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">partial</span><span class="p">,</span> <span class="n">expected</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">partial</span><span class="p">,</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">partial</span> <span class="o">=</span> <span class="n">partial</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">expected</span> <span class="o">=</span> <span class="n">expected</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">expected</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">e</span> <span class="o">=</span> <span class="s">&#39;, </span><span class="si">%i</span><span class="s"> more expected&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">expected</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">e</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+        <span class="k">return</span> <span class="s">&#39;IncompleteRead(</span><span class="si">%i</span><span class="s"> bytes read</span><span class="si">%s</span><span class="s">)&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">partial</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="BadStatusLine"><a class="viewcode-back" href="../../api.html#aiohttp.errors.BadStatusLine">[docs]</a><span class="k">class</span> <span class="nc">BadStatusLine</span><span class="p">(</span><span class="n">HttpBadRequest</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">line</span><span class="p">:</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="nb">repr</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">line</span><span class="p">,</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">line</span> <span class="o">=</span> <span class="n">line</span>
+
+</div>
+<span class="k">class</span> <span class="nc">ParserError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Base parser error.&quot;&quot;&quot;</span>
+
+
+<span class="k">class</span> <span class="nc">LineLimitExceededParserError</span><span class="p">(</span><span class="n">ParserError</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Line is too long.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">limit</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">limit</span> <span class="o">=</span> <span class="n">limit</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">aiohttp 0.9.2- documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, KeepSafe.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>
