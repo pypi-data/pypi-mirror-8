@@ -1,0 +1,81 @@
+#!{{ shell or "/bin/bash" }}
+
+# Clear rbenv variables before starting tmux
+unset RBENV_VERSION
+unset RBENV_DIR
+
+{{ project.tmux }} start-server\; has-session -t {{ project.name }} 2>/dev/null
+
+if [ "$?" -eq 1 ]; then
+  cd {{ project.root or "." }}
+
+  {%- if project.pre %}
+    # Run pre command.
+    {{ project.pre }}
+  {%- endif %}
+
+  # Create the session and a scratch window.
+  TMUX= {{ project.tmux }} new-session -d -s {{ project.name }} -n scratch
+
+  # Copy over the environment variables
+  {%- for key, value in project.environment.iteritems() %}
+    {{ project.tmux }} set-environment -t {{ project.name }} {{ key }} {{ value }}
+  {% endfor %}
+
+  # Create the real first window, swap it with the scratch, and then kill the scratch.
+  {{ project.tmux }} new-window -a -n {{ project.windows[0].name }}
+  {{ project.tmux }} swap-window -s {{ project.name }}:1 -t {{ project.name }}:0
+  {{ project.tmux }} kill-window -t {{ project.name }}:1
+
+  # Create other windows.
+  {%- for window in project.windows %}
+    {%- if loop.index > 1 %}
+      {{ window.tmux_new_window_command }}
+    {%- endif %}
+  {%- endfor %}
+
+  # Handle windows
+  {%- for window in project.windows %}
+    # Window "{{ window.name }}"
+
+    {%- if (window.panes is none) %}
+      # no panes
+      {{ window.tmux_pre_window_command }}
+
+      {%- for command in window.commands %}
+        {{ command }}
+      {%- endfor %}
+    {%- else %}
+      # panes
+      {%- for pane in window.panes %}
+        {{ pane.tmux_pre_window_command }}
+        {{ pane.tmux_pre_command }}
+
+        {%- if pane.has_multiple_commands %}
+          {%- for command in pane.commands %}
+            {{ pane.tmux_main_command(command) }}
+          {%- endfor %}
+        {%- else %}
+          {{ pane.tmux_main_command(pane.commands[0]) }}
+        {%- endif %}
+
+        {%- if not pane.is_last %}
+          {{ pane.tmux_split_command }}
+        {%- endif %}
+
+        {{ window.tmux_layout_command }}
+      {%- endfor %}
+
+      # select first pane in this window
+      {{ window.tmux_select_first_pane }}
+    {%- endif %}
+  {%- endfor %}
+
+  {{ project.tmux }} select-window -t {{ project.base_index }}
+fi
+
+if [ -z "$TMUX" ]; then
+  {{ project.tmux }} -u attach-session -t {{ project.name }}
+else
+  {{ project.tmux }} -u switch-client -t {{ project.name }}
+fi
