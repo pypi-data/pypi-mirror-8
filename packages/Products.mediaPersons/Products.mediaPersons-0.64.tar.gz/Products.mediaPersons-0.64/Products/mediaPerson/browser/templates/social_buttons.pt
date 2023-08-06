@@ -1,0 +1,13 @@
+<div class="social-viewlet"
+    id="social-buttons"
+    i18n:domain="Products.mediaPerson">
+        <div class="btn-group person-buttons" tal:condition="python: context.portal_type == 'Media Person'">
+                    
+                    <a class="btn btn-inverse phone_popover visible-lg visible-md" tal:condition="python: getattr(context, 'telephoneNumber', True)" data-toggle="popover" tal:attributes="data-content python:getattr(context, 'telephoneNumber')" data-container="body" data-viewport=".phone-popover" data-placement="top"><i class="fa fa-phone"></i></a>
+
+                    <a tal:attributes="href python:'tel:'+getattr(context, 'telephoneNumber')" class="btn btn-inverse visible-sm visible-xs" tal:condition="python: getattr(context, 'telephoneNumber', True)"><i class="fa fa-phone"></i></a>
+
+                    <a tal:attributes="href python:'https://twitter.com/intent/follow?original_referer=http://www.intk.com&region=follow_link&screen_name='+getattr(context, 'twitter')+'&tw_p=followbutton&variant=2.0'" class="btn btn-inverse" target="_blank" tal:condition="python: getattr(context, 'twitter', True)"><i class="fa fa-twitter"></i></a>
+                    <a tal:attributes="href python:'mailto:'+getattr(context, 'email')" class="btn btn-inverse" subject="Contact via INTK website" tal:condition="python: getattr(context, 'email', True)"><i class="fa fa-paper-plane"></i></a>
+        </div>
+</div>
