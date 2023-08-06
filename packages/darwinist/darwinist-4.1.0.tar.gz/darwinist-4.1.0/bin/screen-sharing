@@ -1,0 +1,30 @@
+#!/usr/bin/env python
+
+USAGE = """Control OS/X screen sharing
+
+"""
+
+from systematic.shell import Script, ScriptCommand
+
+class ScreenSharingCommand(ScriptCommand):
+    @property
+    def enabled(self):
+        return False
+
+class StatusCommand(ScreenSharingCommand):
+    def run(self, args):
+        self.log.debug('CHECK STATUS')
+
+class DisableCommand(ScreenSharingCommand):
+    def run(self, args):
+        self.log.debug('ENABLE')
+
+class EnableCommand(ScreenSharingCommand):
+    def run(self, args):
+        self.log.debug('DISABLE')
+
+script = Script()
+script.add_subcommand(StatusCommand('status', 'Show screen sharing status'))
+script.add_subcommand(EnableCommand('enable', 'Enable screen sharing'))
+script.add_subcommand(DisableCommand('disable', 'Disable screen sharing'))
+args = script.parse_args()
