@@ -1,0 +1,40 @@
+from tethys_apps.base import TethysAppBase, PersistentStore, app_controller_maker
+
+
+class {{proper_no_spaces}}(TethysAppBase):
+    """
+    Tethys App Class for {{proper_name}}.
+    """
+
+    name = '{{proper_name}}'
+    index = '{{project}}:home'
+    icon = '{{project}}/images/icon.gif'
+    package = '{{project}}'
+    root_url = '{{project_url}}'
+    color = '{{color}}'
+        
+    def controllers(self):
+        """
+        Add controllers
+        """
+        AppController = app_controller_maker(self.root_url)
+
+        controllers = (AppController(name='home',
+                                     url='{{project_url}}',
+                                     controller='{{project}}.controllers.home'
+                       ),
+        )
+
+        return controllers
+
+    def persistent_stores(self):
+        """
+        Add persistent stores
+        """
+        stores = (PersistentStore(name='primary',
+                                  initializer='init_stores:init_primary',
+                                  postgis=True
+                  ),
+        )
+
+        return stores
