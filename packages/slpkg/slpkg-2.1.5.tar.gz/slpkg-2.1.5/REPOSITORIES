@@ -1,0 +1,32 @@
+--------------------------------------------------------------------------------------
+This file was created to explain some peculiarities of repositories used by the slpkg.
+--------------------------------------------------------------------------------------
+
+SlackBuilds.org (sbo) FAQ(15): 
+Slackware current is not supported, but as a general rule, the scripts
+should work on it as well.
+
+Rworkman's (rlw) repository use dependencies where displayed in central site 
+'http://rlworkman.net/pkgs/' and only those. Unfortunately there is no fixed reference
+dependencies file PACKAGES.TXT.
+
+Slackers.it (slackr) repository must be used only from Slackware64 current users.
+Also find in some packages will not show package description when you run the command
+'slpkg -p slackr <package>' and this is because there is not constant reference to the
+description of the file 'PACKAGES.TXT' as in other repositories. Some packages reference
+dependencies not included in the repository. This can be checked if you run the command
+'slpkg -t slackr <package>'. (Example: noticed that the package 'digikam' indicate 
+dependence 'ffmpeg' but that is not available from the repository itself).
+
+Slackonly (slonly) repository contains no dependencies on file PACKAGES.TXT and this makes
+it difficult to automatically resolve dependencies and in the file PACKAGES.TXT and some
+lines with 'PACKAGE NAME:' there is no package so 'slpkg' can not find package.
+Users with Slackware x86_64 will use this repository should establish from the beginning 
+the list of packages with the command 'slpkg re-create' to be updated with new packages 
+and it's because the repository has not 'ChangeLog.txt' file.
+
+Studioware (studio), Alien's ktown (ktown), Alien's multilib (multi), Slacke E17 and E18
+repository has no reference dependencies.
+
+Slackel.gr (slackl) repository must be used only from Slackware current users and has the
+same peculiarities in the repository 'slackr'.
