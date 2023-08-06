@@ -1,0 +1,45 @@
+#!/bin/sh
+# IBM(c) 2014 Apache 2.0
+# chkconfig: 345 85 60
+# description: Confluent hardware manager
+
+### BEGIN INIT INFO
+# Provides: confluent
+# Default-Start: 3 4 5
+# Default-Stop: 0 1 2 6
+### END INIT INFO
+if [ -f /etc/init.d/functions ]; then
+    . /etc/init.d/functions
+    LOG_SUCCESS=success
+elif [ -f /lib/lsb/init-functions ]; then
+    . /lib/lsb/init-functions
+    LOG_SUCCESS=log_success_msg
+else
+    echo "Unknown platform"
+    exit 1
+fi
+
+case $1 in
+	restart)
+	    if [ -S /var/run/confluent/api.sock ]; then
+		    echo -n 'Stopping Confluent '
+		    /opt/confluent/bin/confetty shutdown /
+		fi
+		echo -n 'Starting Confluent '
+		/opt/confluent/bin/confluent
+		$LOG_SUCCESS
+		;;
+	start)
+		echo -n 'Starting Confluent '
+		/opt/confluent/bin/confluent
+		$LOG_SUCCESS
+		;;
+	stop)
+		echo -n 'Stopping Confluent '
+		if [ -S /var/run/confluent/api.sock ]; then
+		    /opt/confluent/bin/confetty shutdown /
+		fi
+		$LOG_SUCCESS
+		;;
+esac
+
