@@ -1,0 +1,237 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Settings &mdash; Django Groups Manager 0.1.0 documentation</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="top" title="Django Groups Manager 0.1.0 documentation" href="index.html"/>
+        <link rel="next" title="Use cases" href="use_cases.html"/>
+        <link rel="prev" title="Django auth models integration" href="auth_integration.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        <a href="index.html" class="fa fa-home"> Django Groups Manager</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+        
+            <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro.html#basic-usage">Basic usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="auth_integration.html">Django auth models integration</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Settings</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#auth-model-synchronization">Auth model synchronization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#permissions">Permissions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#defaults">Defaults</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="use_cases.html">Use cases</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="use_cases.html#projects-management-with-proxy-models">Projects management with Proxy Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="use_cases.html#resource-assignment-via-role-permissions">Resource assignment via role permissions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="API.html">API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="models.html">Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="perms.html">Perms</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tests.html">Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="todo.html">TODO</a></li>
+</ul>
+
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">Django Groups Manager</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>Settings</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          <a href="_sources/settings.txt" rel="nofollow"> View page source</a>
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            
+  <div class="section" id="settings">
+<h1>Settings<a class="headerlink" href="#settings" title="Permalink to this headline">¶</a></h1>
+<p>The application can be configured via settings with <tt class="docutils literal"><span class="pre">GROUPS_MANAGER</span></tt> dictionary.
+Valid keys and values are described below.</p>
+<div class="section" id="auth-model-synchronization">
+<h2>Auth model synchronization<a class="headerlink" href="#auth-model-synchronization" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">&quot;AUTH_MODELS_SYNC&quot;</span></tt>: enables Group, Member and GroupMember synchronization with django&#8217;s Group and User (default: <tt class="docutils literal"><span class="pre">False</span></tt>);</li>
+<li><tt class="docutils literal"><span class="pre">&quot;GROUP_NAME_PREFIX&quot;</span></tt>: prefix used for autogenerated django Group&#8217;s name (default: <tt class="docutils literal"><span class="pre">&quot;DGN_&quot;</span></tt>)</li>
+<li><tt class="docutils literal"><span class="pre">&quot;GROUP_NAME_SUFFIX&quot;</span></tt>: suffix used for autogenerated django Group&#8217;s name. The special value <tt class="docutils literal"><span class="pre">&quot;_$$random&quot;</span></tt> can be used for generate a pseudo-unique suffix of length 8 (the first block of an UUID4) (default: <tt class="docutils literal"><span class="pre">&quot;_$$random&quot;</span></tt>)</li>
+<li><tt class="docutils literal"><span class="pre">&quot;USER_USERNAME_PREFIX&quot;</span></tt>: prefix used for autogenerated django User&#8217;s username (default: <tt class="docutils literal"><span class="pre">&quot;DGN_&quot;</span></tt>)</li>
+<li><tt class="docutils literal"><span class="pre">&quot;USER_USERNAME_SUFFIX&quot;</span></tt>: suffix used for autogenerated django User&#8217;s username. The special value <tt class="docutils literal"><span class="pre">&quot;_$$random&quot;</span></tt> can be used (default: <tt class="docutils literal"><span class="pre">&quot;_$$random&quot;</span></tt>)</li>
+</ul>
+</div>
+<div class="section" id="permissions">
+<h2>Permissions<a class="headerlink" href="#permissions" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">&quot;PERMISSIONS&quot;</span></tt> dictionary: this setting controls the <tt class="docutils literal"><span class="pre">assign_object</span></tt> method of a <tt class="docutils literal"><span class="pre">GroupMember</span></tt> instance.</li>
+</ul>
+<p>Each key controls a specific group type. Values are lists (or, in case of <tt class="docutils literal"><span class="pre">&quot;owner&quot;</span></tt>, also a dictionary) with a combination of permissions&#8217; prefixes <tt class="docutils literal"><span class="pre">&quot;view&quot;</span></tt> (view), <tt class="docutils literal"><span class="pre">&quot;change&quot;</span></tt> (change), <tt class="docutils literal"><span class="pre">&quot;delete&quot;</span></tt> (delete) characters. Obviously, a <tt class="docutils literal"><span class="pre">&quot;view_modelname&quot;</span></tt> permission must be added to the model permissions. You can also add your custom permissions in form of <tt class="docutils literal"><span class="pre">&lt;prefix&gt;</span></tt> where your permission is <tt class="docutils literal"><span class="pre">&lt;prefix&gt;_modelname</span></tt>.</p>
+<p>Valid keys are:</p>
+<blockquote>
+<div><ul class="simple">
+<li><tt class="docutils literal"><span class="pre">&quot;owner&quot;</span></tt>: a list or a dictionary (with keys as roles&#8217; codename attribute). This object-permissions are assigned directly to the user (default: <tt class="docutils literal"><span class="pre">['view',</span> <span class="pre">'change',</span> <span class="pre">'delete']</span></tt>)</li>
+<li><tt class="docutils literal"><span class="pre">&quot;group&quot;</span></tt>: a string. This object-permissions are assigned to the related group (default: <tt class="docutils literal"><span class="pre">['view',</span> <span class="pre">'change']</span></tt>)</li>
+<li><tt class="docutils literal"><span class="pre">&quot;groups_upstream&quot;</span></tt>: a string. This object-permissions are assigned to the ancestors groups (default: <tt class="docutils literal"><span class="pre">['view']</span></tt>)</li>
+<li><tt class="docutils literal"><span class="pre">&quot;groups_downstream&quot;</span></tt>: a string. This object-permissions are assigned to the descendants groups (default: <tt class="docutils literal"><span class="pre">[]</span></tt>)</li>
+<li><tt class="docutils literal"><span class="pre">&quot;groups_siblings&quot;</span></tt>: a string. This object-permissions are assigned to the siblings groups (default: <tt class="docutils literal"><span class="pre">['view']</span></tt>)</li>
+</ul>
+</div></blockquote>
+<p>An example of permissions assigned by role can be found on use cases.</p>
+</div>
+<div class="section" id="defaults">
+<h2>Defaults<a class="headerlink" href="#defaults" title="Permalink to this headline">¶</a></h2>
+<p>Default values are:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">GROUPS_MANAGER</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="c"># User and Groups sync settings</span>
+    <span class="s">&#39;AUTH_MODELS_SYNC&#39;</span><span class="p">:</span> <span class="bp">False</span><span class="p">,</span>
+    <span class="s">&#39;GROUP_NAME_PREFIX&#39;</span><span class="p">:</span> <span class="s">&#39;DGM_&#39;</span><span class="p">,</span>
+    <span class="s">&#39;GROUP_NAME_SUFFIX&#39;</span><span class="p">:</span> <span class="s">&#39;_$$random&#39;</span><span class="p">,</span>
+    <span class="s">&#39;USER_USERNAME_PREFIX&#39;</span><span class="p">:</span> <span class="s">&#39;DGM_&#39;</span><span class="p">,</span>
+    <span class="s">&#39;USER_USERNAME_SUFFIX&#39;</span><span class="p">:</span> <span class="s">&#39;_$$random&#39;</span><span class="p">,</span>
+    <span class="c"># Permissions</span>
+    <span class="s">&#39;PERMISSIONS&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s">&#39;owner&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;view&#39;</span><span class="p">,</span> <span class="s">&#39;change&#39;</span><span class="p">,</span> <span class="s">&#39;delete&#39;</span><span class="p">],</span>
+        <span class="s">&#39;group&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;view&#39;</span><span class="p">,</span> <span class="s">&#39;change&#39;</span><span class="p">],</span>
+        <span class="s">&#39;groups_upstream&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;view&#39;</span><span class="p">],</span>
+        <span class="s">&#39;groups_downstream&#39;</span><span class="p">:</span> <span class="p">[],</span>
+        <span class="s">&#39;groups_siblings&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;view&#39;</span><span class="p">],</span>
+    <span class="p">},</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="use_cases.html" class="btn btn-neutral float-right" title="Use cases"/>Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="auth_integration.html" class="btn btn-neutral" title="Django auth models integration"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2014, Vittorio Zamboni.
+    </p>
+  </div>
+
+  <a href="https://github.com/snide/sphinx_rtd_theme">Sphinx theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

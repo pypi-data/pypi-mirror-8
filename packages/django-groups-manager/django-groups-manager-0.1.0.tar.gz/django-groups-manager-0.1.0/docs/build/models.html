@@ -1,0 +1,504 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Models &mdash; Django Groups Manager 0.1.0 documentation</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="top" title="Django Groups Manager 0.1.0 documentation" href="index.html"/>
+        <link rel="up" title="API" href="API.html"/>
+        <link rel="next" title="Perms" href="perms.html"/>
+        <link rel="prev" title="API" href="API.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        <a href="index.html" class="fa fa-home"> Django Groups Manager</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+        
+            <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro.html#basic-usage">Basic usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="auth_integration.html">Django auth models integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="settings.html">Settings</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="settings.html#auth-model-synchronization">Auth model synchronization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="settings.html#permissions">Permissions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="settings.html#defaults">Defaults</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="use_cases.html">Use cases</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="use_cases.html#projects-management-with-proxy-models">Projects management with Proxy Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="use_cases.html#resource-assignment-via-role-permissions">Resource assignment via role permissions</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="API.html">API</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="">Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="perms.html">Perms</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tests.html">Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="todo.html">TODO</a></li>
+</ul>
+
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">Django Groups Manager</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="API.html">API</a> &raquo;</li>
+      
+    <li>Models</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          <a href="_sources/models.txt" rel="nofollow"> View page source</a>
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            
+  <div class="section" id="models">
+<h1>Models<a class="headerlink" href="#models" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="main-models">
+<h2>Main models<a class="headerlink" href="#main-models" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="groups_manager.models.Group">
+<em class="property">class </em><tt class="descclassname">groups_manager.models.</tt><tt class="descname">Group</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/groups_manager/models.html#Group"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#groups_manager.models.Group" title="Permalink to this definition">¶</a></dt>
+<dd><p>This model represents the group. Each group could have a parent group (via the <cite>parent</cite>
+attribute).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><cite>name</cite>: (required)</li>
+<li><cite>codename</cite>: NON unique codename; if not set, it&#8217;s autogenerated by slugifying the label
+(lower case)</li>
+<li><cite>description</cite>: text field</li>
+<li><cite>comment</cite>: text field</li>
+<li><cite>full_name</cite>: auto generated full name starting from tree root</li>
+<li><cite>properties</cite>: jsonfield properties</li>
+<li><cite>group_members</cite>: m2m to Member, through GroupMember model (related name: <cite>groups</cite>)</li>
+<li><cite>group_type</cite>: foreign key to GroupType (related name: <cite>groups</cite>)</li>
+<li><cite>group_entities</cite>: m2m to GroupEntity (related name: <cite>groups</cite>)</li>
+<li><cite>django_group</cite>: django auth related group</li>
+<li><cite>django_auth_sync</cite>: synchronize or not the group (if setting DJANGO_AUTH_SYNC is True)
+(default: True)</li>
+<li><cite>level</cite>: <tt class="docutils literal"><span class="pre">django-mptt</span></tt> level attribute
+(default: True)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If you want to add a custom manager for a sublcass of Group, use django-mppt
+mptt.models.TreeManager.</p>
+</div>
+<dl class="method">
+<dt id="groups_manager.models.Group.add_member">
+<tt class="descname">add_member</tt><big>(</big><em>member</em>, <em>roles=[]</em><big>)</big><a class="reference internal" href="_modules/groups_manager/models.html#Group.add_member"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#groups_manager.models.Group.add_member" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a member to the group.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><cite>member</cite>: member (required)</li>
+<li><cite>roles</cite>: list of roles. Each role could be a role id, a role label or codename,
+a role instance (optional, default: <tt class="docutils literal"><span class="pre">[]</span></tt>)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="groups_manager.models.Group.assign_object">
+<tt class="descname">assign_object</tt><big>(</big><em>obj</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/groups_manager/models.html#Group.assign_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#groups_manager.models.Group.assign_object" title="Permalink to this definition">¶</a></dt>
+<dd><p>Assign an object to the group.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><cite>obj</cite>: the object to assign (required)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Kwargs:</th><td class="field-body"><ul class="first last simple">
+<li><cite>custom_permissions</cite>: a full or partial redefinition of PERMISSIONS setting.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This method needs django-guardian.</p>
+</div>
+<div class="admonition-todo admonition" id="index-0">
+<p class="first admonition-title">Todo</p>
+<p class="last">Create a method that allows to assign_objects directly to group.</p>
+</div>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="groups_manager.models.Group.entities">
+<tt class="descname">entities</tt><a class="reference internal" href="_modules/groups_manager/models.html#Group.entities"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#groups_manager.models.Group.entities" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return group entities.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="groups_manager.models.Group.get_entities">
+<tt class="descname">get_entities</tt><big>(</big><em>subgroups=False</em><big>)</big><a class="reference internal" href="_modules/groups_manager/models.html#Group.get_entities"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#groups_manager.models.Group.get_entities" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return group entities.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><cite>subgroups</cite>: return also descendants entities (default: <cite>False</cite>)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="groups_manager.models.Group.get_members">
+<tt class="descname">get_members</tt><big>(</big><em>subgroups=False</em><big>)</big><a class="reference internal" href="_modules/groups_manager/models.html#Group.get_members"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#groups_manager.models.Group.get_members" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return group members.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><cite>subgroups</cite>: return also descendants members (default: <cite>False</cite>)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="groups_manager.models.Group.members">
+<tt class="descname">members</tt><a class="reference internal" href="_modules/groups_manager/models.html#Group.members"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#groups_manager.models.Group.members" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return group members.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="groups_manager.models.Group.users">
+<tt class="descname">users</tt><a class="reference internal" href="_modules/groups_manager/models.html#Group.users"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#groups_manager.models.Group.users" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return group django users.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="groups_manager.models.Member">
+<em class="property">class </em><tt class="descclassname">groups_manager.models.</tt><tt class="descname">Member</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/groups_manager/models.html#Member"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#groups_manager.models.Member" title="Permalink to this definition">¶</a></dt>
+<dd><p>Member represents a person that can be related to one or more groups.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><cite>first_name</cite>: member&#8217;s first name (required)</li>
+<li><cite>last_name</cite>: member&#8217;s last name (required)</li>
+<li><cite>username</cite>: member&#8217;s username, used as base for django auth&#8217;s integration</li>
+<li><cite>email</cite>: member&#8217;s email</li>
+<li><cite>django_user</cite>: django auth related User (related name: <cite>groups_manager_member</cite>)</li>
+<li><cite>django_auth_sync</cite>: synchronize or not the member (if setting DJANGO_AUTH_SYNC is True)
+(default: True)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="groups_manager.models.Member.assign_object">
+<tt class="descname">assign_object</tt><big>(</big><em>group</em>, <em>obj</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/groups_manager/models.html#Member.assign_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#groups_manager.models.Member.assign_object" title="Permalink to this definition">¶</a></dt>
+<dd><p>Assign an object to the member honours the group relation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><cite>group</cite>: the member group (required)</li>
+<li><cite>obj</cite>: the object to assign (required)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Kwargs:</th><td class="field-body"><ul class="first last simple">
+<li><cite>custom_permissions</cite>: a full or partial redefinition of PERMISSIONS setting.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This method needs django-guardian.</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="groups_manager.models.Member.has_perm">
+<tt class="descname">has_perm</tt><big>(</big><em>perm</em>, <em>obj=None</em><big>)</big><a class="reference internal" href="_modules/groups_manager/models.html#Member.has_perm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#groups_manager.models.Member.has_perm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bind of django user&#8217;s <tt class="docutils literal"><span class="pre">has_perm</span></tt> method (use it as a shortcut).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="groups_manager.models.Member.has_perms">
+<tt class="descname">has_perms</tt><big>(</big><em>perm_list</em>, <em>obj=None</em><big>)</big><a class="reference internal" href="_modules/groups_manager/models.html#Member.has_perms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#groups_manager.models.Member.has_perms" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bind of django user&#8217;s <tt class="docutils literal"><span class="pre">has_perms</span></tt> method (use it as a shortcut).</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="group-models">
+<h2>Group Models<a class="headerlink" href="#group-models" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="groups_manager.models.GroupType">
+<em class="property">class </em><tt class="descclassname">groups_manager.models.</tt><tt class="descname">GroupType</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/groups_manager/models.html#GroupType"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#groups_manager.models.GroupType" title="Permalink to this definition">¶</a></dt>
+<dd><p>This model represents the kind of the group. One group could have only one type.
+This objects could describe the group&#8217;s nature (i.e. Organization, Division, ecc).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><cite>label</cite>: (required)</li>
+<li><cite>codename</cite>: unique codename; if not set, it&#8217;s autogenerated by slugifying the label
+(lower case)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="class">
+<dt id="groups_manager.models.GroupEntity">
+<em class="property">class </em><tt class="descclassname">groups_manager.models.</tt><tt class="descname">GroupEntity</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/groups_manager/models.html#GroupEntity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#groups_manager.models.GroupEntity" title="Permalink to this definition">¶</a></dt>
+<dd><p>This model represents the entities of a group. One group could have more than one entity.
+This objects could describe the group&#8217;s properties (i.e. Administrators, Users, ecc).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><cite>label</cite>: (required)</li>
+<li><cite>codename</cite>: unique codename; if not set, it&#8217;s autogenerated by slugifying the label
+(lower case)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="relation-management">
+<h2>Relation Management<a class="headerlink" href="#relation-management" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="groups_manager.models.GroupMember">
+<em class="property">class </em><tt class="descclassname">groups_manager.models.</tt><tt class="descname">GroupMember</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/groups_manager/models.html#GroupMember"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#groups_manager.models.GroupMember" title="Permalink to this definition">¶</a></dt>
+<dd><p>This model represents the intermediate model of the relation between a Member and a Group.
+This middleware can have one or more GroupMemberRole associated.
+A member could be in a group only once (group - member pair is unique).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><cite>group</cite>: Group (required)</li>
+<li><cite>member</cite>: Member (required)</li>
+<li><cite>roles</cite>: m2m to GroupMemberRole</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="groups_manager.models.GroupMember.assign_object">
+<tt class="descname">assign_object</tt><big>(</big><em>obj</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/groups_manager/models.html#GroupMember.assign_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#groups_manager.models.GroupMember.assign_object" title="Permalink to this definition">¶</a></dt>
+<dd><p>Assign an object to the member.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><cite>obj</cite>: the object to assign (required)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Kwargs:</th><td class="field-body"><ul class="first last simple">
+<li><cite>custom_permissions</cite>: a full or partial redefinition of PERMISSIONS setting.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This method needs django-guardian.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="groups_manager.models.GroupMemberRole">
+<em class="property">class </em><tt class="descclassname">groups_manager.models.</tt><tt class="descname">GroupMemberRole</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/groups_manager/models.html#GroupMemberRole"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#groups_manager.models.GroupMemberRole" title="Permalink to this definition">¶</a></dt>
+<dd><p>This model represents the role of a user in a relation with a group
+(i.e. Administrator, User, ecc).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><cite>label</cite>: (required)</li>
+<li><cite>codename</cite>: unique codename; if not set, it&#8217;s autogenerated by slugifying the label
+(lower case)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="perms.html" class="btn btn-neutral float-right" title="Perms"/>Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="API.html" class="btn btn-neutral" title="API"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2014, Vittorio Zamboni.
+    </p>
+  </div>
+
+  <a href="https://github.com/snide/sphinx_rtd_theme">Sphinx theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
