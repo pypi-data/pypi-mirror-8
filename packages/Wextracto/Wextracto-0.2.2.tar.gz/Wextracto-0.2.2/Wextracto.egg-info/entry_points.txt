@@ -1,0 +1,22 @@
+
+        [console_scripts]
+        wex = wex.command:main
+
+        [pytest11]
+        wex = wex.pytestplugin
+
+        [wex.method.http]
+        get = wex.http:request
+        post = wex.http:request
+
+        [wex.method.https]
+        get = wex.http:request
+        post = wex.http:request
+
+        [wex.method.ftp]
+        get = wex.ftp:get
+
+        [wex]
+        robots.txt = wex.sitemaps:urls_from_robots_txt
+        sitemaps = wex.sitemaps:urls_from_sitemap
+    
