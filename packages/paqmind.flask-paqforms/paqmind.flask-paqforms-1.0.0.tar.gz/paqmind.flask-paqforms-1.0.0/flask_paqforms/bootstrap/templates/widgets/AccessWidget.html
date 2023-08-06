@@ -1,0 +1,25 @@
+{% from "macros.html" import form_group, print_label with context %}
+
+{% call form_group(field, attrs, 'Access') %}
+    {{ print_label(field, widget.caption, description, tooltip, attrs=Attrs(required=attrs['required'])) }}
+    <div class="controls">
+        <input type="hidden" name="{{ field.fullname }}" value=""/>
+        <div class="dropdown">
+            <div class="dropdown-toggle" data-toggle="dropdown">
+                <span></span>
+                <span class="fa fa-caret-down"></span>
+            </div>
+            <ul class="dropdown-menu dropdown-menu-right">
+                <li class="dropdown-header">Access Level</li>
+                <li class="divider"></li>
+                {% for i, value in enumerate(field.choices) %}
+                    {% set caption, spanattrs = widget.options[i] %}
+                    {% set liattrs = Attrs(class='active' if field.is_chosen(value) else None) %}
+                    <li {{ liattrs }}>
+                        <a href="#" data-access="{{ value }}"><span {{ Attrs(spanattrs) }}></span>{{ caption }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+{% endcall %}

@@ -1,0 +1,16 @@
+{% from "macros.html" import form_group with context %}
+
+{% if field.required() %}
+    {% call form_group(field, attrs, 'Recaptcha') %}
+        <div class="controls">
+            <script src="http://www.google.com/recaptcha/api/challenge?k={{ field.publickey }}"></script>
+            <noscript>
+                <iframe src="http://www.google.com/recaptcha/api/noscript?k={{ field.publickey }}" width="500" height="300" frameborder="0"></iframe><br/>
+                <textarea name="recaptcha_challenge_field" rows="3" cols="40"></textarea>
+                <input type="hidden" name="recaptcha_response_field" value="manual_challenge">
+            </noscript>
+        </div>
+
+        {{ field.alerts() }}
+    {% endcall %}
+{% endif %}
