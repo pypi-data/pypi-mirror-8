@@ -1,0 +1,41 @@
+{% extends "threebot/workflow/detail_base.html" %}
+
+{% block inner_content %}
+<div class="row">
+  <div class="col-lg-8">
+    <h3>Hooks for this workflow</h3>
+    <p>
+      Webhooks allow external services to perform Workflows.<br>
+      Send a POST request to the provided URL to start the Workflow. 
+      <code>curl -X POST "your-custom-hook-url"</code>
+    </p>
+    <table class="table table-hover">
+      <thead>
+        <tr>
+            <th>Your personal URL</th>
+            <th>Worker</th>
+            <th>Parameter List</th>
+            <th></th>
+        </tr>
+        </thead>
+      <tbody>
+      {% for hook in hooks %}
+      <tr>
+        <td><input type="text" class="form-control" readonly value="{{ hook.full_url }}" onClick="this.select();"></td>
+        <td>{{ hook.worker }}</td>
+        <td>{{ hook.param_list }}</td>
+        <td>
+          <div class="btn-group">
+            <a class="btn btn-default btn-sm" href="{% url 'hook_edit' workflow.slug hook.slug %}" title="edit this hook"><span class="glyphicon glyphicon-edit"></span></a>
+            <button type="button" class="disabled btn btn-default btn-sm"><span class="glyphicon glyphicon-trash" title="delete this hook"></span></button>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    <p><a class="btn btn-primary" href="{% url 'hook_create' workflow.slug %}">Add Hook</a></p>
+  </div>
+</div>
+
+{% endblock %}
