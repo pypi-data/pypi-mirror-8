@@ -1,0 +1,65 @@
+A faire par ordre de priorite
+
+- générer écriture de report avec la bonne date plutôt que demander à
+  l'utilisateur de l'ajouter
+
+- ajouter vérifications du type "pas de débit sur un compte 7, 
+  pas de crédit sur un compte 6"
+
+- ajouter vérif net immobilisations = net des immos du bilan
+
+- avoir la possibilité de configurer les livres
+
+- compte 441 est à traiter C/D
+
+- ajouter RefBaseURL à feuilles de style qui rendent le HTML, pour 
+  donner racine des documents référencés
+
+- inclure un répertoire example qui contient les répertoires, les 
+  données et le fichier de conf suffisant pour que "pycompta example.conf"
+  génère un résultat.
+
+- vérifier gestion dates et intervalles. En particulier, le report de la
+  balance d'un nouvel exercice n'est pas la balance de l'ancien, car une partie
+  de l'écriture de report (qui reproduit ce qui apparaît dans l'ancien) est
+  automatiquement annulée par les écritures d'inversions (ex: provisions, etc.)
+
+- il est nécessaire d'avoir des totaux pour le journal et le grand livre
+
+-  demander à olivier si voit moyen améliorer XSL2FO de bilan et CR.
+
+- se préoccuper du mode de réglement.
+
+- se préoccuper des références (factures, affaires, etc.)
+
+- remplacer <b> et <i> dans feuilles de style HTML par des classes et une CSS.
+
+- transformer lib/definitions.py en xml/definitions.xml
+
+Fait
+
+- ce serait bien d'avoir un livre de paye
+
+- deux colonnes années N et N-1 dans compte de résultat
+
+- deux colonnes années N et N-1 dans le bilan
+
+- insérer dans résultat un commentaire avec la version de pycompta utilisée
+  pour génération
+
+- options de config pour préciser chemins xsltproc et fop
+
+- compile fichier config global et fichier config en argument
+
+- gère chemins relatifs
+
+- ajout option --report qui applique la xslt à l'exercice précédent et
+  crée fichier 'ecriture_report' équilibrée avec résultat
+
+- comptes-annuels.xml doit se trouver dans répertoire exercice et
+  sera copié dans répertoire cible, puis généré en xsl:fo et pdf.
+
+- compte de résultat sur une seule colonne par défaut
+
+- ajout au graphique des comptes trésorerie '5*'
+

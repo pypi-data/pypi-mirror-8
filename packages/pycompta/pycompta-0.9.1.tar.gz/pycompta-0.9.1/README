@@ -1,0 +1,80 @@
+========
+pycompta
+========
+
+Description
+-----------
+
+An accounting tool with "double entries", journal, general ledger, 
+work sheet, income statements and balance sheet. Outputed
+accounting records can be HTML, XSL:FO and PDF.
+
+All input data is XML. An entry looks like:
+
+::
+
+  <ecriture date="2002-01-01">
+     <libelle>Bought an accounting tool</libelle>
+     <debit compte="60" montant="81,40" />     <!-- spend -->
+     <debit compte="40" montant="19,60" />     <!-- vat -->
+     <credit  compte="50" montant="100,00" />  <!-- bank account -->
+     <reglement type='CB'> credit card on Jan 1st 2002</reglement>
+  </ecriture>
+
+
+Note: "ecriture" means "entry", "compte" means "account" and
+"montant" means "amount". Contribute your own parser if you will.
+
+Data can be edited with a text editor or with the specific
+graphical user interface.
+
+Configuration
+-------------
+
+Pycompta uses two main directories. The working directory contains
+data and the target directory will hold the resulting reports.
+
+In the working directory one will find:
+  - the description of the company (here societe.xml)   
+  - the list of accounts (named plan-comptable.xml)
+  - the XML files describing actual and previsional assets
+  - the directories containing the actual entries and the previsional
+    entries for the current financial year
+
+Or
+
+::
+
+	/home/compta/data/
+	`-- year2003
+	    |-- entries
+	    `-- entries_prev
+
+
+Here is an example configuration file (compta.conf)
+
+::
+
+	debut = 200301
+	fin = 200301
+	fin_prev = 200312
+
+
+Note: debut means start, fin means end.
+
+Usage
+-----
+
+To generate the reports, just run:
+
+	pycompta compta.conf
+
+and have a look at the results in the target directory.
+
+
+Graphical user interface
+------------------------
+
+To start the graphical user interface:
+
+   pycompta-gui

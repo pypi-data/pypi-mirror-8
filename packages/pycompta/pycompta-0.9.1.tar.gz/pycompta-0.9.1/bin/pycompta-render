@@ -1,0 +1,44 @@
+#!/usr/bin/python
+
+import sys
+import os.path as osp
+import glob
+import codecs
+import xml.etree.ElementTree as ET
+from pycompta.lib import render_html
+
+target = sys.argv[1]
+if not target.endswith('/'): target += '/'
+basedir = osp.dirname(target)
+planc = {}
+for compte in ET.parse(osp.join(target, 'plan-comptable.xml')).findall('.//compte'):
+    planc[compte.get('numero')] = compte.get('nom')
+cr_precedent = ET.parse(osp.join(target, 'compte-resultat_precedent.xml'))
+bilan_precedent = ET.parse(osp.join(target, 'bilan_precedent.xml'))
+
+for path in glob.glob(osp.join(basedir,'*.xml')):
+    basename = osp.basename(path)
+    if basename.startswith('journal'):
+        dest = path.replace('journal', 'journal2').replace('.xml', '.html')
+        print 'rendering journal', dest
+        render_html.write_journal(codecs.open(dest,'w','utf-8'), ET.parse(path), planc)
+    elif basename.startswith('grand-livre'):
+        dest = path.replace('grand-livre', 'balance2').replace('.xml', '.html')
+        print 'rendering balance', dest, 'from', path
+        render_html.write_balance(codecs.open(dest,'w','utf-8'), ET.parse(path), planc)
+        dest = path.replace('grand-livre', 'grand-livre2').replace('.xml', '.html')
+        print 'rendering grand-livre', dest, 'from', path
+        render_html.write_grandlivre(codecs.open(dest,'w','utf-8'), ET.parse(path), planc)
+        dest = path.replace('grand-livre', 'tva2').replace('.xml', '.html')
+        print 'rendering tva', dest, 'from', path
+        render_html.write_tva(codecs.open(dest,'w','utf-8'), ET.parse(path), planc)
+    elif basename.startswith('compte-resultat'):
+        dest = path.replace('compte-resultat', 'compte-resultat2').replace('.xml', '.html')
+        print 'rendering compte-resultat', dest, 'from', path
+        render_html.write_compte_resultat(codecs.open(dest,'w','utf-8'), ET.parse(path), planc, cr_precedent)
+    elif basename.startswith('bilan-immo'):
+        pass
+    elif basename.startswith('bilan') and not basename.startswith('bilan_precedent'):
+        dest = path.replace('bilan', 'bilan2').replace('.xml', '.html')
+        print 'rendering bilan', dest, 'from', path
+        render_html.write_bilan(codecs.open(dest,'w','utf-8'), ET.parse(path), planc, bilan_precedent)

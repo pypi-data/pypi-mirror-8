@@ -1,0 +1,71 @@
+========
+pycompta
+========
+
+Description
+-----------
+
+Une belle comptabilité d'entreprise à parties double, avec journal,
+grand livre, balance, compte de résultat et bilan. Les sorties
+peuvent se faire aux formats HTML, XSL:FO et PDF.
+
+Toutes les données sont au format XML. Une écriture est de la forme:
+
+<ecriture date="2002-01-01">
+   <libelle>achat d'un logiciel de comptabilité</libelle>
+   <debit compte="60" montant="81,40" />     <!-- charges -->
+   <debit compte="40" montant="19,60" />     <!-- tva -->
+   <credit  compte="50" montant="100,00" />  <!-- compte bancaire -->
+</ecriture>
+
+Les données peuvent être entrées en utilisant un simple éditeur de
+texte ou en utilisant l'interface graphique (prévue à cet effet).
+
+Configuration
+-------------
+
+Pycompta utilise deux répertoires principaux. Le répertoire de travail
+contient les données et le répertoire cible contiendra les résultats.
+
+Dans le répertoire de travail, on aura:
+  - la description de la societe (ici societe.xml)
+  - le plan comptable (nommé plan-comptable.xml)
+  - le fichier XML des immobilisations réelles et celui 
+    des immobilisations prévisionnelles
+  - le répertoire de contenant les écritures de l'exercice et
+    celui contenant les écritures prévisionnelles de l'exercice
+
+Soit
+
+::
+
+	/home/compta/data/
+	`-- exercice2003
+	    |-- ecritures
+	    `-- ecritures_prev
+
+
+Voici un exemple de fichier de configuration (compta.conf)
+
+::
+
+	debut = 200301
+	fin = 200301
+	fin_prev = 200312
+
+
+Utilisation
+-----------
+
+Pour générer les sorties, il suffit de lancer la commande:
+
+	pycompta /home/compta/data /tmp/cible
+
+et de consulter les fichier générés dans le répertoire cible.
+
+Interface graphique
+-------------------
+
+Pour lancer l'interface graphique:
+
+     pycompta-gui
