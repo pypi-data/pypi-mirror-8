@@ -1,0 +1,63 @@
+Metadata-Version: 1.1
+Name: scott-freeze
+Version: 0.1
+Summary: Utility for managing requirements files
+Home-page: http://github.com/onefinestay/scott-freeze
+Author: onefinestay
+Author-email: engineering@onefinestay.com
+License: Apache License, Version 2.0
+Description: Scott-freeze
+        ============
+        
+        
+        Keep ``requirements.in`` with unpinned or loosely pinned requirements, and
+        let scott freeze them into ``requirements.txt`` for tests and deployment::
+        
+            $ cat requirements.in
+            flask>0.9
+        
+        ::
+        
+            $ scott-freeze requirements.in > requirements.txt
+        
+        ::
+        
+            $ cat requirements.txt
+            # Generated file. Please do not edit manually
+            #
+            # `requirements.in` contains direct dependencies (and may be >version instead
+            # of ==version) This file is a list of dependencies and _their_ dependencies,
+            # completely frozen.  To generate this file, use scott-freeze
+            #
+            # Example
+            #     $ scott-freeze requirements.in > requirements.txt
+            #
+            Flask==0.10.1
+            itsdangerous==0.24
+            Jinja2==2.7.3
+            MarkupSafe==0.23
+            Werkzeug==0.9.6
+        
+        
+        Version control
+        ---------------
+        
+        We recommend that you keep both ``requirements.in`` and ``requirements.txt``
+        in your repo.
+        
+        
+        License
+        -------
+        
+        Apache 2.0. See LICENSE for details.
+        
+Platform: UNKNOWN
+Classifier: Programming Language :: Python :: 2
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.3
+Classifier: Programming Language :: Python :: 3.4
+Classifier: Operating System :: MacOS :: MacOS X
+Classifier: Operating System :: POSIX
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Intended Audience :: Developers
