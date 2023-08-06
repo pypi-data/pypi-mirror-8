@@ -1,0 +1,40 @@
+#!/usr/bin/env python2
+
+##
+# PyCross
+# https://github.com/leosartaj/PyCross.git
+#
+# Copyright (c) 2014 Sartaj Singh
+# Licensed under the MIT license.
+##
+
+import optparse
+
+# for gui
+from PyCross.gui.pycrossGUIClass import pycrossGUIClass
+import gtk
+
+def parse_args():
+    usage = """usage: %prog [options]
+
+    To play, simply run
+    pycross
+
+    Run 
+    pycross -h/--help
+    For help
+"""
+    parser = optparse.OptionParser(usage)
+
+    options, args = parser.parse_args()
+
+    if len(args):
+        parser.error('expecting no arguments')
+
+    return options
+
+if __name__ == '__main__':
+    options = parse_args()
+
+    app = pycrossGUIClass()
+    gtk.main()
