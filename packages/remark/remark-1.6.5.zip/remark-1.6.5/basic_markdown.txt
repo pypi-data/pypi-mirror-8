@@ -1,0 +1,147 @@
+Markdown syntax
+===============
+
+[[Parent]]: remark_syntax.txt
+
+Here we provide a brief tutorial to the Markdown syntax
+which is the basis on which Remark syntax has been built.
+We provide an external link to complete documentation below. 
+
+Markdown syntax
+---------------
+
+### Normal text
+
+[[Example]]:
+	Once upon a time there was an apple-worm...
+	It was a very green apple-worm.
+	
+	Its home was built into a red apple. 
+
+### Emphasis
+
+[[Example]]:
+	It was a _very_ green apple-worm.
+	
+	It was a __very__ green apple-worm.
+
+	It was a ___very___ green apple-worm.
+
+### Headings
+
+[[Example]]:
+	Level 1
+	=======
+	
+	Level 2
+	-------
+	
+	### Level 3
+
+	#### Level 4
+
+### Unordered lists
+
+[[Example]]:
+	Things to buy:
+
+	* apples
+		* royal gala for john
+		* red delicious for jane
+	* carrots
+	* milk
+
+### Ordered lists
+
+[[Example]]:
+	How to cook potatos:
+
+	1. Heat water to the boiling point.
+		5. Put water into a kettle.
+		3. Put the kettle on the stove.
+		6. Turn on the heat.
+		7. Wait until the water boils.
+	2. Put potatos into the water.
+	3. Decrease the heat somewhat.
+		* Be careful not to touch the hot stove!
+		* About 80% heat is fine.
+	3. Wait for 30 minutes.
+	11. Turn off the heat.
+	10. Pour the water out of the kettle.
+
+### Verbatim content
+
+[[Example]]:
+		Indented text.
+
+In Remark, the indentation is used invoke the indentation macro, which defaults to the [Verbatim][VerbatimMacro] macro.
+
+[VerbatimMacro]: [[Ref]]: Verbatim_Macro.txt
+
+### Tables
+
+[[Example]]:
+	First Header  | Second Header
+	------------- | -------------
+	Content Cell  | Content Cell
+	Content Cell  | Content Cell
+
+### Definition lists
+
+[[Example]]:
+	Apple
+	:   Pomaceous fruit of plants of the genus Malus in 
+	    the family Rosaceae.
+	:	A company.
+	
+	Orange
+	:   The fruit of an evergreen tree of the genus Citrus.
+
+### Abbreviations
+
+[[Example]]:
+	The HTML specification is maintained by the W3C.
+	
+	*[HTML]: Hyper Text Markup Language
+	*[W3C]:  World Wide Web Consortium
+
+The explanation for the abbreviation can be seen by hovering the mouse over it.
+
+### Links in Markdown
+
+[[Example]]:
+	[Remark syntax][Syntax]
+	
+	[Syntax]: remark_syntax.htm
+
+### Links in Remark
+
+While the Markdown linking mechanism is fine (and required) for external links, you will want to use the Remark linking mechanism for links internal to the documentation. This is because it is able to automatically fetch information about the target file, helping to keep the documentation in sync. 
+
+[[Example]]:
+	[[Link: remark_syntax.txt]]  
+	
+	[[FileLink: remark_syntax.txt]]
+	
+	[[DirectoryLink: remark_syntax.txt]]
+
+When you need to give links specific names, use the following
+syntax:
+
+[[Example]]:
+	[Remark syntax][2]
+	
+	[2]: [[Ref: remark_syntax.txt]]
+
+Remark linking relies on the [file searching algorithm][file-search], which 
+is important to make the documentation robust to changes
+in the directory structure.
+
+[file-search]: [[Ref: file_searching_algorithm.txt]]
+
+Links
+-----
+
+[Complete Markdown syntax documentation][Markdown_Syntax]
+
+[Markdown_Syntax]: http://daringfireball.net/projects/markdown/syntax
