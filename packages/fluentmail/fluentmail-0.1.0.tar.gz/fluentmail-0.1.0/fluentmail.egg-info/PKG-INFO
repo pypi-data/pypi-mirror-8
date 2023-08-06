@@ -1,0 +1,161 @@
+Metadata-Version: 1.1
+Name: fluentmail
+Version: 0.1.0
+Summary: Tiny library to send email fluently
+Home-page: https://github.com/alexandrevicenzi/fluentmail
+Author: Alexandre Vicenzi
+Author-email: vicenzi.alexandre@gmail.com
+License: The MIT License (MIT)
+
+Copyright (c) 2014 Alexandre Vicenzi
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+
+Description: fluentmail |Build Status| |Version|
+        ===================================
+        
+        Tiny library to send email fluently
+        
+        Install
+        -------
+        
+        ``pip install fluentmail``
+        
+        Usage
+        -----
+        
+        Basic
+        ~~~~~
+        
+        .. code:: python
+        
+            from fluentmail import FluentMail
+        
+            mail = FluentMail('smtp.gmail.com', 587, TLS)
+        
+            mail.credentials('you@gmail.com', 'pwd')\
+                .from_address('you@gmail.com')\
+                .to('other@gmail.com')\
+                .subject('FluentMail')\
+                .body(u'Hi, I\'m FluentMail.')\
+                .send()
+        
+        HTML Body
+        ~~~~~~~~~
+        
+        .. code:: python
+        
+            from fluentmail import FluentMail
+        
+            mail = FluentMail('smtp.gmail.com', 587, TLS)
+        
+            mail.credentials('you@gmail.com', 'pwd')\
+                .from_address('you@gmail.com')\
+                .to('other@gmail.com')\
+                .subject('FluentMail')\
+                .body(u'<h2>Hi, I\'m FluentMail.<h2>')\
+                .as_html()\
+                .send()
+        
+        With Attachment
+        ~~~~~~~~~~~~~~~
+        
+        .. code:: python
+        
+            from fluentmail import FluentMail
+        
+            mail = FluentMail('smtp.gmail.com', 587, TLS)
+        
+            mail.credentials('you@gmail.com', 'pwd')\
+                .from_address('you@gmail.com')\
+                .to('other@gmail.com')\
+                .subject('FluentMail')\
+                .body(u'<h2>Hi, I\'m FluentMail.<h2>', 'utf-8')\ # Body charset is optional.
+                .as_html()\
+                .attach('photo.png')\
+                .attach('description.txt', 'utf-8')\ # Charset is optional, and only for Text files.
+                .send()
+        
+        Authentication type
+        ~~~~~~~~~~~~~~~~~~~
+        
+        NON\_ENCRYPTED
+        ^^^^^^^^^^^^^^
+        
+        ::
+        
+            mail = FluentMail('smtp.yoursite.com', 25, NON_ENCRYPTED)
+        
+        SSL
+        ^^^
+        
+        ::
+        
+            mail = FluentMail('smtp.yoursite.com', 465, SSL)
+        
+        TLS
+        ^^^
+        
+        ::
+        
+            mail = FluentMail('smtp.yoursite.com', 587, TLS)
+        
+        By default SSL uses port 465, TLS uses 587 and AUTH 25.
+        
+        For GMail you may want to read `this`_ security info.
+        
+        Common smtp servers
+        -------------------
+        
+        +-----------------+-----------------------+------------------+--------+
+        | Name            | Server                | Authentication   | Port   |
+        +=================+=======================+==================+========+
+        | Gmail           | smtp.gmail.com        | SSL              | 465    |
+        +-----------------+-----------------------+------------------+--------+
+        | Gmail           | smtp.gmail.com        | StartTLS         | 587    |
+        +-----------------+-----------------------+------------------+--------+
+        | Hotmail         | smtp.live.com         | SSL              | 465    |
+        +-----------------+-----------------------+------------------+--------+
+        | Mail.com        | smtp.mail.com         | SSL              | 465    |
+        +-----------------+-----------------------+------------------+--------+
+        | Outlook.com     | smtp.live.com         | StartTLS         | 587    |
+        +-----------------+-----------------------+------------------+--------+
+        | Office365.com   | smtp.office365.com    | StartTLS         | 587    |
+        +-----------------+-----------------------+------------------+--------+
+        | Yahoo Mail      | smtp.mail.yahoo.com   | SSL              | 465    |
+        +-----------------+-----------------------+------------------+--------+
+        
+        .. _this: https://www.google.com/settings/security/lesssecureapps
+        
+        .. |Build Status| image:: https://travis-ci.org/alexandrevicenzi/fluentmail.svg?branch=master
+           :target: https://travis-ci.org/alexandrevicenzi/fluentmail
+        .. |Version| image:: https://pypip.in/version/fluentmail/badge.png
+           :target: https://pypi.python.org/pypi/fluentmail
+Keywords: python,email,mail,fluent,smtp
+Platform: 
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Programming Language :: Python
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: MacOS
+Classifier: Operating System :: Microsoft
+Classifier: Operating System :: POSIX
+Classifier: Operating System :: Unix
+Classifier: Topic :: Communications :: Email
+Classifier: Topic :: Utilities
