@@ -1,0 +1,136 @@
+Metadata-Version: 1.1
+Name: kotti-bootswatch
+Version: 0.1.2
+Summary: Kotti bootswatch theme / theme generator
+Home-page: https://github.com/mete0r/kotti_bootswatch
+Author: mete0r
+Author-email: kotti@googlegroups.com
+License: BSD-derived (http://www.repoze.org/LICENSE.txt)
+Description: kotti_bootswatch
+        ****************
+        
+        `Bootswatch`_ theme and theme generator for `Kotti`_.
+        
+        This theme and the generated themes supersede css files of the `js.bootstrap`_
+        and Kotti via `fanstatic`_'s `supersedes`_ and `rollup`_ mechanism.
+        
+        Development happens at https://github.com/mete0r/kotti_bootswatch
+        
+        .. _Kotti: http://pypi.python.org/pypi/Kotti
+        .. _Bootswatch: http://bootswatch.com/
+        .. _js.bootstrap: https://pypi.python.org/pypi/js.bootstrap
+        .. _fanstatic: http://www.fanstatic.org
+        .. _supersedes: http://www.fanstatic.org/en/latest/api.html?highlight=supersedes#fanstatic.Resource
+        .. _rollup: http://www.fanstatic.org/en/latest/configuration.html#rollup
+        
+        
+        Basic usage: predefined bootswatch themes
+        =========================================
+        
+        To enable the extension in your Kotti site, activate the configurator::
+        
+            [app:kotti]
+        
+            ...
+        
+            kotti.configurators =
+                ...
+                kotti_bootswatch.kotti_configure  # enable this extension
+        
+            # Use predefined `darkly' bootswatch theme
+            kotti_bootswatch.theme = darkly  
+        
+            ...
+        
+            [filter:fanstatic]
+            use = egg:fanstatic#fanstatic
+        
+            # fanstatic rollup should be enabled
+            rollup = True
+        
+            ...
+        
+        
+        Advanced usage: generate and use a bootswatch-based themes
+        ==========================================================
+        
+        You can generate bootswatch-based themes::
+        
+            pcreate -s kotti_bootswatch mytheme
+            cd mytheme
+            sh quickstart.sh amelia  # use `amelia' bootswatch theme as a base theme
+        
+        Read generated README.rst for more information::
+        
+            cat mytheme/README.rst
+        
+        
+        To use the generated theme in your Kotti site::
+        
+            [app:kotti]
+        
+            ...
+        
+            kotti.configurators =
+                ...
+                mytheme.kotti_configure  # enable this extension
+        
+            [filter:fanstatic]
+            use = egg:fanstatic#fanstatic
+        
+            # fanstatic rollup should be enabled
+            rollup = True
+        
+        
+        Caveat
+        ======
+        
+        Generated themes contains less files (`static/kotti/*.less`) to override Kotti
+        css files, i.e.  base/view/edit/upload.css. These less files are introduced to
+        adapt the Kotti css files to the bootstrap(or bootswatch) variables.
+        
+        So if the original css files in the Kotti changes, the less files should be
+        changed too.
+        
+        
+        Development
+        ===========
+        
+        Contributions to kotti_bootswatch are highly welcome.
+        Just clone its `Github repository`_ and submit your contributions as pull requests.
+        
+        .. _tracker: https://github.com/mete0r/kotti_bootswatch/issues
+        .. _Github repository: https://github.com/mete0r/kotti_bootswatch
+        
+        
+        History
+        =======
+        
+        0.1.2 (2014-12-31)
+        ------------------
+        
+        - Specify `minify` as a requirement in the generated README.rst
+        - Generate separate README files for user/maintainer
+        
+        
+        0.1.1 (2014-12-31)
+        ------------------
+        
+        - Generate/use minified css files.
+        
+        
+        0.1.0 (2014-12-29)
+        ------------------
+        
+        - Create package with ``pcreate -s kotti kotti_bootswatch``.
+        
+Keywords: kotti web cms wcms pylons pyramid sqlalchemy bootstrap
+Platform: UNKNOWN
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 2.6
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Framework :: Pylons
+Classifier: Topic :: Internet :: WWW/HTTP
+Classifier: Topic :: Internet :: WWW/HTTP :: Dynamic Content
+Classifier: Topic :: Internet :: WWW/HTTP :: WSGI :: Application
+Classifier: License :: Repoze Public License

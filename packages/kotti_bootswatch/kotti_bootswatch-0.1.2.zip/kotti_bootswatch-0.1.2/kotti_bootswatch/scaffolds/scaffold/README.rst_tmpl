@@ -1,0 +1,44 @@
+{{project}}
+***********
+
+A `Bootswatch`_ based theme for `Kotti`_.
+
+This theme supersede css files of the `js.bootstrap`_ and Kotti via
+`fanstatic`_'s `supersedes`_ and `rollup`_ mechanism.
+
+.. _Kotti: http://pypi.python.org/pypi/Kotti
+.. _Bootswatch: http://bootswatch.com/
+.. _js.bootstrap: https://pypi.python.org/pypi/js.bootstrap
+.. _fanstatic: http://www.fanstatic.org
+.. _supersedes: http://www.fanstatic.org/en/latest/api.html?highlight=supersedes#fanstatic.Resource
+.. _rollup: http://www.fanstatic.org/en/latest/configuration.html#rollup
+
+
+Usage
+=====
+
+To enable the extension in your Kotti site, activate the configurator::
+
+    [app:kotti]
+
+    ...
+
+    kotti.configurators =
+        ...
+        {{package}}.kotti_configure  # enable this extension
+
+    ...
+
+    [filter:fanstatic]
+    use = egg:fanstatic#fanstatic
+
+    # fanstatic rollup should be enabled
+    rollup = True
+
+    ...
+
+
+Developer
+=========
+
+See README.maintainer.rst
