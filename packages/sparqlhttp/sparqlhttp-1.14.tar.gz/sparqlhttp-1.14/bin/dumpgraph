@@ -1,0 +1,24 @@
+#!/usr/bin/python
+"""
+demo client that selects and prints all triples from a server
+"""
+
+import pprint, optparse
+from sparqlhttp.remotegraph import RemoteGraph
+from sparqlhttp.oneshot import run
+
+parser = optparse.OptionParser()
+parser.add_option('-s', '--server', help='server endpoint URL')
+opts, args = parser.parse_args()
+
+if not opts.server:
+    parser.error("--server is required")
+
+graph = RemoteGraph(serverUrl=opts.server, resultFormat='xml')
+
+d = graph.remoteQueryd("SELECT ?s ?p ?o WHERE { ?s ?p ?o }")
+def printResult(rows):
+    pprint.pprint([(r['s'], r['p'], r['o']) for r in rows])
+
+run(d, printResult)
+

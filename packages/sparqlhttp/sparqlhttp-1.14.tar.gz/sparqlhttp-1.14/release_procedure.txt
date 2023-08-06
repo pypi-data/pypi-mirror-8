@@ -1,0 +1,20 @@
+update setup.py version (two places)
+
+update download links in doc.html
+
+darcs rec
+
+run 'python setup.py sdist', go to a blank virtualenv somewhere, and
+try to easy_install the prospective .tgz
+
+darcs tag -m "release 1.x"   
+
+python setup.py sdist
+cp dist/sparqlhttp-1.x.tar.gz /my/site/projects/sparqlhttp
+
+python setup.py register
+
+darcs cha, put interesting lines into
+   /my/site/projects/sparqlhttp/changelog-1.x
+
+(cd /my/darcs/sparqlhttp; darcs pull -a)
