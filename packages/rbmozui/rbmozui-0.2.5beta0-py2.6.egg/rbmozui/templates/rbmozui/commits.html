@@ -1,0 +1,39 @@
+{% comment %}
+This is the template for the "Commits" list in a push-based review request.
+{% endcomment %}
+
+{% load i18n %}
+
+<ul id="rbmozui-child-commits" class="current-arrow">
+  <li {% if root_rr.id == current_id %} current="true" {% endif %}>{% trans "Root review request" %}
+    <div class="reviews-diffs-links">
+{%  if is_draft %}
+      <a href="{{root_rr.review_request.get_absolute_url}}">[{% trans "Reviews" %}]</a> <a href="{{root_rr.review_request.get_absolute_url}}diff/">[{% trans "Diff" %}]</a>
+{%  else %}
+{%    if root_rr.id != current_id %}
+     <a href="{{root_rr.get_absolute_url}}">[{% trans "Reviews" %}]</a> <a href="{{root_rr.get_absolute_url}}diff/">[{% trans "Diff" %}]</a>
+{%    endif %}
+{%  endif %}
+    </div>
+
+    <ul class="current-arrow">
+{% for commit_id, child in child_rrs %}
+      <li {% if child.id == current_id %} current="true" {% endif %}>
+        <span title="{{commit_id}}">{{ commit_id|truncatechars:11 }}</span> - <span title="{{child.description}}">{{ child.summary }}</span>
+        <div>
+          <label>{% trans "Reviewers:" %}</label> <span class="child-rr-reviewers" data-id="{{child.id}}"></span>
+        </div>
+        <div class="reviews-diffs-links">
+{%    if child.id != current_id %}
+{%      if is_draft %}
+          <a href="{{child.review_request.get_absolute_url}}">[{% trans "Reviews" %}]</a> <a href="{{child.review_request.get_absolute_url}}diff/">[{% trans "Diff" %}]</a>
+{%      else %}
+          <a href="{{child.get_absolute_url}}">[{% trans "Reviews" %}]</a> <a href="{{child.get_absolute_url}}diff/">[{% trans "Diff" %}]</a>
+{%      endif %}
+{%    endif %}
+        </div>
+      </li>
+{% endfor %}
+    </ul>
+  </li>
+</ul>
