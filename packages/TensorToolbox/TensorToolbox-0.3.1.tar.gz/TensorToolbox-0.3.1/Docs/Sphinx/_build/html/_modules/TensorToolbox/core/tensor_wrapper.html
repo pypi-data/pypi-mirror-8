@@ -1,0 +1,641 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>TensorToolbox.core.tensor_wrapper &mdash; TensorToolbox 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://c328740.ssl.cf1.rackcdn.com/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="TensorToolbox 0.1 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">TensorToolbox 0.1 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for TensorToolbox.core.tensor_wrapper</h1><div class="highlight"><pre>
+<span class="c">#</span>
+<span class="c"># This file is part of TensorToolbox.</span>
+<span class="c">#</span>
+<span class="c"># TensorToolbox is free software: you can redistribute it and/or modify</span>
+<span class="c"># it under the terms of the LGNU Lesser General Public License as published by</span>
+<span class="c"># the Free Software Foundation, either version 3 of the License, or</span>
+<span class="c"># (at your option) any later version.</span>
+<span class="c">#</span>
+<span class="c"># TensorToolbox is distributed in the hope that it will be useful,</span>
+<span class="c"># but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c"># LGNU Lesser General Public License for more details.</span>
+<span class="c">#</span>
+<span class="c"># You should have received a copy of the LGNU Lesser General Public License</span>
+<span class="c"># along with TensorToolbox.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+<span class="c">#</span>
+<span class="c"># DTU UQ Library</span>
+<span class="c"># Copyright (C) 2014 The Technical University of Denmark</span>
+<span class="c"># Scientific Computing Section</span>
+<span class="c"># Department of Applied Mathematics and Computer Science</span>
+<span class="c">#</span>
+<span class="c"># Author: Daniele Bigoni</span>
+<span class="c">#</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;TensorWrapper&#39;</span><span class="p">]</span>
+
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">operator</span>
+<span class="kn">import</span> <span class="nn">itertools</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">import</span> <span class="nn">os.path</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">numpy.linalg</span> <span class="kn">as</span> <span class="nn">npla</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">scipy.linalg</span> <span class="kn">as</span> <span class="nn">scla</span>
+<span class="kn">import</span> <span class="nn">marshal</span><span class="o">,</span> <span class="nn">types</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">import</span> <span class="nn">h5py</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">mpi_map</span>
+    <span class="n">MPI_SUPPORT</span> <span class="o">=</span> <span class="bp">True</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">MPI_SUPPORT</span> <span class="o">=</span> <span class="bp">False</span>
+
+<span class="kn">from</span> <span class="nn">TensorToolbox.core</span> <span class="kn">import</span> <span class="n">idxunfold</span><span class="p">,</span> <span class="n">idxfold</span><span class="p">,</span> <span class="n">expand_idxs</span><span class="p">,</span> <span class="n">storable_object</span>
+
+<div class="viewcode-block" id="TensorWrapper"><a class="viewcode-back" href="../../../index.html#TensorToolbox.core.TensorWrapper">[docs]</a><span class="k">class</span> <span class="nc">TensorWrapper</span><span class="p">(</span><span class="n">storable_object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; A tensor wrapper is a data structure W that given a multi-dimensional scalar function f(X,params), and a set of coordinates {{x1}_i1,{x2}_i2,..,{xd}_id} indexed by the multi index {i1,..,id}, let you access f(x1_i1,..,xd_id) by W[i1,..,id]. The function evaluations are performed &quot;as needed&quot; and stored for future accesses.</span>
+
+<span class="sd">    :param f: multi-dimensional scalar function of type f(x,params), x being a list.</span>
+<span class="sd">    :param list X: list of arrays with coordinates for each dimension</span>
+<span class="sd">    :param tuple params: parameters to be passed to function f</span>
+<span class="sd">    :param list W: list of arrays with weights for each dimension</span>
+<span class="sd">    :param int Q: power to which round all the dimensions to.</span>
+<span class="sd">    :param string twtype: &#39;array&#39; values are stored whenever computed, &#39;view&#39; values are never stored and function f is always called</span>
+<span class="sd">    :param dict data: initialization data of the Tensor Wrapper (already computed entries)</span>
+<span class="sd">    :param type dtype: type of output to be expected from f</span>
+<span class="sd">    :param str store_file: file where to store the data</span>
+<span class="sd">    :param object store_object: a storable object that must be stored in place of the TensorWrapper</span>
+<span class="sd">    :param bool store_freq: how frequently to store the TensorWrapper (seconds)</span>
+<span class="sd">    :param bool store_overwrite: whether to overwrite pre-existing files.</span>
+<span class="sd">    :param bool empty: Creates an instance without initializing it. All the content can be initialized using the ``setstate()`` function.</span>
+<span class="sd">    :param int maxprocs: Number of processors to be used in the function evaluation (MPI)</span>
+<span class="sd">    :param bool marshal_f: whether to marshal the function or not</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">propagate</span> <span class="o">=</span> <span class="bp">False</span>
+    <span class="n">ch</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">)</span>
+    <span class="n">formatter</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%(asctime)s</span><span class="s"> </span><span class="si">%(levelname)s</span><span class="s">:</span><span class="si">%(name)s</span><span class="s">: </span><span class="si">%(message)s</span><span class="s">&quot;</span><span class="p">,</span>
+                                  <span class="s">&quot;%Y-%m-</span><span class="si">%d</span><span class="s"> %H:%M:%S&quot;</span><span class="p">)</span>
+    <span class="n">ch</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">formatter</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">ch</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">W</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">Q</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">twtype</span><span class="o">=</span><span class="s">&#39;array&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">object</span><span class="p">,</span>
+                 <span class="n">store_file</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">store_object</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">store_freq</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">store_overwrite</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+                 <span class="n">empty</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+                 <span class="n">maxprocs</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                 <span class="n">marshal_f</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">TensorWrapper</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">store_file</span><span class="p">,</span> 
+                                           <span class="n">store_freq</span><span class="o">=</span><span class="n">store_freq</span><span class="p">,</span> 
+                                           <span class="n">store_overwrite</span><span class="o">=</span><span class="n">store_overwrite</span><span class="p">)</span>
+
+        <span class="c">#######################################</span>
+        <span class="c"># List of attributes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">f_code</span> <span class="o">=</span> <span class="bp">None</span>               <span class="c"># Marshal string of the function f</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">X</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">W</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Q</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span> <span class="o">=</span> <span class="nb">object</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ndim</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">twtype</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">serialize_list</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span> <span class="p">[</span><span class="s">&#39;X&#39;</span><span class="p">,</span> <span class="s">&#39;W&#39;</span><span class="p">,</span> <span class="s">&#39;dtype&#39;</span><span class="p">,</span> <span class="s">&#39;params&#39;</span><span class="p">,</span> <span class="s">&#39;Q&#39;</span><span class="p">,</span> <span class="s">&#39;shape&#39;</span><span class="p">,</span> <span class="s">&#39;ndim&#39;</span><span class="p">,</span> <span class="s">&#39;size&#39;</span><span class="p">,</span> <span class="s">&#39;twtype&#39;</span><span class="p">,</span> <span class="s">&#39;f_code&#39;</span><span class="p">]</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subserialize_list</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span> <span class="p">[]</span> <span class="p">)</span>
+
+        <span class="c"># Attributes which are not serialized and need to be reset on reload</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__ghost_shape</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">f</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">store_object</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__maxprocs</span> <span class="o">=</span> <span class="bp">None</span>             <span class="c"># Number of processors to be used (MPI)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">fix_idxs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fix_dims</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">stored_keys</span> <span class="o">=</span> <span class="bp">None</span> <span class="c"># Set of stored keys (to improve the saving speed)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">active_weights</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="c"># End list of attributes</span>
+        <span class="c">#################################</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">active_weights</span> <span class="o">=</span> <span class="bp">False</span>        
+        <span class="bp">self</span><span class="o">.</span><span class="n">stored_keys</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">empty</span><span class="p">:</span> 
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_f</span><span class="p">(</span><span class="n">f</span><span class="p">,</span><span class="n">marshal_f</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="n">params</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">X</span> <span class="o">=</span> <span class="n">X</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">W</span> <span class="o">=</span> <span class="n">W</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Q</span> <span class="o">=</span> <span class="n">Q</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_shape</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ndim</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_size</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">twtype</span> <span class="o">=</span> <span class="n">twtype</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span> <span class="o">=</span> <span class="n">dtype</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_store_object</span><span class="p">(</span><span class="n">store_object</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_maxprocs</span><span class="p">(</span><span class="n">maxprocs</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">twtype</span> <span class="o">==</span> <span class="s">&#39;array&#39;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">data</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="p">{}</span> <span class="c"># Dictionary in python behave as a hash-table</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">twtype</span> <span class="o">!=</span> <span class="s">&#39;view&#39;</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Tensor Wrapper type not existent. Use &#39;array&#39; or &#39;view&#39;&quot;</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">__getstate__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">TensorWrapper</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__getstate__</span><span class="p">()</span>
+        
+    <span class="k">def</span> <span class="nf">__setstate__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">state</span><span class="p">,</span><span class="n">f</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">store_object</span> <span class="o">=</span> <span class="bp">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">TensorWrapper</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__setstate__</span><span class="p">(</span> <span class="n">state</span><span class="p">,</span> <span class="n">store_object</span> <span class="p">)</span>
+        <span class="c"># Reset parameters</span>
+        <span class="k">if</span> <span class="n">f</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">reset_f_marshal</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_f</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_store_object</span><span class="p">(</span> <span class="n">store_object</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fix_idxs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fix_dims</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__maxprocs</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset_shape</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">active_weights</span> <span class="o">=</span> <span class="bp">False</span>
+
+<div class="viewcode-block" id="TensorWrapper.set_weights"><a class="viewcode-back" href="../../../index.html#TensorToolbox.core.TensorWrapper.set_weights">[docs]</a>    <span class="k">def</span> <span class="nf">set_weights</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">W</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Set a new list of weights for the tensor</span>
+<span class="sd">        :param list W: list of np.ndarray with weights for each dimension</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">W</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_global_shape</span><span class="p">()):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;The provided set of weights has not the right dimension: len(W)=</span><span class="si">%d</span><span class="s">, dim=</span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">W</span><span class="p">),</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_global_shape</span><span class="p">())))</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span> <span class="p">[</span> <span class="nb">len</span><span class="p">(</span><span class="n">wi</span><span class="p">)</span> <span class="o">!=</span> <span class="n">si</span> <span class="k">for</span> <span class="n">wi</span><span class="p">,</span><span class="n">si</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">W</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">get_global_shape</span><span class="p">())</span> <span class="p">]</span> <span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;The provided set of weights contains at least one dimension which is not conformal with the tensor grid.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">W</span> <span class="o">=</span> <span class="n">W</span>
+</div>
+<div class="viewcode-block" id="TensorWrapper.set_active_weights"><a class="viewcode-back" href="../../../index.html#TensorToolbox.core.TensorWrapper.set_active_weights">[docs]</a>    <span class="k">def</span> <span class="nf">set_active_weights</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">flag</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Set whether to use the weights or not.</span>
+
+<span class="sd">        :param bool flag: If ``True`` the items returned by the Tensor Wrapper will be weighted according to the weights provided at construction time. If ``False`` the original values of the function will be returned.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">active_weights</span> <span class="o">=</span> <span class="n">flag</span>
+</div>
+    <span class="k">def</span> <span class="nf">getstate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__getstate__</span><span class="p">();</span>
+    
+    <span class="k">def</span> <span class="nf">setstate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">state</span><span class="p">,</span><span class="n">f</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">store_object</span> <span class="o">=</span> <span class="bp">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__setstate__</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">store_object</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">h5store</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">h5file</span><span class="p">):</span>
+        <span class="c"># Store the data table in the h5 file. Update if possible.</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">tw_grp</span> <span class="o">=</span> <span class="n">h5file</span><span class="p">[</span><span class="s">&#39;TW&#39;</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="c"># Create the group, the data structure and dump data</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">tw_grp</span> <span class="o">=</span> <span class="n">h5file</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="s">&#39;TW&#39;</span><span class="p">)</span>
+                <span class="n">tw_grp</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s">&quot;keys&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">maxshape</span><span class="o">=</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">get_ndim</span><span class="p">())</span> <span class="p">)</span>
+                <span class="n">tw_grp</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s">&quot;values&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="n">maxshape</span><span class="o">=</span><span class="p">(</span><span class="bp">None</span><span class="p">,)</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">()[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">shape</span> <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">stored_keys</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c"># Increase the shape of the datasets to accommodate for the new data</span>
+            <span class="n">tw_grp</span><span class="p">[</span><span class="s">&quot;keys&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">),</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">tw_grp</span><span class="p">[</span><span class="s">&quot;values&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">),</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+            <span class="c"># Store by data chunk</span>
+            <span class="n">N</span> <span class="o">=</span> <span class="mi">100000</span>
+            <span class="n">it</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">dvals</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">tw_grp</span><span class="p">[</span><span class="s">&quot;values&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+            <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stored_keys</span><span class="p">)</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">):</span>
+                <span class="c"># Get the missing data</span>
+                <span class="n">new_data</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">ifilter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">i</span><span class="p">:</span><span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">stored_keys</span><span class="p">,</span> 
+                                                  <span class="n">itertools</span><span class="o">.</span><span class="n">islice</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">iteritems</span><span class="p">(),</span> 
+                                                                    <span class="n">it</span><span class="o">*</span><span class="n">N</span><span class="p">,</span> 
+                                                                    <span class="nb">min</span><span class="p">((</span><span class="n">it</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">N</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">))</span> 
+                                                                    <span class="p">)</span> 
+                                                  <span class="p">))</span>
+                <span class="n">it</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="c"># Assign new values to the datasets</span>
+                <span class="n">tw_grp</span><span class="p">[</span><span class="s">&quot;keys&quot;</span><span class="p">][</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stored_keys</span><span class="p">):</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stored_keys</span><span class="p">)</span><span class="o">+</span><span class="nb">len</span><span class="p">(</span><span class="n">new_data</span><span class="p">),:]</span> <span class="o">=</span> <span class="n">new_data</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+                <span class="n">tw_grp</span><span class="p">[</span><span class="s">&quot;values&quot;</span><span class="p">][</span> <span class="p">(</span><span class="nb">slice</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stored_keys</span><span class="p">),</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stored_keys</span><span class="p">)</span><span class="o">+</span><span class="nb">len</span><span class="p">(</span><span class="n">new_data</span><span class="p">),</span><span class="bp">None</span><span class="p">),)</span> <span class="o">+</span> <span class="nb">tuple</span><span class="p">([</span><span class="nb">slice</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span><span class="bp">None</span><span class="p">,</span><span class="bp">None</span><span class="p">)]</span><span class="o">*</span><span class="p">(</span><span class="n">dvals</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span> <span class="p">]</span> <span class="o">=</span> <span class="n">new_data</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">stored_keys</span> <span class="o">|=</span> <span class="nb">set</span><span class="p">(</span> <span class="n">new_data</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">h5load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">h5file</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">tw_grp</span> <span class="o">=</span> <span class="n">h5file</span><span class="p">[</span><span class="s">&#39;TW&#39;</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="c"># The data structure is empty. Do nothing.</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c"># Load by data chunk</span>
+            <span class="n">N</span> <span class="o">=</span> <span class="mi">100000</span>
+            <span class="n">it</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">dvals</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">tw_grp</span><span class="p">[</span><span class="s">&quot;values&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+            <span class="n">Ndata</span> <span class="o">=</span> <span class="n">tw_grp</span><span class="p">[</span><span class="s">&quot;keys&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">Ndata</span><span class="p">:</span>
+                <span class="n">keys</span> <span class="o">=</span> <span class="n">tw_grp</span><span class="p">[</span><span class="s">&quot;keys&quot;</span><span class="p">][</span><span class="n">it</span><span class="o">*</span><span class="n">N</span><span class="p">:</span><span class="nb">min</span><span class="p">((</span><span class="n">it</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">N</span><span class="p">,</span><span class="n">Ndata</span><span class="p">),</span> <span class="p">:]</span>
+                <span class="n">values</span> <span class="o">=</span> <span class="n">tw_grp</span><span class="p">[</span><span class="s">&quot;values&quot;</span><span class="p">][</span> <span class="p">(</span><span class="nb">slice</span><span class="p">(</span><span class="n">it</span><span class="o">*</span><span class="n">N</span><span class="p">,</span> <span class="nb">min</span><span class="p">((</span><span class="n">it</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">N</span><span class="p">,</span><span class="n">Ndata</span><span class="p">),</span><span class="bp">None</span><span class="p">),)</span> <span class="o">+</span> <span class="nb">tuple</span><span class="p">([</span><span class="nb">slice</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span><span class="bp">None</span><span class="p">,</span><span class="bp">None</span><span class="p">)]</span><span class="o">*</span><span class="p">(</span><span class="n">dvals</span><span class="o">-</span><span class="mi">1</span><span class="p">))]</span>
+                <span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">dvals</span><span class="o">=</span><span class="n">dvals</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="p">(</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">keys</span><span class="p">[</span><span class="n">i</span><span class="p">,:]),</span> <span class="n">values</span><span class="p">[(</span><span class="n">i</span><span class="p">,)</span> <span class="o">+</span> <span class="nb">tuple</span><span class="p">([</span><span class="nb">slice</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span><span class="bp">None</span><span class="p">,</span><span class="bp">None</span><span class="p">)]</span><span class="o">*</span><span class="p">(</span><span class="n">dvals</span><span class="o">-</span><span class="mi">1</span><span class="p">))]</span> <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">update</span><span class="p">(</span> <span class="n">itertools</span><span class="o">.</span><span class="n">imap</span><span class="p">(</span> <span class="n">f</span><span class="p">,</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">keys</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="p">)</span> <span class="p">)</span>
+                <span class="n">it</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stored_keys</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="p">)</span>
+    
+<div class="viewcode-block" id="TensorWrapper.to_v_0_3_0"><a class="viewcode-back" href="../../../index.html#TensorToolbox.core.TensorWrapper.to_v_0_3_0">[docs]</a>    <span class="k">def</span> <span class="nf">to_v_0_3_0</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">store_location</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Upgrade to v0.3.0</span>
+<span class="sd">        </span>
+<span class="sd">        :param string filename: path to the filename. This must be the main filename with no extension.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">TensorWrapper</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">to_v_0_3_0</span><span class="p">(</span><span class="n">store_location</span><span class="p">)</span>
+        <span class="c"># Upgrade serialize list</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">serialize_list</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span> <span class="s">&#39;data&#39;</span> <span class="p">)</span>
+</div>
+    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">TensorWrapper</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">,</span> <span class="n">twtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">twtype</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+
+    <span class="k">def</span> <span class="nf">set_Q</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Q</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Q</span> <span class="o">=</span> <span class="n">Q</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__ghost_shape</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_q_shape</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_shape</span><span class="p">()</span>
+
+<div class="viewcode-block" id="TensorWrapper.get_size"><a class="viewcode-back" href="../../../index.html#TensorToolbox.core.TensorWrapper.get_size">[docs]</a>    <span class="k">def</span> <span class="nf">get_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Always returns the size of the tensor view</span>
+<span class="sd">        </span>
+<span class="sd">        .. note: use :py:meth:`TensorWrapper.get_global_size` to get the size of the original tensor</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">reduce</span><span class="p">(</span><span class="n">operator</span><span class="o">.</span><span class="n">mul</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_shape</span><span class="p">(),</span> <span class="mi">1</span><span class="p">)</span>
+    </div>
+<div class="viewcode-block" id="TensorWrapper.get_ndim"><a class="viewcode-back" href="../../../index.html#TensorToolbox.core.TensorWrapper.get_ndim">[docs]</a>    <span class="k">def</span> <span class="nf">get_ndim</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Always returns the number of dimensions of the tensor view</span>
+<span class="sd">        </span>
+<span class="sd">        .. note: use :py:meth:`TensorWrapper.get_global_ndim` to get the number of dimensions of the original tensor</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_shape</span><span class="p">())</span>
+</div>
+<div class="viewcode-block" id="TensorWrapper.get_shape"><a class="viewcode-back" href="../../../index.html#TensorToolbox.core.TensorWrapper.get_shape">[docs]</a>    <span class="k">def</span> <span class="nf">get_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Always returns the shape of the actual tensor view</span>
+<span class="sd">        </span>
+<span class="sd">        .. note: use :py:meth:`TensorWrapper.get_global_shape` to get the shape of the original tensor</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__ghost_shape</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">dim</span> <span class="o">=</span> <span class="p">[</span> <span class="nb">len</span><span class="p">(</span><span class="n">coord</span><span class="p">)</span> <span class="k">for</span> <span class="n">dim</span><span class="p">,</span><span class="n">coord</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="p">)</span> <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">dim</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">fix_dims</span><span class="p">)</span> <span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span> 
+            <span class="n">dim</span> <span class="o">=</span> <span class="p">[</span> <span class="n">s</span> <span class="k">for</span> <span class="n">dim</span><span class="p">,</span><span class="n">s</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__ghost_shape</span><span class="p">)</span> <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">dim</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">fix_dims</span><span class="p">)</span> <span class="p">]</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">dim</span><span class="p">)</span>
+    </div>
+<div class="viewcode-block" id="TensorWrapper.get_full_shape"><a class="viewcode-back" href="../../../index.html#TensorToolbox.core.TensorWrapper.get_full_shape">[docs]</a>    <span class="k">def</span> <span class="nf">get_full_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Always returns the shape of the reshaped tensor tensor with no fixed indices</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__ghost_shape</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">dim</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_q_shape</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dim</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__ghost_shape</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">dim</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="TensorWrapper.get_full_ndim"><a class="viewcode-back" href="../../../index.html#TensorToolbox.core.TensorWrapper.get_full_ndim">[docs]</a>    <span class="k">def</span> <span class="nf">get_full_ndim</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Always returns the ndim of the reshaped tensor tensor with no fixed indices</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_full_shape</span><span class="p">())</span>
+    </div>
+<div class="viewcode-block" id="TensorWrapper.get_full_size"><a class="viewcode-back" href="../../../index.html#TensorToolbox.core.TensorWrapper.get_full_size">[docs]</a>    <span class="k">def</span> <span class="nf">get_full_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Always returns the size of the reshaped tensor tensor with no fixed indices</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">reduce</span><span class="p">(</span><span class="n">operator</span><span class="o">.</span><span class="n">mul</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_full_shape</span><span class="p">(),</span> <span class="mi">1</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="TensorWrapper.get_q_shape"><a class="viewcode-back" href="../../../index.html#TensorToolbox.core.TensorWrapper.get_q_shape">[docs]</a>    <span class="k">def</span> <span class="nf">get_q_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Always returns the shape of the tensor rounded to the next power of Q if Q!=None. Otherwise returns the shape of the underlying tensor.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">Q</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">dim</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_global_shape</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dim</span> <span class="o">=</span> <span class="p">[</span> <span class="bp">self</span><span class="o">.</span><span class="n">Q</span><span class="o">**</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">s</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">Q</span><span class="p">))</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_global_shape</span><span class="p">()</span> <span class="p">]</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span> <span class="n">dim</span> <span class="p">)</span>
+    </div>
+<div class="viewcode-block" id="TensorWrapper.get_q_size"><a class="viewcode-back" href="../../../index.html#TensorToolbox.core.TensorWrapper.get_q_size">[docs]</a>    <span class="k">def</span> <span class="nf">get_q_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Always returns the size of the tensor rounded to the next power of Q</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">reduce</span><span class="p">(</span><span class="n">operator</span><span class="o">.</span><span class="n">mul</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_q_shape</span><span class="p">(),</span> <span class="mi">1</span><span class="p">)</span>
+    </div>
+<div class="viewcode-block" id="TensorWrapper.get_global_shape"><a class="viewcode-back" href="../../../index.html#TensorToolbox.core.TensorWrapper.get_global_shape">[docs]</a>    <span class="k">def</span> <span class="nf">get_global_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Always returns the shape of the underlying tensor</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">dim</span> <span class="o">=</span> <span class="p">[</span> <span class="nb">len</span><span class="p">(</span><span class="n">coord</span><span class="p">)</span> <span class="k">for</span> <span class="n">coord</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">X</span> <span class="p">]</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">dim</span><span class="p">)</span>
+    </div>
+<div class="viewcode-block" id="TensorWrapper.get_global_ndim"><a class="viewcode-back" href="../../../index.html#TensorToolbox.core.TensorWrapper.get_global_ndim">[docs]</a>    <span class="k">def</span> <span class="nf">get_global_ndim</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Always returns the ndim of the underlying tensor</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_global_shape</span><span class="p">())</span>
+    </div>
+<div class="viewcode-block" id="TensorWrapper.get_global_size"><a class="viewcode-back" href="../../../index.html#TensorToolbox.core.TensorWrapper.get_global_size">[docs]</a>    <span class="k">def</span> <span class="nf">get_global_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Always returns the size of the underlying tensor</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">reduce</span><span class="p">(</span><span class="n">operator</span><span class="o">.</span><span class="n">mul</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_global_shape</span><span class="p">(),</span> <span class="mi">1</span><span class="p">)</span>
+</div>
+    <span class="k">def</span> <span class="nf">get_fill_level</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">twtype</span> <span class="o">==</span> <span class="s">&#39;view&#39;</span><span class="p">:</span> <span class="k">return</span> <span class="mi">0</span>
+        <span class="k">else</span><span class="p">:</span> <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TensorWrapper.fix_indices"><a class="viewcode-back" href="../../../index.html#TensorToolbox.core.TensorWrapper.fix_indices">[docs]</a>    <span class="k">def</span> <span class="nf">fix_indices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idxs</span><span class="p">,</span> <span class="n">dims</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Fix some of the indices in the tensor wrapper and reshape/resize it accordingly. The internal storage of the data is still done with respect to the global indices, but once some indices are fixed, the TensorWrapper can be accessed using just the remaining free indices.</span>
+<span class="sd">        </span>
+<span class="sd">        :param list idxs: list of indices to be fixed</span>
+<span class="sd">        :param list dims: list of dimensions to which the indices refer to</span>
+<span class="sd">        </span>
+<span class="sd">        .. note: ``len(idxs) == len(dims)``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">idxs</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">dims</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s">&quot;TensorToolbox.TensorWrapper.fix_indices: len(idxs) == len(dims) violated&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">dims</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">dims</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s">&quot;TensorToolbox.TensorWrapper.fix_indices: the list of dimensions must contain unique entries only.&quot;</span><span class="p">)</span>
+        
+        <span class="c"># Reorder the lists</span>
+        <span class="n">i_ord</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dims</span><span class="p">)),</span> <span class="n">key</span><span class="o">=</span><span class="n">dims</span><span class="o">.</span><span class="n">__getitem__</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fix_idxs</span> <span class="o">=</span> <span class="p">[</span> <span class="n">idxs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">i_ord</span> <span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fix_dims</span> <span class="o">=</span> <span class="p">[</span> <span class="n">dims</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">i_ord</span> <span class="p">]</span>
+        
+        <span class="c"># Update shape, ndim and size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_shape</span><span class="p">()</span>
+    </div>
+    <span class="k">def</span> <span class="nf">release_indices</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fix_idxs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fix_dims</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_shape</span><span class="p">()</span>
+    
+    <span class="k">def</span> <span class="nf">update_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_shape</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_size</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ndim</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_ndim</span><span class="p">()</span>
+    
+    <span class="k">def</span> <span class="nf">reshape</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">newshape</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">reduce</span><span class="p">(</span><span class="n">operator</span><span class="o">.</span><span class="n">mul</span><span class="p">,</span> <span class="n">newshape</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_q_size</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__ghost_shape</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">newshape</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_shape</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span>
+    
+    <span class="k">def</span> <span class="nf">reset_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__ghost_shape</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_shape</span><span class="p">()</span>
+    
+    <span class="k">def</span> <span class="nf">full_to_q</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">idxs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">idxfold</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_q_shape</span><span class="p">(),</span> <span class="n">idxunfold</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_full_shape</span><span class="p">(),</span> <span class="n">idxs</span> <span class="p">)</span> <span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">q_to_full</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">idxs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">idxfold</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_full_shape</span><span class="p">(),</span> <span class="n">idxunfold</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_q_shape</span><span class="p">(),</span> <span class="n">idxs</span> <span class="p">)</span> <span class="p">)</span>
+    
+<div class="viewcode-block" id="TensorWrapper.q_to_global"><a class="viewcode-back" href="../../../index.html#TensorToolbox.core.TensorWrapper.q_to_global">[docs]</a>    <span class="k">def</span> <span class="nf">q_to_global</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">idxs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; This is a non-injective function from the q indices to the global indices</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span> <span class="p">[</span> <span class="p">(</span> <span class="n">i</span> <span class="k">if</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">N</span> <span class="k">else</span> <span class="n">N</span><span class="o">-</span><span class="mi">1</span> <span class="p">)</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">N</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">idxs</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">get_global_shape</span><span class="p">())</span> <span class="p">]</span> <span class="p">)</span>
+    </div>
+<div class="viewcode-block" id="TensorWrapper.global_to_q"><a class="viewcode-back" href="../../../index.html#TensorToolbox.core.TensorWrapper.global_to_q">[docs]</a>    <span class="k">def</span> <span class="nf">global_to_q</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">idxs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; This operation is undefined because one global idx can point to many q indices</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">Q</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="bp">NotImplemented</span><span class="p">(</span><span class="s">&quot;This operation is undefined because one global idx can point to many q indices&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">idxs</span>
+</div>
+    <span class="k">def</span> <span class="nf">global_to_full</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">idxs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">q_to_full</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">global_to_q</span><span class="p">(</span> <span class="n">idxs</span> <span class="p">)</span> <span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">full_to_global</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">idxs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">q_to_global</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">full_to_q</span><span class="p">(</span> <span class="n">idxs</span> <span class="p">)</span> <span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">get_fill_idxs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+    
+    <span class="k">def</span> <span class="nf">get_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span>
+    
+    <span class="k">def</span> <span class="nf">get_X</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">X</span>
+
+    <span class="k">def</span> <span class="nf">get_params</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span>
+    
+    <span class="k">def</span> <span class="nf">set_f</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">f</span><span class="p">,</span><span class="n">marshal_f</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">f</span> <span class="o">=</span> <span class="n">f</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">f</span> <span class="o">!=</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">marshal_f</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">f_code</span> <span class="o">=</span> <span class="n">marshal</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="o">.</span><span class="n">func_code</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">reset_f_marshal</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">f_code</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">code</span> <span class="o">=</span> <span class="n">marshal</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">f_code</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">f</span> <span class="o">=</span> <span class="n">types</span><span class="o">.</span><span class="n">FunctionType</span><span class="p">(</span><span class="n">code</span><span class="p">,</span> <span class="nb">globals</span><span class="p">(),</span> <span class="s">&quot;f&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s">&quot;TensorToolbox.TensorWrapper: The tensor wrapper has not function code to un-marshal. The function is undefined. Define it using TensorToolbox.TensorWrapper.set_f&quot;</span><span class="p">,</span> <span class="ne">RuntimeWarning</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">set_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="n">params</span>
+    
+    <span class="k">def</span> <span class="nf">set_maxprocs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">maxprocs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__maxprocs</span> <span class="o">=</span> <span class="n">maxprocs</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="kn">import</span> <span class="nn">mpi_map</span>
+            <span class="n">MPI_SUPPORT</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+            <span class="n">MPI_SUPPORT</span> <span class="o">=</span> <span class="bp">False</span>
+        
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__maxprocs</span> <span class="o">!=</span> <span class="bp">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">MPI_SUPPORT</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s">&quot;TensorToolbox.TensorWrapper: MPI is not supported on this machine. The program will run without it.&quot;</span><span class="p">,</span> <span class="ne">RuntimeWarning</span><span class="p">)</span>
+        
+    <span class="k">def</span> <span class="nf">set_store_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">store_object</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">store_object</span> <span class="o">=</span> <span class="n">store_object</span>
+
+    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">idxs_in</span><span class="p">):</span>
+        
+        <span class="p">(</span><span class="n">lidxs</span><span class="p">,</span><span class="n">list_idx</span><span class="p">,</span><span class="n">slice_idx</span><span class="p">,</span><span class="n">out_shape</span><span class="p">,</span><span class="n">transpose_list_shape</span><span class="p">)</span> <span class="o">=</span> <span class="n">expand_idxs</span><span class="p">(</span><span class="n">idxs_in</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_full_shape</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">fix_dims</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fix_idxs</span><span class="p">)</span>
+        
+        <span class="c"># Allocate output array</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">out_shape</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">out_shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">active_weights</span><span class="p">:</span>
+                <span class="n">out_weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">out_shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+            
+            <span class="c"># MPI code</span>
+            <span class="n">eval_is</span> <span class="o">=</span><span class="p">[]</span>
+            <span class="n">eval_idxs</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">eval_xx</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="c"># End MPI code</span>
+
+            <span class="k">for</span> <span class="n">i</span><span class="p">,(</span><span class="n">lidx</span><span class="p">,</span><span class="n">sidx</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">lidxs</span><span class="p">):</span>
+                <span class="c"># Reorder the idxs</span>
+                <span class="n">idxs</span> <span class="o">=</span> <span class="p">[</span><span class="bp">None</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">list_idx</span><span class="p">)</span><span class="o">+</span><span class="nb">len</span><span class="p">(</span><span class="n">slice_idx</span><span class="p">))]</span>
+                <span class="k">for</span> <span class="n">j</span><span class="p">,</span><span class="n">jj</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">list_idx</span><span class="p">):</span> <span class="n">idxs</span><span class="p">[</span><span class="n">jj</span><span class="p">]</span> <span class="o">=</span> <span class="n">lidx</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">j</span><span class="p">,</span><span class="n">jj</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">slice_idx</span><span class="p">):</span> <span class="n">idxs</span><span class="p">[</span><span class="n">jj</span><span class="p">]</span> <span class="o">=</span> <span class="n">sidx</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+                <span class="n">idxs</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">idxs</span><span class="p">)</span>
+
+                <span class="c"># Map ghost indices to global indices</span>
+                <span class="n">idxs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">full_to_global</span><span class="p">(</span> <span class="n">idxs</span> <span class="p">)</span>
+                
+                <span class="c"># Compute the weight corresponding to idxs</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">active_weights</span><span class="p">:</span>
+                    <span class="n">out_weights</span><span class="p">[</span><span class="n">idxfold</span><span class="p">(</span><span class="n">out_shape</span><span class="p">,</span><span class="n">i</span><span class="p">)]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">W</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="n">jj</span><span class="p">]</span> <span class="k">for</span> <span class="n">j</span><span class="p">,</span><span class="n">jj</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">idxs</span><span class="p">)])</span>
+                
+                <span class="c"># Separate field idxs from parameter idxs                </span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">twtype</span> <span class="o">==</span> <span class="s">&#39;array&#39;</span><span class="p">:</span>
+                    <span class="c"># Check whether the value has already been computed</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">out</span><span class="p">[</span><span class="n">idxfold</span><span class="p">(</span><span class="n">out_shape</span><span class="p">,</span><span class="n">i</span><span class="p">)]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">idxs</span><span class="p">]</span>
+                    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">idxs</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">eval_idxs</span><span class="p">:</span>
+                            <span class="c"># Evaluate function</span>
+                            <span class="n">xx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="p">[</span><span class="n">ii</span><span class="p">][</span><span class="n">idx</span><span class="p">]</span> <span class="k">for</span> <span class="n">ii</span><span class="p">,</span><span class="n">idx</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">idxs</span><span class="p">)]</span> <span class="p">)</span>
+                            <span class="c"># MPI code</span>
+                            <span class="n">eval_is</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">i</span><span class="p">])</span>
+                            <span class="n">eval_idxs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">idxs</span><span class="p">)</span>
+                            <span class="n">eval_xx</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">xx</span><span class="p">)</span>
+                            <span class="c"># End MPI code</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">pos</span> <span class="o">=</span> <span class="n">eval_idxs</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">idxs</span><span class="p">)</span>
+                            <span class="n">eval_is</span><span class="p">[</span><span class="n">pos</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c"># Evaluate function</span>
+                    <span class="n">xx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="p">[</span><span class="n">ii</span><span class="p">][</span><span class="n">idx</span><span class="p">]</span> <span class="k">for</span> <span class="n">ii</span><span class="p">,</span><span class="n">idx</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">idxs</span><span class="p">)])</span>
+                    <span class="n">out</span><span class="p">[</span><span class="n">idxfold</span><span class="p">(</span><span class="n">out_shape</span><span class="p">,</span><span class="n">i</span><span class="p">)]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">)</span>
+            
+            <span class="c"># Evaluate missing values</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">eval_xx</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot; [START] Num. of func. eval.: </span><span class="si">%d</span><span class="s"> &quot;</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">eval_xx</span><span class="p">))</span>
+                <span class="n">start_eval</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__maxprocs</span> <span class="o">==</span> <span class="bp">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">MPI_SUPPORT</span><span class="p">:</span>
+                    <span class="c"># Serial evaluation</span>
+                    <span class="k">for</span> <span class="p">(</span><span class="n">ii</span><span class="p">,</span><span class="n">idxs</span><span class="p">,</span><span class="n">xx</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">eval_is</span><span class="p">,</span> <span class="n">eval_idxs</span><span class="p">,</span> <span class="n">eval_xx</span><span class="p">):</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">idxs</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">store</span><span class="p">()</span>
+                        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">ii</span><span class="p">:</span>
+                            <span class="n">out</span><span class="p">[</span><span class="n">idxfold</span><span class="p">(</span><span class="n">out_shape</span><span class="p">,</span><span class="n">i</span><span class="p">)]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">idxs</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c"># MPI code</span>
+                    <span class="n">eval_res</span> <span class="o">=</span> <span class="n">mpi_map</span><span class="o">.</span><span class="n">mpi_map_code</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">f_code</span><span class="p">,</span> <span class="n">eval_xx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__maxprocs</span> <span class="p">)</span>
+                    <span class="k">for</span> <span class="p">(</span><span class="n">ii</span><span class="p">,</span><span class="n">idxs</span><span class="p">,</span><span class="n">res</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">eval_is</span><span class="p">,</span> <span class="n">eval_idxs</span><span class="p">,</span> <span class="n">eval_res</span><span class="p">):</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">idxs</span><span class="p">]</span> <span class="o">=</span> <span class="n">res</span>
+                        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">ii</span><span class="p">:</span>
+                            <span class="n">out</span><span class="p">[</span><span class="n">idxfold</span><span class="p">(</span><span class="n">out_shape</span><span class="p">,</span><span class="n">i</span><span class="p">)]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">idxs</span><span class="p">]</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">store</span><span class="p">()</span>
+                    <span class="c"># End MPI code</span>
+                <span class="n">stop_eval</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot; [DONE] Num. of func. eval.: </span><span class="si">%d</span><span class="s"> - Avg. time of func. eval.: </span><span class="si">%f</span><span class="s">s - Tot. time: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">eval_xx</span><span class="p">),(</span><span class="n">stop_eval</span><span class="o">-</span><span class="n">start_eval</span><span class="p">)</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">eval_xx</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__maxprocs</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">eval_xx</span><span class="p">))</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__maxprocs</span> <span class="o">!=</span> <span class="bp">None</span> <span class="k">else</span> <span class="mi">1</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="p">(</span><span class="n">stop_eval</span><span class="o">-</span><span class="n">start_eval</span><span class="p">)))</span> <span class="p">))</span>
+            
+            <span class="c"># Apply weights if needed</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">active_weights</span><span class="p">:</span>
+                <span class="n">out</span> <span class="o">*=</span> <span class="n">out_weights</span>
+            
+            <span class="k">if</span> <span class="n">transpose_list_shape</span><span class="p">:</span>
+                <span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span> <span class="n">out</span> <span class="p">,</span> <span class="nb">tuple</span><span class="p">(</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">out_shape</span><span class="p">))</span> <span class="o">+</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">)</span> <span class="p">)</span>
+            
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">idxs</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="p">(</span><span class="o">*</span><span class="n">lidxs</span><span class="o">.</span><span class="n">next</span><span class="p">()))</span>
+            <span class="c"># Map ghost indices to global indices</span>
+            <span class="n">idxs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">full_to_global</span><span class="p">(</span> <span class="n">idxs</span> <span class="p">)</span>
+            <span class="c"># Compute weight if necessary</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">active_weights</span><span class="p">:</span>
+                <span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">W</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="n">jj</span><span class="p">]</span> <span class="k">for</span> <span class="n">j</span><span class="p">,</span><span class="n">jj</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">idxs</span><span class="p">)])</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">twtype</span> <span class="o">==</span> <span class="s">&#39;array&#39;</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">idxs</span><span class="p">]</span>
+                <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                    <span class="c"># Evaluate function</span>
+                    <span class="n">xx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="p">[</span><span class="n">ii</span><span class="p">][</span><span class="n">idx</span><span class="p">]</span> <span class="k">for</span> <span class="n">ii</span><span class="p">,</span><span class="n">idx</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">idxs</span><span class="p">)])</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">idxs</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">store</span><span class="p">()</span>
+                    <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">idxs</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="p">[</span><span class="n">ii</span><span class="p">][</span><span class="n">idx</span><span class="p">]</span> <span class="k">for</span> <span class="n">ii</span><span class="p">,</span><span class="n">idx</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">idxs</span><span class="p">)]),</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">)</span>
+            <span class="c"># Apply the weight if necessary</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">active_weights</span><span class="p">:</span>
+                <span class="n">out</span> <span class="o">*=</span> <span class="n">w</span>
+        
+        <span class="k">return</span> <span class="n">out</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">TensorToolbox 0.1 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2013, Daniele Bigoni.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3b1.
+    </div>
+  </body>
+</html>

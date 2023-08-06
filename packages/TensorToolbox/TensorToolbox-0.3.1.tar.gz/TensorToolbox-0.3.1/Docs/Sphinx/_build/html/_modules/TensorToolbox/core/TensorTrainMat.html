@@ -1,0 +1,469 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>TensorToolbox.core.TensorTrainMat &mdash; TensorToolbox 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://c328740.ssl.cf1.rackcdn.com/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="TensorToolbox 0.1 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">TensorToolbox 0.1 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for TensorToolbox.core.TensorTrainMat</h1><div class="highlight"><pre>
+<span class="c">#</span>
+<span class="c"># This file is part of TensorToolbox.</span>
+<span class="c">#</span>
+<span class="c"># TensorToolbox is free software: you can redistribute it and/or modify</span>
+<span class="c"># it under the terms of the LGNU Lesser General Public License as published by</span>
+<span class="c"># the Free Software Foundation, either version 3 of the License, or</span>
+<span class="c"># (at your option) any later version.</span>
+<span class="c">#</span>
+<span class="c"># TensorToolbox is distributed in the hope that it will be useful,</span>
+<span class="c"># but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c"># LGNU Lesser General Public License for more details.</span>
+<span class="c">#</span>
+<span class="c"># You should have received a copy of the LGNU Lesser General Public License</span>
+<span class="c"># along with TensorToolbox.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+<span class="c">#</span>
+<span class="c"># DTU UQ Library</span>
+<span class="c"># Copyright (C) 2014 The Technical University of Denmark</span>
+<span class="c"># Scientific Computing Section</span>
+<span class="c"># Department of Applied Mathematics and Computer Science</span>
+<span class="c">#</span>
+<span class="c"># Author: Daniele Bigoni</span>
+<span class="c">#</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;TTmat&#39;</span><span class="p">,</span><span class="s">&#39;eye&#39;</span><span class="p">,</span><span class="s">&#39;randmat&#39;</span><span class="p">]</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">sparse</span> <span class="k">as</span> <span class="n">scsp</span>
+
+<span class="kn">from</span> <span class="nn">TensorToolbox.core</span> <span class="kn">import</span> <span class="n">TTvec</span><span class="p">,</span> <span class="n">WTTvec</span><span class="p">,</span> <span class="n">mat_to_tt_idxs</span>
+
+<div class="viewcode-block" id="TTmat"><a class="viewcode-back" href="../../../index.html#TensorToolbox.core.TTmat">[docs]</a><span class="k">class</span> <span class="nc">TTmat</span><span class="p">(</span><span class="n">TTvec</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Constructor of multidimensional matrix in Tensor Train format</span>
+
+<span class="sd">    :param Candecomp,ndarray,TT A: Available input formats are Candecomp, full tensor in numpy.ndarray, Tensor Train structure (list of cores), list of sparse matrices of sizes (r_{i-1}*r_{i}*nrows x ncols) (used for fast dot product - limited support for other functionalities)</span>
+<span class="sd">    :param list,int nrows: If int then the row size will be the same in all dimensions, if list then len(nrows) == len(self.TT) (numer of cores) and row size will change for each dimension.</span>
+<span class="sd">    :param list,int ncols: If int then the column size will be the same in all dimensions, if list then len(ncols) == len(self.TT) (numer of cores) and column size will change for each dimension.</span>
+<span class="sd">    :param bool is_sparse: [default == False] if True it uses sparsity to accelerate some computations</span>
+<span class="sd">    :param list sparse_ranks: [default==None] mandatory argument when A is a list of sparse matrices. It contains integers listing the TT-ranks of the matrix.</span>
+
+<span class="sd">    .. note:: the method __getitem__ is not overwritten, thus the indices used to access the tensor refer to the flatten versions of the matrices composing the matrix tensor.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">A</span><span class="p">,</span><span class="n">nrows</span><span class="p">,</span><span class="n">ncols</span><span class="p">,</span><span class="n">is_sparse</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span><span class="n">sparse_ranks</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                 <span class="n">store_location</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="p">,</span><span class="n">store_object</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span><span class="n">store_freq</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">store_overwrite</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        
+        <span class="nb">super</span><span class="p">(</span><span class="n">TTmat</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> 
+                                   <span class="n">store_location</span><span class="o">=</span><span class="n">store_location</span><span class="p">,</span>
+                                   <span class="n">store_object</span><span class="o">=</span><span class="n">store_object</span><span class="p">,</span>
+                                   <span class="n">store_freq</span><span class="o">=</span><span class="n">store_freq</span><span class="p">,</span>
+                                   <span class="n">store_overwrite</span><span class="o">=</span><span class="n">store_overwrite</span><span class="p">)</span>
+
+        <span class="c">############################</span>
+        <span class="c"># List of attributes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nrows</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ncols</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_sparse</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sparse_TT</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sparse_only</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sparse_ranks</span> <span class="o">=</span> <span class="bp">None</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">serialize_list</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span> <span class="p">[</span><span class="s">&#39;nrows&#39;</span><span class="p">,</span><span class="s">&#39;ncols&#39;</span><span class="p">,</span><span class="s">&#39;is_sparse&#39;</span><span class="p">,</span><span class="s">&#39;sparse_TT&#39;</span><span class="p">,</span><span class="s">&#39;sparse_only&#39;</span><span class="p">,</span><span class="s">&#39;sparse_ranks&#39;</span><span class="p">]</span> <span class="p">)</span>
+        <span class="c"># End list of attributes</span>
+        <span class="c">############################</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">nrows</span> <span class="o">=</span> <span class="n">nrows</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ncols</span> <span class="o">=</span> <span class="n">ncols</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_sparse</span> <span class="o">=</span> <span class="n">is_sparse</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sparse_ranks</span> <span class="o">=</span> <span class="n">sparse_ranks</span>
+
+    <span class="k">def</span> <span class="nf">__getstate__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">TTmat</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__getstate__</span><span class="p">()</span>
+    
+    <span class="k">def</span> <span class="nf">__setstate__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">state</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">TTmat</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__setstate__</span><span class="p">(</span> <span class="n">state</span> <span class="p">)</span>
+
+<div class="viewcode-block" id="TTmat.build"><a class="viewcode-back" href="../../../index.html#TensorToolbox.core.TTmat.build">[docs]</a>    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="mf">1e-10</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s">&#39;svd&#39;</span><span class="p">,</span> <span class="n">rs</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">fix_rank</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">Jinit</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">delta</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">,</span> <span class="n">maxit</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">mv_eps</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">,</span> <span class="n">mv_maxit</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">kickrank</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Common interface for the construction of the approximation.</span>
+
+<span class="sd">        :param float eps: [default == 1e-10] For method==&#39;svd&#39;: precision with which to approximate the input tensor. For method==&#39;ttcross&#39;: TT-rounding tolerance for rank-check.</span>
+<span class="sd">        :param string method: &#39;svd&#39; use singular value decomposition to construct the TT representation [1]_, &#39;ttcross&#39; use low rank skeleton approximation to construct the TT representation [2]_, &#39;ttdmrg&#39; uses Tensor Train Renormalization Cross to construct the TT representation [3]_ [4]_, &#39;ttdmrgcross&#39; uses &#39;ttdmrg&#39; with &#39;ttcross&#39; approximation of supercores</span>
+<span class="sd">        :param list rs: list of integer ranks of different cores. If ``None`` then the incremental TTcross approach will be used. (method==&#39;ttcross&#39;)</span>
+<span class="sd">        :param bool fix_rank: determines whether the rank is allowed to be increased (method==&#39;ttcross&#39;)</span>
+<span class="sd">        :param list Jinit: list of list of integers containing the r starting columns in the lowrankapprox routine for each core. If ``None`` then pick them randomly. (method==&#39;ttcross&#39;)</span>
+<span class="sd">        :param float delta: accuracy parameter in the TT-cross routine (method==&#39;ttcross&#39;). It is the relative error in Frobenious norm between two successive iterations.</span>
+<span class="sd">        :param int maxit: maximum number of iterations in the lowrankapprox routine (method==&#39;ttcross&#39;)</span>
+<span class="sd">        :param float mv_eps: accuracy parameter for each usage of the maxvol algorithm (method==&#39;ttcross&#39;)</span>
+<span class="sd">        :param int mv_maxit: maximum number of iterations in the maxvol routine (method==&#39;ttcross&#39;)</span>
+<span class="sd">        :param bool fix_rank: Whether the rank is allowed to increase</span>
+<span class="sd">        :param int kickrank: rank overshooting for &#39;ttdmrg&#39;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="n">nrows</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nrows</span>
+        <span class="n">ncols</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ncols</span>
+        <span class="n">is_sparse</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_sparse</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">nrows</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ncols</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_sparse</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sparse_TT</span> <span class="o">=</span> <span class="p">[]</span>
+        
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">A</span><span class="p">,</span><span class="nb">list</span><span class="p">)</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span> <span class="p">[</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">A</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">scsp</span><span class="o">.</span><span class="n">csr_matrix</span><span class="p">)</span> <span class="ow">or</span>
+                                                  <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">A</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">scsp</span><span class="o">.</span><span class="n">csc_matrix</span><span class="p">)</span> <span class="ow">or</span>
+                                                  <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">A</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">scsp</span><span class="o">.</span><span class="n">dia_matrix</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">A</span><span class="p">))</span> <span class="p">]</span> <span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sparse_ranks</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s">&quot;The parameter sparse_ranks must be defined for only-sparse initialization&quot;</span><span class="p">)</span>
+            
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sparse_ranks</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">A</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s">&quot;The condition len(sparse_ranks)-1 == len(A) must hold.&quot;</span><span class="p">)</span>
+            
+            <span class="bp">self</span><span class="o">.</span><span class="n">sparse_only</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sparse_TT</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">A</span>
+
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">nrows</span><span class="p">,</span><span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ncols</span><span class="p">,</span><span class="nb">int</span><span class="p">):</span>
+                <span class="n">d</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sparse_TT</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">nrows</span> <span class="o">=</span> <span class="p">[</span><span class="n">nrows</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">d</span><span class="p">)]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ncols</span> <span class="o">=</span> <span class="p">[</span><span class="n">ncols</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">d</span><span class="p">)]</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">nrows</span><span class="p">,</span><span class="nb">list</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ncols</span><span class="p">,</span><span class="nb">list</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">nrows</span> <span class="o">=</span> <span class="n">nrows</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ncols</span> <span class="o">=</span> <span class="n">ncols</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">init</span> <span class="o">=</span> <span class="bp">False</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s">&quot;tensor.TTmat.__init__: types of nrows and ncols are inconsistent.&quot;</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">is_sparse</span> <span class="o">=</span> <span class="p">[</span><span class="bp">True</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sparse_TT</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">TT</span> <span class="o">=</span> <span class="p">[</span><span class="bp">None</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sparse_TT</span><span class="p">)</span>
+            
+            <span class="bp">self</span><span class="o">.</span><span class="n">init</span> <span class="o">=</span> <span class="bp">True</span>
+
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">A</span><span class="p">,</span><span class="nb">list</span><span class="p">)</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span> <span class="p">[</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">A</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">scsp</span><span class="o">.</span><span class="n">csr_matrix</span><span class="p">)</span> <span class="ow">or</span>
+                                                    <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">A</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">scsp</span><span class="o">.</span><span class="n">csc_matrix</span><span class="p">)</span> <span class="ow">or</span>
+                                                    <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">A</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">scsp</span><span class="o">.</span><span class="n">dia_matrix</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">A</span><span class="p">))</span> <span class="p">]</span> <span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s">&quot;Mixed sparse/full initialization not implemented yet&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sparse_only</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="nb">super</span><span class="p">(</span><span class="n">TTmat</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">build</span><span class="p">(</span> <span class="n">eps</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">rs</span><span class="p">,</span> <span class="n">fix_rank</span><span class="p">,</span> <span class="n">Jinit</span><span class="p">,</span> <span class="n">delta</span><span class="p">,</span> <span class="n">maxit</span><span class="p">,</span> <span class="n">mv_eps</span><span class="p">,</span> <span class="n">mv_maxit</span><span class="p">,</span> <span class="n">kickrank</span> <span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">nrows</span><span class="p">,</span><span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ncols</span><span class="p">,</span><span class="nb">int</span><span class="p">):</span>
+                <span class="n">d</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">TT</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">nrows</span> <span class="o">=</span> <span class="p">[</span><span class="n">nrows</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">d</span><span class="p">)]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ncols</span> <span class="o">=</span> <span class="p">[</span><span class="n">ncols</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">d</span><span class="p">)]</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">nrows</span><span class="p">,</span><span class="nb">list</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ncols</span><span class="p">,</span><span class="nb">list</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">nrows</span> <span class="o">=</span> <span class="n">nrows</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ncols</span> <span class="o">=</span> <span class="n">ncols</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">init</span> <span class="o">=</span> <span class="bp">False</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s">&quot;tensor.TTmat.__init__: types of nrows and ncols are inconsistent.&quot;</span><span class="p">)</span>
+        
+            <span class="k">if</span> <span class="n">is_sparse</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">is_sparse</span> <span class="o">=</span> <span class="p">[</span><span class="bp">False</span><span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">TT</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">is_sparse</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">TT</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s">&quot;tensor.TTmat.__init__: parameter is_sparse must be of length d=A.ndims.&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_sparse</span> <span class="o">=</span> <span class="n">is_sparse</span>
+
+            <span class="k">for</span> <span class="n">i</span><span class="p">,(</span><span class="n">is_sp</span><span class="p">,</span><span class="n">Ai</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">is_sparse</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">TT</span><span class="p">)):</span>
+                <span class="k">if</span> <span class="n">is_sp</span><span class="p">:</span>
+                    <span class="n">Ai_rsh</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">Ai</span><span class="p">,(</span><span class="n">Ai</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">nrows</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">ncols</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">Ai</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span>
+                    <span class="n">Ai_rsh</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">Ai_rsh</span><span class="p">,</span><span class="n">axes</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span>
+                    <span class="n">Ai_rsh</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">Ai_rsh</span><span class="p">,(</span><span class="n">Ai</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">Ai</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">nrows</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">ncols</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">sparse_TT</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">scsp</span><span class="o">.</span><span class="n">csr_matrix</span><span class="p">(</span><span class="n">Ai_rsh</span><span class="p">)</span> <span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">sparse_TT</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="bp">None</span> <span class="p">)</span>
+        
+            <span class="c"># Check that all the mode sizes are equal to rows*cols</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">msize</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">()):</span>
+                <span class="k">if</span> <span class="n">msize</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nrows</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">ncols</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">init</span> <span class="o">=</span> <span class="bp">False</span>
+                    <span class="k">raise</span> <span class="ne">NameError</span><span class="p">(</span><span class="s">&quot;tensor.TTmat.__init__: the </span><span class="si">%d</span><span class="s">-th TT mode size must be equal to nrows[</span><span class="si">%d</span><span class="s">]*ncols[</span><span class="si">%d</span><span class="s">]&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">i</span><span class="p">,</span><span class="n">i</span><span class="p">))</span>
+        
+        <span class="k">return</span> <span class="bp">self</span>
+</div>
+    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">newTT</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">TTi</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">TT</span><span class="p">:</span> <span class="n">newTT</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">TTi</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+        <span class="k">return</span> <span class="n">TTmat</span><span class="p">(</span><span class="n">newTT</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">nrows</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">ncols</span><span class="p">,</span><span class="n">is_sparse</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">is_sparse</span><span class="p">)</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">kron</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">A</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="p">:</span> <span class="k">raise</span> <span class="ne">NameError</span><span class="p">(</span><span class="s">&quot;tensor.TTmat.extend: TT not initialized correctly&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="n">TTmat</span><span class="p">):</span> <span class="k">raise</span> <span class="ne">NameError</span><span class="p">(</span><span class="s">&quot;tensor.TTmat.extend: input tensor is not in TT format&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">A</span><span class="o">.</span><span class="n">init</span><span class="p">:</span> <span class="k">raise</span> <span class="ne">NameError</span><span class="p">(</span><span class="s">&quot;tensor.TTmat.extend: input tensor is not initialized correctly&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">TT</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">TT</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nrows</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">nrows</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ncols</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">ncols</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_sparse</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">is_sparse</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sparse_TT</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">sparse_TT</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">ranks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sparse_only</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sparse_ranks</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">TTmat</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">ranks</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">idxs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">        Return the item at a certain index. </span>
+<span class="sd">        The index is formed as follows:</span>
+<span class="sd">           idxs = (rowidxs,colidxs) = ((i_1,...,i_d),(j_1,...,j_d))</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="p">:</span> <span class="k">raise</span> <span class="ne">NameError</span><span class="p">(</span><span class="s">&quot;tensor.TTmat.__getitem__: TTmat not initialized correctly&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">TTvec</span><span class="o">.</span><span class="n">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">mat_to_tt_idxs</span><span class="p">(</span><span class="n">idxs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">idxs</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">nrows</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">ncols</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">__imul__</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="n">B</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="n">TTmat</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">B</span><span class="p">,</span><span class="n">TTmat</span><span class="p">):</span>
+            <span class="c"># Check dim consistency</span>
+            <span class="k">if</span> <span class="n">A</span><span class="o">.</span><span class="n">nrows</span> <span class="o">!=</span> <span class="n">B</span><span class="o">.</span><span class="n">nrows</span> <span class="ow">or</span> <span class="n">A</span><span class="o">.</span><span class="n">ncols</span> <span class="o">!=</span> <span class="n">B</span><span class="o">.</span><span class="n">ncols</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">NameError</span><span class="p">(</span><span class="s">&quot;tensor.TTmat.mul: Matrices of non consistent dimensions&quot;</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">TTvec</span><span class="o">.</span><span class="n">__imul__</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="n">B</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">dot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">B</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">B</span><span class="p">,</span><span class="n">TTvec</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">B</span><span class="p">,</span><span class="n">TTmat</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">init</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">B</span><span class="o">.</span><span class="n">init</span><span class="p">:</span> <span class="k">raise</span> <span class="ne">NameError</span><span class="p">(</span><span class="s">&quot;TensorToolbox.TTmat.dot: TT not initialized correctly&quot;</span><span class="p">)</span>
+
+            <span class="c"># TT matrix-vector dot product</span>
+            <span class="c"># Check consistency</span>
+            <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sparse_only</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sparse_TT</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">B</span><span class="o">.</span><span class="n">TT</span><span class="p">))</span> <span class="ow">or</span> <span class="p">(</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">sparse_only</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">TT</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">B</span><span class="o">.</span><span class="n">TT</span><span class="p">)):</span>
+                <span class="k">raise</span> <span class="ne">NameError</span><span class="p">(</span><span class="s">&quot;TensorToolbox.TTmat.dot: A and B must have the same number of cores&quot;</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">bsize</span><span class="p">,</span><span class="n">Acols</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">B</span><span class="o">.</span><span class="n">shape</span><span class="p">(),</span><span class="bp">self</span><span class="o">.</span><span class="n">ncols</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">bsize</span> <span class="o">!=</span> <span class="n">Acols</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">NameError</span><span class="p">(</span><span class="s">&quot;TensorToolbox.TTmat.dot: Matrix and Vector mode dimensions are not consistent&quot;</span><span class="p">)</span>
+
+            <span class="n">Y</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,(</span><span class="n">Ai</span><span class="p">,</span><span class="n">Bi</span><span class="p">,</span><span class="n">is_sparse</span><span class="p">,</span><span class="n">sp_A</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">TT</span><span class="p">,</span><span class="n">B</span><span class="o">.</span><span class="n">TT</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">is_sparse</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">sparse_TT</span><span class="p">)):</span>
+                <span class="n">Bi_rsh</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">Bi</span><span class="p">,</span><span class="n">axes</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span>
+                <span class="n">Bi_rsh</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">Bi_rsh</span><span class="p">,(</span><span class="n">Bi</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">Bi</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">Bi</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span>
+
+                <span class="k">if</span> <span class="n">is_sparse</span><span class="p">:</span>
+                    <span class="n">Yi_rsh</span> <span class="o">=</span> <span class="n">sp_A</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">Bi_rsh</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">Ai_rsh</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">Ai</span><span class="p">,(</span><span class="n">Ai</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">nrows</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">ncols</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">Ai</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span>
+                    <span class="n">Ai_rsh</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">Ai_rsh</span><span class="p">,</span><span class="n">axes</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span>
+                    <span class="n">Ai_rsh</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">Ai_rsh</span><span class="p">,(</span><span class="n">Ai</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">Ai</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">nrows</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">ncols</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+                    <span class="n">Yi_rsh</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">Ai_rsh</span><span class="p">,</span><span class="n">Bi_rsh</span><span class="p">)</span>
+
+                <span class="n">Ai0</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ranks</span><span class="p">()[</span><span class="n">i</span><span class="p">]</span>
+                <span class="n">Ai2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ranks</span><span class="p">()[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">Yi_rsh</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">Yi_rsh</span><span class="p">,(</span><span class="n">Ai0</span><span class="p">,</span><span class="n">Ai2</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">nrows</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">Bi</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">Bi</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span>
+                <span class="n">Yi_rsh</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">Yi_rsh</span><span class="p">,</span><span class="n">axes</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span>
+                <span class="n">Yi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">Yi_rsh</span><span class="p">,(</span><span class="n">Ai0</span><span class="o">*</span><span class="n">Bi</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">nrows</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">Ai2</span><span class="o">*</span><span class="n">Bi</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span>
+
+                <span class="n">Y</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Yi</span><span class="p">)</span>
+            
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">B</span><span class="p">,</span><span class="n">WTTvec</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">WTTvec</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span><span class="n">B</span><span class="o">.</span><span class="n">sqrtW</span><span class="p">)</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">TTvec</span><span class="p">(</span><span class="n">Y</span><span class="p">)</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
+
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">B</span><span class="p">,</span><span class="n">TTmat</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">init</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">B</span><span class="o">.</span><span class="n">init</span><span class="p">:</span> <span class="k">raise</span> <span class="ne">NameError</span><span class="p">(</span><span class="s">&quot;TensorToolbox.TTmat.dot: TT not initialized correctly&quot;</span><span class="p">)</span>
+
+            <span class="c"># TT matrix-matrix dot product</span>
+            <span class="c"># Check consistency</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">TT</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">B</span><span class="o">.</span><span class="n">TT</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">NameError</span><span class="p">(</span><span class="s">&quot;TensorToolbox.TTmat.dot: A and B must have the same number of cores&quot;</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">Brows</span><span class="p">,</span><span class="n">Acols</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">B</span><span class="o">.</span><span class="n">nrows</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">ncols</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">Brows</span> <span class="o">!=</span> <span class="n">Acols</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">NameError</span><span class="p">(</span><span class="s">&quot;TensorToolbox.TTmat.dot: Matrices mode dimensions are not consistent&quot;</span><span class="p">)</span>
+
+            <span class="n">Y</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,(</span><span class="n">Ai</span><span class="p">,</span><span class="n">Bi</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">TT</span><span class="p">,</span><span class="n">B</span><span class="o">.</span><span class="n">TT</span><span class="p">)):</span>
+                <span class="n">Ai_rsh</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">Ai</span><span class="p">,(</span><span class="n">Ai</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">nrows</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">ncols</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">Ai</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span>
+                <span class="n">Ai_rsh</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">Ai_rsh</span><span class="p">,</span><span class="n">axes</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span>
+                <span class="n">Ai_rsh</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">Ai_rsh</span><span class="p">,(</span><span class="n">Ai</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">Ai</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">nrows</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">ncols</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+
+                <span class="n">Bi_rsh</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">Bi</span><span class="p">,(</span><span class="n">Bi</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">B</span><span class="o">.</span><span class="n">nrows</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">B</span><span class="o">.</span><span class="n">ncols</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">Bi</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span>
+                <span class="n">Bi_rsh</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">Bi_rsh</span><span class="p">,</span><span class="n">axes</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span>
+                <span class="n">Bi_rsh</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">Bi_rsh</span><span class="p">,(</span><span class="n">B</span><span class="o">.</span><span class="n">nrows</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">Bi</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">Bi</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="n">B</span><span class="o">.</span><span class="n">ncols</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+
+                <span class="n">Yi_rsh</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">Ai_rsh</span><span class="p">,</span><span class="n">Bi_rsh</span><span class="p">)</span>
+
+                <span class="n">Yi_rsh</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">Yi_rsh</span><span class="p">,(</span><span class="n">Ai</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">Ai</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">nrows</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">Bi</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">Bi</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="n">B</span><span class="o">.</span><span class="n">ncols</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+                <span class="n">Yi_rsh</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">Yi_rsh</span><span class="p">,</span><span class="n">axes</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span>
+                <span class="n">Yi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">Yi_rsh</span><span class="p">,(</span><span class="n">Ai</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">Bi</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">nrows</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="n">B</span><span class="o">.</span><span class="n">ncols</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">Ai</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="n">Bi</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span>
+
+                <span class="n">Y</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Yi</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">TTmat</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">nrows</span><span class="p">,</span><span class="n">B</span><span class="o">.</span><span class="n">ncols</span><span class="p">)</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">B</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="p">:</span> <span class="k">raise</span> <span class="ne">NameError</span><span class="p">(</span><span class="s">&quot;TensorToolbox.multilinalg.dot: TT not initialized correctly&quot;</span><span class="p">)</span>
+
+            <span class="c"># matrix-vector dot product with TTmat and full vector</span>
+            <span class="c"># Check consistency</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">())</span> <span class="o">!=</span> <span class="n">B</span><span class="o">.</span><span class="n">ndim</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">NameError</span><span class="p">(</span><span class="s">&quot;TensorToolbox.multilinalg.dot: A and B must have the same number of dimensions&quot;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">bsize</span><span class="p">,</span><span class="n">Acols</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">B</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">ncols</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">bsize</span> <span class="o">!=</span> <span class="n">Acols</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">NameError</span><span class="p">(</span><span class="s">&quot;TensorToolbox.multilinalg.dot: Matrix and Vector mode dimensions are not consistent&quot;</span><span class="p">)</span>
+
+            <span class="n">Bshape</span> <span class="o">=</span> <span class="n">B</span><span class="o">.</span><span class="n">shape</span>
+            <span class="n">Y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">B</span><span class="p">,(</span> <span class="p">(</span><span class="mi">1</span><span class="p">,)</span> <span class="o">+</span> <span class="n">Bshape</span> <span class="p">))</span>
+            <span class="n">Yshape</span> <span class="o">=</span> <span class="n">Y</span><span class="o">.</span><span class="n">shape</span>
+
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">Ak</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">TT</span><span class="p">):</span>
+                <span class="c"># Note: Ak(alpha_{k-1},(i_k,j_k),alpha_{k})</span>
+                <span class="c"># Reshape it to Ak((alpha_{k},i_k),(alpha_{k-1},j_k))</span>
+                <span class="n">alpha0</span> <span class="o">=</span> <span class="n">Ak</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">alpha1</span> <span class="o">=</span> <span class="n">Ak</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+                <span class="n">Ak_rsh</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">Ak</span><span class="p">,</span> <span class="p">(</span><span class="n">alpha0</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">nrows</span><span class="p">[</span><span class="n">k</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">ncols</span><span class="p">[</span><span class="n">k</span><span class="p">],</span><span class="n">alpha1</span><span class="p">))</span>
+                <span class="n">Ak_rsh</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">Ak_rsh</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span> <span class="c"># Ak(alpha_{k},i_k,alpha_{k},j_k)</span>
+                <span class="n">Ak_rsh</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">Ak_rsh</span><span class="p">,</span> <span class="p">(</span><span class="n">alpha1</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">nrows</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">alpha0</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">ncols</span><span class="p">[</span><span class="n">k</span><span class="p">]))</span>
+
+                <span class="c"># Reshape Y to Y((alpha_{k-1},j_k),(i_1,..,i_k-1,j_k+1,..,j_d))</span>
+                <span class="n">Y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span><span class="n">axes</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">k</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">+</span><span class="nb">tuple</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">k</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span><span class="o">+</span><span class="nb">tuple</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">k</span><span class="o">+</span><span class="mi">2</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">Bshape</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">)))</span>
+                <span class="n">Y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span> <span class="n">Y</span><span class="p">,(</span><span class="n">alpha0</span> <span class="o">*</span> <span class="n">Yshape</span><span class="p">[</span><span class="n">k</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">Yshape</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="n">k</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">Yshape</span><span class="p">[</span><span class="n">k</span><span class="o">+</span><span class="mi">2</span><span class="p">:]))</span> <span class="p">)</span>
+
+                <span class="c"># Dot product</span>
+                <span class="n">Y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">Ak_rsh</span><span class="p">,</span><span class="n">Y</span><span class="p">)</span>
+
+                <span class="c"># Reshape Y</span>
+                <span class="n">Y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="p">(</span><span class="n">alpha1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nrows</span><span class="p">[</span><span class="n">k</span><span class="p">])</span> <span class="o">+</span> <span class="n">Yshape</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="n">k</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">Yshape</span><span class="p">[</span><span class="n">k</span><span class="o">+</span><span class="mi">2</span><span class="p">:])</span>
+                <span class="n">Y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,)</span> <span class="o">+</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="n">k</span><span class="o">+</span><span class="mi">2</span><span class="p">))</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="p">,)</span> <span class="o">+</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">k</span><span class="o">+</span><span class="mi">2</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">Bshape</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span> <span class="p">)</span>
+                <span class="n">Yshape</span> <span class="o">=</span> <span class="n">Y</span><span class="o">.</span><span class="n">shape</span>
+
+            <span class="k">if</span> <span class="n">Y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span> <span class="k">raise</span> <span class="ne">NameError</span><span class="p">(</span><span class="s">&quot;TensorToolbox.multilinalg.dot: Last core dimenstion error&quot;</span><span class="p">)</span>
+
+            <span class="n">Y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span><span class="n">Y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+
+            <span class="k">return</span> <span class="n">Y</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s">&quot;TensorToolbox.TTmat.dot: wrong input type&quot;</span><span class="p">)</span>
+
+<span class="c">##########################################################</span>
+<span class="c"># Constructors of frequently used tensor matrices</span>
+<span class="c">##########################################################</span>
+
+<span class="c"># Random rank-1 matrix</span></div>
+<div class="viewcode-block" id="randmat"><a class="viewcode-back" href="../../../index.html#TensorToolbox.core.randmat">[docs]</a><span class="k">def</span> <span class="nf">randmat</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">nrows</span><span class="p">,</span><span class="n">ncols</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Returns the rank-1 multidimensional random matrix in Tensor Train format</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">       d (int): number of dimensions</span>
+<span class="sd">       nrows (int or list): If int then uniform sizes are used for all the dimensions, if list of int then len(nrows) == d and each dimension will use different size</span>
+<span class="sd">       ncols (int or list): If int then uniform sizes are used for all the dimensions, if list of int then len(ncols) == d and each dimension will use different size</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">       TTmat The rank-1 multidim random matrix in Tensor Train format</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">numpy.random</span> <span class="kn">as</span> <span class="nn">npr</span>
+    <span class="kn">from</span> <span class="nn">TensorToolbox.core</span> <span class="kn">import</span> <span class="n">Candecomp</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">nrows</span><span class="p">,</span><span class="nb">int</span><span class="p">):</span> <span class="n">nrows</span> <span class="o">=</span> <span class="p">[</span> <span class="n">nrows</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="p">]</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ncols</span><span class="p">,</span><span class="nb">int</span><span class="p">):</span> <span class="n">ncols</span> <span class="o">=</span> <span class="p">[</span> <span class="n">ncols</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="p">]</span>
+    <span class="n">CPtmp</span> <span class="o">=</span> <span class="p">[</span><span class="n">npr</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="n">nrows</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="n">ncols</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="n">nrows</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="n">ncols</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">d</span><span class="p">)]</span>
+    <span class="n">CP_rand</span> <span class="o">=</span> <span class="n">Candecomp</span><span class="p">(</span><span class="n">CPtmp</span><span class="p">)</span>
+    <span class="n">TT_rand</span> <span class="o">=</span> <span class="n">TTmat</span><span class="p">(</span><span class="n">CP_rand</span><span class="p">,</span><span class="n">nrows</span><span class="p">,</span><span class="n">ncols</span><span class="p">)</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">TT_rand</span>
+
+<span class="c"># Identity tensor</span></div>
+<div class="viewcode-block" id="eye"><a class="viewcode-back" href="../../../index.html#TensorToolbox.core.eye">[docs]</a><span class="k">def</span> <span class="nf">eye</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">N</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Returns the multidimensional identity operator in Tensor Train format</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">       d (int): number of dimensions</span>
+<span class="sd">       N (int or list): If int then uniform sizes are used for all the dimensions, if list of int then len(N) == d and each dimension will use different size</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">       TTmat The multidim identity matrix in Tensor Train format</span>
+
+<span class="sd">    Note:</span>
+<span class="sd">       TODO: improve construction avoiding passage through Candecomp</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">TensorToolbox.core</span> <span class="kn">import</span> <span class="n">Candecomp</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="n">If</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">N</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="n">N</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+        <span class="n">CPtmp</span> <span class="o">=</span> <span class="p">[</span><span class="n">If</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">d</span><span class="p">)]</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="n">CPtmp</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">N</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="n">N</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">d</span><span class="p">)]</span>
+    
+    <span class="n">CP_id</span> <span class="o">=</span> <span class="n">Candecomp</span><span class="p">(</span><span class="n">CPtmp</span><span class="p">)</span>
+    <span class="n">TT_id</span> <span class="o">=</span> <span class="n">TTmat</span><span class="p">(</span><span class="n">CP_id</span><span class="p">,</span><span class="n">nrows</span><span class="o">=</span><span class="n">N</span><span class="p">,</span><span class="n">ncols</span><span class="o">=</span><span class="n">N</span><span class="p">,</span><span class="n">is_sparse</span><span class="o">=</span><span class="p">[</span><span class="bp">True</span><span class="p">]</span><span class="o">*</span><span class="n">d</span><span class="p">)</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">TT_id</span>
+</pre></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">TensorToolbox 0.1 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2013, Daniele Bigoni.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3b1.
+    </div>
+  </body>
+</html>

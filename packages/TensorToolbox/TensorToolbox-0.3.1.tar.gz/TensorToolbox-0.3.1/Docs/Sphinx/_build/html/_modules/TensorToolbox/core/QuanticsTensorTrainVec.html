@@ -1,0 +1,548 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>TensorToolbox.core.QuanticsTensorTrainVec &mdash; TensorToolbox 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://c328740.ssl.cf1.rackcdn.com/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="TensorToolbox 0.1 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">TensorToolbox 0.1 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for TensorToolbox.core.QuanticsTensorTrainVec</h1><div class="highlight"><pre>
+<span class="c">#</span>
+<span class="c"># This file is part of TensorToolbox.</span>
+<span class="c">#</span>
+<span class="c"># TensorToolbox is free software: you can redistribute it and/or modify</span>
+<span class="c"># it under the terms of the LGNU Lesser General Public License as published by</span>
+<span class="c"># the Free Software Foundation, either version 3 of the License, or</span>
+<span class="c"># (at your option) any later version.</span>
+<span class="c">#</span>
+<span class="c"># TensorToolbox is distributed in the hope that it will be useful,</span>
+<span class="c"># but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c"># LGNU Lesser General Public License for more details.</span>
+<span class="c">#</span>
+<span class="c"># You should have received a copy of the LGNU Lesser General Public License</span>
+<span class="c"># along with TensorToolbox.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+<span class="c">#</span>
+<span class="c"># DTU UQ Library</span>
+<span class="c"># Copyright (C) 2014 The Technical University of Denmark</span>
+<span class="c"># Scientific Computing Section</span>
+<span class="c"># Department of Applied Mathematics and Computer Science</span>
+<span class="c">#</span>
+<span class="c"># Author: Daniele Bigoni</span>
+<span class="c">#</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;QTTvec&#39;</span><span class="p">,</span><span class="s">&#39;QTTzerosvec&#39;</span><span class="p">]</span>
+
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">import</span> <span class="nn">logging</span> 
+<span class="kn">import</span> <span class="nn">operator</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">numpy.linalg</span> <span class="kn">as</span> <span class="nn">npla</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">itertools</span>
+
+<span class="kn">from</span> <span class="nn">TensorToolbox.core</span> <span class="kn">import</span> <span class="n">TTvec</span><span class="p">,</span> <span class="n">idxfold</span><span class="p">,</span> <span class="n">idxunfold</span><span class="p">,</span> <span class="n">expand_idxs</span><span class="p">,</span> <span class="n">TensorWrapper</span><span class="p">,</span> <span class="n">matkron_to_mattensor</span>
+<span class="kn">from</span> <span class="nn">TensorToolbox</span> <span class="kn">import</span> <span class="n">multilinalg</span> <span class="k">as</span> <span class="n">mla</span>
+
+<div class="viewcode-block" id="QTTvec"><a class="viewcode-back" href="../../../index.html#TensorToolbox.core.QTTvec">[docs]</a><span class="k">class</span> <span class="nc">QTTvec</span><span class="p">(</span><span class="n">TTvec</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Constructor of multidimensional tensor in Quantics Tensor Train format</span>
+<span class="sd">    </span>
+<span class="sd">    :param Candecomp,ndarray,TT A: Available input formats are Candecomp, full tensor in numpy.ndarray, Tensor Train structure (list of cores)</span>
+<span class="sd">    :param list global_shape: Argument to be provided if ``A`` is the list of cores of a TT format.</span>
+<span class="sd">    :param int base: base selected to do the folding</span>
+
+<span class="sd">    .. note: In the new version (&gt;0.3.1): the tensor A is extended to the next power of base and then folded.</span>
+<span class="sd">    .. note: (In the old version (&lt;=0.3.1): The minimum folding base is always used.)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">propagate</span> <span class="o">=</span> <span class="bp">False</span>
+    <span class="n">ch</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">)</span>
+    <span class="n">formatter</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%(asctime)s</span><span class="s"> </span><span class="si">%(levelname)s</span><span class="s">:</span><span class="si">%(name)s</span><span class="s">: </span><span class="si">%(message)s</span><span class="s">&quot;</span><span class="p">,</span>
+                                  <span class="s">&quot;%Y-%m-</span><span class="si">%d</span><span class="s"> %H:%M:%S&quot;</span><span class="p">)</span>
+    <span class="n">ch</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">formatter</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">ch</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">A</span><span class="p">,</span> <span class="n">global_shape</span><span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                 <span class="n">store_location</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="p">,</span><span class="n">store_object</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span><span class="n">store_freq</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">store_overwrite</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+                 <span class="n">multidim_point</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        
+        <span class="c"># Initialize the tensor with the input tensor in TT ([][]numpy.ndarray), tensor(numpy.ndarray)</span>
+        <span class="c"># if isinstance(A,Candecomp):</span>
+        <span class="c">#     self.TT = A.to_TT()</span>
+        
+        <span class="nb">super</span><span class="p">(</span><span class="n">QTTvec</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> 
+                                    <span class="n">store_location</span><span class="o">=</span><span class="n">store_location</span><span class="p">,</span>
+                                    <span class="n">store_object</span><span class="o">=</span><span class="n">store_object</span><span class="p">,</span>
+                                    <span class="n">store_freq</span><span class="o">=</span><span class="n">store_freq</span><span class="p">,</span>
+                                    <span class="n">store_overwrite</span><span class="o">=</span><span class="n">store_overwrite</span><span class="p">,</span>
+                                    <span class="n">multidim_point</span><span class="o">=</span><span class="n">multidim_point</span><span class="p">)</span>
+
+        <span class="c">###################################</span>
+        <span class="c"># List of attributes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">base</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">global_shape</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">q_shape</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">folded_shape</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">serialize_list</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span> <span class="p">[</span><span class="s">&#39;base&#39;</span><span class="p">,</span><span class="s">&#39;global_shape&#39;</span><span class="p">,</span><span class="s">&#39;q_shape&#39;</span><span class="p">,</span><span class="s">&#39;folded_shape&#39;</span><span class="p">]</span> <span class="p">)</span>
+        <span class="c"># End list of attributes</span>
+        <span class="c">##################################</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">base</span> <span class="o">=</span> <span class="n">base</span>
+        
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">A</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">A</span><span class="p">,</span> <span class="n">TensorWrapper</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">global_shape</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span> <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s">&quot;TensorToolbox.QTTvec.__init__: shape argument is unnecessary for ndarray and TensorWrapper input&quot;</span><span class="p">,</span> <span class="ne">RuntimeWarning</span><span class="p">)</span>
+            
+            <span class="bp">self</span><span class="o">.</span><span class="n">global_shape</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">A</span><span class="o">.</span><span class="n">shape</span>
+            
+            <span class="c"># Construct the base &quot;base&quot; shape</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">q_shape</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span> <span class="p">[</span> <span class="bp">self</span><span class="o">.</span><span class="n">base</span><span class="o">**</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">s</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">base</span><span class="p">))</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_global_shape</span><span class="p">()</span> <span class="p">]</span> <span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">A</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+                <span class="c"># Resize the array and fill the extended dimensions with data on the -1 hyper-faces</span>
+                <span class="n">Anew</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">q_shape</span><span class="p">)</span>
+                <span class="n">Anew</span><span class="p">[</span> <span class="nb">tuple</span><span class="p">([</span> <span class="nb">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">gs</span><span class="p">,</span><span class="bp">None</span><span class="p">)</span> <span class="k">for</span> <span class="n">gs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">global_shape</span> <span class="p">])</span> <span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">A</span>
+                <span class="k">for</span> <span class="n">dcube</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">A</span><span class="o">.</span><span class="n">ndim</span><span class="p">):</span>
+                    <span class="n">cubes</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">combinations</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">A</span><span class="o">.</span><span class="n">ndim</span><span class="p">),</span> <span class="n">dcube</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">cube</span> <span class="ow">in</span> <span class="n">cubes</span><span class="p">:</span>
+                        <span class="n">idxs_out</span> <span class="o">=</span> <span class="p">[]</span>
+                        <span class="n">idxs_in</span> <span class="o">=</span> <span class="p">[]</span>
+                        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">gs</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">global_shape</span><span class="p">):</span>
+                            <span class="k">if</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">cube</span><span class="p">:</span>
+                                <span class="n">idxs_out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="nb">slice</span><span class="p">(</span><span class="n">gs</span><span class="p">,</span><span class="bp">None</span><span class="p">,</span><span class="bp">None</span><span class="p">)</span> <span class="p">)</span>
+                                <span class="n">idxs_in</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span> <span class="p">)</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="n">idxs_out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="nb">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">gs</span><span class="p">,</span><span class="bp">None</span><span class="p">)</span> <span class="p">)</span>
+                                <span class="n">idxs_in</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="nb">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">gs</span><span class="p">,</span><span class="bp">None</span><span class="p">)</span> <span class="p">)</span>
+                        <span class="n">idxs_out</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">idxs_out</span><span class="p">)</span>
+                        <span class="n">idxs_in</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">idxs_in</span><span class="p">)</span>
+                        <span class="n">Anew</span><span class="p">[</span> <span class="n">idxs_out</span> <span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">A</span><span class="p">[</span> <span class="n">idxs_in</span> <span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">A</span> <span class="o">=</span> <span class="n">Anew</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">A</span><span class="o">.</span><span class="n">set_Q</span><span class="p">(</span> <span class="n">base</span> <span class="p">)</span>
+                
+            <span class="c"># Set the folded_shape (list of list) for each dimension</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">folded_shape</span> <span class="o">=</span> <span class="p">[</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">base</span><span class="p">]</span> <span class="o">*</span> <span class="nb">int</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">A</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">base</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">global_shape</span><span class="p">))</span> <span class="p">]</span>
+            
+            <span class="c"># Folding matrix</span>
+            <span class="n">new_shape</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">base</span><span class="p">]</span> <span class="o">*</span> <span class="nb">int</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">A</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">base</span> <span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">A</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">A</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">new_shape</span><span class="p">)</span>
+            
+            <span class="c"># # Construct the folding shape</span>
+            <span class="c"># self.folded_shape = []</span>
+            <span class="c"># for sizedim in self.A.shape:</span>
+            <span class="c">#     new_subshape = []</span>
+            <span class="c">#     if sizedim == 1:</span>
+            <span class="c">#         new_subshape.append(sizedim)</span>
+            <span class="c">#     else:</span>
+            <span class="c">#         div = 1</span>
+            <span class="c">#         while sizedim != 1:</span>
+            <span class="c">#             div += 1</span>
+            <span class="c">#             while sizedim % div == 0:</span>
+            <span class="c">#                 sizedim /= div</span>
+            <span class="c">#                 new_subshape.append(div)</span>
+            <span class="c">#     self.folded_shape.append(new_subshape)</span>
+            
+            <span class="c"># # Folding matrix</span>
+            <span class="c"># new_shape = list(itertools.chain(*self.folded_shape))</span>
+            <span class="c"># self.A = self.A.reshape(new_shape)</span>
+
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">A</span><span class="p">,</span><span class="nb">list</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">global_shape</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span> <span class="k">raise</span> <span class="ne">NameError</span><span class="p">(</span><span class="s">&quot;TensorToolbox.QTTvec.__init__: shape argument is mandatory for TT input&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">global_shape</span> <span class="o">=</span> <span class="n">global_shape</span>
+
+    <span class="k">def</span> <span class="nf">__getstate__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">QTTvec</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__getstate__</span><span class="p">()</span>
+    
+    <span class="k">def</span> <span class="nf">__setstate__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">state</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">QTTvec</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__setstate__</span><span class="p">(</span> <span class="n">state</span> <span class="p">)</span>
+
+<div class="viewcode-block" id="QTTvec.build"><a class="viewcode-back" href="../../../index.html#TensorToolbox.core.QTTvec.build">[docs]</a>    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="mf">1e-10</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s">&#39;svd&#39;</span><span class="p">,</span> <span class="n">rs</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">fix_rank</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">Jinit</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">delta</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">,</span> <span class="n">maxit</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">mv_eps</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">,</span> <span class="n">mv_maxit</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">kickrank</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Common interface for the construction of the approximation.</span>
+
+<span class="sd">        :param float eps: [default == 1e-10] For method==&#39;svd&#39;: precision with which to approximate the input tensor. For method==&#39;ttcross&#39;: TT-rounding tolerance for rank-check.</span>
+<span class="sd">        :param string method: &#39;svd&#39; use singular value decomposition to construct the TT representation [1]_, &#39;ttcross&#39; use low rank skeleton approximation to construct the TT representation [2]_, &#39;ttdmrg&#39; uses Tensor Train Renormalization Cross to construct the TT representation [3]_ [4]_, &#39;ttdmrgcross&#39; uses &#39;ttdmrg&#39; with &#39;ttcross&#39; approximation of supercores</span>
+<span class="sd">        :param list rs: list of integer ranks of different cores. If ``None`` then the incremental TTcross approach will be used. (method==&#39;ttcross&#39;)</span>
+<span class="sd">        :param bool fix_rank: determines whether the rank is allowed to be increased (method==&#39;ttcross&#39;)</span>
+<span class="sd">        :param list Jinit: list of list of integers containing the r starting columns in the lowrankapprox routine for each core. If ``None`` then pick them randomly. (method==&#39;ttcross&#39;)</span>
+<span class="sd">        :param float delta: accuracy parameter in the TT-cross routine (method==&#39;ttcross&#39;). It is the relative error in Frobenious norm between two successive iterations.</span>
+<span class="sd">        :param int maxit: maximum number of iterations in the lowrankapprox routine (method==&#39;ttcross&#39;)</span>
+<span class="sd">        :param float mv_eps: accuracy parameter for each usage of the maxvol algorithm (method==&#39;ttcross&#39;)</span>
+<span class="sd">        :param int mv_maxit: maximum number of iterations in the maxvol routine (method==&#39;ttcross&#39;)</span>
+<span class="sd">        :param bool fix_rank: Whether the rank is allowed to increase</span>
+<span class="sd">        :param int kickrank: rank overshooting for &#39;ttdmrg&#39;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">A</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">A</span><span class="p">,</span> <span class="n">TensorWrapper</span><span class="p">):</span>
+
+            <span class="nb">super</span><span class="p">(</span><span class="n">QTTvec</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">build</span><span class="p">(</span> <span class="n">eps</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">rs</span><span class="p">,</span> <span class="n">fix_rank</span><span class="p">,</span> <span class="n">Jinit</span><span class="p">,</span> <span class="n">delta</span><span class="p">,</span> <span class="n">maxit</span><span class="p">,</span> <span class="n">mv_eps</span><span class="p">,</span> <span class="n">mv_maxit</span><span class="p">,</span> <span class="n">kickrank</span><span class="p">)</span>
+            
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">A</span><span class="p">,</span><span class="nb">list</span><span class="p">):</span>
+            
+            <span class="nb">super</span><span class="p">(</span><span class="n">QTTvec</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">build</span><span class="p">(</span> <span class="n">eps</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">rs</span><span class="p">,</span> <span class="n">fix_rank</span><span class="p">,</span> <span class="n">Jinit</span><span class="p">,</span> <span class="n">delta</span><span class="p">,</span> <span class="n">maxit</span><span class="p">,</span> <span class="n">mv_eps</span><span class="p">,</span> <span class="n">mv_maxit</span><span class="p">,</span> <span class="n">kickrank</span><span class="p">)</span>
+
+            <span class="n">shape</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">()</span>
+
+            <span class="c"># Check that the shape is consistent with the global_shape</span>
+            <span class="c"># and construct folded_shape</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">folded_shape</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">i_fold</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">sizedim</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">global_shape</span><span class="p">:</span>
+                <span class="n">subshape</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">if</span> <span class="n">sizedim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">shape</span><span class="p">[</span><span class="n">i_fold</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                        <span class="n">subshape</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                        <span class="n">i_fold</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s">&quot;TensorToolbox.QTTvec.__init__: the shape provided is not consistent with the shape of A #1&quot;</span><span class="p">)</span>
+                <span class="k">while</span> <span class="n">sizedim</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">sizedim</span> <span class="o">%</span> <span class="n">shape</span><span class="p">[</span><span class="n">i_fold</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s">&quot;TensorToolbox.QTTvec.__init__: the shape provided is not consistent with the shape of A #2&quot;</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">subshape</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">shape</span><span class="p">[</span><span class="n">i_fold</span><span class="p">])</span>
+                        <span class="n">sizedim</span> <span class="o">/=</span> <span class="n">shape</span><span class="p">[</span><span class="n">i_fold</span><span class="p">]</span>
+                        <span class="n">i_fold</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">folded_shape</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">subshape</span><span class="p">)</span>
+            
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NameError</span><span class="p">(</span><span class="s">&quot;TensorToolbox.TTvec.__init__: Input type not allowed&quot;</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="bp">self</span>
+</div>
+    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">newTT</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">TTi</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">TT</span><span class="p">:</span> <span class="n">newTT</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">TTi</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+        <span class="k">return</span> <span class="n">QTTvec</span><span class="p">(</span><span class="n">newTT</span><span class="p">,</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">global_shape</span><span class="p">))</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
+
+<div class="viewcode-block" id="QTTvec.get_data_F_norm"><a class="viewcode-back" href="../../../index.html#TensorToolbox.core.QTTvec.get_data_F_norm">[docs]</a>    <span class="k">def</span> <span class="nf">get_data_F_norm</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Used to get the Frobeniuos norm of the underlying data.</span>
+<span class="sd">        </span>
+<span class="sd">        .. note: To get the Frobenious norm of the TT approximation, use the :py:method:`multilinalg.norm`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">npla</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">A</span><span class="p">[</span><span class="nb">tuple</span><span class="p">([</span> <span class="nb">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">gs</span><span class="p">,</span><span class="bp">None</span><span class="p">)</span> <span class="k">for</span> <span class="n">gs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_global_shape</span><span class="p">()</span> <span class="p">])]</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span><span class="mi">2</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="QTTvec.get_ttdmrg_real_subtensor"><a class="viewcode-back" href="../../../index.html#TensorToolbox.core.QTTvec.get_ttdmrg_real_subtensor">[docs]</a>    <span class="k">def</span> <span class="nf">get_ttdmrg_real_subtensor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">C</span><span class="p">,</span><span class="n">idxs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Used to get the Frobeniuos norm of a subtensor of the underlying data.</span>
+<span class="sd">  </span>
+<span class="sd">        :param np.ndarray C: Extracted 4-d tensor with shape len(l_idx) x n x m x len(r_idx)</span>
+<span class="sd">        :param list idxs: List of tuples of the form (l_idx, slice, slice, r_idx)</span>
+
+<span class="sd">        :return np.ndarray Creal: 1-d array containing the filtered values belonging to the real tensor</span>
+<span class="sd">        </span>
+<span class="sd">        .. note: To get the Frobenious norm of the TT approximation, use the :py:method:`multilinalg.norm`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># Expand the indices</span>
+        <span class="p">(</span><span class="n">lidxs</span><span class="p">,</span><span class="n">list_idx</span><span class="p">,</span><span class="n">slice_idx</span><span class="p">,</span><span class="n">_</span><span class="p">,</span><span class="n">_</span><span class="p">)</span> <span class="o">=</span> <span class="n">expand_idxs</span><span class="p">(</span><span class="n">idxs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">())</span>
+        
+        <span class="c"># Transpose C in order to be iterated the same way of the lidxs</span>
+        <span class="n">Csh</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span>
+        
+        <span class="c"># Filter the redundant values</span>
+        <span class="n">Creal</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,((</span><span class="n">lidx</span><span class="p">,</span><span class="n">sidx</span><span class="p">),(</span><span class="n">_</span><span class="p">,</span><span class="n">value</span><span class="p">))</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span> <span class="nb">zip</span><span class="p">(</span><span class="n">lidxs</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">ndenumerate</span><span class="p">(</span><span class="n">Csh</span><span class="p">))</span> <span class="p">):</span>
+            <span class="c"># Reorder the idxs</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="p">[</span><span class="bp">None</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">list_idx</span><span class="p">)</span><span class="o">+</span><span class="nb">len</span><span class="p">(</span><span class="n">slice_idx</span><span class="p">))]</span>
+            <span class="k">for</span> <span class="n">j</span><span class="p">,</span><span class="n">jj</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">list_idx</span><span class="p">):</span> <span class="n">idx</span><span class="p">[</span><span class="n">jj</span><span class="p">]</span> <span class="o">=</span> <span class="n">lidx</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">j</span><span class="p">,</span><span class="n">jj</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">slice_idx</span><span class="p">):</span> <span class="n">idx</span><span class="p">[</span><span class="n">jj</span><span class="p">]</span> <span class="o">=</span> <span class="n">sidx</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+            
+            <span class="c"># Get the index representation in the unfolded base q tensor</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">full_to_q</span><span class="p">(</span> <span class="n">idx</span> <span class="p">)</span>
+
+            <span class="k">if</span> <span class="nb">all</span><span class="p">(</span> <span class="n">ii</span> <span class="o">&lt;</span> <span class="n">si</span> <span class="k">for</span> <span class="p">(</span><span class="n">ii</span><span class="p">,</span><span class="n">si</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">get_global_shape</span><span class="p">())</span> <span class="p">):</span>
+                <span class="n">Creal</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">Creal</span><span class="p">)</span>
+        <span class="c"># return C.flatten()</span>
+</div>
+<div class="viewcode-block" id="QTTvec.get_global_shape"><a class="viewcode-back" href="../../../index.html#TensorToolbox.core.QTTvec.get_global_shape">[docs]</a>    <span class="k">def</span> <span class="nf">get_global_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Return the shape of the original tensor</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">global_shape</span>
+</div>
+<div class="viewcode-block" id="QTTvec.get_global_ndim"><a class="viewcode-back" href="../../../index.html#TensorToolbox.core.QTTvec.get_global_ndim">[docs]</a>    <span class="k">def</span> <span class="nf">get_global_ndim</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Return the ndim of the original tensor</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">global_shape</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="QTTvec.get_folded_shape"><a class="viewcode-back" href="../../../index.html#TensorToolbox.core.QTTvec.get_folded_shape">[docs]</a>    <span class="k">def</span> <span class="nf">get_folded_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Return the shape of the folded tensor (list of lists)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">folded_shape</span>
+    </div>
+<div class="viewcode-block" id="QTTvec.get_q_shape"><a class="viewcode-back" href="../../../index.html#TensorToolbox.core.QTTvec.get_q_shape">[docs]</a>    <span class="k">def</span> <span class="nf">get_q_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Return the shape of the base &quot;base&quot; shape of the tensor</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">q_shape</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_global_shape</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span> 
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">q_shape</span>
+</div>
+    <span class="k">def</span> <span class="nf">to_tensor</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">A</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">QTTvec</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">to_tensor</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">A</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_q_shape</span><span class="p">())[</span> <span class="nb">tuple</span><span class="p">([</span> <span class="nb">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">gs</span><span class="p">,</span><span class="bp">None</span><span class="p">)</span> <span class="k">for</span> <span class="n">gs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_global_shape</span><span class="p">()</span> <span class="p">])</span> <span class="p">]</span>
+    
+    <span class="k">def</span> <span class="nf">to_TTvec</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">icore</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">TTs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">subshape</span><span class="p">,</span><span class="n">gs</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">folded_shape</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">get_global_shape</span><span class="p">()):</span>
+            <span class="n">tmpcore</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">TT</span><span class="p">[</span><span class="n">icore</span><span class="p">]</span>
+            <span class="n">icore</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">subshape</span><span class="p">)):</span>
+                <span class="n">tmpcore</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tensordot</span><span class="p">(</span> <span class="n">tmpcore</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">TT</span><span class="p">[</span><span class="n">icore</span><span class="p">],</span> <span class="p">(</span> <span class="p">(</span><span class="n">tmpcore</span><span class="o">.</span><span class="n">ndim</span><span class="o">-</span><span class="mi">1</span><span class="p">,),(</span><span class="mi">0</span><span class="p">,)</span> <span class="p">)</span> <span class="p">)</span>
+                <span class="n">icore</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">tmpcore</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span> <span class="n">tmpcore</span><span class="p">,</span> 
+                                  <span class="p">(</span><span class="n">tmpcore</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> 
+                                   <span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">tmpcore</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span> 
+                                   <span class="n">tmpcore</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="p">)</span>
+            <span class="c"># Truncate the core mode to the global_shape</span>
+            <span class="n">tmpcore</span> <span class="o">=</span> <span class="n">tmpcore</span><span class="p">[:,:</span><span class="n">gs</span><span class="p">,:]</span>
+            <span class="n">TTs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tmpcore</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">TTvec</span><span class="p">(</span><span class="n">TTs</span><span class="p">)</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
+    
+    <span class="k">def</span> <span class="nf">q_to_full</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">idxs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">idxfold</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">(),</span> <span class="n">idxunfold</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_q_shape</span><span class="p">(),</span> <span class="n">idxs</span> <span class="p">)</span> <span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">full_to_q</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">idxs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">idxfold</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_q_shape</span><span class="p">(),</span> <span class="n">idxunfold</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">(),</span> <span class="n">idxs</span> <span class="p">)</span> <span class="p">)</span>
+    
+<div class="viewcode-block" id="QTTvec.q_to_global"><a class="viewcode-back" href="../../../index.html#TensorToolbox.core.QTTvec.q_to_global">[docs]</a>    <span class="k">def</span> <span class="nf">q_to_global</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">idxs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; This is a non-injective function from the q indices to the global indices</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span> <span class="p">[</span> <span class="p">(</span> <span class="n">i</span> <span class="k">if</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">N</span> <span class="k">else</span> <span class="n">N</span><span class="o">-</span><span class="mi">1</span> <span class="p">)</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">N</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">idxs</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">get_global_shape</span><span class="p">())</span> <span class="p">]</span> <span class="p">)</span>
+    </div>
+    <span class="k">def</span> <span class="nf">full_to_global</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">idxs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">q_to_global</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">full_to_q</span><span class="p">(</span> <span class="n">idxs</span> <span class="p">)</span> <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_ttdmrg_eval_idxs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">idxs_full</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">QTTvec</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get_ttdmrg_eval_idxs</span><span class="p">()</span>
+        <span class="n">idxs</span> <span class="o">=</span> <span class="p">[</span> <span class="bp">self</span><span class="o">.</span><span class="n">full_to_global</span><span class="p">(</span> <span class="n">idxs_full</span><span class="p">[</span><span class="n">i</span><span class="p">,:]</span> <span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">idxs_full</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="p">]</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">idxs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">idxs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Get item function: indexes are entered in with respect to the unfolded mode sizes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="p">:</span> <span class="k">raise</span> <span class="ne">NameError</span><span class="p">(</span><span class="s">&quot;TensorToolbox.QTTvec.__getitem__: QTT not initialized correctly&quot;</span><span class="p">)</span>
+        
+        <span class="c"># Check whether index out of bounds</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">operator</span><span class="o">.</span><span class="n">ge</span><span class="p">,</span><span class="n">idxs</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">get_global_shape</span><span class="p">())):</span>
+            <span class="k">raise</span> <span class="ne">NameError</span><span class="p">(</span><span class="s">&quot;TensorToolbox.QTTvec.__getitem__: Index out of bounds&quot;</span><span class="p">)</span>
+
+        <span class="c"># Compute the index of the folding representation from the unfolded representation</span>
+        <span class="k">return</span> <span class="n">TTvec</span><span class="o">.</span><span class="n">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">idxfold</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">(),</span><span class="n">idxunfold</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_global_shape</span><span class="p">(),</span><span class="n">idxs</span><span class="p">)))</span>
+        
+    <span class="k">def</span> <span class="nf">kron</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">A</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="p">:</span> <span class="k">raise</span> <span class="ne">NameError</span><span class="p">(</span><span class="s">&quot;TensorToolbox.QTTvec.kron: TT not initialized correctly&quot;</span><span class="p">)</span>
+        <span class="c"># Additional tests wrt the extend function of TTvec</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="n">QTTvec</span><span class="p">):</span> <span class="k">raise</span> <span class="ne">NameError</span><span class="p">(</span><span class="s">&quot;TensorToolbox.QTTvec.kron: A is not of QTTvec type&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">A</span><span class="o">.</span><span class="n">init</span><span class="p">:</span> <span class="k">raise</span> <span class="ne">NameError</span><span class="p">(</span><span class="s">&quot;TensorToolbox.QTTvec.kron: input tensor is not initialized correctly&quot;</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">TT</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">TT</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">global_shape</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">get_global_shape</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">folded_shape</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">get_folded_shape</span><span class="p">())</span>
+    
+<div class="viewcode-block" id="QTTvec.interpolate"><a class="viewcode-back" href="../../../index.html#TensorToolbox.core.QTTvec.interpolate">[docs]</a>    <span class="k">def</span> <span class="nf">interpolate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Ms</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span><span class="n">eps</span><span class="o">=</span><span class="mf">1e-8</span><span class="p">,</span><span class="n">is_sparse</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Interpolates the values of the QTTvec at arbitrary points, using the interpolation matrices ``Ms&#39;&#39;.</span>
+<span class="sd">        </span>
+<span class="sd">        :param list Ms: list of interpolation matrices for each dimension. Ms[i].shape[1] == self.shape()[i]</span>
+<span class="sd">        :param float eps: tolerance with which to perform the rounding after interpolation</span>
+<span class="sd">        :param list is_sparse: is_sparse[i] is a bool indicating whether Ms[i] is sparse or not. If &#39;None&#39; all matrices are non sparse [sparsity is not exploited]</span>
+<span class="sd">        </span>
+<span class="sd">        :returns: QTTvec interpolation</span>
+<span class="sd">        :rtype: QTTvec</span>
+
+<span class="sd">        &gt;&gt;&gt; from DABISpectralToolbox import DABISpectral1D as S1D</span>
+<span class="sd">        &gt;&gt;&gt; Ms = [ S1D.LinearInterpolationMatrix(X[i],XI[i]) for i in range(d) ]</span>
+<span class="sd">        &gt;&gt;&gt; is_sparse = [True]*d</span>
+<span class="sd">        &gt;&gt;&gt; TTapproxI = TTapprox.interpolate(Ms,eps=1e-8,is_sparse=is_sparse)</span>
+<span class="sd">        </span>
+<span class="sd">        .. note: NOT WORKING! (Transform first to TTvec)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">TensorToolbox</span> <span class="kn">import</span> <span class="n">QTTmat</span>
+        
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="p">:</span> <span class="k">raise</span> <span class="ne">NameError</span><span class="p">(</span><span class="s">&quot;TensorToolbox.QTTvec.interpolate: QTT not initialized correctly&quot;</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">Ms</span><span class="p">)</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_global_ndim</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s">&quot;The length of Ms and the dimension of the TTvec must be the same!&quot;</span><span class="p">)</span>
+
+        <span class="n">d</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">Ms</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">Ms</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_global_shape</span><span class="p">()[</span><span class="n">i</span><span class="p">]:</span>
+                <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s">&quot;The condition  Ms[i].shape[1] == self.shape()[i] must hold.&quot;</span><span class="p">)</span>                        
+
+        <span class="c"># Construct the interpolating TTmat</span>
+        <span class="n">Ms0</span> <span class="o">=</span> <span class="n">matkron_to_mattensor</span><span class="p">(</span><span class="n">Ms</span><span class="p">[</span><span class="mi">0</span><span class="p">],[</span><span class="n">Ms</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]],[</span><span class="n">Ms</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
+        <span class="n">TT_MND</span> <span class="o">=</span> <span class="n">QTTmat</span><span class="p">(</span> <span class="n">Ms0</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">base</span><span class="p">,</span> <span class="n">nrows</span><span class="o">=</span><span class="p">[</span><span class="n">Ms</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span><span class="n">ncols</span><span class="o">=</span><span class="p">[</span><span class="n">Ms</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="p">)</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">M</span> <span class="ow">in</span> <span class="n">Ms</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+            <span class="n">Msi</span> <span class="o">=</span> <span class="n">matkron_to_mattensor</span><span class="p">(</span><span class="n">M</span><span class="p">,[</span><span class="n">M</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]],[</span><span class="n">M</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
+            <span class="n">TT_M</span> <span class="o">=</span> <span class="n">QTTmat</span><span class="p">(</span> <span class="n">Msi</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">base</span><span class="p">,</span> <span class="n">nrows</span><span class="o">=</span><span class="p">[</span><span class="n">M</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span><span class="n">ncols</span><span class="o">=</span><span class="p">[</span><span class="n">M</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="p">)</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
+            <span class="n">TT_MND</span><span class="o">.</span><span class="n">kron</span><span class="p">(</span> <span class="n">TT_M</span> <span class="p">)</span>
+        
+        <span class="c"># Perform interpolation</span>
+        <span class="k">return</span> <span class="n">mla</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">TT_MND</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">rounding</span><span class="p">(</span><span class="n">eps</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="QTTvec.project"><a class="viewcode-back" href="../../../index.html#TensorToolbox.core.QTTvec.project">[docs]</a>    <span class="k">def</span> <span class="nf">project</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Vs</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">Ws</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="mf">1e-8</span><span class="p">,</span><span class="n">is_sparse</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Project the QTTvec onto a set of basis provided, using the Generalized Vandermonde matrices ``Vs&#39;&#39; and weights ``Ws&#39;&#39;.</span>
+<span class="sd">        </span>
+<span class="sd">        :param list Vs: list of generalized Vandermonde matrices for each dimension. Ms[i].shape[1] == self.shape()[i]</span>
+<span class="sd">        :param list Ws: list of weights for each dimension. Ws[i].shape[0] == self.shape()[i]</span>
+<span class="sd">        :param float eps: tolerance with which to perform the rounding after interpolation</span>
+<span class="sd">        :param list is_sparse: is_sparse[i] is a bool indicating whether Ms[i] is sparse or not. If &#39;None&#39; all matrices are non sparse [sparsity is not exploited]</span>
+<span class="sd">        </span>
+<span class="sd">        :returns: TTvec containting the Fourier coefficients</span>
+<span class="sd">        :rtype: TTvec</span>
+
+<span class="sd">        &gt;&gt;&gt; from DABISpectralToolbox import DABISpectral1D as S1D</span>
+<span class="sd">        &gt;&gt;&gt; P = S1D.Poly1D(S1D.JACOBI,(0,0))</span>
+<span class="sd">        &gt;&gt;&gt; x,w = S1D.Quadrature(10,S1D.GAUSS)</span>
+<span class="sd">        &gt;&gt;&gt; X = [x]*d</span>
+<span class="sd">        &gt;&gt;&gt; W = [w]*d</span>
+<span class="sd">        &gt;&gt;&gt; # Compute here the TTapprox at points X</span>
+<span class="sd">        &gt;&gt;&gt; TTapprox = QTTvec(....)</span>
+<span class="sd">        &gt;&gt;&gt; # Project</span>
+<span class="sd">        &gt;&gt;&gt; Vs = [ P.GradVandermonde1D(x,10,0,norm=False) ] * d</span>
+<span class="sd">        &gt;&gt;&gt; is_sparse = [False]*d</span>
+<span class="sd">        &gt;&gt;&gt; TTfourier = TTapprox.project(Vs,W,eps=1e-8,is_sparse=is_sparse)</span>
+
+<span class="sd">        .. note: NOT WORKING! (Transform first to TTvec)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">TensorToolbox</span> <span class="kn">import</span> <span class="n">QTTmat</span>
+        
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="p">:</span> <span class="k">raise</span> <span class="ne">NameError</span><span class="p">(</span><span class="s">&quot;TensorToolbox.QTTvec.project: QTT not initialized correctly&quot;</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">Vs</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">Ws</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">Ws</span><span class="p">)</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_global_ndim</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s">&quot;The length of Vs, Ms and the dimension of the QTTvec must be the same!&quot;</span><span class="p">)</span>
+
+        <span class="n">d</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">Vs</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">Vs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">Ws</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">or</span> <span class="n">Ws</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_global_shape</span><span class="p">()[</span><span class="n">i</span><span class="p">]:</span>
+                <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s">&quot;The condition  Vs[i].shape[1] == Ws[i].shape[0] == self.get_global_shape()[i] must hold.&quot;</span><span class="p">)</span>
+        
+        <span class="c"># Prepare matrices</span>
+        <span class="n">VV</span> <span class="o">=</span> <span class="p">[</span> <span class="n">Vs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">T</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">Ws</span><span class="p">[</span><span class="n">i</span><span class="p">],(</span><span class="n">Vs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="mi">1</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="p">]</span>
+
+        <span class="n">V0</span> <span class="o">=</span> <span class="n">matkron_to_mattensor</span><span class="p">(</span><span class="n">VV</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="n">VV</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="p">[</span><span class="n">VV</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
+        <span class="n">TT_MND</span> <span class="o">=</span> <span class="n">QTTmat</span><span class="p">(</span><span class="n">V0</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">base</span><span class="p">,</span> <span class="n">nrows</span><span class="o">=</span><span class="p">[</span><span class="n">VV</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span><span class="n">ncols</span><span class="o">=</span><span class="p">[</span><span class="n">VV</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">V</span> <span class="ow">in</span> <span class="n">VV</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+            <span class="n">Vi</span> <span class="o">=</span> <span class="n">matkron_to_mattensor</span><span class="p">(</span><span class="n">V</span><span class="p">,</span> <span class="p">[</span><span class="n">V</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="p">[</span><span class="n">V</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
+            <span class="n">TT_V</span> <span class="o">=</span> <span class="n">QTTmat</span><span class="p">(</span><span class="n">Vi</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">base</span><span class="p">,</span> <span class="n">nrows</span><span class="o">=</span><span class="p">[</span><span class="n">V</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span><span class="n">ncols</span><span class="o">=</span><span class="p">[</span><span class="n">V</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
+            <span class="n">TT_MND</span><span class="o">.</span><span class="n">kron</span><span class="p">(</span> <span class="n">TT_V</span> <span class="p">)</span>
+        
+        <span class="c"># Perform projection</span>
+        <span class="k">return</span> <span class="n">mla</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">TT_MND</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">rounding</span><span class="p">(</span><span class="n">eps</span><span class="p">)</span>
+        
+<span class="c">##########################################################</span>
+<span class="c"># Constructors of frequently used tensor vectors</span>
+<span class="c">##########################################################</span>
+</div></div>
+<div class="viewcode-block" id="QTTzerosvec"><a class="viewcode-back" href="../../../index.html#TensorToolbox.core.QTTzerosvec">[docs]</a><span class="k">def</span> <span class="nf">QTTzerosvec</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">N</span><span class="p">,</span><span class="n">base</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Returns the rank-1 multidimensional vector of zeros in Quantics Tensor Train format</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">       d (int): number of dimensions</span>
+<span class="sd">       N (int or list): If int then uniform sizes are used for all the dimensions, if list of int then len(N) == d and each dimension will use different size</span>
+<span class="sd">       base (int): QTT base</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">       QTTvec The rank-1 multidim vector of zeros in Tensor Train format</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">TensorToolbox.core</span> <span class="kn">import</span> <span class="n">Candecomp</span>
+    <span class="kn">from</span> <span class="nn">TensorToolbox.core</span> <span class="kn">import</span> <span class="n">zerosvec</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">N</span><span class="p">,</span><span class="nb">int</span><span class="p">):</span>
+        <span class="n">N</span> <span class="o">=</span> <span class="p">[</span><span class="n">N</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">d</span><span class="p">)]</span>
+    
+    <span class="k">for</span> <span class="n">sizedim</span> <span class="ow">in</span> <span class="n">N</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">remainder</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">sizedim</span><span class="p">)</span><span class="o">/</span><span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">base</span><span class="p">),</span><span class="mf">1.0</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">spacing</span><span class="p">(</span><span class="mi">1</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">NameError</span><span class="p">(</span><span class="s">&quot;TensorToolbox.QTTvec.QTTzerosvec: base is not a valid base of N&quot;</span><span class="p">)</span>
+    
+    <span class="n">L</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">around</span><span class="p">(</span> <span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">N</span><span class="p">))</span><span class="o">/</span><span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">base</span><span class="p">)</span> <span class="p">)</span> <span class="p">)</span>
+
+    <span class="n">tt</span> <span class="o">=</span> <span class="n">zerosvec</span><span class="p">(</span><span class="n">L</span><span class="p">,[</span><span class="n">base</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">L</span><span class="p">)])</span>
+
+    <span class="k">return</span> <span class="n">QTTvec</span><span class="p">(</span><span class="n">tt</span><span class="o">.</span><span class="n">TT</span><span class="p">,</span> <span class="n">global_shape</span><span class="o">=</span><span class="n">N</span><span class="p">)</span><span class="o">.</span><span class="n">build</span><span class="p">()</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">TensorToolbox 0.1 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2013, Daniele Bigoni.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3b1.
+    </div>
+  </body>
+</html>
