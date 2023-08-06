@@ -1,0 +1,418 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Adding a control mechanism to a scenario &mdash; mosaik 2.0 documentation</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  
+  
+
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:'../',
+        VERSION:'2.0',
+        COLLAPSE_INDEX:false,
+        FILE_SUFFIX:'.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+    <link rel="top" title="mosaik 2.0 documentation" href="../index.html"/>
+        <link rel="up" title="Tutorial" href="index.html"/>
+        <link rel="next" title="Integrating a control mechanism" href="demo2.html"/>
+        <link rel="prev" title="Creating and running simple simulation scenarios" href="demo1.html"/> 
+
+  <script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        <a href="../index.html" class="icon icon-home"> mosaik</a>
+        <form class="wy-form" action="../search.html" method="get">
+  <input type="text" name="q" placeholder="Search docs" />
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix">
+        
+        
+            <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../installation.html#linux">Linux</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../installation.html#os-x">OS X</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../installation.html#windows">Windows</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../overview.html#what-s-mosaik-supposed-to-do">What&#8217;s mosaik supposed to do?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../overview.html#mosaik-s-main-components">Mosaik&#8217;s main components</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosystem.html">The mosaik ecosystem</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Tutorial</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="examplesim.html">Integrating a simulation model into the mosaik ecosystem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="demo1.html">Creating and running simple simulation scenarios</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="">Adding a control mechanism to a scenario</a></li>
+<li class="toctree-l2"><a class="reference internal" href="demo2.html">Integrating a control mechanism</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../mosaik-api/index.html">The mosaik API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../mosaik-api/overview.html">How mosaik communicates with a simulator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../mosaik-api/low-level.html">The low-level API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../mosaik-api/high-level.html">The high-level API</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../scenario-definition.html">Scenario definition</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../scenario-definition.html#the-setup">The setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../scenario-definition.html#starting-simulators">Starting simulators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../scenario-definition.html#instantiating-simulation-models">Instantiating simulation models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../scenario-definition.html#connecting-entities">Connecting entities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../scenario-definition.html#running-the-simulation">Running the simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../scenario-definition.html#how-to-achieve-bi-directional-data-flows">How to achieve bi-directional data-flows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../scenario-definition.html#how-to-filter-entity-sets">How to filter entity sets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../scenario-definition.html#how-to-create-user-defined-connection-rules">How to create user-defined connection rules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../scenario-definition.html#how-to-retrieve-static-data-from-entities">How to retrieve static data from entities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../scenario-definition.html#how-to-access-topology-and-data-flow-information">How to access topology and data-flow information</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../scenario-definition.html#how-to-destroy-a-world">How to destroy a world</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../scenario-definition.html#how-to-to-real-time-simulations">How to to real-time simulations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../scenario-definition.html#how-to-call-extra-methods-of-a-simulator">How to call extra methods of a simulator</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../simmanager.html">The simulator manager</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../scheduler.html">Scheduling and simulation execution</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../scheduler.html#anatomy-of-a-step">Anatomy of a step</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../scheduler.html#synchronization-and-data-flows">Synchronization and data-flows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../scheduler.html#cyclic-data-flows">Cyclic data-flows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../scheduler.html#stepping-and-simulation-duration">Stepping and simulation duration</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">FAQ</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#general-questions">General questions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#coupling-models-with-mosaik">Coupling models with mosaik</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#the-mosaik-demo">The mosaik demo</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../dev/index.html">Developer&#8217;s Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../dev/setup.html">Development setup and tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dev/release_process.html">Release Process</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dev/requirements.html">Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dev/design-decisions.html">Discussion of design decisions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dev/logo-ci.html">Logo and corporate identity</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api_reference/index.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/mosaik.html"><tt class="docutils literal"><span class="pre">mosaik</span></tt> &#8212; The ende-user API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/mosaik.exceptions.html"><tt class="docutils literal"><span class="pre">mosaik.exceptions</span></tt> &#8212; mosaik specific error types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/mosaik.scenario.html"><tt class="docutils literal"><span class="pre">mosaik.scenario</span></tt> &#8212; Classes related to the scenario creation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/mosaik.scheduler.html"><tt class="docutils literal"><span class="pre">mosaik.scheduler</span></tt> &#8212; Coordinate and execute simulators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/mosaik.simmanager.html"><tt class="docutils literal"><span class="pre">mosaik.simmanager</span></tt> &#8212; Management of external processes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/mosaik.util.html"><tt class="docutils literal"><span class="pre">mosaik.util</span></tt> &#8212; Utility classes and functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../about/index.html">About mosaik</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../about/acknowledgements.html">Acknowledgments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../about/history.html">The history of mosaik</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../glossary.html">Glossary</a></li>
+</ul>
+
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top">
+        <i data-toggle="wy-nav-top" class="icon icon-reorder"></i>
+        <a href="/">mosaik</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <ul class="wy-breadcrumbs">
+  <li><a href="../index.html">Docs</a> &raquo;</li>
+  <li><a href="">Adding a control mechanism to a scenario</a></li>
+  
+</ul>
+<hr/>
+
+          
+  <div class="section" id="adding-a-control-mechanism-to-a-scenario">
+<span id="examplectrl"></span><h1>Adding a control mechanism to a scenario<a class="headerlink" href="#adding-a-control-mechanism-to-a-scenario" title="Permalink to this headline">¶</a></h1>
+<p>Now that we integrated our first simulator into mosaik and tested it in
+a simple scenario, we should a control mechanism and mess around with our
+example simulator a little bit.</p>
+<p>As you remember, our example models had a <em>value</em> to which they added something
+in each step. Eventually, their value will end up to be very high. We&#8217;ll use
+a multi-agent system to keep the values of our models in [-3, 3]. The agents
+will monitor the current <em>value</em> of their respective models and when it reaches
+-3/3, they will set <em>delta</em> to 1/-1 for their model.</p>
+<p>Implementing the Sim API for control strategies is very similar to implementing
+it for normal simulators. We start again by importing the <a class="reference internal" href="../mosaik-api/high-level.html#module-mosaik_api" title="mosaik_api"><tt class="xref py py-mod docutils literal"><span class="pre">mosaik_api</span></tt></a>
+package and defining the simulator meta data:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># controller.py</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">A simple demo controller.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">mosaik_api</span>
+
+
+<span class="n">META</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">&#39;models&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s">&#39;Agent&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s">&#39;public&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">,</span>
+            <span class="s">&#39;params&#39;</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="s">&#39;attrs&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;val_in&#39;</span><span class="p">],</span>
+        <span class="p">},</span>
+    <span class="p">},</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Our control mechanism will use agents to control other entities. The agent has
+no parameters and only one attribute for incoming values.</p>
+<p>Lets continue and implement <a class="reference internal" href="../mosaik-api/high-level.html#mosaik_api.Simulator" title="mosaik_api.Simulator"><tt class="xref py py-class docutils literal"><span class="pre">mosaik_api.Simulator</span></tt></a>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Controller</span><span class="p">(</span><span class="n">mosaik_api</span><span class="o">.</span><span class="n">Simulator</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">META</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">agents</span> <span class="o">=</span> <span class="p">[]</span>
+</pre></div>
+</div>
+<p>Again, nothing special is going on here. We pass our meta data dictionary to
+our super class and set an empty list for our agents.</p>
+<p>Since our agent doesn&#8217;t have any parameters, we don&#8217;t need to implement
+<a class="reference internal" href="../mosaik-api/high-level.html#mosaik_api.Simulator.init" title="mosaik_api.Simulator.init"><tt class="xref py py-meth docutils literal"><span class="pre">init()</span></tt></a>. The default implementation will return
+the meta data, so there&#8217;s nothing we need to do in this case.</p>
+<p>Implementing <a class="reference internal" href="../mosaik-api/high-level.html#mosaik_api.Simulator.create" title="mosaik_api.Simulator.create"><tt class="xref py py-meth docutils literal"><span class="pre">create()</span></tt></a> is also straight forward:</p>
+<div class="highlight-python"><div class="highlight"><pre>    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
+        <span class="n">n_agents</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">agents</span><span class="p">)</span>
+        <span class="n">entities</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_agents</span><span class="p">,</span> <span class="n">n_agents</span> <span class="o">+</span> <span class="n">num</span><span class="p">):</span>
+            <span class="n">eid</span> <span class="o">=</span> <span class="s">&#39;Agent_</span><span class="si">%d</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">i</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">agents</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">eid</span><span class="p">)</span>
+            <span class="n">entities</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s">&#39;eid&#39;</span><span class="p">:</span> <span class="n">eid</span><span class="p">,</span> <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="n">model</span><span class="p">})</span>
+
+        <span class="k">return</span> <span class="n">entities</span>
+</pre></div>
+</div>
+<p>Every agent gets an ID like &#8220;Agent_*&lt;num&gt;*&#8221;. Because there might be multiple
+<a class="reference internal" href="../mosaik-api/high-level.html#mosaik_api.Simulator.create" title="mosaik_api.Simulator.create"><tt class="xref py py-meth docutils literal"><span class="pre">create()</span></tt></a> calls, we need to keep track of how many
+agents we already created in order to generate correct entity IDs. We also
+create a list of <cite>{&#8216;eid&#8217;: &#8216;Agent_&lt;num&gt;&#8217;, &#8216;type&#8217;: &#8216;Agent&#8217;}</cite> dictionaries for
+mosaik.</p>
+<p>You may have noticed that we, in contrast to our example simulator, did not
+actually instantiate any <em>real</em> simulation models this time. We just pretend to
+do it. This okay, since we&#8217;ll implement the agent&#8217;s &#8220;intelligence&#8221; directly in
+<a class="reference internal" href="../mosaik-api/high-level.html#mosaik_api.Simulator.step" title="mosaik_api.Simulator.step"><tt class="xref py py-meth docutils literal"><span class="pre">step()</span></tt></a>:</p>
+<div class="highlight-python"><div class="highlight"><pre>    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">inputs</span><span class="p">):</span>
+        <span class="n">commands</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">agent_eid</span><span class="p">,</span> <span class="n">attrs</span> <span class="ow">in</span> <span class="n">inputs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="n">attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;val_in&#39;</span><span class="p">,</span> <span class="p">{})</span>
+</pre></div>
+</div>
+<p>The <tt class="docutils literal"><span class="pre">commands</span></tt> dict will contain the commands that our control mechanism is
+going to send to the example simulator. We fill this dict in the following
+loop. In that, we iterate over all inputs and extract the input values for each
+agent; so <tt class="docutils literal"><span class="pre">values</span></tt> is a dict containing the current values of all models
+connected to that agent, e.g., <cite>values == {&#8216;Model_0&#8217;: 1}</cite></p>
+<p>We now check the every input value:</p>
+<div class="highlight-python"><div class="highlight"><pre>            <span class="k">for</span> <span class="n">model_eid</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">values</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+
+                <span class="k">if</span> <span class="n">value</span> <span class="o">&gt;=</span> <span class="mi">3</span><span class="p">:</span>
+                    <span class="n">delta</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+                <span class="k">elif</span> <span class="n">value</span> <span class="o">&lt;=</span> <span class="o">-</span><span class="mi">3</span><span class="p">:</span>
+                    <span class="n">delta</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">continue</span>
+</pre></div>
+</div>
+<p>If the value is ≤ -3 or ≥ 3, we have to set a new <em>delta</em> value. Else, we don&#8217;t
+need to do anything and can continue with a new iteration of the loop.</p>
+<p>If we have a new <em>delta</em>, we add it to the <tt class="docutils literal"><span class="pre">commands</span></tt> dict:</p>
+<div class="highlight-python"><div class="highlight"><pre>                <span class="k">if</span> <span class="n">agent_eid</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">commands</span><span class="p">:</span>
+                    <span class="n">commands</span><span class="p">[</span><span class="n">agent_eid</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+                <span class="k">if</span> <span class="n">model_eid</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">commands</span><span class="p">[</span><span class="n">agent_eid</span><span class="p">]:</span>
+                    <span class="n">commands</span><span class="p">[</span><span class="n">agent_eid</span><span class="p">][</span><span class="n">model_eid</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+                <span class="n">commands</span><span class="p">[</span><span class="n">agent_eid</span><span class="p">][</span><span class="n">model_eid</span><span class="p">][</span><span class="s">&#39;delta&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">delta</span>
+</pre></div>
+</div>
+<p>After finishing the loop, the <tt class="docutils literal"><span class="pre">commands</span></tt> dict may look like this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s">&#39;Agent_0&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;Model_0&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;delta&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}},</span>
+    <span class="s">&#39;Agent_2&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;Model_2&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;delta&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">}},</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><em>Agent_0</em> sets for <em>Model_0</em> the new <em>delta</em> = 1. <em>Agent_2</em> sets for <em>Model_2</em>
+the new <em>delta</em> = -1. <em>Agent_1</em> did not set a new <em>delta</em>.</p>
+<p>So now that we create all commands – how do they get to the example simulator?
+The way via <a class="reference internal" href="../mosaik-api/high-level.html#mosaik_api.Simulator.get_data" title="mosaik_api.Simulator.get_data"><tt class="xref py py-meth docutils literal"><span class="pre">get_data()</span></tt></a> is not possible since it
+would require a circular data-flow like <tt class="docutils literal"><span class="pre">connect(model,</span> <span class="pre">agent);</span> <span class="pre">connect(agent,</span>
+<span class="pre">model)</span></tt> which mosaik cannot resolve (You can read <a class="reference internal" href="../dev/design-decisions.html#circular-data-flows"><em>the details</em></a> if you are curious why).</p>
+<p>Instead, we use one of the <a class="reference internal" href="../mosaik-api/overview.html#async-requests-overview"><em>asynchronous requests</em></a> that you can perform within
+<a class="reference internal" href="../mosaik-api/high-level.html#mosaik_api.Simulator.step" title="mosaik_api.Simulator.step"><tt class="xref py py-meth docutils literal"><span class="pre">step()</span></tt></a>, namely
+<a class="reference internal" href="../api_reference/mosaik.simmanager.html#mosaik.simmanager.MosaikRemote.set_data" title="mosaik.simmanager.MosaikRemote.set_data"><tt class="xref py py-meth docutils literal"><span class="pre">set_data()</span></tt></a>. The
+<a class="reference internal" href="../mosaik-api/high-level.html#mosaik_api.Simulator" title="mosaik_api.Simulator"><tt class="xref py py-class docutils literal"><span class="pre">Simulator</span></tt></a> makes these requests available via the
+<a class="reference internal" href="../mosaik-api/high-level.html#mosaik_api.Simulator.mosaik" title="mosaik_api.Simulator.mosaik"><tt class="xref py py-attr docutils literal"><span class="pre">mosaik</span></tt></a> attribute:</p>
+<div class="highlight-python"><div class="highlight"><pre>        <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">mosaik</span><span class="o">.</span><span class="n">set_data</span><span class="p">(</span><span class="n">commands</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">time</span> <span class="o">+</span> <span class="mi">60</span>
+</pre></div>
+</div>
+<p>The <a class="reference internal" href="../api_reference/mosaik.simmanager.html#mosaik.simmanager.MosaikRemote.set_data" title="mosaik.simmanager.MosaikRemote.set_data"><tt class="xref py py-meth docutils literal"><span class="pre">set_data()</span></tt></a> actively sends the
+commands to mosaik which will pass them to the example simulator in its next
+step.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last"><em>yield???</em> If you are new to Python and don&#8217;t know what the <tt class="docutils literal"><span class="pre">yield</span></tt>
+keyword does: Don&#8217;t worry! In this case, it will just block the execution of
+<tt class="docutils literal"><span class="pre">step()</span></tt> until all commands are sent to mosaik. After that, the method
+will normally continue its execution.</p>
+</div>
+<p>When all commands are sent to mosaik, we are done with our step and return the
+time for our next one (which should be in one minute).</p>
+<p>That&#8217;s it. Since there&#8217;s no data to be retrieved, we don&#8217;t need to implement
+<a class="reference internal" href="../mosaik-api/high-level.html#mosaik_api.Simulator.get_data" title="mosaik_api.Simulator.get_data"><tt class="xref py py-meth docutils literal"><span class="pre">get_data()</span></tt></a>. The default implementation will raise
+an error for us if it should be called accidentally.</p>
+<p>Here is the complete code for our (very simple) controller / mutli-agent
+system:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># controller.py</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">A simple demo controller.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">mosaik_api</span>
+
+
+<span class="n">META</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">&#39;models&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s">&#39;Agent&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s">&#39;public&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">,</span>
+            <span class="s">&#39;params&#39;</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="s">&#39;attrs&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;val_in&#39;</span><span class="p">],</span>
+        <span class="p">},</span>
+    <span class="p">},</span>
+<span class="p">}</span>
+
+
+<span class="k">class</span> <span class="nc">Controller</span><span class="p">(</span><span class="n">mosaik_api</span><span class="o">.</span><span class="n">Simulator</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">META</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">agents</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
+        <span class="n">n_agents</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">agents</span><span class="p">)</span>
+        <span class="n">entities</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_agents</span><span class="p">,</span> <span class="n">n_agents</span> <span class="o">+</span> <span class="n">num</span><span class="p">):</span>
+            <span class="n">eid</span> <span class="o">=</span> <span class="s">&#39;Agent_</span><span class="si">%d</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">i</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">agents</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">eid</span><span class="p">)</span>
+            <span class="n">entities</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s">&#39;eid&#39;</span><span class="p">:</span> <span class="n">eid</span><span class="p">,</span> <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="n">model</span><span class="p">})</span>
+
+        <span class="k">return</span> <span class="n">entities</span>
+
+    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">inputs</span><span class="p">):</span>
+        <span class="n">commands</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">agent_eid</span><span class="p">,</span> <span class="n">attrs</span> <span class="ow">in</span> <span class="n">inputs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="n">attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;val_in&#39;</span><span class="p">,</span> <span class="p">{})</span>
+            <span class="k">for</span> <span class="n">model_eid</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">values</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+
+                <span class="k">if</span> <span class="n">value</span> <span class="o">&gt;=</span> <span class="mi">3</span><span class="p">:</span>
+                    <span class="n">delta</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+                <span class="k">elif</span> <span class="n">value</span> <span class="o">&lt;=</span> <span class="o">-</span><span class="mi">3</span><span class="p">:</span>
+                    <span class="n">delta</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">continue</span>
+
+                <span class="k">if</span> <span class="n">agent_eid</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">commands</span><span class="p">:</span>
+                    <span class="n">commands</span><span class="p">[</span><span class="n">agent_eid</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+                <span class="k">if</span> <span class="n">model_eid</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">commands</span><span class="p">[</span><span class="n">agent_eid</span><span class="p">]:</span>
+                    <span class="n">commands</span><span class="p">[</span><span class="n">agent_eid</span><span class="p">][</span><span class="n">model_eid</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+                <span class="n">commands</span><span class="p">[</span><span class="n">agent_eid</span><span class="p">][</span><span class="n">model_eid</span><span class="p">][</span><span class="s">&#39;delta&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">delta</span>
+
+        <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">mosaik</span><span class="o">.</span><span class="n">set_data</span><span class="p">(</span><span class="n">commands</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">time</span> <span class="o">+</span> <span class="mi">60</span>
+
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">mosaik_api</span><span class="o">.</span><span class="n">start_simulation</span><span class="p">(</span><span class="n">Controller</span><span class="p">())</span>
+
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Next, we&#8217;ll create a new scenario to test our controller.</p>
+</div>
+
+
+          <footer>
+  
+    <div class="rst-footer-buttons">
+      
+        <a href="demo2.html" class="btn btn-neutral float-right" title="Integrating a control mechanism"/>Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="demo1.html" class="btn btn-neutral" title="Creating and running simple simulation scenarios"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <p>
+      &copy; Copyright 2013, Stefan Scherfke.
+  </p>
+
+  <a href="https://www.github.com/snide/sphinx_rtd_theme">Sphinx theme</a> provided by <a href="http://readthedocs.org">Read the Docs</a>
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+</body>
+</html>
