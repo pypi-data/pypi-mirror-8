@@ -1,0 +1,8 @@
+APACHE_ROOTDIR = c:\Apache22
+APACHE_VERSION = 22
+
+PYTHON_ROOTDIR = c:\Python32
+PYTHON_VERSION = 32
+
+include common.mk
+
