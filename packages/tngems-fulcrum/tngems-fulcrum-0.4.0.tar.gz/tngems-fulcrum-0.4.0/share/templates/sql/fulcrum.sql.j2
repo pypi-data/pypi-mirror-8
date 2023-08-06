@@ -1,0 +1,42 @@
+{% if not _INCL_FULCRUM|default(False) %}
+-----------------------------------------------------------------------
+--  Fulcrum
+--
+--  This is the Fulcrum header file which specifies all stored
+--  procedures, types, sequences and views used by the TNGEMS/Fulcrum
+--  database.
+--
+-----------------------------------------------------------------------
+{% set _INCL_FULCRUM = True %}
+
+--  This is the main sequences for all domain objects that are identified
+--  by a surrogate primary key.
+CREATE SEQUENCE IF NOT EXISTS {{ schema_public }}.tngems_object;
+
+
+--  These are the extensions used by the TNGEMS/Fulcrum database. In future
+--  releases a mechanism must be defined to include these extensions only
+--  if they are actually needed.
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+CREATE EXTENSION IF NOT EXISTS fuzzystrmatch;
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
+CREATE EXTENSION IF NOT EXISTS postgis;
+CREATE EXTENSION IF NOT EXISTS btree_gist;
+CREATE EXTENSION IF NOT EXISTS lo;
+CREATE EXTENSION IF NOT EXISTS plpythonu;
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
+
+-- Set the PYTHONPATH for all subsequent commands using PL/Python so that
+-- it can import libtng.
+DO
+$$
+    import sys
+    sys.path.append("{{ libtng_module_dir }}")
+$$
+LANGUAGE PLPYTHONU;
+
+
+
+
+{% endif %}
