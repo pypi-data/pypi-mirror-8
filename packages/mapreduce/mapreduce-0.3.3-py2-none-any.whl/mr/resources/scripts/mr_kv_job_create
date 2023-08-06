@@ -1,0 +1,38 @@
+#!/usr/bin/env python2.7
+
+import sys
+import os.path
+dev_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
+sys.path.insert(0, dev_path)
+
+import argparse
+import pprint
+
+import mr.config.log
+import mr.models.kv.job
+import mr.models.kv.workflow
+import mr.models.kv.step
+
+description = "Create a job entity"
+
+parser = argparse.ArgumentParser(description=description)
+
+parser.add_argument('workflow_name', help='Workflow name')
+parser.add_argument('job_name', help='Job name')
+parser.add_argument('description', help='Description')
+parser.add_argument('initial_step_name', help='Initial step name')
+
+args = parser.parse_args()
+
+workflow = mr.models.kv.workflow.get(args.workflow_name)
+initial_step = mr.models.kv.step.get(workflow, args.initial_step_name)
+
+job = mr.models.kv.job.Job(
+        workflow_name=args.workflow_name, 
+        job_name=args.job_name, 
+        description=args.description, 
+        initial_step_name=initial_step.step_name)
+
+job.save()
+
+print(job.get_debug())
