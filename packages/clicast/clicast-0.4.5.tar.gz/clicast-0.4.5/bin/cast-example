@@ -1,0 +1,36 @@
+#!/usr/bin/env python
+
+import argparse
+import sys
+
+from clicast import check_message
+from clicast.filters import match_cli_args
+
+
+def main():
+  parser = argparse.ArgumentParser()
+  parser.add_argument('-r', '--reset', action='store_true', help='Reset read messages. Useful for testing')
+  parser.add_argument('-d', '--debug', action='store_true', help='Show debug messages')
+  parser.add_argument('-f', action='store_true', help='Option to demo msg filtering feature')
+
+  args = parser.parse_args()
+
+  try:
+    check_message('https://raw.githubusercontent.com/maxzheng/clicast/master/test/example.cast',
+                  msg_filter=match_cli_args,
+                  cache_duration=60,
+                  allow_exit=False,
+                  raises=args.debug,               # Recommended to set to False for production (default)
+                  local_file='test/example.cast',  # Used for development only
+                  reset=args.reset,                # Used for development only
+                  header='=' * 80,
+                  footer='=' * 80)
+  except Exception as e:
+    log.debug(e)  # Using a try/except with raises=args.debug is a nice way to figure out why a cast isn't working
+                  # instead of plainly setting raises=False in production. Either way works well.
+
+  print "Hello World! Pass in '-f' to see message targeted for that option"
+
+
+if __name__ == '__main__':
+  main()
