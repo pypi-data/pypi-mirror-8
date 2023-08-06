@@ -1,0 +1,78 @@
+// fix weird border in color selector overlay
+.farbtastic .overlay {
+    padding: 0;
+}
+
+/*
+    Placemap Styles
+*/
+.with-sources .placemap,
+.with-sources .placemap-sources {
+    box-sizing: border-box;
+    float: left;
+    height: 450px;
+}
+
+.placemap {
+    width: 75%;
+}
+
+.placemap-sources {
+    float: right;
+    width: 25%;
+    
+    background-color: $lightgray;
+    
+    padding: 0.5em 1em;
+    border-left: 8px solid white;
+
+    h2 {
+        margin: 0.25em 0 0.25em 0;
+    }
+
+    ul {
+        list-style: none;
+        padding: 0;
+    }
+
+    li {
+        margin: 0;
+    }
+}
+
+.placemap-icon {
+    display: inline-block;
+
+    height: 10px;
+    width: 10px;
+    
+    border-radius: 10px;
+    border: 1px solid white;
+
+    // show the icon like it's in its own column by taking it out of the
+    // flow and by moving the title and controls to the right.
+    position: absolute;
+    margin-top: 4px;
+}
+
+.placemap-title,
+.placemap-controls {
+    position: relative;
+    left: 16px;
+}
+
+/*
+    Placemap Mobile Styles
+*/
+
+@media screen and (max-width: 769px) {
+    .placemap, .placemap-sources {
+        float: none;
+        width: 100%;
+    }
+
+    .placemap-sources {
+        height: auto !important;
+        border-left: none;
+    }
+}

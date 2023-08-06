@@ -1,0 +1,54 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      metal:use-macro="context/main_template/macros/master"
+      i18n:domain="seantis.placemap">
+
+<metal:block fill-slot="javascript_head_slot">
+    <metal:openlayers use-macro="context/@@collectivegeo-macros/openlayers" />
+
+    <script type="text/javascript">
+      (function($){
+        $(window).on('maploadend', function(e, widget) {
+            seantis.placemap.enable_popups(widget.map);
+        });
+      })(jQuery);
+    </script>
+</metal:block>
+
+<metal:content-title fill-slot="content-description">
+  <div class="placemap-description" tal:content="structure context/description" tal:condition="context/description"/>
+</metal:content-title>
+
+<metal:block fill-slot="content-core">
+
+    <div class="without-sources" tal:condition="not:view/show_map" i18n:translate="">
+        No sources have been added yet.
+    </div>
+
+    <div class="with-sources" tal:condition="view/show_map">
+      <div class="placemap">
+          <metal:mapwidget use-macro="context/@@collectivegeo-macros/map-widget"/>
+      </div>
+      <div class="placemap-sources" tal:condition="view/show_map">
+        <h2 i18n:translate="">Legend</h2>
+        <ul>
+          <li tal:repeat="source view/get_sources" class="source">
+            <span class="placemap-icon" tal:attributes="style string:background-color:${source/color};" />
+            <span class="placemap-title" tal:content="source/Title" />
+            <div class="placemap-controls" tal:condition="view/show_controls">
+              <a tal:attributes="href string:${source/getURL}/edit" i18n:translate="">Edit</a>
+              <a tal:attributes="href string:${source/getURL}/delete_confirmation" i18n:translate="">Delete</a>
+              <a tal:attributes="href string:${source/getURL}/content_status_history" tal:content="python: view.get_item_state(source)"></a>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="clearFix" />
+    </div>
+
+</metal:block>
+
+</html>
