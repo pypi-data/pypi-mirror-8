@@ -1,0 +1,27 @@
+-- vim: syntax=sql
+-----------------------------------------------------------------------
+--
+--  TOP-LEVEL DOMAIN NAME STORED PROCEDURES
+--
+-----------------------------------------------------------------------
+
+
+-----------------------------------------------------------------------
+--  Return a set of valid top-level domain names.
+--
+--  Returns:
+--      setof varchar
+--
+-----------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION public.get_valid_tlds()
+RETURNS TABLE (
+    tld varchar
+) AS
+$$
+try:
+    import libtng.dns
+
+    return libtng.dns.get_valid_tlds()
+except ImportError:
+     plpy.fatal("Unable to import libtng. Is it on sys.path?")
+$$ LANGUAGE PLPYTHON3U STABLE SECURITY DEFINER;

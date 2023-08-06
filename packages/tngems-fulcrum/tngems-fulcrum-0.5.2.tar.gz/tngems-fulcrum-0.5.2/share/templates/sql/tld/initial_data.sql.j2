@@ -1,0 +1,15 @@
+-- vim: syntax=sql
+-----------------------------------------------------------------------
+--
+--  TOP-LEVEL DOMAIN NAME INITIAL DATA
+--
+-----------------------------------------------------------------------
+{% if with_remote_data %}
+INSERT INTO {{ schema_common }}.topleveldomains (tld)
+SELECT R1.tld
+FROM public.get_valid_tlds() R1
+WHERE R1.tld NOT IN (
+    SELECT tld
+    FROM {{ schema_common }}.topleveldomains
+);
+{% endif %}

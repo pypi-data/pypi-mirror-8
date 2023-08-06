@@ -1,0 +1,30 @@
+-- vim: syntax=sql
+-----------------------------------------------------------------------
+--
+--  SOUSOU IDENTITY MANAGEMENT SYSTEM INITIAL DATA
+--
+--  This file specifies the initial data for the Sousou IMS database
+--  schema, such as the root user and clients.
+--
+-----------------------------------------------------------------------
+SELECT public.set_session_user(0);
+SELECT public.set_session_client(0);
+SELECT public.set_session_mutation_timestamp('2011-01-01 00:00+00');
+
+
+-- {{ schema_entities }}.party initial data
+WITH initial_data(party_id, subtype) AS (
+    VALUES
+        (-3, 'X'), -- POS
+        (-2, 'X'), -- Unspecified
+        (-1, 'X') -- Unknown
+)
+INSERT INTO {{ schema_entities }}.party (party_id, subtype)
+SELECT party_id, subtype
+FROM initial_data
+WHERE party_id NOT IN (
+    SELECT party_id FROM {{ schema_entities }}.party
+);
+
+-- Important!
+SELECT public.set_session_mutation_timestamp(CURRENT_TIMESTAMP);

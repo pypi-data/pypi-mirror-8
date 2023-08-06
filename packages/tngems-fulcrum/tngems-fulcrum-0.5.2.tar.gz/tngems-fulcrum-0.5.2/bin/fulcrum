@@ -1,0 +1,9 @@
+#!/bin/sh
+# vim: noexpandtab:syntax=sh
+. /etc/tngems/defaults/common
+VIRTUALENV="$TNGEMS_LIB_DIR/fulcrum/bin/activate"
+if [ -d $VIRTUALENV ];
+then
+	. $VIRTUALENV
+fi;
+$TNGEMS_LIB_DIR/fulcrum/bin/fulcrum.py $@

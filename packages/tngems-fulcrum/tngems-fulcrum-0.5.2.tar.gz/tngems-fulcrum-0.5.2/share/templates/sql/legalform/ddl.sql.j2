@@ -1,0 +1,36 @@
+-- vim: syntax=sql
+-----------------------------------------------------------------------
+--
+--  LEGAL FORMS DATA DEFINITION LANGUAGE (DDL)
+--
+--  This file specifies a datamodel to store information about legal
+--  forms, allowing the system to make decisions based on them.
+--
+-----------------------------------------------------------------------
+{% if with_drop %}
+DROP TABLE IF EXISTS
+    {{ schema_common }}.legalforms CASCADE;
+{% endif %}
+
+
+-----------------------------------------------------------------------
+--  LEGAL FORM
+--
+--  Specifies a legal form and it's characteristics during an abritrary
+--  period.
+--
+--  Column:
+--      codename: a codename identifying the legal form.
+--      country: an ISO 3166 Alpha 2 country code specifying the
+--          country.
+--      legal_personality: indicates if an organization in this legal
+--          form is a legal personality.
+--
+-----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS {{ schema_common }}.legalforms(
+    codename varchar NOT NULL,
+    country varchar(2) NOT NULL,
+    legal_personality boolean NOT NULL,
+    CONSTRAINT legalforms_pk
+        PRIMARY KEY (codename, country)
+);

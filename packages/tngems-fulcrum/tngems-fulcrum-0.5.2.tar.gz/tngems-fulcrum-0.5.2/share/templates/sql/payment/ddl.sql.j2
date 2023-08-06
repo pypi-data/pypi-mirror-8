@@ -1,0 +1,134 @@
+-- depends:auth,party
+--
+-- vim: syntax=sql
+-----------------------------------------------------------------------
+--
+--  PAYMENT DATA DEFINITION LANGUAGE (DDL)
+--
+--  This file specifies a schema to store payments and related
+--  information.
+--
+--  Depends:
+--      - auth
+--      - party
+--
+-----------------------------------------------------------------------
+{% if with_drop %}
+DROP TABLE IF EXISTS
+    {{ schema_common }}.paymentmethodtypes CASCADE;
+DROP TABLE IF EXISTS
+    {{ schema_common }}.paymentserviceproviders CASCADE;
+DROP TABLE IF EXISTS
+    {{ schema_common }}.paymentmethods CASCADE;
+DROP TABLE IF EXISTS
+    {{ schema_entities }}.payments CASCADE;
+{% endif %}
+
+
+-----------------------------------------------------------------------
+--  PAYMENT METHOD TYPE
+--
+--  Represents method through which a payment can occur.
+--
+--  Columns:
+--      codename: an internal identifier.
+--      display_name: specifies the display name of the payment method.
+--
+-----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS {{ schema_common }}.paymentmethodtypes(
+    codename varchar(32) NOT NULL,
+    display_name varchar NOT NULL,
+    CONSTRAINT paymentmethodtypes_pk
+        PRIMARY KEY (codename)
+);
+
+
+-----------------------------------------------------------------------
+--  PAYMENT SERVICE PROVIDER
+--
+--  Specifies a Payment Service Provider (PSP).
+--
+--  Columns:
+--      codename: an internal identifier.
+--      display_name: specifies the display name translation token.
+--
+-----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS {{ schema_common }}.paymentserviceproviders(
+    codename varchar(32) NOT NULL,
+    display_name varchar NOT NULL,
+    CONSTRAINT paymentserviceproviders_pk
+        PRIMARY KEY (codename)
+);
+
+
+-----------------------------------------------------------------------
+--  PAYMENT METHODS
+--
+--  Specifies a combination of PAYMENT SERVICE PROVIDER and PAYMENT
+--  METHOD TYPE, that can be referenced by PAYMENT entities to indicate
+--  the method of payment.
+--
+--  Columns:
+--      service_provider: specifies the PAYMENT SERVICE PROVIDER.
+--      payment_method: specifies the PAYMENT METHOD TYPE.
+--
+-----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS {{ schema_common }}.paymentmethods(
+    service_provider varchar(32) NOT NULL,
+    payment_method varchar(32) NOT NULL,
+    CONSTRAINT paymentmethods_pk
+        PRIMARY KEY (service_provider, payment_method)
+);
+
+
+-----------------------------------------------------------------------
+--  PAYMENT
+--
+--  Specifies that a payment occurred between two PARTYs at a given
+--  date and time, using PAYMENT METHOD T:YPE `payment_method`,
+--  facilitated by PAYMENT SERVICE PROVIDER `service_provider`.
+--
+--  Columns:
+--      payment_id: a surrogate primary key.
+--      payment_timestamp: specifies the date and time at which the
+--          payment occurred (at the consideration of our system).
+--      service_provider: specifies the PAYMENT SERVICE PROVIDER that
+--          facilitated the payment.
+--      payment_method: specifies the PAYMENT METHOD TYPE through which
+--          the payment occurred.
+--      issuer_id: identifies the PARTY that issued the payment.
+--      receiver_id: identifies the PARTY the received the payment.
+--      amount: the amount of the payment.
+--      currency: the currency of the payment.
+--
+-----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS {{ schema_entities }}.payments(
+    payment_id serial8 NOT NULL,
+    payment_timestamp timestamp with time zone NOT NULL,
+    service_provider varchar(32) NOT NULL,
+    payment_method varchar(32) NOT NULL,
+    issuer_id int NOT NULL,
+    receiver_id int NOT NULL,
+    amount decimal(19, 6) NOT NULL,
+    currency varchar(3) NOT NULL,
+    CONSTRAINT payments_pk
+        PRIMARY KEY (payment_id),
+    CONSTRAINT payments_paymentmethods_fk1
+        FOREIGN KEY (service_provider, payment_method)
+        REFERENCES {{ schema_common }}.paymentmethods 
+            (service_provider, payment_method)
+        ON UPDATE NO ACTION ON DELETE NO ACTION
+        DEFERRABLE INITIALLY IMMEDIATE,
+    CONSTRAINT payments_party_fk1
+        FOREIGN KEY (issuer_id)
+        REFERENCES {{ schema_entities }}.party (party_id)
+        ON UPDATE CASCADE ON DELETE NO ACTION
+        DEFERRABLE INITIALLY IMMEDIATE,
+    CONSTRAINT payments_party_fk2
+        FOREIGN KEY (receiver_id)
+        REFERENCES {{ schema_entities }}.party (party_id)
+        ON UPDATE CASCADE ON DELETE NO ACTION
+        DEFERRABLE INITIALLY IMMEDIATE,
+    CONSTRAINT payments_amount_gt_zero
+        CHECK (amount > '0'::decimal)
+);

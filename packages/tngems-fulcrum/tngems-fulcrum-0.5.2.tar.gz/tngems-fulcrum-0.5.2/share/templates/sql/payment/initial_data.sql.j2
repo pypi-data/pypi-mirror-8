@@ -1,0 +1,31 @@
+-- vim: syntax=sql
+-----------------------------------------------------------------------
+--
+--  PAYMENT INITIAL DATA
+--
+-----------------------------------------------------------------------
+
+
+-- {{ schema_common }}.paymentmethodtypes initial data
+WITH initial_data(codename, display_name) AS (
+    VALUES
+        ('cash',            'NAME_PAYMENT_METHOD_TYPE_CASH'),
+        ('wire-transfer',   'NAME_PAYMENT_METHOD_TYPE_WIRETRANSFER'),
+        ('debitcard',       'NAME_PAYMENT_METHOD_TYPE_DEBITCARD'),
+        ('creditcard',      'NAME_PAYMENT_METHOD_TYPE_CREDITCARD'),
+        ('check',           'NAME_PAYMENT_METHOD_TYPE_CHECK'),
+        ('paypal',          'NAME_PAYMENT_METHOD_TYPE_PAYPAL')
+), upsert AS (
+    UPDATE {{ schema_common }}.paymentmethodtypes R1 SET
+        display_name = U.display_name
+    FROM initial_data U
+    WHERE R1.codename = U.codename
+    RETURNING R1.*
+)
+INSERT INTO {{ schema_common }}.paymentmethodtypes (codename, display_name)
+SELECT codename, display_name
+FROM initial_data
+WHERE codename NOT IN (
+    SELECT codename
+    FROM upsert
+);

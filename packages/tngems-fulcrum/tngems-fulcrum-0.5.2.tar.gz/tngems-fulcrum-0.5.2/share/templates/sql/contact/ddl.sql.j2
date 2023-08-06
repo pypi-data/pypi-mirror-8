@@ -1,0 +1,219 @@
+-- vim: syntax=sql
+-----------------------------------------------------------------------
+--
+--  COMMUNICATION  DDL, VIEWS, PROCEDURES AND TRIGGERS
+--
+-----------------------------------------------------------------------
+{% if with_drop %}
+DROP TABLE IF EXISTS
+    {{ schema_common }}.contactmechanismtypes CASCADE;
+DROP TABLE IF EXISTS
+    {{ schema_entities }}.contactmechanisms CASCADE;
+DROP TABLE IF EXISTS
+    {{ schema_entities }}.emailaddresses CASCADE;
+DROP TABLE IF EXISTS
+    {{ schema_entities }}.phonenumbers CASCADE;
+DROP TABLE IF EXISTS
+    {{ schema_common }}.contactmechanismapplicationtypes CASCADE;
+DROP TABLE IF EXISTS
+    {{ schema_common }}.contactmechanismapplications CASCADE;
+{% endif %}
+
+
+
+-----------------------------------------------------------------------
+--  COMMUNICATION MECHANISM TYPE
+--
+--  Specifies a type of communcation mechanism.
+--
+--  Columns:
+--      code: an identifier.
+--      description: a description/label.
+--
+-----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS {{ schema_common }}.contactmechanismtypes(
+    code public.string NOT NULL,
+    description public.string NOT NULL,
+    CONSTRAINT contactmechanismtypes_pk
+        PRIMARY KEY (code)
+);
+
+
+-----------------------------------------------------------------------
+--  CONTACT MECHANISM APPLICATION TYPE
+--
+--  Specifies a type of application for a contact mechanism.
+--
+--  Columns:
+--      mechanism_type: the contact mechanism type.
+--      code: the contact mechanism applicatio code.
+--      description: a short description.
+--
+-----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS {{ schema_common }}.contactmechanismapplicationtypes(
+    mechanism_type varchar NOT NULL,
+    code public.string NOT NULL,
+    description public.string NOT NULL,
+    CONSTRAINT contactmechanismapplicationtypes_pk
+        PRIMARY KEY (mechanism_type, code),
+    CONSTRAINT contactmechanismapplicationtypes_contactmechanismtypes_fk1
+        FOREIGN KEY (mechanism_type)
+        REFERENCES {{ schema_common }}.contactmechanismtypes (code)
+        ON UPDATE NO ACTION ON DELETE NO ACTION
+        DEFERRABLE INITIALLY IMMEDIATE
+);
+
+
+-----------------------------------------------------------------------
+--  CONTACT MECHANISM
+--
+--  Represents a mechanism through which a party can be contacted.
+--
+--  Columns:
+--      mechanism_type: identifiers the type of contact mechanism.
+--      mechanism_id: a surrogate primary key.
+--
+--  Notes:
+--  -   Clients MUST NOT insert on this table. Mutations on
+--      {{ schema_entities }}.contactmechanism MUST occur through
+--      one of it's child tables (e.g. {{ schema_entities }}.emailaddresses,
+--      {{ schema_entities }}.phonenumbers).
+--
+-----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS {{ schema_entities }}.contactmechanisms(
+    mechanism_type varchar NOT NULL,
+    mechanism_id int8 NOT NULL,
+    CONSTRAINT contactmechanisms_pk
+        PRIMARY KEY (mechanism_type, mechanism_id)
+);
+
+{% macro contactmechanisms_child_constraints(nspname, relname, typname) %}
+ALTER TABLE {{ nspname }}.{{ relname }} ALTER COLUMN mechanism_type
+    SET DEFAULT '{{ typname }}';
+ALTER TABLE {{ nspname }}.{{ relname }} DROP CONSTRAINT IF EXISTS
+    {{ relname }}_mechanism_type_chk CASCADE;
+ALTER TABLE {{ nspname }}.{{ relname }} ADD CONSTRAINT {{ relname }}_mechanism_type_chk
+    CHECK (mechanism_type = '{{ typname }}');
+ALTER TABLE {{ nspname }}.{{ relname }} DROP CONSTRAINT IF EXISTS
+    {{ relname }}_ak1 CASCADE;
+ALTER TABLE {{ nspname }}.{{ relname }} ADD CONSTRAINT {{ relname }}_ak1
+    UNIQUE (mechanism_id);
+ALTER TABLE {{ nspname }}.{{ relname }} ALTER COLUMN mechanism_id
+    SET DEFAULT nextval('{{ TNGEMS_OBJECT_SEQUENCE }}');
+{% endmacro %}
+
+
+-----------------------------------------------------------------------
+--  CONTACT MECHANISM APPLICATION
+--
+--  Specifies the possible applications of a contact mechanism.
+--
+--  Columns:
+--      mechanism_type: identifiers the type of contact mechanism.
+--      mechanism_id: the mechanism id.
+--      application_type: the application type.
+--      during: the period during which the application was used.
+--
+-----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS {{ schema_entities }}.contactmechanismapplications(
+    mechanism_type varchar NOT NULL,
+    mechanism_id int8 NOT NULL,
+    during public.transaction_time NOT NULL
+        DEFAULT tstzrange(CURRENT_TIMESTAMP, 'infinity'),
+    application_type varchar NOT NULL,
+    CONSTRAINT contactmechanismapplications_pk
+        PRIMARY KEY (mechanism_type, mechanism_id, during, application_type),
+    CONSTRAINT contactmechanismapplications_excl
+        EXCLUDE USING GIST (mechanism_type WITH =, mechanism_id WITH =,
+            during WITH &&, application_type WITH =),
+    CONSTRAINT contactmechanismapplications_adj
+        EXCLUDE USING GIST (mechanism_type WITH =, mechanism_id WITH =,
+            during WITH -|-, application_type WITH =),
+    CONSTRAINT contactmechanismapplications_contactmechanisms_fk1
+        FOREIGN KEY (mechanism_type,mechanism_id)
+        REFERENCES {{ schema_entities }}.contactmechanisms (mechanism_type, mechanism_id)
+        ON UPDATE NO ACTION ON DELETE NO ACTION
+        DEFERRABLE INITIALLY IMMEDIATE,
+    CONSTRAINT contactmechanismapplications_contactmechanismapplicationtypes_fk2
+        FOREIGN KEY (mechanism_type, application_type)
+        REFERENCES {{ schema_common }}.contactmechanismapplicationtypes (mechanism_type, code)
+        ON UPDATE NO ACTION ON DELETE NO ACTION
+        DEFERRABLE INITIALLY IMMEDIATE
+);
+
+
+-----------------------------------------------------------------------
+--  EMAIL ADDRESS
+--
+--  Specifies an e-mail address.
+--
+--  Columns:
+--      email_address: the email address.
+--      is_suspended: indicates if automated mail to this e-mail address
+--          is suspended.
+--      is_blocked: indicates if incoming mail from this e-mail address
+--          should be blocked.
+--
+-----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS {{ schema_entities }}.emailaddresses(
+    mechanism_type varchar NOT NULL,
+    mechanism_id int8 NOT NULL,
+    email_address varchar NOT NULL,
+    is_valid boolean NOT NULL DEFAULT FALSE,
+    is_suspended boolean NOT NULL DEFAULT FALSE,
+    is_blocked boolean NOT NULL DEFAULT FALSE,
+    CONSTRAINT emailaddresses_pk
+        PRIMARY KEY (email_address),
+    CONSTRAINT emailaddresses_ak1
+        UNIQUE (mechanism_type, mechanism_id),
+    CONSTRAINT emailaddresses_contactmechanisms_fk1
+        FOREIGN KEY (mechanism_type, mechanism_id)
+        REFERENCES {{ schema_entities }}.contactmechanisms (mechanism_type, mechanism_id)
+        ON UPDATE NO ACTION ON DELETE NO ACTION
+        DEFERRABLE INITIALLY IMMEDIATE
+);
+
+
+{{ contactmechanisms_child_constraints(schema_entities, "emailaddresses", "email") }}
+
+
+
+
+-----------------------------------------------------------------------
+--  PHONENUMBER
+--
+--  Specifies an ITU-T E.164 formatted international phonenumber.
+--
+--  Columns:
+--      phonenumber: the phonenumber.
+--      line_type: specifies the line type; (L)andline, (M)obile
+--          or (U)nknown.
+--      is_valid: indicates if the phonenumber is confirmed valid.
+--      is_suspended: indicates if automated calling is suspended.
+--      is_blocked: indicates if incoming calls from this phonenumber
+--          should be blocked.
+--
+-----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS {{ schema_entities }}.phonenumbers(
+    mechanism_type varchar NOT NULL,
+    mechanism_id int8 NOT NULL,
+    phonenumber public.phonenumber NOT NULL,
+    line_type varchar(1) NOT NULL DEFAULT 'U',
+    is_valid boolean NOT NULL DEFAULT FALSE,
+    is_suspended boolean NOT NULL DEFAULT FALSE,
+    is_blocked boolean NOT NULL DEFAULT FALSE,
+    CONSTRAINT phonenumbers_pk
+        PRIMARY KEY (phonenumber),
+    CONSTRAINT phonenumbers_line_type_valid
+        CHECK (line_type IN ('L','M','U')),
+    CONSTRAINT phonenumbers_ak1
+        UNIQUE (mechanism_type, mechanism_id),
+    CONSTRAINT phonenumbers_contactmechanisms_fk1
+        FOREIGN KEY (mechanism_type, mechanism_id)
+        REFERENCES {{ schema_entities }}.contactmechanisms (mechanism_type, mechanism_id)
+        ON UPDATE NO ACTION ON DELETE NO ACTION
+        DEFERRABLE INITIALLY IMMEDIATE
+);
+
+
+{{ contactmechanisms_child_constraints(schema_entities, "phonenumbers", "phonenumber") }}
