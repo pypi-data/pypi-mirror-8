@@ -1,0 +1,104 @@
+Metadata-Version: 1.1
+Name: ngi.notify.datadog
+Version: 1.0b3
+Summary: Notify the Plone operation event to the DataDog
+Home-page: https://github.com/ngi644/ngi.notify.datadog
+Author: Takashi NAGAI
+Author-email: ngi644@gmail.com
+License: gpl
+Description: .. contents::
+        
+        Introduction
+        ============
+        
+        This product is notify the Plone operation event to the DataDog.
+        
+        
+        Supported events
+        -------------------------------------------
+        
+        - Zope process start.
+        
+        - Content {create, modify, and change workflow}.
+        
+        - User {add, delete, login and logout}.
+        
+        - Site settings modify.
+        
+        - ZODB size(using Zope clock server).
+        
+        
+        
+        Usage
+        --------------------------------------------
+        
+        For now only tested with latest Plone 4.3:
+        
+        
+        Add the following to your buildout:
+        
+        ::
+        
+          [buildout]
+        
+          eggs =
+              ngi.notify.datadog
+        
+        
+          [instance]
+        
+          zope-conf-additional =
+              <clock-server>
+                  method /your-plone-instance/@@dd_cron
+                  period 120
+                  user your-admin-user-name
+                  password your-admin-user-password
+                  host localhost
+              </clock-server>
+        
+        
+        Re-run buildout.
+        
+        Install via quickinstaller or the Add Ons control panel.
+        
+        
+        Contributors
+        ============
+        
+        
+        - Takashi Nagai, Original Author
+        
+        Changelog
+        =========
+        
+        1.0b3
+        --------------------
+        
+        - Support script(Python)
+        
+        
+        .. code-block:: python
+        
+          from ngi.notify.datadog.dd import metric_datadog
+        
+          metric_datadog('plone.login_failed', tags={'user': request.form.get('__ac_name', '')})
+        
+        
+        1.0b2 (unreleased)
+        --------------------
+        
+        - add MANIFEST.in
+        
+        
+        1.0b1 (unreleased)
+        --------------------
+        
+        
+        
+Platform: UNKNOWN
+Classifier: Environment :: Web Environment
+Classifier: Framework :: Plone
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 2.6
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
