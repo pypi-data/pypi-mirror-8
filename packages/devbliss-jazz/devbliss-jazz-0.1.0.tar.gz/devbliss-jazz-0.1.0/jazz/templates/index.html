@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="{{ static_url('style.css') }}">
+  </head>
+  <a class="key" data-n="52">C5</a>
+  <a class="key black" data-n="53">C#</a>
+  <a class="key" data-n="54">D</a>
+  <a class="key black" data-n="55">Eb</a>
+  <a class="key" data-n="56">E</a>
+  <a class="key" data-n="57">F</a>
+  <a class="key black" data-n="58">F#</a>
+  <a class="key" data-n="59">G</a>
+  <a class="key black" data-n="60">G#</a>
+  <a class="key" data-n="61">A</a>
+  <a class="key black" data-n="62">Bb</a>
+  <a class="key" data-n="63">B</a>
+  <a class="key" data-n="64">C6</a>
+  <a class="key black" data-n="65">C#</a>
+  <a class="key" data-n="66">D</a>
+  <a class="key black" data-n="67">Eb</a>
+  <a class="key" data-n="68">E</a>
+  <a class="key" data-n="69">F</a>
+  <a class="key black" data-n="70">F#</a>
+  <a class="key" data-n="71">G</a>
+  <a class="key black" data-n="72">G#</a>
+  <a class="key" data-n="73">A</a>
+  <a class="key black" data-n="74">Bd</a>
+  <a class="key" data-n="75">B</a>
+  <a class="key" data-n="76">C7</a>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+  <script>
+   $(function () {
+       $("a.key").click(function (e) {
+           $.ajax("/notes", {type: "POST", data: {"n": $(this).attr("data-n")}, success: function (r) {
+               console.log(r);
+           }, error: function (e) { console.log(e); }});
+           e.preventDefault();
+       });
+   });
+  </script>
+</html>
