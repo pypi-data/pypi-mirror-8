@@ -1,0 +1,31 @@
+#!python
+
+## Add path for when we're not already in the path (via proper installation).
+
+import sys
+import os
+dev_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
+sys.path.insert(0, dev_path)
+
+## Change to the root of the project (which Gunicorn requires).
+
+import mr
+root_path = os.path.abspath(os.path.join(os.path.dirname(mr.__file__), '..'))
+
+os.chdir(root_path)
+
+## Start Gunicorn.
+
+# TODO(dustin): Have to pass "env=" into Popen?
+
+os.environ['MR_DO_STREAM_LOG'] = '0'
+os.environ['MR_LOG_FILEPATH'] = '/var/log/jobx.log'
+
+import subprocess
+
+cmd = ['gunicorn', '-c', 'mr/resources/data/gunicorn_conf_prod.py', 'mr.app.main:app']
+
+p = subprocess.Popen(cmd)
+r = p.wait()
+if r != 0:
+    raise EnvironmentError("Gunicorn launch failed.")

@@ -1,0 +1,22 @@
+#!python
+
+import sys
+import os.path
+dev_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
+sys.path.insert(0, dev_path)
+
+import argparse
+
+import mr.config.log
+import mr.models.kv.workflow
+
+description = "Delete a workflow entity"
+
+parser = argparse.ArgumentParser(description=description)
+
+parser.add_argument('name', help='Name')
+
+args = parser.parse_args()
+
+w = mr.models.kv.workflow.get(args.name)
+w.delete()
