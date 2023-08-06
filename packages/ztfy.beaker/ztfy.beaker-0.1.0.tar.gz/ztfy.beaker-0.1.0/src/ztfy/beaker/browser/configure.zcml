@@ -1,0 +1,28 @@
+<configure
+	xmlns="http://namespaces.zope.org/browser"
+	xmlns:zope="http://namespaces.zope.org/zope"
+	i18n_domain="ztfy.beaker">
+
+	<addform
+		name="addBeakerSession.html"
+		schema="..interfaces.IBeakerSessionUtility"
+		label="Add Beaker session data container"
+		content_factory="..session.BeakerSessionUtility"
+		permission="zope.ManageServices" />
+
+	<addMenuItem
+		title="Beaker session"
+		description="Beaker session data container"
+		class="..session.BeakerSessionUtility"
+		view="addBeakerSession.html"
+		permission="zope.ManageServices" />
+
+	<editform
+		name="edit.html"
+		title="Edit"
+		label="Session Data Container Properties"
+		schema="..interfaces.IBeakerSessionUtility"
+		permission="zope.ManageServices"
+		menu="zmi_views" />
+
+</configure>
