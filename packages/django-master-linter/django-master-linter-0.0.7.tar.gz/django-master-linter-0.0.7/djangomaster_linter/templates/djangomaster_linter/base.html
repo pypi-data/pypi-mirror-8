@@ -1,0 +1,51 @@
+{% extends 'djangomaster/sbadmin/base.html' %}
+{% load i18n %}
+{% load url from future %}
+
+{% block page_title %}{{page_title}}{% endblock %}
+
+
+{% block content %}
+    {% if not LINT_IS_INSTALLED %}
+        <p>{% blocktrans with lint_cmd=LINT_CMD %}{{ lint_cmd }} isn't installed.{% endblocktrans %}</p>
+    {% elif not settings.BASE_DIR %}
+        {% url 'djangomaster:home' as home_url %}
+        <p>{% blocktrans with home_url=home_url %}settings.BASE_DIR isn't define. Please, <a href="{{home_url}}#requirements">add it</a>.{% endblocktrans %}</p>
+    {% endif %}
+
+    {% if results %}
+        <p>{% blocktrans with lint_cmd=LINT_CMD %}Executing {{ lint_cmd }}.{% endblocktrans %}</p>
+    {% endif %}
+
+
+    {% for result in results %}
+        {% if result.result %}
+            <div class="panel panel-default">
+                <div class="panel-heading">{{ result.filename }} {% if not result.result %}=){% endif %}</div>
+                <div class="panel-body"><small><pre>{{ result.result }}</pre></small></div>
+            </div>
+        {% endif %}
+    {% endfor %}
+
+    <h2>{% trans 'Files with no output' %}</h2>
+    <table class="table">
+        <tbody>
+            {% for result in results %}
+                {% if not result.result %}
+                    <tr><td>{{ result.filename }}</td></tr>
+                {% endif %}
+            {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}
+
+{% block footer %}
+    <small>
+        {% blocktrans with conf_name=conf_name %}To change the ignored patterns list, change the `{{conf_name}}` settings.{% endblocktrans %}<br />
+        <code>
+            {% trans 'Ignored patterns:' %}
+            [{% for pattern in ignored_patterns %}"{{ pattern.pattern }}"{% if not forloop.last %}, {% endif %}{% endfor %}]
+        </code>
+    </small>
+{% endblock %}
