@@ -1,0 +1,501 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Client Reference &mdash; BAM - Blender Asset Manager 0.0.1 alpha documentation</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="top" title="BAM - Blender Asset Manager 0.0.1 alpha documentation" href="../index.html"/>
+        <link rel="next" title="Installation and requirements" href="../install/index.html"/>
+        <link rel="prev" title="User manual" href="../manual/index.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        <a href="../index.html" class="fa fa-home"> BAM - Blender Asset Manager</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+        
+            <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../manual/index.html">User manual</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../manual/index.html#project-initialization">Project Initialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../manual/index.html#session-creation">Session creation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../manual/index.html#editing">Editing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../manual/index.html#committing-changes">Committing changes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../manual/index.html#updatding-and-existing-session">Updatding and existing session</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Client Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../install/index.html">Installation and requirements</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../install/index.html#webservice">Webservice</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../install/index.html#client">Client</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../design/planning.html">Pipeline</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../design/planning.html#asset-managment">Asset Managment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../design/planning.html#project-management">Project Management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../design/planning.html#automated-tasks">Automated Tasks</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../design/milestones.html">Milestones</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../design/milestones.html#minimum-viable-product">Minimum Viable Product</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../design/milestones.html#performance">Performance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../design/milestones.html#interface">Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../design/milestones.html#scaling-project">Scaling/Project</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../design/milestones.html#basic-automated-tasks">Basic Automated Tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../design/milestones.html#story-tool">Story Tool</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../design/milestones.html#project-management">Project Management</a></li>
+</ul>
+</li>
+</ul>
+
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">BAM - Blender Asset Manager</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+    <li>Client Reference</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          <a href="../_sources/reference/index.txt" rel="nofollow"> View page source</a>
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            
+  <div class="section" id="client-reference">
+<h1>Client Reference<a class="headerlink" href="#client-reference" title="Permalink to this headline">¶</a></h1>
+<p>Here is a reference of all the BAM cli commands.</p>
+<p>BAM!
+
+Blender asset manager
+</p>
+<pre class="literal-block">
+usage: bam [-h]
+           {init,create,cr,checkout,co,commit,ci,update,up,revert,rv,status,st,list,ls,deps,dp,pack,pk,remap}
+           ...
+</pre>
+<dl class="docutils">
+<dt>Sub-commands:</dt>
+<dd><dl class="first last docutils">
+<dt><strong>init</strong></dt>
+<dd><p class="first">Initialize a new project directory</p>
+<pre class="literal-block">
+usage: bam init [-h] url [directory_name]
+</pre>
+<dl class="last docutils">
+<dt>Positional arguments:</dt>
+<dd><table class="first last docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>url</kbd></td>
+<td>Project repository url</td></tr>
+<tr><td class="option-group">
+<kbd>directory_name</kbd></td>
+<td>Directory name</td></tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd>
+<dt><strong>create (cr)</strong></dt>
+<dd><p class="first">Create a new empty session directory</p>
+<pre class="literal-block">
+usage: bam create [-h] session_name
+</pre>
+<dl class="last docutils">
+<dt>Positional arguments:</dt>
+<dd><table class="first last docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>session_name</kbd></td>
+<td>Name of session directory</td></tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd>
+<dt><strong>checkout (co)</strong></dt>
+<dd><p class="first">Checkout a remote path in an existing project</p>
+<pre class="literal-block">
+usage: bam checkout [-h] [-o DIRNAME] [-a] REMOTE_PATH
+</pre>
+<dl class="last docutils">
+<dt>Positional arguments:</dt>
+<dd><table class="first last docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>path</kbd></td>
+<td>Path to checkout on the server</td></tr>
+</tbody>
+</table>
+</dd>
+<dt>Options:</dt>
+<dd><table class="first last docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd><span class="option">-o</span>, <span class="option">--output</span></kbd></td>
+<td>Local name to checkout the session into (optional, falls back to path name)</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-a=False</span>, <span class="option">--all-deps=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Follow all dependencies (unused indirect dependencies too)</td></tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd>
+<dt><strong>commit (ci)</strong></dt>
+<dd><p class="first">Commit changes from a session to the remote project</p>
+<pre class="literal-block">
+usage: bam commit [-h] -m MESSAGE [paths [paths ...]]
+</pre>
+<dl class="last docutils">
+<dt>Positional arguments:</dt>
+<dd><table class="first last docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>paths</kbd></td>
+<td>paths to commit</td></tr>
+</tbody>
+</table>
+</dd>
+<dt>Options:</dt>
+<dd><table class="first last docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd><span class="option">-m</span>, <span class="option">--message</span></kbd></td>
+<td>Commit message</td></tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd>
+<dt><strong>update (up)</strong></dt>
+<dd><p class="first">Update a local session with changes from the remote project</p>
+<pre class="literal-block">
+usage: bam update [-h] [paths [paths ...]]
+</pre>
+<dl class="last docutils">
+<dt>Positional arguments:</dt>
+<dd><table class="first last docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>paths</kbd></td>
+<td>Path(s) to operate on</td></tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd>
+<dt><strong>revert (rv)</strong></dt>
+<dd><p class="first">Reset local changes back to the state at time of checkout</p>
+<pre class="literal-block">
+usage: bam revert [-h] paths [paths ...]
+</pre>
+<dl class="last docutils">
+<dt>Positional arguments:</dt>
+<dd><table class="first last docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>paths</kbd></td>
+<td>Path(s) to operate on</td></tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd>
+<dt><strong>status (st)</strong></dt>
+<dd><p class="first">Show any edits made in the local session</p>
+<pre class="literal-block">
+usage: bam status [-h] [-j] [paths [paths ...]]
+</pre>
+<dl class="last docutils">
+<dt>Positional arguments:</dt>
+<dd><table class="first last docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>paths</kbd></td>
+<td>Path(s) to operate on</td></tr>
+</tbody>
+</table>
+</dd>
+<dt>Options:</dt>
+<dd><table class="first last docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-j=False</span>, <span class="option">--json=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Generate JSON output</td></tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd>
+<dt><strong>list (ls)</strong></dt>
+<dd><p class="first">List the contents of a remote directory</p>
+<pre class="literal-block">
+usage: bam list [-h] [-j] [paths [paths ...]]
+</pre>
+<dl class="last docutils">
+<dt>Positional arguments:</dt>
+<dd><table class="first last docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>paths</kbd></td>
+<td>Path(s) to operate on</td></tr>
+</tbody>
+</table>
+</dd>
+<dt>Options:</dt>
+<dd><table class="first last docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-j=False</span>, <span class="option">--json=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Generate JSON output</td></tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd>
+<dt><strong>deps (dp)</strong></dt>
+<dd><p class="first">List dependencies for file(s)</p>
+<pre class="literal-block">
+usage: bam deps [-h] [-r] [-j] [paths [paths ...]]
+</pre>
+<dl class="last docutils">
+<dt>Positional arguments:</dt>
+<dd><table class="first last docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>paths</kbd></td>
+<td>Path(s) to operate on</td></tr>
+</tbody>
+</table>
+</dd>
+<dt>Options:</dt>
+<dd><table class="first last docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-r=False</span>, <span class="option">--recursive=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Scan dependencies recursively</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-j=False</span>, <span class="option">--json=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Generate JSON output</td></tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd>
+<dt><strong>pack (pk)</strong></dt>
+<dd><p class="first">Pack a blend file and its dependencies into an archive</p>
+<pre class="literal-block">
+usage: bam pack [-h] -o ZIP [-a] [-q] [-c LEVEL] paths [paths ...]
+</pre>
+<dl class="last docutils">
+<dt>Positional arguments:</dt>
+<dd><table class="first last docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>paths</kbd></td>
+<td>Path(s) to operate on</td></tr>
+</tbody>
+</table>
+</dd>
+<dt>Options:</dt>
+<dd><table class="first last docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd><span class="option">-o</span>, <span class="option">--output</span></kbd></td>
+<td>Output file or a directory when multiple inputs are passed</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-a=False</span>, <span class="option">--all-deps=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Follow all dependencies (unused indirect dependencies too)</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-q=False</span>, <span class="option">--quiet=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Suppress status output</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-c=default</span>, <span class="option">--compress=default</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td><p class="first">Compression level for resulting archive</p>
+<p class="last">Possible choices: default, fast, best, store</p>
+</td></tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd>
+<dt><strong>remap</strong></dt>
+<dd><p class="first">Remap blend file paths</p>
+<pre class="literal-block">
+usage: bam remap [-h] {start,finish,reset} ...
+</pre>
+<dl class="last docutils">
+</dl>
+</dd>
+</dl>
+</dd>
+</dl>
+</div>
+
+
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../install/index.html" class="btn btn-neutral float-right" title="Installation and requirements"/>Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../manual/index.html" class="btn btn-neutral" title="User manual"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+    </p>
+  </div>
+
+  <a href="https://github.com/snide/sphinx_rtd_theme">Sphinx theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.0.1 alpha',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
