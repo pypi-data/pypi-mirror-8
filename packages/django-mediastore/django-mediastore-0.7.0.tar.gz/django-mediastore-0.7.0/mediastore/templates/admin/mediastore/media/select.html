@@ -1,0 +1,55 @@
+{% extends "admin/change_list.html" %}
+{% load i18n static mediastore_tags mediastore_admin %}
+
+{% block extrastyle %}{{ block.super }}
+<link rel="stylesheet" type="text/css" href="{% static "mediastore/css/smoothness/jquery-ui-1.7.2.custom.css" %}" />
+<link rel="stylesheet" type="text/css" href="{% static "mediastore/css/mediaselect.css" %}" />
+{% endblock %}
+
+
+{% block extrahead %}{{ block.super }}
+<script type="text/javascript" src="{% static "mediastore/js/jquery-1.3.2.min.js" %}"></script>
+<script type="text/javascript" src="{% static "mediastore/js/jquery-ui-1.7.2.custom.min.js" %}"></script>
+<script type="text/javascript" src="{% static "mediastore/js/mediaselect.js" %}"></script>
+<script type="text/javascript">//<![CDATA[
+    var MEDIASELECT_POPUP = true;
+//]]></script>
+{% endblock %}
+
+
+{% block coltype %}flex{% endblock %}
+
+
+{% block result_list %}
+    {% if multiple %}
+    <p class="paginator">
+        <input type="submit" class="default" name="submit" value="Select"/>
+    </p>
+    {% endif %}
+
+    <div id="media-list" class="select-{% if multiple %}multiple{% else %}single{% endif %}">
+        {% for object in cl.result_list %}
+        {% with object.object as object %}
+            {% block display-object %}
+            <div class="media-object {{ object.type }}" id="media-id-{{ object.pk }}">
+                <div class="meta keywords">
+                    {{ object.name }}
+                    {{ object.description }}
+                    {{ object.tags.all|join:" " }}
+                </div>
+                <div class="meta date">{{ object.created|date:"Y-m-d H:m:s" }}</div>
+                {% admin_preview_media object size=160px %}
+                <div class="name">
+                    {{ object.name }}
+                </div>
+            </div>
+            {% endblock %}
+        {% endwith %}
+        {% endfor %}
+    </div>
+    {% if multiple %}
+    <p class="paginator">
+        <input type="submit" class="default" name="submit" value="Select"/>
+    </p>
+    {% endif %}
+{% endblock %}

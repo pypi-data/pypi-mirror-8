@@ -1,0 +1,10 @@
+{% load thumbnail %}
+{% if object.thumbnail %}
+<img src="{% thumbnail object.thumbnail 300x200 crop %}" alt="" style="max-width:{{ size }};" />
+{% else %}
+<em>Embeded media</em>
+{% if object.name %}
+    <br/><strong>{{ object.name }}</strong>
+{% else %}
+{% endif %}
+{% endif %}
