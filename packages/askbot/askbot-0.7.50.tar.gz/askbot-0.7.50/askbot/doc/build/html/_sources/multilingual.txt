@@ -1,0 +1,72 @@
+.. _multilingual:
+========================
+Language modes in Askbot
+========================
+
+Askbot supports three language modes, specified by the settings.py setting
+``ASKBOT_LANGUAGE_MODE``::
+
+* single language, setting value `single-lang`
+* multilingual, with the current language set via url, `url-lang`
+* multilingual, with languages specified by each user via their profile `user-lang`
+
+Single language mode
+--------------------
+
+To use a single language mode, add this to your ``settings.py``::
+
+    ASKBOT_LANGUAGE_MODE = 'single-lang'
+    LANGUAGE_CODE = 'en' #assuming that you want English
+
+Multilingual, with language set via the URL
+-------------------------------------------
+
+In this mode url has a prefix that selects the current language, e.g. /de/questions/.
+
+The limitation of this mode is that path portions of urls must be in English,
+translation of the urls themselves is not supported.
+
+To use this mode, add this to your ``settings.py``::
+    ASKBOT_LANGUAGE_MODE = 'url-lang'
+    LANGUAGE_CODE = 'en' #English will be default in this case
+    _ = lambda v: v      #use fake translation function in the settings.py
+    LANGUAGES = (        #list of available languages
+        ('en', _('English')),
+        ('de', _('German'))
+    )
+
+Also, activate the django's locale middleware by adding to the 
+`MIDDLEWARE_CLASSES` the following entry::
+
+    'django.middleware.locale.LocaleMiddleware',
+
+
+Multilingual, with languages selected by the users
+--------------------------------------------------
+
+In this mode users can select several languages via their user profile
+and the language is not part of the url. I.e. questions in >1 language
+can be shown on the listing of questions.
+
+To select this mode, add this to your ``settings.py``::
+    ASKBOT_LANGUAGE_MODE = 'user-lang'
+    LANGUAGE_CODE = 'en' #English will be default enabled in this case
+    _ = lambda v: v      #use fake translation function in the settings.py
+    LANGUAGES = (        #list of available languages
+        ('en', _('English')),
+        ('de', _('German'))
+    )
+
+Further information
+-------------------
+
+.. note::
+    If you want to learn about configuration of individual languages
+    please look :ref:`here <localization>`
+
+More on the usage of this setting can be read in the
+`Django documentation <https://docs.djangoproject.com/en/dev/ref/settings/#languages>`_.
+
+There are a number of `settings.py` options that control the various 
+aspects of the site localization - the behaviour of the software depending on the
+currently active language.. Please read more about the :ref:`Localization of Askbot <localization>`.
