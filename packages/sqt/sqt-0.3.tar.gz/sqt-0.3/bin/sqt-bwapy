@@ -1,0 +1,281 @@
+#!/usr/bin/env python3
+"""
+Nice Python wrapper for calling BWA that tries to prevent a lot of errors.
+
+sqt-bwa [options] <BAM> <FASTQ1> [<FASTQ2>]
+
+Map single-end or paired-end reads with BWA. FASTQ1 (and FASTQ2) are the input
+files (can be gzipped). If FASTQ2 is not given, single-end mapping is done.
+BAM is the name of the output BAM file.
+The BAM file will be sorted unless --dontsort is given.
+Duplicates will be marked unless --dontmarkdup is given.
+
+As last step, the BAM files is written atomically (it is renamed
+from a temporary file). That is, the file exists iff everything
+was successful.
+"""
+import tempfile
+import os
+import sys
+import argparse
+from multiprocessing import cpu_count
+from subprocess import Popen, check_call
+from socket import gethostname
+
+from sqt import HelpfulArgumentParser
+
+__author__ = "Marcel Martin"
+
+
+DEFAULT_FASTAREF = "hg1kv37.fasta.gz"
+BUFFER = "pv -q -B 40M"
+#BUFFER="bfr -m 0 -b 40M"
+
+# memory used by samtools sort, in bytes
+MEMORY = 2000 * 1000
+THREADS = DEFAULT_THREADS
+
+def free_space(path): # TODO use this
+	"""Free diskspace on given path in bytes"""
+	result = os.statvfs(path)
+	return result.f_bavail * result.f_frsize
+
+
+CS = False # set to -c to enable color space
+PE = False # set to 'pe' to enable paired-end mapping
+
+
+
+def main():
+	parser = HelpfulArgumentParser(description=__doc__)
+	arg = parser.add_argument
+	arg("-b", "--fifo", action='store_true', default=False,
+		help="Run all processes at the same time using a FIFO -- needs up to three times as much RAM."
+			" Is not faster at the moment")
+	arg('-r', '--reference', metavar="REF", default=DEFAULT_FASTAREF,
+		help="Reference FASTA file to use. Allowed extensions are .fa.gz, .fa,"
+			" .fasta.gz and .fasta (the first found is used). A bwa index must"
+			" exist at that location. (default: %(default)s)")
+	arg("-c", "--colorspace", action='store_true', default=False,
+		help="Work in color space")
+	arg("--threads", "-t", metavar='N', type=int, default=cpu_count(),
+		help="Use at most N threads (default on this machine: %(default)s)")
+	arg("--dontsort", dest='sort', action='store_false', default=True,
+		help="Do not create a sorted BAM file (will also disable duplicate marking)")
+	arg("--dontmarkdup", dest='markdup', action='store_false', default=True,
+		help='Do not mark duplicates in BAM file')
+	arg('--force', '-f', action='store_true', default=False,
+		help='When an output file exists, overwrite it instead of failing.')
+
+	group = parser.add_argument_group('Parameters passed to BWA')
+	garg = group.add_argument
+	garg('-k', '--seed-errors', metavar='N', type=int,
+		help='allowed errors in seed (passed to "bwa aln")')
+	garg('-l', '--seed-length', metavar='N', type=int,
+		help='seed length (passed to "bwa aln")')
+	garg('-n', '--errors', metavar='N', # type is int or float
+		help='allowed errors or allowed missing probabality')
+	garg('-q', dest='quality_cutoff', type=int, default=None,
+		help='passed to "bwa aln" (quality threshold for read trimming)')
+
+	#group = parser.add_argument_group('Parameters passed to BWA samse or sampe')
+## 	echo "-l LB   read group library (LB)"
+	garg('-i', '--read-group', help='read group identifier (ID)')
+	garg('-m', '--sample', help='read group sample (SM), required if ID is given')
+	garg('-p', '--platform', help='read group platform (PL)') # TODO default="Illumina"?
+
+	arg('bam', metavar='BAM', help='output BAM file')
+	arg('fastq1', metavar='FASTQ1', help='FASTQ input file')
+	arg('fastq2', metavar='FASTQ2', nargs='?', help='second FASTQ input file (for paired-end mapping)')
+
+	args = parser.parse_args()
+
+	bwaargs = []
+	if args.quality_cutoff is not None:
+		bwaargs += ['-q', args.quality_cutoff ]
+	if args.seed_errors is not None:
+		bwaargs += [ '-k', args.seed_errors ]
+	if args.seed_length is not None:
+		bwaargs += [ '-l', args.seed_length ]
+	if args.errors is not None:
+		bwaargs += [ '-n', args.errors ]
+
+	if args.read_group:
+		if not args.sample:
+			parser.error('if --read-group/-i is used, --sample must also be given')
+		rg_param = '@RG\tID:{read_group}\tSM:{sample}'.format(**args)
+		if args.platform:
+			rg_params += '\tPL:{}'.format(args.platform)
+		args.bwaargs += [ '-r', rg_params ]
+
+	if not args.sort:
+		args.markdup = False
+	if args.colorspace and args.quality_cutoff:
+		parser.error('Sorry, trimming low-quality ends does not work in colorspace (BWA bug)')
+
+	if not os.path.exists(args.reference):
+		parser.error('reference file "{}" does not exist'.format(args.reference))
+
+	if not os.path.exists(args.reference + '.pac'):
+		print("File {}.pac does not exist -- it seems there's no index"
+			"usable by bwa at the given reference location.".format(args.reference))
+		print()
+		if args.colorspace:
+			print('You can create a color space index as follows:')
+		else:
+			print('You can create an index as follows:')
+		print('bwa index {} {}'.format('-c' if colorspace else '', args.reference))
+		sys.exit(2)
+
+	if args.colorspace and not os.path.exists(args.reference + '.nt.ann'):
+		print('An index was found at {0}, but no {0}.nt.ann exists.'
+			' This is probably not a color space index. Use the -c option'
+			' to bwa index to create one.'.format(args.reference))
+		sys.exit(2)
+	elif args.colorspace and os.path.exists(args.reference + '.nt.ann'):
+		print('An index was found at {0}, but a file {0}.nt.ann exists.'
+			' This means that this is probably a color space index, which'
+			' will not work with non-colorspace data.'.format(args.reference))
+		sys.exit(2)
+
+	if os.path.exists(args.bam) and not args.force:
+		print('Output file "{}" already exists, will not overwrite.'.format(args.bam))
+		sys.exit(2)
+
+	paired_end = bool(args.fastq2)
+	# TODO check that there is enough space in the temporary directory
+	"""
+	observed:
+	input:
+	reads1 6.8 GB
+	reads2 6.9 GB
+
+	output:
+	sai1: 1.54 GB
+	sai2: 1.66 GB
+	unsorted.bam: 15.4 GB
+
+	factor output / input is approx 1.4
+	"""
+
+	#if not check_available_space(args.fastq1, args.fastq2):
+	#tempfile.gettempdir()
+	with tempfile.TemporaryDirectory() as tempdir:
+		sai1 = os.path.join(tempdir, 'reads.1.sai')
+		if args.fifo:
+			os.mkfifo(sai1)
+		aln_threads = args.threads
+		if paired_end:
+			try:
+				checkfastqpe(fastq1, fastq2)
+			except ValueError as e:
+				print("Sorry, your paired-end FASTQ files are not properly paired")
+				print(e)
+				sys.exit(3)
+			sai2 = os.path.join(tempdir, 'reads.2.sai')
+			if args.fifo:
+				os.mkfifo(sai1)
+			aln_threads = (aln_threads + 1) // 2
+			assert aln_threads > 0
+
+	if not args.sort and not args.markdup:
+		# If the next step is the last step,
+		# put target on same partition as final BAM.
+		mappedbam = args.bam + '.runbwatmp.unsorted.' + str(os.getpid()) + '.bam'
+	else:
+		# Otherwise, put on tmp file system
+		mappedbam = os.path.join(tempdir, 'runbwa.unsorted.bam')
+
+	print("Time started:", time.strftime('%F %T'))
+	print("Command line:", sys.argv)
+	print("Running on host:",  gethostname())
+	print("Running processes in parallel:", 'yes' if args.fifo else 'no')
+	print('Paired-end:', 'yes' if paired_end else 'no')
+
+	# echo "running bwa aln (SAI: ${SAI1}) ..."
+	colorspace = ['-c'] if args.colorspace else []
+	bwacmd = ['bwa', 'aln'] + bwaargs + colorspace + [
+		'-t', str(aln_threads), args.reference ]
+	if args.fifo:
+		cmd = Popen
+	else:
+		cmd = check_call
+	with open(sai1, 'wb') as out1: # TODO does this work? file is closed after popen
+		print('running', bwacmd + [args.fastq1])
+		cmd(bwacmd + [args.fastq1], output=out1.fileno()) # .pid
+
+	if paired_end:
+		print('running bwa aln for second set of reads ...')
+		with open(sai2, 'wb') as out2:
+		#${BWACMD} ${READS2} > ${SAI2} | ${BUFFER} & # TODO buffer
+			cmd(bwacmd + [args.fastq2], output=out2.fileno()) # .pid
+
+
+	WORKING HERE NOT FINISHED YET
+	BWASAMPE="bwa sampe ${RGPARAMETERS} ${REF} ${SAI1} ${SAI2} ${READS1} ${READS2}"
+	echo "running: ${BWACMD2}"
+	(	echo -e "@PG\tID:bwa_aln1\tCL:\"${BWACMD} ${READS1}\""
+		echo -e "@PG\tID:bwa_aln2\tCL:\"${BWACMD} ${READS2}\""
+		${BWASAMPE}
+	) |  sqt-samfixn | samtools view -bS - > ${MAPPEDBAM}
+	echo "bwa sampe finished."
+else
+
+	BWASAMSE="bwa samse ${RGPARAMETERS} ${REF} ${SAI1} ${READS1}"
+	echo "running: $BWASAMSE"
+	# TODO -n 10
+	(
+		echo -e "@PG\tID:bwa_aln\tCL:\"${BWACMD} ${READS1}\""
+		${BWASAMSE}
+	) | sqt-samfixn | samtools view -bS - > ${MAPPEDBAM}
+	echo "bwa samse finished."
+fi
+echo -n "Time: "; date +'%F %T %:z'
+
+echo "Written: ${MAPPEDBAM}"
+CURRENTBAM=${MAPPEDBAM}
+
+if [ x$SORT = xyes ]; then
+	echo "Checking BAM file ..."
+	if ! sqt-bam-eof -q ${CURRENTBAM}; then
+		echo "BAM file is corrupt (truncated)"
+		exit 1
+	fi
+	if [ x$MARKDUP = xno ]; then
+		# this is the last step:
+		# put target on same partition as final BAM.
+		TMPBAM=${BAM}.runbwatmp.sorted.$$.bam
+	else
+		# Otherwise, put on tmp file system
+		TMPBAM=${TMPDIR}/runbwa.sorted.bam
+	fi
+	echo "Sorting BAM file ..."
+	samtools sort -m ${MEMORY}000000 ${CURRENTBAM} ${TMPBAM%.bam}
+	echo "Sorting finished."
+
+	rm ${CURRENTBAM}
+	CURRENTBAM=${TMPBAM}
+fi
+
+
+if [ x$MARKDUP = xyes ]; then
+	TMPBAM=${BAM}.runbwatmp.dupmarked.$$.bam
+	samtools index ${CURRENTBAM}
+	picard-tools MarkDuplicates ASSUME_SORTED=true I=${CURRENTBAM} O=${TMPBAM} M=${BAM}.metrices VALIDATION_STRINGENCY=LENIENT
+	CURRENTBAM=${TMPBAM}
+fi
+
+# final steps: indexing and renaming
+if [ x$SORT = xyes ]; then
+	echo "Indexing BAM file ..."
+	samtools index ${CURRENTBAM}
+	echo "Indexing finished."
+	mv ${CURRENTBAM}.bai ${BAM}.bai
+fi
+mv ${CURRENTBAM} ${BAM}
+"""
+	print("Time finished: ", time.strftime('%F %T'))
+
+
+if __name__ == '__main__':
+	main()
