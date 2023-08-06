@@ -1,0 +1,112 @@
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification,
+are permitted provided that the following conditions are met:
+
+ * Redistributions of source code must retain the above copyright notice, this
+   list of conditions and the following disclaimer.
+ * Redistributions in binary form must reproduce the above copyright notice,
+   this list of conditions and the following disclaimer in the documentation
+   and/or other materials provided with the distribution.
+ * Neither the name of Sprockets nor the names of its
+   contributors may be used to endorse or promote products derived from this
+   software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+Description: sprockets.mixins.json_error
+        ===========================
+        Handler mixin for writing JSON errors
+        
+        |Version| |Downloads| |Status| |Coverage| |License|
+        
+        Installation
+        ------------
+        ``sprockets.mixins.json_error`` is available on the
+        `Python Package Index <https://pypi.python.org/pypi/sprockets.mixins.json_error>`_
+        and can be installed via ``pip`` or ``easy_install``:
+        
+        .. code:: bash
+        
+          pip install sprockets.mixins.json_error
+        
+        Documentation
+        -------------
+        https://sprocketsmixinsjson_error.readthedocs.org
+        
+        Requirements
+        ------------
+        -  `sprockets <https://github.com/sprockets/sprockets>`_
+        
+        Example
+        -------
+        This examples demonstrates how to use ``sprockets.mixins.json_error`` to format
+        errors as JSON.
+        
+        .. code:: python
+        
+            from sprockets import mixins.json_error
+            from tornado import web
+        
+            class MyRequestHandler(json_error.JsonErrorMixin,
+                                   web.RequestHandler):
+        
+                def get(self, *args, **kwargs):
+                    raise web.HTTPError(404, log_message='My reason')
+        
+        
+        The response from the handler will automatically be formatted as:
+        
+        .. code:: json
+        
+            {
+                "message": "My reason",
+                "type": "Not Found"
+            }
+        
+        
+        Version History
+        ---------------
+        Available at https://sprocketsmixinsjson_error.readthedocs.org/en/latest/history.html
+        
+        .. |Version| image:: https://badge.fury.io/py/sprockets.mixins.json_error.svg?
+           :target: http://badge.fury.io/py/sprockets.mixins.json_error
+        
+        .. |Status| image:: https://travis-ci.org/sprockets/sprockets.mixins.json_error.svg?branch=master
+           :target: https://travis-ci.org/sprockets/sprockets.mixins.json_error
+        
+        .. |Coverage| image:: https://img.shields.io/coveralls/sprockets/sprockets.mixins.json_error.svg?
+           :target: https://coveralls.io/r/sprockets/sprockets.mixins.json_error
+        
+        .. |Downloads| image:: https://pypip.in/d/sprockets.mixins.json_error/badge.svg?
+           :target: https://pypi.python.org/pypi/sprockets.mixins.json_error
+        
+        .. |License| image:: https://pypip.in/license/sprockets.mixins.json_error/badge.svg?
+           :target: https://sprocketsmixinsjson_error.readthedocs.org
+        
+Platform: UNKNOWN
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Natural Language :: English
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 2
+Classifier: Programming Language :: Python :: 2.6
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.2
+Classifier: Programming Language :: Python :: 3.3
+Classifier: Programming Language :: Python :: 3.4
+Classifier: Programming Language :: Python :: Implementation :: CPython
+Classifier: Programming Language :: Python :: Implementation :: PyPy
+Classifier: Topic :: Software Development :: Libraries
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
