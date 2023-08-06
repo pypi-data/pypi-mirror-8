@@ -1,0 +1,60 @@
+{% extends sitebase.html %}
+{% block head %}
+<link rel="stylesheet" href="/static/vendor/css/jquery.dataTables.css" type="text/css">
+
+<script src="/static/vendor/js/jquery.dataTables.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+    $('#public-studies-table').dataTable({"order": [[1, "asc"]]});
+    $("#waiting").hide();
+} );
+</script>
+
+{% end %}
+{% block content %}
+{% if len(public_studies) %}
+    <table id="public-studies-table" class="display table-bordered table-hover">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Owner</th>
+                <th>Metadata Complete</th>
+                <th>Samples</th>
+                <th>Sequence Files</th>
+                <th>Principal Investigator</th>
+                <th>Pubmed ID(s)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for s in public_studies %}
+            <tr>
+                <td><a href="/study/description/{{ s.id }}">{{ s.title }}</a></td>
+                <td>{% raw s.owner %}</td>
+                {% if s.meta_complete %}
+                <td><span class="glyphicon glyphicon-ok"></span></td>
+                {% else %}
+                <td><span class="glyphicon glyphicon-remove"></span></td>
+                {% end %}
+                <td>{{ s.num_samples_collected }}</td>
+                {% if s.num_raw_data %}
+                <td>{{ s.num_raw_data }}</td>
+                {% else %}
+                <td><span class="glyphicon glyphicon-remove"></span></td>
+                {% end %}
+                <td>{% raw s.pi %}</td>
+                <td>{% raw s.pmids %}</td>
+            </tr>
+            {% end %}
+        </tbody>
+    </table>
+{% else %}
+    <div class="jumbotron">
+        <h1><span class="glyphicon glyphicon-thumbs-down"></span> There are no studies available</h1>
+        <p>
+            This means that the system currently has no public studies you can
+            access
+        </p>
+</div>
+{% end %}
+{% end %}

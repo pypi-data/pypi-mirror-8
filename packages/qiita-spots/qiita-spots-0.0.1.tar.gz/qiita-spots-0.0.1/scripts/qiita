@@ -1,0 +1,274 @@
+#!/usr/bin/env python
+
+# -----------------------------------------------------------------------------
+# Copyright (c) 2014--, The Qiita Development Team.
+#
+# Distributed under the terms of the BSD 3-clause License.
+#
+# The full license is in the file LICENSE, distributed with this software.
+# -----------------------------------------------------------------------------
+
+import click
+import tornado.httpserver
+import tornado.ioloop
+from psycopg2 import OperationalError
+
+from qiita_db.util import (get_filepath_types, get_filetypes,
+                           get_data_types,
+                           get_processed_params_tables,
+                           get_preprocessed_params_tables)
+from qiita_db.commands import (load_sample_template_from_cmd,
+                               load_study_from_cmd,
+                               load_raw_data_cmd, load_processed_data_cmd,
+                               load_preprocessed_data_from_cmd,
+                               load_prep_template_from_cmd)
+from qiita_db.sql_connection import SQLConnectionHandler
+from qiita_db.exceptions import QiitaDBConnectionError
+from qiita_core.configuration_manager import ConfigurationManager
+from qiita_ware.commands import ebi_actions, submit_EBI as _submit_EBI
+from qiita_ware import r_server
+
+
+_CONFIG = ConfigurationManager()
+
+try:
+    conn = SQLConnectionHandler()
+except OperationalError:
+    raise QiitaDBConnectionError("Database does not exist. See qiita_env "
+                                 "make --help for more information")
+else:
+    del conn
+
+
+@click.group()
+def qiita():
+    pass
+
+
+@qiita.group()
+def db():
+    pass
+
+
+@qiita.group()
+def ebi():
+    pass
+
+
+@qiita.group()
+def maintenance():
+    pass
+
+
+@qiita.group()
+def webserver():
+    pass
+
+
+# #############################################################################
+# DB COMMANDS
+# #############################################################################
+
+
+@db.command()
+@click.option('--owner', required=True,
+              help="The email address of the owner of the study")
+@click.option('--title', help="The title of the study", required=True)
+@click.option('--info', type=click.File(mode='r'), required=True,
+              help="filepath of file with study information in python "
+              "config file format")
+def load_study(owner, title, info):
+    """Loads a study to the database"""
+    study = load_study_from_cmd(owner, title, info)
+    print("Study successfully added to the database with id %s" % study.id)
+
+
+@db.command()
+@click.option('--fp', required=True, type=click.Path(resolve_path=True,
+              readable=True, exists=True), multiple=True,
+              help='Path to the raw data file. This option can be used '
+              'multiple times if there are multiple raw data files.')
+@click.option('--fp_type', required=True, multiple=True, help='Describes the '
+              'contents of the file. Pass one fp_type per fp.',
+              type=click.Choice(get_filepath_types().keys()))
+@click.option('--filetype', required=True,
+              type=click.Choice(get_filetypes().keys()),
+              help='The type of data')
+@click.option('--study', multiple=True, help='Associate the data with this '
+              'study. This option can be used multiple times if the data '
+              'should be associated with multiple studies', type=int,
+              required=True)
+def load_raw(fp, fp_type, filetype, study):
+    """Loads a raw data to the database"""
+    raw_data = load_raw_data_cmd(fp, fp_type, filetype, study)
+    print("Raw data successfully added to the database with id %s"
+          % raw_data.id)
+
+
+@db.command()
+@click.option('--study_id', help="Study id associated with data",
+              required=True)
+@click.option('--params_table', help="Name of the paramaters table for the "
+              "preprocessed data", required=True,
+              type=click.Choice(get_preprocessed_params_tables()))
+@click.option('--filedir', help="Directory containing preprocessed data",
+              required=True)
+@click.option('--filepathtype', help="Describes the contents of the input "
+              "files", required=True,
+              type=click.Choice(get_filepath_types().keys()))
+@click.option('--params_id', required=True,
+              help="id in the paramater table associated with the parameters")
+@click.option('--prep_template_id',
+              help="Prep template id associated with data", default=None)
+@click.option('--insdc', is_flag=True,
+              help="If provided, the preprocessed data have been submitted "
+                   "to insdc")
+@click.option('--data_type', default=None,
+              type=click.Choice(get_data_types()),
+              help="The data type of data")
+def load_preprocessed(study_id, params_table, filedir, filepathtype,
+                      params_id, prep_template_id, insdc, data_type):
+    """Loads a preprocessed data to the database"""
+    preproc_data = load_preprocessed_data_from_cmd(
+        study_id, params_table, filedir, filepathtype, params_id, insdc,
+        prep_template_id, data_type)
+    print("Preprocessed data successfully added to the database with id %s"
+          % preproc_data.id)
+
+
+@db.command()
+@click.option('--fp', required=True, type=click.Path(resolve_path=True,
+              readable=True, exists=True), multiple=True, help='Path to the '
+              'processed data. This option can be used multilpe times if '
+              'there are multiple processed data files.')
+@click.option('--fp_type', required=True, multiple=True, help='Describes the '
+              'contents of the file. Pass one fp_type per fp.',
+              type=click.Choice(get_filepath_types().keys()))
+@click.option('--processed_params_table', required=True,
+              type=click.Choice(get_processed_params_tables()),
+              help='The table containing the processed parameters used to '
+              'generate this file')
+@click.option('--processed_params_id', required=True, type=int,
+              help='The ID of the row in the processed_params table')
+@click.option('--preprocessed_data_id', type=int, default=None, help='The '
+              'ID of the row in the preprocessed_data table from which '
+              'this processed data was created')
+@click.option('--study_id', type=int, default=None, help='The '
+              'ID of the row in the study table to which this processed data '
+              'belongs')
+@click.option('--processed_date', type=str, default=None,
+              help='The date to use as the processed_date. Must be '
+              'interpretable  as a datetime. If None, then the current date '
+              'and time will be used.')
+def load_processed(fp, fp_type, processed_params_table,
+                   processed_params_id, preprocessed_data_id, study_id,
+                   processed_date):
+    """Loads a processed data to the database"""
+    proc_data = load_processed_data_cmd(fp, fp_type, processed_params_table,
+                                        processed_params_id,
+                                        preprocessed_data_id, study_id,
+                                        processed_date)
+    print("Processed data successfully added to the database with id %s"
+          % proc_data.id)
+
+
+@db.command()
+@click.argument('fp', required=True,
+                type=click.Path(resolve_path=True, readable=True, exists=True))
+@click.option('--study', required=True, type=int,
+              help='Associate the sample template with this study')
+def load_sample_template(fp, study):
+    """Loads a sample template to the database"""
+    sample_temp = load_sample_template_from_cmd(fp, study)
+    print("Sample template successfully added to the database with id %s"
+          % sample_temp.id)
+
+
+@db.command()
+@click.argument('fp', required=True,
+                type=click.Path(resolve_path=True, readable=True, exists=True))
+@click.option('--raw_data', required=True, type=int,
+              help='Associate the prep template with this raw data')
+@click.option('--study', required=True, type=int,
+              help='Associate the prep template with this study')
+@click.option('--data_type', required=True,
+              type=click.Choice(get_data_types()),
+              help="The data type of data")
+def load_prep_template(fp, raw_data, study, data_type):
+    """Loads a sample template to the database"""
+    prep_template = load_prep_template_from_cmd(fp, raw_data, study, data_type)
+    print("Prep template successfully added to the database with id %s"
+          % prep_template.id)
+
+
+# #############################################################################
+# EBI COMMANDS
+# #############################################################################
+
+
+@ebi.command()
+@click.option('--preprocessed_data_id', required=True, type=int)
+@click.option('--action', type=click.Choice(ebi_actions),
+              default='submit', help='The generated XML files will specify '
+              'this "action", which controls how the EBI servers handle the '
+              'metadata')
+@click.option('--send/--no-send', default=False, help="Controls whether or "
+              "not sequence files and metadata will actually be sent to EBI "
+              "(default is to generate all the files, but not to send)")
+@click.option('--fastq-dir', type=click.Path(exists=True, file_okay=False,
+                                             resolve_path=True))
+def submit(preprocessed_data_id, action, send, fastq_dir):
+    _submit_EBI(preprocessed_data_id, action, send, fastq_dir)
+
+
+# #############################################################################
+# MAINTENANCE COMMANDS
+# #############################################################################
+
+
+@maintenance.command()
+@click.option('--time', required=True, type=int,
+              help='The amount of time to lock the site, in seconds')
+@click.option('--message', required=True, type=str,
+              help="Message to show users")
+def lock(message, time):
+    r_server.setex('maintenance', message, time)
+
+
+@maintenance.command()
+def unlock():
+    r_server.delete('maintenance')
+
+
+@maintenance.command()
+def status():
+    status = r_server.get('maintenance')
+    if status is None:
+        print "Site is not in maintenance mode"
+    else:
+        print "Site is in maintenance mode:"
+        print status
+        print r_server.ttl('maintenance'), "seconds remaining"
+
+
+# #############################################################################
+# WEBSERVER COMMANDS
+# #############################################################################
+
+@webserver.command()
+@click.option('--port', required=False, type=int, help='Port where the '
+              'webserver will start', default=8888)
+def start(port):
+    # in order to use this command you need to have an IPython cluster running,
+    # for now this makes it so that you can use other sub-commands without
+    # having to do that. The solution will (perhaps) be to move this subcommand
+    # into an entirely different script.
+    from qiita_pet.webserver import Application
+
+    http_server = tornado.httpserver.HTTPServer(Application())
+    http_server.listen(port)
+    print("Qiita started on port", port)
+    tornado.ioloop.IOLoop.instance().start()
+
+if __name__ == '__main__':
+    qiita()

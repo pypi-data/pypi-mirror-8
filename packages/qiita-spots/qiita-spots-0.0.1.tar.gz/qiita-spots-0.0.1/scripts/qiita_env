@@ -1,0 +1,114 @@
+#!/usr/bin/env python
+
+# -----------------------------------------------------------------------------
+# Copyright (c) 2014--, The Qiita Development Team.
+#
+# Distributed under the terms of the BSD 3-clause License.
+#
+# The full license is in the file LICENSE, distributed with this software.
+# -----------------------------------------------------------------------------
+
+import click
+
+from qiita_db.environment_manager import (
+    make_environment, drop_environment, clean_test_environment,
+    CLUSTERS, patch as _patch)
+from qiita_core.environment_manager import (
+    start_cluster as _start_cluster, stop_cluster as _stop_cluster)
+from qiita_core.configuration_manager import ConfigurationManager
+
+
+_CONFIG = ConfigurationManager()
+
+
+@click.group()
+def env():
+    pass
+
+
+@env.command()
+@click.argument('clusters', required=True, type=click.Choice(CLUSTERS),
+                nargs=-1)
+def start_cluster(clusters):
+    """Start a compute environment"""
+    for cluster in clusters:
+        print "Starting cluster", cluster
+        if cluster == 'demo':
+            _start_cluster(_CONFIG.ipyc_demo, _CONFIG.ipyc_demo_n)
+        elif cluster == 'reserved':
+            _start_cluster(_CONFIG.ipyc_reserved, _CONFIG.ipyc_reserved_n)
+        elif cluster == 'general':
+            _start_cluster(_CONFIG.ipyc_general, _CONFIG.ipyc_general_n)
+
+
+@env.command()
+@click.argument('clusters', required=True, type=click.Choice(CLUSTERS),
+                nargs=-1)
+def stop_cluster(clusters):
+    """Stop a compute environment"""
+    for cluster in clusters:
+        print "Stopping cluster", cluster
+        if cluster == 'demo':
+            _stop_cluster(_CONFIG.ipyc_demo)
+        elif cluster == 'reserved':
+            _stop_cluster(_CONFIG.ipyc_reserved)
+        elif cluster == 'general':
+            _stop_cluster(_CONFIG.ipyc_general)
+
+
+@env.command()
+@click.option('--load-ontologies/--no-load-ontologies',
+              default=True, help='If True, ontologies will be loaded. '
+              'Cannot be True if this is a test environment.')
+@click.option('--download-reference/--no-download-reference',
+              default=False, help='If True, greengenes reference files will '
+                                  'be downloaded')
+@click.option('--add-demo-user/--no-add-demo-user',
+              default=False, help='If True, then demo@microbio.me will be '
+                                  'added to the database with password '
+                                  '"password"')
+def make(load_ontologies, download_reference, add_demo_user):
+    """Creates the database specified in config"""
+    # TODO: use password from config, see issue #363
+    # Or figure out a way to use
+    # http://click.pocoo.org/3/options/#password-prompts
+    # and have it work with Travis...
+    make_environment(load_ontologies, download_reference, add_demo_user)
+
+
+@env.command()
+@click.option('--ask-for-confirmation/--no-ask-for-confirmation',
+              default=True, help='If True, will ask for confirmation before '
+              'dropping the production environment.')
+def drop(ask_for_confirmation):
+    """Drops the database specified in config"""
+    # TODO: use password from config, see issue #363
+    # Or figure out a way to use
+    # http://click.pocoo.org/3/options/#password-prompts
+    # and have it work with Travis...
+    drop_environment(ask_for_confirmation)
+
+
+@env.command()
+def clean_test():
+    """Cleans the test database environment.
+
+    In case that the test database is dirty (i.e. the 'qiita' schema is
+    present), this cleans it up by dropping the 'qiita' schema and rebuilding
+    the test database.
+    """
+    clean_test_environment()
+
+
+@env.command()
+def patch():
+    """Patches the database schema based on the SETTINGS table
+
+    Pulls the current patch from the settings table and applies all subsequent
+    patches found in the patches directory.
+    """
+    _patch()
+
+
+if __name__ == '__main__':
+    env()
