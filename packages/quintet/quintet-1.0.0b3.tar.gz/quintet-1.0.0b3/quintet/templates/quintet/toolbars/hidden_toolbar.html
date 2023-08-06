@@ -1,0 +1,30 @@
+<div class="btn-group pull-right">
+  <button type="button" class="btn btn-default approve-btn" data-loading-text="Loading..." data-approved="{{ approved }}">
+    <span class="glyphicon glyphicon-ok-sign"></span>
+    <span class="btn-label">{% if approved %}Unapprove{% else %}Approve{% endif %}</span>
+  </button>
+  <button type="button" class="goto-comments btn btn-default">Comment</button>
+</div>
+
+<div class="btn-group pull-right">
+  <a href="{{ post.get_set_show_url }}" class="btn btn-success"><span class="glyphicon glyphicon-eye-open"></span> Show Post</a>
+  <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></button>
+  <ul class="dropdown-menu" role="menu">
+    <li><a href="{{ post.get_set_draft_url }}">Mark as Draft</a></li>
+    <li><a href="#" data-toggle="modal" data-target="#confirm-archive-modal">Archive</a></li>
+    {% if perms.quintet.delete_post %}
+    <li class="divider"></li>
+    <li><a href="#" data-toggle="modal" data-target="#confirm-delete-modal">Delete</a></li>
+    {% endif %}
+  </ul>
+</div>
+
+{% include 'quintet/toolbars/components/reviewers.html' %}
+
+<script type="text/javascript">
+$(document).ready( function() {
+  $('.goto-comments').click(function() {
+    $.scrollTo('#comment-form', 500);
+  })
+});
+</script>

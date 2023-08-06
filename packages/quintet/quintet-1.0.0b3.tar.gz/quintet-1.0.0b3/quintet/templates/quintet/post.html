@@ -1,0 +1,160 @@
+{% extends 'quintet/post_list.html' %}
+{% load static %}
+
+{% block title %}Edit Post{% endblock %}
+
+{% block content %}
+<div class="btn-toolbar" style="margin-bottom: 20px;">
+  <div class="btn-group" id="contributor-list">
+    {% for contributor in post.contributors.all %}
+    <a href="#" rel="tooltip" data-placement="bottom" title="{{ contributor.user.get_full_name }}, {{ contributor.role.all|join:', ' }}" style="display: block; width: 34px; height: 34px; float: left; margin-right: 10px;" data-pk="{{ contributor.pk }}" data-name="{{ contributor.user.get_full_name }}" data-role-pks="{% for role in contributor.role.all %}{{ role.pk }},{% endfor %}" data-role="{{ contributor.role.all|join:', ' }}" class="edit">
+      <img src="{{ contributor.user.profile.get_thumbnail_url }}" alt="{{ contributor.user.get_full_name }}, {{ contributor.role.all|join:', ' }}" class="img-circle img-responsive">
+    </a>
+    {% endfor %}
+    <a href="#" rel="tooltip" data-placement="bottom" title="Add Contributor" style="display: block; width: 34px; height: 34px; float: left; margin-right: 10px;" class="add" data-toggle="modal" data-target="#contributor-modal">
+      <span class="img-circle img-responsive text-center" style="background-color: #ccc; height: 100%;"><span class="glyphicon glyphicon-plus" style="margin-top: 8px; color: #fff;"></span></span>
+    </a>
+  </div>
+
+  {% include 'quintet/toolbars/toolbars.html' %}
+
+  <div class="save-status-wrapper pull-right" style="margin: 10px 15px 0 0; line-height: 1em;">
+    <p class="save-status text-muted" style="display: none;"></p>
+  </div>
+</div>
+
+<form role="form" method="post" style="margin-bottom: 20px;" id="post-form">{% csrf_token %}
+  <div class="row">
+    <div class="col-sm-8">
+      <div class="form-group">
+        <label for="{{ form.title.id_for_label }}" class="sr-only">{{ form.title.label }}</label>
+        {{ form.title }}
+      </div>
+    </div>
+
+    <div class="col-sm-4">
+      <div class="form-group">
+        <label for="{{ form.section.id_for_label }}" class="sr-only">{{ form.section.label }}</label>
+        {{ form.section }}
+      </div>
+    </div>
+  </div>
+  <div class="form-group">
+    {{ form.markdown }}
+  </div>
+  <div class="form-group">
+    <label for="{{ form.tags.id_for_label }}">{{ form.tags.label }}</label>
+    {{ form.tags }}
+  </div>
+</form>
+
+{% include 'quintet/comments.html' %}
+
+{% include 'quintet/modals/confirm_archive.html' %}
+{% include 'quintet/modals/confirm_delete.html' %}
+{% include 'quintet/modals/add_contributor.html' with form=contributor_form %}
+{% include 'quintet/modals/edit_contributor.html' %}
+{% include 'quintet/modals/add_reviewer.html' with form=add_reviewer_form %}
+{% endblock %}
+
+{% block js %}
+<script src="{% static 'js/murmurhash3.js' %}"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery-scrollTo/1.4.11/jquery.scrollTo.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery.form/3.49/jquery.form.min.js"></script>
+<script src="{% static 'js/jquery.selection.min.js' %}"></script>
+
+{{ form.media }}
+
+<script type="text/javascript">
+  $(document).ready(function() {
+    $('body').tooltip({
+        selector: 'a[rel="tooltip"], [data-toggle="tooltip"]'
+    });
+
+    // Post auto-save
+    window.post_last_saved = false;
+    window.post_hash = murmurhash3_32_gc($('#post-form').formSerialize(), '{{ post.pk }}');
+    window.hide_status_timeout = null;
+
+    setInterval(function() {
+      var hash = murmurhash3_32_gc($('#post-form').formSerialize(), '{{ post.pk }}');
+
+      if(hash != window.post_hash) {
+        post_save();
+      }
+    }, 5*1000); // every 5 seconds
+
+    $('#post-form').submit(function(e) {
+      e.preventDefault();
+      post_save();
+    });
+
+    $('.save-status').on('click', '.save-again', function(e) {
+      e.preventDefault();
+      post_save();
+    });
+
+    function post_save() {
+      var hash = murmurhash3_32_gc($('#post-form').formSerialize(), '{{ post.pk }}');
+
+      display_save_status("Saving...");
+      $('#post-form').ajaxSubmit({
+        'success': function() {
+          display_save_status("Saved.");
+          window.post_hash = hash;
+        },
+        'error': function() {
+          display_save_status("Error Saving. <a class=\"save-again\" href=\"#\">Try again</a>", -1);
+        },
+        'timeout': 4*1000
+      });
+    }
+
+    function display_save_status(status, duration) {
+      duration = typeof duration !== 'undefined' ? duration : 3*1000 // three seconds
+      $('.save-status').html(status);
+
+      if($('.save-status').is(':hidden')) {
+        $('.save-status').fadeIn();
+      }
+
+      clearTimeout(window.hide_status_timeout);
+      if (duration > 1) {
+        window.hide_status_timeout = setTimeout(function() {
+          $('.save-status').fadeOut();
+        }, duration);
+      }
+    }
+
+    // Edit contributor modal Init
+    $('#contributor-list').on('click', '.edit', function(e) {
+      e.preventDefault();
+
+      $modal = $('#edit-contributor-modal');
+      $modal.find('.full_name').text($(this).attr('data-name'));
+      $modal.find('.modal-left-image').html('\
+        <img src="' + $(this).children('img').attr('src') + '" alt="' + $(this).attr('data-name') + '">\
+        ');
+
+      $modal.find('#edit-contributor-form').attr('action', 'edit_contributor/' + $(this).attr('data-pk') + '/');
+
+      $modal.find('#id_role').val($(this).attr('data-role-pks').split(','));
+      $modal.find('#id_role').djangoBootstrapTypeahead('refresh');
+
+      $modal.find('#remove-contributor').attr('data-pk', $(this).attr('data-pk'));
+
+      $modal.modal('show');
+    });
+
+    // Warn on window close with unsaved changes.
+    $(window).bind('beforeunload', function(e) {
+      var hash = murmurhash3_32_gc($('#post-form').formSerialize(), '{{ post.pk }}');
+
+      if(hash != window.post_hash) {
+        return "You have unsaved changes."
+      }
+      return void 0;
+    });
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,63 @@
+{% extends 'quintet/post.html' %}
+{% load static %}
+
+{% block title %}{{ post.title }}{% endblock %}
+
+{% block content %}
+<div class="btn-toolbar" style="margin-bottom: 20px;">
+  <div class="btn-group">
+    {% for contributor in post.contributors.all %}
+    <a href="#" onclick="event.preventDefault();" data-toggle="tooltip" data-placement="bottom" title="{{ contributor.user.get_full_name }}, {{ contributor.role.all|join:', ' }}" style="display: block; width: 34px; height: 34px; float: left; margin-right: 10px;">
+      <img src="{{ contributor.user.profile.get_thumbnail_url }}" alt="{{ contributor.user.get_full_name }}, {{ contributor.role.all|join:', ' }}" class="img-circle img-responsive">
+    </a>
+    {% endfor %}
+  </div>
+
+  {% include 'quintet/toolbars/toolbars.html' %}
+</div>
+
+<div class="row">
+  <div class="col-sm-8">
+    <h1>{{ post.title }}</h1>
+  </div>
+
+  <div class="col-sm-4 text-right">
+    {% if post.section %}<h1><small>{{ post.section }}</small></h1>{% endif %}
+  </div>
+</div>
+
+<article class="preview">
+  {{ post.html|safe }}
+</article>
+
+<hr />
+
+<div class="tags">
+  {% for tag in post.tags.all %}
+    <span class="label label-default">{{ tag }}</span>
+  {% endfor %}
+</div>
+
+{% include 'quintet/comments.html' %}
+
+{% endblock %}
+
+{% block js %}
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery.form/3.49/jquery.form.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/ekko-lightbox/3.0.3a/ekko-lightbox.min.js"></script>
+<script src="{% static 'js/jquery.selection.min.js' %}"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery-scrollTo/1.4.11/jquery.scrollTo.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $('body').tooltip({
+        selector: '[rel=tooltip], [data-toggle=tooltip]'
+    });
+
+    // Initialize Lightbox
+    $('article').on('click', 'a:has(img)', function(e) {
+      e.preventDefault();
+      $(this).ekkoLightbox();
+    });
+  });
+</script>
+{% endblock %}
