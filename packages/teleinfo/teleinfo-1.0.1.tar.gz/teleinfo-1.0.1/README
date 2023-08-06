@@ -1,0 +1,23 @@
+pour construire l'archive pip :
+  python setup.py sdist
+
+pour installer avec pip:
+  pip install dist/teleinfo-1.0.0.tar.gz
+
+pour upload vers Pypi :
+  (la 1ere fois, pour declarer le module) : python setup.py register
+  python setup.py sdist upload
+puis installation :
+  pip install teleinfoi
+
+Lors de l'installation, un outil CLI est installé : bin/teleinfo_json
+
+Usage du module :
+  from teleinfo import Teleinfo
+  from teleinfo.hw_vendors import RpiDom
+  ti = Teleinfo(RpiDom())
+  print ti.get_frame()
+
+Le parseur supporte aussi l'itération :
+  for frame in Teleinfo(RpiDom()):
+      do_something_with(frame)
