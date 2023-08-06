@@ -1,0 +1,54 @@
+\chapter{Architecture design}
+A lot of efforts has been devoted to the architecture design. Indeed, the design should reflect the mathematical notions employed in MM as well as their practical use and manipulation. The design should also follow some constraints established by the usability of the library itself, which could be summarized as follow:
+\begin{itemize}
+\item Completely cross-platform. There is no sense in providing a library that runs only on a few platforms, and the libraries should help the work of the researchers/practician. To that extend, the specifications and the constraints should comply with standard and massively used tools. As a direct consequence, the library should conform completely to these standards. This includes the programming language, the compilers as well as the third party libraries, but also the build system.
+\item The design should be modular. A lot of different notions are manipulated and there is no point in packaging all of them in one module. The library should be articulated in modules which roles are easily identifiable. 
+\end{itemize}
+
+
+\section{Third party libraries and programs}
+
+\subsection{Visual C++, XCode, GCC}
+We advocate the use of free software, and building and using Yayi does not require any commercial software or any restrictive licence. 
+
+\paragraph{Unix} Under Unices (Linux, Unix, etc.) there is a great number of free software that can be used for compiling and editing source code. 
+\paragraph{Mac OSX} Under Mac OSX, XCode is free but downloading it requires a registration on the Apple Web site. 
+\paragraph{Windows} Under Windows, things are a bit more complicated. A free version of a great C++ compiler is shipped with Visual C++ Express Edition, which requires a (free) registration before using it. We recommend using version 10 or above. If you want to use the x64 compilation for Visual 10, you should install first the SP1 of Visual (unless already shipped) and also the Plateform SDK, which provides among many things the x64 C++ compiler. 
+
+
+
+
+
+\subsection{General tools}
+Yayi heavily depends on Boost \cite{Boost} \footnote{\url{http://www.boost.org}}. This library offers an invaluable number of structures and functionalities (of very high quality) that often are hard to implement. It is entirely cross-platform, with a very active developer community. Some parts of Boost were ported into the C++ Technical Report 1 (C++ TR1 in 2008)\footnote{See \url{http://en.wikipedia.org/wiki/C\%2B\%2B_Technical_Report_1}}\footnote{which also guaranties that the Boost licence is compatible with any industrial development, since some parts of it are now \textit{standard}.}. 
+
+\subsection{Build system}
+Yayi uses CMake \footnote{\url{http://www.cmake.org}} as the main build system. It currently depends on the version 2.8. CMake is a free and multi-platform meta-build engine. It proposes a language for defining the components of a project, their dependencies, their link, installation options, etc. in a cross-platform manner. It is able to generate makefiles, Visual C++/Studio or XCode projects directly, with no change in the build script.
+
+\subsubsection{CMake on Unix/Mac OSX}
+Usually, installing CMake on Unix/Mac OSX declares also the CMake binary in the \verb'$PATH'. 
+Hence, simply by typing 
+\begin{bash}
+$> cmake --version
+\end{bash} 
+%$
+
+you should see something like "cmake version 2.8.XX". 
+
+\subsubsection{CMake on Windows}
+CMake on Windows is shipped with a nice front-end allowing you to properly configure the different options of the project before it is built \footnote{This is also the case under Unix/Mac, but it seems to me more convenient to use the command line on these platforms.}. 
+
+On Windows, CMake is able to generate Visual Studio/C++ solutions. Visual automatically uses several cores for building the solution. If you are familiar with Unix/Mac, or if you like your small Windows shell very much, you certainly would like to work on makefiles, that then can be built using the Microsoft flavour of make: NMake. However, one big inconvenient in using NMake is that it is not multi-threaded, and the builds can be much longer than in Visual. 
+
+On way to have the advantages of using a shell and the Visual building engine is by using the MSbuild building engine, that comes with Microsoft .NET (preferably 4 or above.) % mettre plus de détails
+See \S \ref{sub:msbuild_build} for more details.
+
+\subsection{Image specific libraries}
+These dependencies include only image I/O functionalities. In particular, Yayi is self-contained in terms of image processing, and does not make use of any thirdparty library for performing processing on images (even Boost.GIL). 
+
+
+\subsection{Python}
+Yayi exports all functions and relevant objects into the Python language, which means that you can manipulate images from Python, export measurements on image into Python native objects, etc. 
+
+For specific topic concerning the x64 vs. x86 debate, please consider reading \S \ref{sec:x86x64}. 
+

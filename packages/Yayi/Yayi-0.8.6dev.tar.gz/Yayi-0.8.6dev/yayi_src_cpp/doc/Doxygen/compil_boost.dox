@@ -1,0 +1,81 @@
+/*!
+
+
+@page compil_boost Compiling Boost
+@tableofcontents
+
+The compilation of Boost is a bit tricky, and people are often afraid of it. However, the compilation of Boost is not particularly hard. 
+The thing usually disturbing developers seems to be the dedicated cross-platform build system of Boost. 
+In the facts, compiling Boost reduces merely to 2 lines in bash, as explained below. 
+
+
+@section compil_boost_linmac Linux/MacOSX
+@code{bash}
+$> ./bootstrap.sh
+$> ./bjam --prefix=your_install_prefix_directory --ignore-config install
+@endcode
+
+The <b>--ignore-config</b> option is to avoid any troubleshooting between your freshly untared version of boost, and a possibly preinstalled version of boost in your system. 
+Note that @b bjam was replaced by @b b2. 
+
+@warning{Remarks on Ubuntu} Please note that the Ubuntu package curiously does not contain all the necessary libraries for properly compiling Yayi 
+(Boost.UnitTest is not complete).
+@todo Check if this is still true for 1.42. 
+
+@subsection compil_boost_linmac_universallib Compilation of universal binaries on MacOSX
+If you would like to generate universal binaries for MacOSX (same binaries containing both the x86 and x64 versions), you must add the following options to bjam:
+@code{bash}
+$> ./b2 --prefix=your_install_prefix_directory address-model=32_64 architecture=x86 --ignore-config install
+@endcode
+
+Note that since v0.08, Yayi by default compiles as universal binaries. If boost was not compiled as universal binaries, you may encounter link issues.
+
+
+- Remarks on MacOSX:
+This was the theory. Now the practice: building under MacOSX can be a perfect pain. The problems are the following:
+  - curiously, the @b ~ is not developed for your prefix installation (hence <b>--prefix=~/usr/local</b> will not properly go to your 
+    <b>$HOME/usr/local</b> but into a subdirectory of your current directory). You must provide the full installation prefix.
+  - the compiler shipped by Apple and targeted as being the default on new versions of OSX, namely @b llvm, does not seem to be perfectly compatible with boost. 
+  - the version of python shipped by Apple does not seem to be compatible with packages that are interesting for us (namely @b numpy). 
+
+
+The second point may make you willing to install the official version of Python. This can easily be done by downloading the installation package 
+from the official Python web page, and double click on it. You should however ensure during your build steps that this is precisely the version used for 
+compilation, including boost. You may check the version of Python with the following command:
+
+@code{bash}
+$> ./b2 -q  --prefix=your_install_prefix_directory --debug-configuration install
+@endcode
+
+which flushes in the terminal the complete version of Python, its headers and library location, and also the compiler chosen by the boost toolchain. 
+
+If you have installed the "official" Python, I strongly encourage you to read @ref install_python "this page". 
+
+
+@code
+$> ./b2  -j 6 -q --prefix=our_prefix_install macosx-version=10.6 toolset=darwin architecture=x86 target-os=darwin address-model=32_64 install
+@endcode
+
+@section compil_boost_windows Windows
+
+@code{bash}
+$> bootstrap.bat
+$> bjam --prefix=your_install_prefix_directory --build-type=complete --layout=versioned --ignore-config install
+@endcode
+
+However, the compilation takes time, and some parts (though not needed for Yayi) are easily missed. You might consider the installation made from 
+<a href="http://www.boostpro.com">BoostPro</a> for your specific flavour of Visual/build environment. 
+
+@section boostremarks_allplatforms Remarks for all platforms
+Using the following option:
+@code{bash}
+$> bjam -q [...]
+@endcode
+will stop the build at first encountered error. 
+
+The option
+@code{bash}
+$> bjam -j XX [...]
+@endcode
+will span the build on XX processes (faster builds). 
+*/

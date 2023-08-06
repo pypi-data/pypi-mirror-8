@@ -1,0 +1,26 @@
+/*!
+@page install_python Python
+There is no need to present <a href="http://www.python.org">Python</a>. Installing Python is a routine, however there is one thing to care about under MacOSX. 
+As pointed out in @ref compil_boost "here", if you have installed an other version of Python than the one shipped with your OS, you have to check carefully 
+if this version you installed is properly used by your toolchain and by cmake. It is possible to check this by inspecting the outputs given by 
+cmake during the configuration. You should see something like
+
+@code{bash}
+-- Found PythonLibs: /usr/lib/libpython2.7.dylib 
+-- Found PythonInterp: /Library/Frameworks/Python.framework/Versions/2.7/bin/python (found version "2.7.2")
+@endcode
+
+Sometime, unfortunately more often than expected, the default dylib at <b>/usr/lib</b> is not properly updated during the installation of the official Python. 
+This will result in wonderful and unexplainable crashes. 
+
+@code{bash}
+otool -v -L PATH_TO_COMPILATION/YayiCommonPython.so
+@endcode
+
+In order to replace the Apple Python library by the official one, you may type (supposing you have Python 2.7):
+@code{bash}
+sudo mv /usr/lib/libpython2.7.dylib /usr/lib/libpython2.7_apple.dylib
+sudo ln -s /Library/Frameworks/Python.framework/Versions/2.7/lib/libpython2.7.dylib /usr/lib/libpython2.7.dylib
+@endcode
+
+*/
