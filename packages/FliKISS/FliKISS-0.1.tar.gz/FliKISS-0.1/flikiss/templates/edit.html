@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block head %}
+  <script src="//cdnjs.cloudflare.com/ajax/libs/codemirror/3.20.0/codemirror.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/codemirror/3.20.0/mode/markdown/markdown.js"></script>
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/codemirror/3.20.0/codemirror.css">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/codemirror/3.20.0/theme/xq-light.css">
+  <script src="{{ url_for('static', filename='js/editor.js') }}"></script>
+{% endblock %}
+ 
+{% block content %}
+  <h3>Edit page</h3>
+  <hr />
+  <form method="post" name="page_post">
+    {{ form.hidden_tag() }}
+    <dl>
+      <dt>{{ form.markdown_content.label }}</dt>
+      <dd>{{ form.markdown_content(rows=25, cols=40) }}</dd>
+    </dl>
+    <input type="submit" value="Save">
+  </form>
+  <script>
+    var editor = new Editor( '{{ form.markdown_content.id }}', "{{ url_for('upload') }}", "{{ url_for('render') }}" );
+  </script>
+{% endblock %}
+
