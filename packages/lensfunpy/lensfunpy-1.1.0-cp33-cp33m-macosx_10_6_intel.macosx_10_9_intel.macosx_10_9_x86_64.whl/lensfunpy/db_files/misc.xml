@@ -1,0 +1,105 @@
+<lensdatabase version="1">
+
+    <mount>
+        <name>M42</name>
+        <compat>Generic</compat>
+    </mount>
+
+    <mount>
+        <name>T2</name>
+        <compat>Generic</compat>
+    </mount>
+
+    <mount>
+        <name>C</name>
+        <compat>Generic</compat>
+    </mount>
+
+    <camera>
+        <!-- This works for 4:3 and 16:9 because crop factor is the same in
+             both cases, no matter what Nokia's white paper says. -->
+        <maker>Nokia</maker>
+        <model>Lumia 1020</model>
+        <mount>lumia1020</mount>
+        <cropfactor>3.93</cropfactor>
+    </camera>
+
+    <camera>
+        <maker>SEIKO EPSON CORP.</maker>
+        <maker lang="en">Epson</maker>
+        <model>R-D1</model>
+        <mount>Leica M</mount>
+        <cropfactor>1.525</cropfactor>
+    </camera>
+
+    <!-- I think this is also known under the brand "Michael Lens" or "Movie
+         Lens", and with f/1.6.  The correction data actually was submitted as
+         "CCTV Movie Lens HD-MC 35mm/F1.6".  The distortion model is not perfect,
+         test it with
+         <https://c2.staticflickr.com/6/5530/12031215365_2fd76aa31c_z.jpg>.
+         FixMe: It should be re-checked. -->
+    <lens>
+        <maker>Fujian</maker>
+        <model>35mm f/1.7</model>
+        <mount>C</mount>
+        <cropfactor>2.0</cropfactor>
+        <aspect-ratio>4:3</aspect-ratio>
+        <calibration>
+            <distortion model="poly3" focal="35" k1="-0.0055" />
+            <tca model="poly3" focal="35" br="-0.0001764" vr="1.0005429" bb="0.0000786" vb="1.0008622" />
+        </calibration>
+    </lens>
+
+    <lens>
+        <!-- This works for 4:3 and 16:9 because crop factor is the same in
+             both cases, no matter what Nokia's white paper says. -->
+        <maker>Zeiss</maker>
+        <model>Lumia 1020</model>
+        <model lang="en">fixed lens</model>
+        <model lang="de">festes Objektiv</model>
+        <mount>lumia1020</mount>
+        <cropfactor>3.93</cropfactor>
+        <aspect-ratio>16:9</aspect-ratio>
+        <calibration>
+            <distortion model="ptlens" focal="6.6" a="-0.01804" b="0.06109" c="-0.05264" />
+            <tca model="poly3" focal="6.6" br="-0.0000439" vr="1.0001865" bb="0.0000085" vb="0.9999709" />
+        </calibration>
+    </lens>
+
+    <lens>
+        <maker>Pentacon</maker>
+        <model>Pentacon 50mm f/1.8 auto multi coating</model>
+        <mount>M42</mount>
+        <cropfactor>1.526</cropfactor>
+        <calibration>
+            <!-- Taken with Pentax K-5 -->
+            <distortion model="poly3" focal="50" k1="-0.00197" />
+            <tca model="poly3" focal="50" br="-0.0000012" vr="1.0000573" bb="-0.0000011" vb="0.9999574" />
+        </calibration>
+    </lens>
+
+    <lens>
+        <maker>Cosina</maker>
+        <model>Cosina Cosinon-S 50mm 1:2</model>
+        <mount>Pentax K</mount>
+        <cropfactor>1.538</cropfactor>
+        <calibration>
+            <!-- Taken with Pentax K20D -->
+            <distortion model="poly3" focal="50" k1="-0.00146" />
+            <tca model="poly3" focal="50" br="-0.0000159" vr="1.0000709" bb="0.0000131" vb="0.9999198" />
+        </calibration>
+    </lens>
+
+    <lens>
+        <maker>Mitakon</maker>
+        <model>Mitakon wide MC f=24mm 1:2.8</model>
+        <mount>Minolta MC</mount>
+        <cropfactor>1.538</cropfactor>
+        <calibration>
+            <!-- Taken with Pentax K20D -->
+            <distortion model="ptlens" focal="24" a="0.00966" b="-0.0318" c="0.01539" />
+            <tca model="poly3" focal="24" br="-0.0000186" vr="1.0006527" bb="0.0001034" vb="0.9995702" />
+        </calibration>
+    </lens>
+
+</lensdatabase>
