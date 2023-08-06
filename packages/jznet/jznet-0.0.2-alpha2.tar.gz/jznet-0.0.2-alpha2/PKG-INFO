@@ -1,0 +1,45 @@
+Metadata-Version: 1.0
+Name: jznet
+Version: 0.0.2-alpha2
+Summary: a python RPC library based on websocket
+Home-page: UNKNOWN
+Author: zoowii
+Author-email: 1992zhouwei@gmail.com
+License: MIT License
+Description: 
+        pyjznet
+        ====
+        python implementation of jznet
+        
+        ## Requirements
+        
+        You need install gevent and gevent-websocket manually
+        
+        * gevent
+        * gevent-websocket
+        
+        ## Install
+        
+        pip install jznet
+        
+        ## Usage
+        
+            >>> import pyjznet
+            >>> from pyjznet import Server
+            >>> class DemoService(object):
+                    def sayHi(self, name, remote_service):
+                        try:
+                            age = remote_service.call_rpc('demo', 'getAge')
+                        except Exception as e:
+                            logging.error(e)
+                            return str(e)
+                        logging.info('got say hi request of %s who's age is %d' % (name, age))
+                        return "Hi, %s who's age is %d!" % (name, age)
+            >>> server = Server()
+            >>> server.add_rpc_service('demo', DemoService())
+            >>> server.start()
+        
+        call the service using jznet.js library
+            
+Keywords: net,websocket,RPC
+Platform: any
