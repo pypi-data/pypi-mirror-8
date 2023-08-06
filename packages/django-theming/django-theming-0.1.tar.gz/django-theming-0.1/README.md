@@ -1,0 +1,117 @@
+# Django Theming
+
+Django app to implement the concept of theming, allow theming for host url.
+
+## Setup
+
+**NOTE**: The following settings should be added to the project file `settings.py`.
+
+1. Add 'theming' to `INSTALLED_APPS`:
+
+   ```sh
+   INSTALLED_APPS += ( 'theming', )
+   ```
+
+2. Add 'theming.middleware.ThemingMiddleware' to `MIDDLEWARE_CLASSES`:
+
+   ```sh
+   MIDDLEWARE_CLASSES += ( 'theming.middleware.ThemingMiddleware', )
+   ```
+
+2. Add 'theming.loaders.ThemeLoader' to `TEMPLATE_LOADERS`:
+
+   ```sh
+   TEMPLATE_LOADERS += ( 'theming.loaders.ThemeLoader', )
+   ```
+
+4. Declare `THEME_ROOT` and `MEDIA_ROOT`:
+
+   ```sh
+   BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+   
+   THEME_ROOT = os.path.join(BASE_DIR, 'themes')
+   MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+   ```
+
+5. Declare `MEDIA_URL`:
+
+   ```sh
+   MEDIA_URL = '/media/'
+   ```
+
+6. Declare `THEME_MEDIA_ROOT` y `THEME_MEDIA_URL`:
+
+   ```sh
+   THEME_MEDIA_ROOT = os.path.join(MEDIA_ROOT, 'themes')
+   THEME_MEDIA_URL = os.path.join(MEDIA_URL, 'themes')
+   ```
+
+7. Declare host/theme config tuple `THEME_CONFIG`:
+
+   ```sh
+   THEME_CONFIG = (
+       (r'^(.+\.)?dominio\.pe', 'default'),
+       (r'^(.+\.)?test\.pe', 'test'),
+   )
+   ```
+
+## Usage
+
+It should create a folder `themes` at the project with the following structure:
+
+```sh
+project_django/
+| -- themes/
+    | -- default/  ** theme name
+        | -- templates/
+        | -- media/
+        |   | -- styles/
+        |   | -- scripts/
+        |   | -- images/
+        | -- metadata.json
+```
+
+**NOTE**: We use `media` instead of `static` for independent assets by theme.
+
+In the file `metadata.json` it should include information on the theme:
+
+```sh
+{
+    "slug": "default",
+    "name": "Default",
+    "description": "Theme Default",
+    "author": "RCP",
+    "version": "1.0"
+}
+```
+
+You can use the template tag `theme` to refer to the theme assets as follows:
+
+```sh
+<link rel="stylesheet" href="{% theme 'styles/main.css' %}" />
+```
+
+**NOTE**: The tamplate tag `theme` will refer to the `media/themes/<theme_name>` folder, if not find the file in that path, it will search in `static/`
+
+You can use the command `collectthemes` to copy all assets of the theme to the location  `media/`:
+
+```sh
+python manage.py collectthemes
+
+options:
+- l, --link : Create a symbolic link to each file instead of copying.
+- f, --force: Force to overwrite content.
+```
+
+##Contributing
+
+Development of django-theming happens at github: https://github.com/muleros/django-theming
+
+## Credits
+
+* Andrés Chávez
+* Giorgio Leveroni
+* Antonio Ognio
+* Antonio Kobashikawa
+
+[![PIP](https://pypip.in/v/django-theming/badge.png)](https://pypi.python.org/pypi/django-theming)
