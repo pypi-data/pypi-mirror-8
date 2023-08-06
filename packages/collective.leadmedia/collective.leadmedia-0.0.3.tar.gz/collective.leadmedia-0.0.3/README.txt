@@ -1,0 +1,70 @@
+Introduction
+============
+
+Adds a slideshow to any dexterity folderish type
+
+Features
+============
+
+* Adds a slideshow to dexterity folderish types
+* Easy to adapt to custom dexterity types
+* Easy to upload multiple images using drag and drop
+* Easy to include youtube and vimeo videos in the slideshow
+
+* Adds a media view that shows the first image of the slideshow in folders and collections
+* Slideshow shows image description as caption
+* Uses slick carousel by Ken Wheeler (adaptable to other carousels)
+
+The collective.leadmedia adds a slideshow to any dexterity folderish type. 
+
+How it works
+============
+
+An administrator can choose which types are upgraded with slideshow functionality by adding a 'slideshow' behaviour via the 'Site Setup’/'Dexterity content types’. A folder named ’slideshow’ appears inside of items with slideshow behaviour. Using drag and drop functionality multiple images can be uploaded to the slideshow folder. A slideshow with the several images appears automatically in the view of any item that contains more than one image int the ‘slideshow' folder. In case the folder contains only one image, the view shows the image but not the next/previous buttons. In case the folder contains no images, the slideshow does not appear in the page.
+
+Videos from YouTube and Vimeo can also be added to the slideshow. Create an item of type link inside the slideshow folder pointing to the video on youtube or Vimeo. Make sure the URL is a canonic YouTube or Vimeo url.
+
+
+How to a different carousel
+============
+
+The list of images available in the slideshow folder are being returned by the view /slideshowListing that returns a json with the format:
+	{
+	     url: image URL,
+	     UID: Object UID
+	}
+
+The details of each image are being served by the view http://url/to/image/get_slideshow_item
+Returns a json with format
+	{
+	     type: The type of the item
+	     description: Item description
+	     title: Item title
+	}
+
+These views can be reached by AJAX calls.
+Use your carousel API to add the slides. 
+
+Dependencies
+============
+
+* collective.folderishtypes
+* collective.slickslideshow
+* collective.quickupload
+* Products.FolderContentsPortletManager
+
+Todo
+============
+
+* Use collective.upload once is ready for production;
+* Add collective.quickupload portlet automatically to Folder contents portlet manager
+* Slideshow behaviour should only be added to folderish types
+
+
+Changelog
+============
+
+0.1dev (unreleased)
+-------------------
+
+- Initial release

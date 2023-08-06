@@ -1,0 +1,12 @@
+
+<!-- Slick Slideshow -->
+<div class="slideshow" id="slickslideshow"
+  i18n:domain="collective.leadmedia" tal:condition="python:view.slideshowInContext(context, request.URL)">
+  <div class="slideshowWrapper">
+  <tal:checkslideshow condition="exists: context/slideshow">
+    <tal:slideshow replace="structure python:view.slideshow(context['slideshow'])" tal:condition="python:view.slideshowInContext(context, request.URL)">
+   </tal:slideshow>     
+  </tal:checkslideshow>
+	</div>
+</div>
+<!-- -->
