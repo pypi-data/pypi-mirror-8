@@ -1,0 +1,150 @@
+<!-- snippets/header.html starts. This is the top navigation header on our page -->
+{% load url from future %}
+{% load i18n %}
+{% load static %}
+{% load url from future %}
+
+<div id="top_navigation_bar" class="navbar navbar-fixed-top" xmlns="http://www.w3.org/1999/html">
+    <div class="navbar-inner">
+        <div class="container-fluid" style="padding-right: 0;">
+            <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </a>
+
+            <!-- Logo in top nav -->
+            <a class="brand" href="{% url 'home' %}">{{ settings.TOPMENU_HOME }}</a>
+            <div class="nav-collapse">
+                <ul class="nav" id="top_navigation_menuitems">
+                  {% for item in settings.TOPMENU_ITEMS %}
+                    <li class="{% if item.1|lower in urlname or item.1|lower in request.path %}active{% endif %}">
+                      {% with item.2|slice:":1" as start %}
+                        {% if start == "/" %}
+                          <a href="{{ item.2 }}">
+                        {% else %}
+                          <a href="{% url item.2 %}" >
+                        {% endif %}
+                        <i class="glyph-grey {{ item.3 }}"></i> {% trans item.0 %}
+                        </a>
+                      {% endwith %}
+                    </li>
+                  {% endfor %}
+
+
+                    <!-- Any extra plugins can put an entry in the menubar -->
+                    {% for i in menubar_items %}
+                        <!-- Plugin menubar for {{ i }} -->
+                        {% include i %}
+                        <!-- End of plugin menubar {{ i }} -->
+                    {% endfor %}
+                </ul>
+
+
+
+
+                <!-- Right aligned navbar - MISC -->
+
+                <ul class="nav pull-right">
+                    {% if not nagios_running %}
+                        <li>
+                            <form action="{% url 'misc.views.nagios_service' %}" method="POST">
+                                {% csrf_token %}
+                                <input type="hidden" name="start" value="1" />
+                                <input type="image" src="{% url "media" path="img/tdot.png" %}" class="glyph-grey glyph-play-button" alt="start"/>
+                            </form>
+                        </li>
+                    {% endif %}
+
+                    <li class="nagios_needs_reload">
+                        <a  title="Nagios Service needs a reload for configuration changes to take effect." href="#">
+                            <span id="nagios_needs_reload_button" class="hide">
+                            <i  class="glyph-white glyph-refresh" onclick="adagios.misc.reload_nagios();"></i>
+                            </span>
+                        </a>
+                    </li>
+                    {% if num_problems and plugins.status  %}
+                        <li style="color: red;">
+                        <a style="color: red;" href="{% url 'status.views.problems' %}?unhandled">
+                            <i class="glyph-grey  glyph-warning-sign" title="You have unhandled problems"></i>
+                            {{ num_problems }}
+                        </a>
+                        </li>
+                    {% endif %}
+
+                    <li class="dropdown"><a><i class="glyph-grey glyph-clock"></i> {{ current_time }}</a></li>
+                    {% get_current_language as curr_language %}
+                    <li class="dropdown" id="user-drop-down">
+                        <a class="dropdown-toggle"
+                           data-toggle="dropdown"
+                           href="#"><i class="glyph-user glyph-grey"></i> {{ remote_user }} ({{ curr_language }})
+                            {% if tagged_comments %}({{ tagged_comments }}){% endif %}
+                        </a>
+                        <ul class="dropdown-menu">
+                            {% if tagged_comments and plugins.status %}
+                                <li>
+
+                                <a href="{% url 'status.views.detail' %}?contact_name={{ remote_user }}">
+                                    User {{ remote_user }} is mentioned in {{ tagged_comments }} comments.
+                                </a>
+                                </li>
+                            {% endif %}
+                            {% if plugins.status %}
+                                <li><a href="{% url 'status.views.detail' %}?contact_name={{ remote_user }}">{% trans "My Profile" %}</a></li>
+                            {% endif %}
+                            <li><a href="{% url 'misc.views.preferences' %}">{% trans "Preferences" %}</a></li>
+                            <li><a href="#" onclick="adagios.misc.logout(); return false;">{% trans "Sign Out" %}</a></li>
+                        </ul>
+                    </li>
+                    {% if backends|length >= 2 %}
+                    <li class="dropdown">
+                      <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                        <i class="glyph-tags glyph-grey"></i>
+                      </a>
+                      <ul class="dropdown-menu">
+                        {% for backend in backends %}
+                          <li>
+                            <a href="#"
+                               onclick="adagios.rest.status.toggle_backend_visibility({'backend_name':'{{ backend }}'}).done(function() {location.reload();});">
+                              <i class="circle {% if backend in nonworking_backends %}state_2unhandled{% else %}state_0{% endif %}"></i>
+                              <span{% if backend in user_data.disabled_backends %} style="text-decoration: line-through;"{% else %}{% endif %}>{{ backend }}</span></a>
+                          </li>
+                        {% endfor %}
+                      </ul>
+                    </li>
+                    {% endif %}
+                    <li class="dropdown">
+                        <a class="dropdown-toggle"
+                           data-toggle="dropdown"
+                           href="#"><i class="glyph-cogwheel glyph-grey"></i>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a href="https://github.com/opinkerfi/adagios/issues">{% trans "Report Bug" %}</a></li>
+                            <li><a href="https://github.com/opinkerfi/adagios/issues">{% trans "Make Suggestion" %}</a></li>
+                            <li><a href="http://adagios.org/">{% trans "Project Webpage" %}</a></li>
+                            <li class="divider"></li>
+                            <li><a href="{%  url 'objectbrowser.views.show_plugins' %}">{% trans "Missing Plugins" %}</a></li>
+                            <li><a href="{%  url 'objectbrowser.views.edit_nagios_cfg' %}">{% trans "Edit nagios.cfg" %}</a></li>
+                            <li><a href="{%  url 'misc.views.nagios_service' %}">{% trans "Nagios Service" %}</a></li>
+                            <li><a href="{%  url 'misc.views.gitlog' %}">{% trans "Object History" %}</a></li>
+                            <li><a href="{%  url 'misc.views.settings' %}">{% trans "Settings" %}</a></li>
+                            <li class="divider"></li>
+                            {% if settings.enable_pnp4nagios %}
+                                <li><a href="{%  url 'misc.views.pnp4nagios' %}">{% trans "PNP Integration" %}</a></li>
+                            {% endif %}
+                            <!-- Any extra plugins can put an entry in the menubar -->
+                            {% for i in misc_menubar_items %}
+                                <!-- Plugin menubar for {{ i }} -->
+                                {% include i %}
+                                <!-- End of plugin menubar {{ i }} -->
+                            {% endfor %}
+
+                        </ul>
+                   </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- snippets/header.html ends -->
