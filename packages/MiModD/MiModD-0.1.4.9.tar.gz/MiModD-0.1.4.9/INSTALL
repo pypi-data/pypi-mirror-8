@@ -1,0 +1,330 @@
+Installation Instructions for MiModD and Additional Software
+************************************************************
+
+Standard Installation
+=====================
+
+Simple installation with *pip*
+------------------------------
+
+.. admonition:: Requirements
+
+   Mac OS (installation from binary wheel package):
+   
+   - zlib library version 1.2.3+
+   - Python3.2+
+   
+   Linux and other platforms (installation from source):
+   
+   - a C compiler (tested with gcc and Clang)
+   - zlib library version 1.2.3+ including header files
+   - Python3.2+ including the Python C header files
+
+   See `Installation of required software`_ for more details.
+
+The quickest way (requiring the `pip installation tool 
+<http://pip.readthedocs.org/en/latest/installing.html>`__) 
+to get MiModD up and running is by executing (possibly with superuser rights)::
+
+    pip3 install MiModD [--user] [--install-option="--install-scripts=<EXECUTABLE_DIR>"]
+
+where the optional ``--user`` flag can be used, if you do not have write 
+permission in global installation directories, to install MiModD relative to 
+your user directory, and ``--install-option`` may be 
+used to control the directory to which the *mimodd* executable will be copied 
+(usually defaults to /usr/local/bin).
+
+------------------------------------------
+
+Alternative installation
+------------------------
+
+.. admonition:: Requirements
+   
+   all platforms (installation from source):
+   
+   - a C compiler (tested with gcc and Clang)
+   - zlib library version 1.2.3+ including header files
+   - Python3.2+ including the Python C header files
+
+   See `Installation of required software`_ for more details.
+
+If you do not want to or cannot use pip, you can instead 
+
+i)   download the package archive from the 
+     `MiModD project home page <http://sourceforge.net/projects/mimodd/>`__ 
+ii)  unpack the archive and change to the unpacked directory via ``cd <UNPACK_DIR>``  
+iii) run (possibly with superuser rights)::
+
+        python3 setup.py install [--user] [--install-scripts=<EXECUTABLE_DIR>]
+
+------------------------------------------
+
+Package Configuration
+---------------------
+
+After a successful installation you should have MiModD available as a suite of 
+command line tools. Simply type::
+
+    mimodd --help
+    
+to see which subcommands are available, then proceed by `configuring 
+<Configuring MiModD for your system_>`_ the freshly 
+installed package.
+
+------------------------------------------
+
+Integration into Galaxy
+-----------------------
+
+To use a standard installation of MiModD from 
+`Galaxy <http://galaxyproject.org/>`__, all you have to do is:
+
+i)  enable the package in your local Galaxy instance by running::
+	
+        mimodd enable-galaxy <PATH_TO_LOCAL_GALAXY>``
+	
+    where ``<PATH_TO_LOCAL_GALAXY>`` typically is something like ``~/galaxy-dist``
+
+ii) (re)start Galaxy and import the Workflows that come with MiModD 
+    (and can be found in the galaxy-workflows directory of the unpacked 
+    download directory).
+
+------------------------------------------
+
+Galaxy Toolshed Installation
+============================
+
+.. admonition:: Requirements
+
+   - a C compiler (tested with gcc and Clang)
+
+The `standard installation scheme above <Standard Installation_>`_ is flexible 
+in that it provides MiModD as a fully functional command line tool, which can 
+be integrated with a local Galaxy installation at any time.
+
+If, on the other hand, you are managing a local instance of Galaxy and are 
+reluctant to make changes to your system, you can install MiModD with all 
+dependencies in a single step from the Galaxy Toolshed. 
+This scheme will encapsulate MiModD and all dependencies in your Galaxy 
+installation, i.e., none of the installed components will influence the 
+behavior of your system.
+On the downside, the encapsulated nature of the installation means that you 
+will have no easy way to access MiModD's functionality from the command line 
+and the automated installation of dependencies (including a current version of 
+the Python3 interpreter) will typically result in a larger installation size.
+
+The installer metapackage that takes care of installing all components of 
+MiModD from the toolshed is called `suite_mimodd_0_1_4 
+<https://toolshed.g2.bx.psu.edu/view/wolma/suite_mimodd_0_1_4>`__.
+
+The process of installing MiModD from the toolshed is the same as for any other 
+tool, and is described `here 
+<https://wiki.galaxyproject.org/Admin/Tools/AddToolFromToolShedTutorial>`__.
+
+------------------------------------------
+
+Installation of required software
+=================================
+
+zlib library : v1.2.3 or higher
+    Most OS come with the zlib library installed. If you do not have it or if 
+    your system has an outdated version, you can either
+    
+    - install a current version through your OS package manager or 
+    - download it from  `<http://zlib.net/>`__, then from inside the unpacked 
+      archive run this series of steps from a terminal::
+      
+        ./configure
+        make
+        make install
+    
+    If you had zlib preinstalled or if you installed it through a package 
+    manager, then, depending on your OS, the installation may not contain the 
+    C header files required by MiModD during installation from source.
+    If you are getting a corresponding MiModD install error message, you will 
+    need to install a separate zlib development package (e.g., 
+    *zlib1g-dev* on Debian/Ubuntu).
+
+------------------------------------------
+        
+Python 3 : v3.2 or higher
+    You can run::
+    
+        python3 --version
+        
+    from a terminal to see which version, if any, of Python 3 you have installed 
+    on your system.
+    If your version does not match the requirement, you can check whether there 
+    is a suitable package available through your OS package manager or download 
+    it from `<http://www.python.org/downloads/>`__.
+
+    If you had Python 3 preinstalled or if you installed it through a package 
+    manager, then, depending on your OS, the installation may not contain the 
+    Python C header files required by MiModD during installation from source. 
+    If you are getting a corresponding MiModD install error message, you will 
+    need to separately install a python3 development package 
+    (e.g., *python3-dev* on Debian/Ubuntu).
+    
+    If you are compiling Python 3 from source, you'll have to make sure that 
+    you install the zlib library (see above) **before** you build Python 3.
+
+------------------------------------------
+
+Installation of optional software (can also be installed later)
+===============================================================
+
+SnpEff : v3.3 or higher
+    .. admonition:: additional requirement
+    
+       snpEff is written in and, thus, requires Java, which you may need to
+       install separately.
+
+    You can download SnpEff from `<http://snpeff.sourceforge.net/>`__.
+    
+    Unpack the downloaded archive to a newly created ``snpEff`` folder in your 
+    home directory or, if you prefer a different installation directory, read 
+    the instructions at 
+    `<http://snpeff.sourceforge.net/download.html#install>`__.
+
+    Before you can use SnpEff-dependent functionality, you will have 
+    to configure the SNPEFF_PATH parameter in MiModD (see `Configuring MiModD 
+    for your system`_).
+    
+------------------------------------------
+
+Galaxy : any recent release
+    .. admonition:: Requirements
+       
+       -    Currently, Galaxy runs under Python 2.6 or 2.7 (Python 3 is not yet 
+            supported).
+            
+            This means that you will have to have two different Python versions 
+            installed on your system (2.6/7 for Galaxy, Python 3.2 or higher 
+            for MiModD). The simplest way to make Galaxy and MiModD use their 
+            correct versions is by making Python 2.x available as ``python`` 
+            and Python 3.x as ``python3`` from your shell. 
+            
+            You can use ``python --version`` and ``python3 --version`` from the 
+            command line, respectively, to find out what versions of Python are 
+            known to your system under the different names. 
+            
+            The Galaxy installation instructions (see below) also provide an 
+            `example 
+            <https://wiki.galaxyproject.org/Admin/GetGalaxy#Check_your_Python_version>`__  
+            of how you can manipulate your $PATH variable to make your system 
+            find the right Python.
+
+       -    The installation procedure for Galaxy requires Mercurial. To see 
+            whether that is installed on your system, type ``hg`` on the 
+            command line and see whether that brings up a help or an error 
+            message. If you do not have Mercurial you can get it from 
+            `<http://mercurial.selenic.com/wiki/Mercurial>`__ or via your OS 
+            package manager.
+            
+    See `<https://wiki.galaxyproject.org/Admin/GetGalaxy>`__ for installation 
+    instructions.
+
+    If you are trying to install Galaxy from behind a proxy, you may not be 
+    able to connect to the Galaxy source code repository with::
+    
+        hg clone https://bitbucket.org/galaxy/galaxy-dist/
+        
+    as suggested in the installation instructions.
+
+    In this case, you need to specify the proxy that Mercurial should use like 
+    this::
+    
+        hg --config http_proxy.host=ADRRESS_OF_PROXY:PORT_NUMBER clone https://bitbucket.org/galaxy/galaxy-dist/
+        
+    or::
+    
+        hg --config http_proxy.host=ADRRESS_OF_PROXY:PORT_NUMBER --config http_proxy.user=USERNAME --config http_proxy.passwd=PASSWORD clone https://bitbucket.org/galaxy/galaxy-dist/
+
+    (for proxies requiring authentication)
+
+------------------------------------------
+
+Configuring MiModD for your system
+==================================
+
+.. Note::
+
+    You can change all settings at any time, but you should definitely set
+    them according to your system specifications before you first start using
+    MiModD.
+
+From the command line use::
+
+    mimodd config -v
+
+to see the current configuration settings of MiModD.
+
+For a freshly installed copy of MiModD the output should be similar to this::
+
+    CURRENT MIMODD SETTINGS
+    -----------------------
+    PARAMETER : VALUE
+    .......................
+    TMPFILES_PATH : /var/tmp/
+    MULTITHREADING_LEVEL : 4
+    MAX_MEMORY : 2
+    SNPEFF_PATH : not available
+
+The basic invocation for changing settings looks like::
+
+    mimodd config -c [--tmpfiles PATH] [--snpeff PATH] [-t THREADS] [-m MEMORY]
+
+Depending on your installation of MiModD changes to the configuration file may 
+require superuser rights, so you will have to prepend ``sudo`` to the above.
+
+Configuration parameters
+------------------------
+
+TMPFILES_PATH : --tmpfiles option
+    the directory that MiModD will use to store temporary files.
+
+    In a typical analysis pipeline, MiModD will produce several GB of data
+    in this directory and remove them automatically again when the data is not 
+    any longer needed. Under exceptional circumstances, however, MiModD might 
+    fail to delete data files, so this directory is the first place you should 
+    look at if you notice reduced disk space. Also, any users of MiModD will 
+    require write permission in this directory.
+
+MULTITHREADING_LEVEL : -t option
+    the maximum number of threads that a single MiModD process will ever use on 
+    the system. 
+    
+    Many MiModD subcommands take advantage of multithreading to speed up 
+    analyses.
+
+MAX_MEMORY : -m option
+    the maximum memory in GB that any single MiModD process will use on the 
+    system. 
+    
+    This value will be respected by all MiModD subcommands/tools **EXCEPT the 
+    snap alignment subcommands/tools**. Due to the nature of the underlying 
+    SNAP aligner, ``mimodd snap``, ``mimodd snap-batch`` and the Galaxy tool 
+    *SNAP Read Alignment* will always use a fixed amount of memory that depends 
+    on the size of the reference genome and which may be significantly more 
+    than the configured setting.
+
+.. Tip::
+
+    MULTITHREADING\_LEVEL and MAX\_MEMORY will have a big effect on the
+    performance of MiModD, but also on the responsiveness of your system
+    during execution of MiModD subcommannds. As a rule of thumb, if you do not 
+    have special requirements, we recommend to set both parameters to between 
+    50 and 75 % of the available resources on your system, i.e., if you have 
+    8 threads and 16 GB of RAM on your system, you might set 
+    MULTITHREADING\_LEVEL to 4-6 and MAX\_MEM to 8-12.
+
+SNPEFF_PATH : --snpeff option
+    the path where MiModD will look for the optional SnpEff variant annotation 
+    tool.
+    
+    Should be configured to the directory that you installed SnpEff into 
+    (e.g., ~/snpEff if you followed the recommended installation steps). 
+    If you do not have SnpEff installed, you can simply accept the default 
+    setting, which will block SnpEff dependent functionality of MiModD.
+
