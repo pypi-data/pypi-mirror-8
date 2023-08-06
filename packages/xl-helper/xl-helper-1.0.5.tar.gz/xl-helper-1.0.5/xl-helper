@@ -1,0 +1,19 @@
+#!/usr/bin/env python
+
+from xl_helper.Engine import Engine
+from xl_helper.Argh import Argh
+from xl_helper.XlHelperConfig import XlHelperConfig
+
+if __name__ == "__main__":
+    args = Argh.create_parser().parse_args()
+
+    Engine(args.path, XlHelperConfig.config).run(
+        op=args.action,
+        subject=args.subject,
+        version=args.version,
+        distribution_path=args.dist,
+        upgrade_from_path=args.upgrade_from_path,
+        start=args.start,
+        plugin_name=args.plugin)
+    
+    print "Done!"
