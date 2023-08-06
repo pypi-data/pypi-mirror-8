@@ -1,0 +1,13 @@
+
+<html metal:use-macro="load: main.pt">
+
+<div metal:fill-slot="content">
+
+<!--?<div tal:condition="exists:courses">-->
+<br>
+لیست دوره های موجود:
+<p tal:repeat="course courses">
+    <a href="${request.route_url('course_page', course_title=course.title)}" value="${course.id}"> ${course.title}</a><br/>
+</p>
+</div>
+</html>

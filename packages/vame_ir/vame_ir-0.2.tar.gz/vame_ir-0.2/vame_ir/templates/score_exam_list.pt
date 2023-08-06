@@ -1,0 +1,17 @@
+
+<html metal:use-macro="load: main.pt">
+
+<div metal:fill-slot="content">
+
+<!--?<div tal:condition="exists:exams">-->
+<br>
+لیست برگه های موجود:
+    وضعیت: <input type="text" name="status"><br>
+    <input type="submit" name="submit.status" value="ثبت"><br>
+    <p tal:repeat="exam exams">
+    <a href="${request.route_url('score_exam_page', exam_id=exam.id)}"> ${exam.course.title}</a><br/>
+
+${exam.user.last_name} - ${exam.course.title} - <br>
+</p>
+</div>
+</html>

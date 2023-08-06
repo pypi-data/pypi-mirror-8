@@ -1,0 +1,127 @@
+<html metal:use-macro="load: main.pt">
+
+<div metal:fill-slot="content">
+<div tal:condition="exam.status==0">
+    آیا شما مایل به شروع آزمون این دوره هستید؟ در این صورت باید به حد اکثر  ${exam.course.max_question} در  ${exam.course.time} ثانیه پاسخ دهید
+
+    <form name="exam.start" method="post">
+        <input type="submit" name="exam.start" value="ثبت">
+    </form>
+
+    </div>
+
+<div tal:condition="exam.status==1">
+    <!--?####################-->
+
+<div id="countdown_frame">
+    <div id="countdown">
+	<div class="clock" style="margin:2em;"></div>
+	<div class="message"></div>
+
+	<script type="text/javascript">
+		var clock;
+
+		$(document).ready(function() {
+
+			clock = $('.clock').FlipClock(${counter_time}, {
+		        clockFace: 'MinuteCounter',
+		        countdown: true,
+		        callbacks: {
+		        	stop: function() {
+//                        if (!document.getElementById('agreement').
+//                        {
+                            document.getElementById('agreement').checked = true;
+//                        }
+                        document.getElementById('submit').click();
+//		        		$('.message').html('The clock has stopped!');
+		        	}
+		        }
+		    });
+
+		});
+
+	</script>
+    </div>
+
+
+
+    </div>
+
+    <!--?####################-->
+    <form name="exam.finish" method="post">
+<p tal:repeat="answer exam.answers">
+    ${answer.question.title}<br/>
+    <input type="text" name="${answer.id}" value="${answer.value}"><br>
+</p>
+پایان آزمون: <input id="agreement" type="checkbox" name="scored" value="1"><br>
+        <input id="submit" type="submit" name="exam.finish" value="ثبت">
+    </form>
+</div>
+
+<div tal:condition="exam.status==2">
+${exam.status_finder()}
+    <br>${exam.course.title}
+
+    <table border="1">
+    <tr>
+        <td>سوال</td>
+        <td>پاسخ صحیح</td>
+        <td>پاسخ کاربر</td>
+    </tr>
+    <tr tal:repeat="answer exam.answers">
+        <td> ${answer.question.title} </td>
+        <td> ${answer.question.correct_answer}  </td>
+        <td> ${answer.value} </td>
+        <td> ${answer.find_score()}</td>
+    </tr>
+</table>
+
+
+</div>
+
+<div tal:condition="exam.status==3">
+
+${exam.status_finder()}
+    <br>${exam.course.title}
+
+    <table border="1">
+    <tr>
+        <td>سوال</td>
+        <td>پاسخ صحیح</td>
+        <td>پاسخ کاربر</td>
+
+    </tr>
+    <tr tal:repeat="answer exam.answers">
+        <td> ${answer.question.title} </td>
+        <td> ${answer.question.correct_answer}  </td>
+        <td> ${answer.value} </td>
+        <td> ${answer.find_score()}</td>
+    </tr>
+</table>
+
+</div>
+<div tal:condition="exam.status==4">
+
+${exam.status_finder()}
+    <br>${exam.course.title}
+
+    <table border="1">
+    <tr>
+        <td>سوال</td>
+        <td>پاسخ صحیح</td>
+        <td>پاسخ کاربر</td>
+
+    </tr>
+    <tr tal:repeat="answer exam.answers">
+        <td> ${answer.question.title} </td>
+        <td> ${answer.question.correct_answer}  </td>
+        <td> ${answer.value} </td>
+        <td> ${answer.find_score()}</td>
+    </tr>
+</table>
+
+</div>
+</div>
+
+</html>
+

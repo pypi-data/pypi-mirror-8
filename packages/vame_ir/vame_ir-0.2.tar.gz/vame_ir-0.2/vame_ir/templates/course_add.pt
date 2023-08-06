@@ -1,0 +1,19 @@
+<html metal:use-macro="load: main.pt">
+
+<div metal:fill-slot="content">
+<form name="signup" method="post">
+    عنوان: <input type="text" name="title"><br>
+    هزینه: <input type="text" name="price"><br>
+  حد اکثر  تعداد سوال: <input type="text" name="max_question"><br>
+  حد اقل نمره به درصد: <input type="text" name="min_score"><br>
+    زمان: <input type="text" name="time"><br>
+    توضیحات: <textarea name="comment"></textarea><br>
+    <p tal:repeat="question questions">
+    <input type="checkbox" name="questions" value="${question.id}"> ${question.title}<br/>
+</p>
+    <input type="submit" name="submit" value="ثبت">
+</form>
+    </div>
+
+</html>
+

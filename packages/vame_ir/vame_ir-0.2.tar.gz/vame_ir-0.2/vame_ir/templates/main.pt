@@ -1,0 +1,34 @@
+<html>
+<head>
+		<link rel="stylesheet" href="${request.static_url('vame_ir:static/countdown/flipclock.css')}">
+
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+
+		<script src="${request.static_url('vame_ir:static/countdown/flipclock.js')}"></script>
+</head>
+<body dir="rtl">
+  <a href="${request.route_url('home')}">صفحه اصلی</a>
+  <a href="${request.route_url('course_list')}">فهرست دوره ها</a>
+  <a href="${request.route_url('exam_list')}">دوره های ثبت نام شده</a>
+  <a href="${request.route_url('course_add')}">افزودن دوره جدید</a>
+  <a href="${request.route_url('question_add')}">افزودن سوال جدید</a>
+  <a href="${request.route_url('question_group_add')}">افزودن گروه سوال جدید</a>
+  <a href="${request.route_url('score_exam_list')}">تصحیح برگه ها</a>
+  <a href="${request.route_url('payment')}">اافزایش اعتبار</a>
+  <span tal:condition="exists:user">
+  <span tal:condition="not:user">
+    شما وارد نشده اید <a href="${request.route_url('login')}">ورود </a> یا <a href="${request.route_url('signup')}">ثبت نام</a>
+  </span></span>
+<br>
+  <br>
+
+
+<div tal:condition="exists:user">
+        <div tal:condition="user">
+سلام آفای/خانم ${user.first_name} ${user.last_name} شما با نام کاربری ${user.login_name} وارد شده اید<br>
+ حساب کاربری شما:${user.account} ریال <a href="${request.route_url('logout')}">خروج</a><br></div></div>
+  <div tal:condition="exists:message">
+  ${message}<br></div>
+  <div metal:define-slot="content"></div>
+</body>
+</html>
