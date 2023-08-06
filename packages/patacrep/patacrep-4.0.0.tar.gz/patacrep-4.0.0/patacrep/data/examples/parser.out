@@ -1,0 +1,1920 @@
+Created by PLY version 3.4 (http://www.dabeaz.com/ply)
+
+Grammar
+
+Rule 0     S' -> expression
+Rule 1     expression -> brackets expression
+Rule 2     expression -> braces expression
+Rule 3     expression -> command expression
+Rule 4     expression -> NEWLINE expression
+Rule 5     expression -> beginsong expression
+Rule 6     expression -> word expression
+Rule 7     expression -> SPACE expression
+Rule 8     expression -> empty
+Rule 9     empty -> <empty>
+Rule 10    brackets -> LBRACKET expression RBRACKET
+Rule 11    braces -> LBRACE expression RBRACE
+Rule 12    command -> COMMAND brackets_list braces_list
+Rule 13    brackets_list -> brackets brackets_list
+Rule 14    brackets_list -> empty
+Rule 15    braces_list -> braces braces_list
+Rule 16    braces_list -> empty
+Rule 17    word -> CHARACTER word_next
+Rule 18    word -> COMMA word_next
+Rule 19    word -> EQUAL word_next
+Rule 20    word_next -> CHARACTER word_next
+Rule 21    word_next -> empty
+Rule 22    beginsong -> BEGINSONG separator songbraces separator songbrackets
+Rule 23    songbrackets -> SONG_LOPTIONS separator dictionary separator SONG_ROPTIONS
+Rule 24    songbrackets -> empty
+Rule 25    songbraces -> SONG_LTITLE separator titles separator SONG_RTITLE
+Rule 26    songbraces -> empty
+Rule 27    dictionary -> identifier EQUAL braces dictionary_next
+Rule 28    dictionary -> identifier EQUAL error dictionary_next
+Rule 29    identifier -> CHARACTER identifier
+Rule 30    identifier -> empty
+Rule 31    separator -> SPACE
+Rule 32    separator -> empty
+Rule 33    dictionary_next -> separator COMMA separator dictionary
+Rule 34    dictionary_next -> empty
+Rule 35    titles -> title titles_next
+Rule 36    titles_next -> NEWLINE title titles_next
+Rule 37    titles_next -> empty
+Rule 38    title -> brackets title
+Rule 39    title -> braces title
+Rule 40    title -> command title
+Rule 41    title -> word title
+Rule 42    title -> SPACE title
+Rule 43    title -> empty
+
+Terminals, with rules where they appear
+
+BEGINSONG            : 22
+CHARACTER            : 17 20 29
+COMMA                : 18 33
+COMMAND              : 12
+EQUAL                : 19 27 28
+LBRACE               : 11
+LBRACKET             : 10
+NEWLINE              : 4 36
+RBRACE               : 11
+RBRACKET             : 10
+SONG_LOPTIONS        : 23
+SONG_LTITLE          : 25
+SONG_ROPTIONS        : 23
+SONG_RTITLE          : 25
+SPACE                : 7 31 42
+error                : 28
+
+Nonterminals, with rules where they appear
+
+beginsong            : 5
+braces               : 2 15 27 39
+braces_list          : 12 15
+brackets             : 1 13 38
+brackets_list        : 12 13
+command              : 3 40
+dictionary           : 23 33
+dictionary_next      : 27 28
+empty                : 8 14 16 21 24 26 30 32 34 37 43
+expression           : 1 2 3 4 5 6 7 10 11 0
+identifier           : 27 28 29
+separator            : 22 22 23 23 25 25 33 33
+songbraces           : 22
+songbrackets         : 22
+title                : 35 36 38 39 40 41 42
+titles               : 25
+titles_next          : 35 36
+word                 : 6 41
+word_next            : 17 18 19 20
+
+Parsing method: LALR
+
+state 0
+
+    (0) S' -> . expression
+    (1) expression -> . brackets expression
+    (2) expression -> . braces expression
+    (3) expression -> . command expression
+    (4) expression -> . NEWLINE expression
+    (5) expression -> . beginsong expression
+    (6) expression -> . word expression
+    (7) expression -> . SPACE expression
+    (8) expression -> . empty
+    (10) brackets -> . LBRACKET expression RBRACKET
+    (11) braces -> . LBRACE expression RBRACE
+    (12) command -> . COMMAND brackets_list braces_list
+    (22) beginsong -> . BEGINSONG separator songbraces separator songbrackets
+    (17) word -> . CHARACTER word_next
+    (18) word -> . COMMA word_next
+    (19) word -> . EQUAL word_next
+    (9) empty -> .
+
+    NEWLINE         shift and go to state 15
+    SPACE           shift and go to state 2
+    LBRACKET        shift and go to state 16
+    LBRACE          shift and go to state 7
+    COMMAND         shift and go to state 12
+    BEGINSONG       shift and go to state 11
+    CHARACTER       shift and go to state 1
+    COMMA           shift and go to state 8
+    EQUAL           shift and go to state 10
+    $end            reduce using rule 9 (empty -> .)
+
+    beginsong                      shift and go to state 3
+    command                        shift and go to state 9
+    brackets                       shift and go to state 4
+    word                           shift and go to state 5
+    expression                     shift and go to state 13
+    braces                         shift and go to state 6
+    empty                          shift and go to state 14
+
+state 1
+
+    (17) word -> CHARACTER . word_next
+    (20) word_next -> . CHARACTER word_next
+    (21) word_next -> . empty
+    (9) empty -> .
+
+  ! shift/reduce conflict for CHARACTER resolved as shift
+    CHARACTER       shift and go to state 17
+    NEWLINE         reduce using rule 9 (empty -> .)
+    SPACE           reduce using rule 9 (empty -> .)
+    LBRACKET        reduce using rule 9 (empty -> .)
+    LBRACE          reduce using rule 9 (empty -> .)
+    COMMAND         reduce using rule 9 (empty -> .)
+    BEGINSONG       reduce using rule 9 (empty -> .)
+    COMMA           reduce using rule 9 (empty -> .)
+    EQUAL           reduce using rule 9 (empty -> .)
+    $end            reduce using rule 9 (empty -> .)
+    RBRACE          reduce using rule 9 (empty -> .)
+    RBRACKET        reduce using rule 9 (empty -> .)
+    SONG_RTITLE     reduce using rule 9 (empty -> .)
+
+  ! CHARACTER       [ reduce using rule 9 (empty -> .) ]
+
+    empty                          shift and go to state 18
+    word_next                      shift and go to state 19
+
+state 2
+
+    (7) expression -> SPACE . expression
+    (1) expression -> . brackets expression
+    (2) expression -> . braces expression
+    (3) expression -> . command expression
+    (4) expression -> . NEWLINE expression
+    (5) expression -> . beginsong expression
+    (6) expression -> . word expression
+    (7) expression -> . SPACE expression
+    (8) expression -> . empty
+    (10) brackets -> . LBRACKET expression RBRACKET
+    (11) braces -> . LBRACE expression RBRACE
+    (12) command -> . COMMAND brackets_list braces_list
+    (22) beginsong -> . BEGINSONG separator songbraces separator songbrackets
+    (17) word -> . CHARACTER word_next
+    (18) word -> . COMMA word_next
+    (19) word -> . EQUAL word_next
+    (9) empty -> .
+
+    NEWLINE         shift and go to state 15
+    SPACE           shift and go to state 2
+    LBRACKET        shift and go to state 16
+    LBRACE          shift and go to state 7
+    COMMAND         shift and go to state 12
+    BEGINSONG       shift and go to state 11
+    CHARACTER       shift and go to state 1
+    COMMA           shift and go to state 8
+    EQUAL           shift and go to state 10
+    $end            reduce using rule 9 (empty -> .)
+    RBRACE          reduce using rule 9 (empty -> .)
+    RBRACKET        reduce using rule 9 (empty -> .)
+
+    beginsong                      shift and go to state 3
+    command                        shift and go to state 9
+    brackets                       shift and go to state 4
+    word                           shift and go to state 5
+    expression                     shift and go to state 20
+    braces                         shift and go to state 6
+    empty                          shift and go to state 14
+
+state 3
+
+    (5) expression -> beginsong . expression
+    (1) expression -> . brackets expression
+    (2) expression -> . braces expression
+    (3) expression -> . command expression
+    (4) expression -> . NEWLINE expression
+    (5) expression -> . beginsong expression
+    (6) expression -> . word expression
+    (7) expression -> . SPACE expression
+    (8) expression -> . empty
+    (10) brackets -> . LBRACKET expression RBRACKET
+    (11) braces -> . LBRACE expression RBRACE
+    (12) command -> . COMMAND brackets_list braces_list
+    (22) beginsong -> . BEGINSONG separator songbraces separator songbrackets
+    (17) word -> . CHARACTER word_next
+    (18) word -> . COMMA word_next
+    (19) word -> . EQUAL word_next
+    (9) empty -> .
+
+    NEWLINE         shift and go to state 15
+    SPACE           shift and go to state 2
+    LBRACKET        shift and go to state 16
+    LBRACE          shift and go to state 7
+    COMMAND         shift and go to state 12
+    BEGINSONG       shift and go to state 11
+    CHARACTER       shift and go to state 1
+    COMMA           shift and go to state 8
+    EQUAL           shift and go to state 10
+    $end            reduce using rule 9 (empty -> .)
+    RBRACE          reduce using rule 9 (empty -> .)
+    RBRACKET        reduce using rule 9 (empty -> .)
+
+    beginsong                      shift and go to state 3
+    command                        shift and go to state 9
+    brackets                       shift and go to state 4
+    word                           shift and go to state 5
+    expression                     shift and go to state 21
+    braces                         shift and go to state 6
+    empty                          shift and go to state 14
+
+state 4
+
+    (1) expression -> brackets . expression
+    (1) expression -> . brackets expression
+    (2) expression -> . braces expression
+    (3) expression -> . command expression
+    (4) expression -> . NEWLINE expression
+    (5) expression -> . beginsong expression
+    (6) expression -> . word expression
+    (7) expression -> . SPACE expression
+    (8) expression -> . empty
+    (10) brackets -> . LBRACKET expression RBRACKET
+    (11) braces -> . LBRACE expression RBRACE
+    (12) command -> . COMMAND brackets_list braces_list
+    (22) beginsong -> . BEGINSONG separator songbraces separator songbrackets
+    (17) word -> . CHARACTER word_next
+    (18) word -> . COMMA word_next
+    (19) word -> . EQUAL word_next
+    (9) empty -> .
+
+    NEWLINE         shift and go to state 15
+    SPACE           shift and go to state 2
+    LBRACKET        shift and go to state 16
+    LBRACE          shift and go to state 7
+    COMMAND         shift and go to state 12
+    BEGINSONG       shift and go to state 11
+    CHARACTER       shift and go to state 1
+    COMMA           shift and go to state 8
+    EQUAL           shift and go to state 10
+    $end            reduce using rule 9 (empty -> .)
+    RBRACE          reduce using rule 9 (empty -> .)
+    RBRACKET        reduce using rule 9 (empty -> .)
+
+    beginsong                      shift and go to state 3
+    command                        shift and go to state 9
+    brackets                       shift and go to state 4
+    word                           shift and go to state 5
+    expression                     shift and go to state 22
+    braces                         shift and go to state 6
+    empty                          shift and go to state 14
+
+state 5
+
+    (6) expression -> word . expression
+    (1) expression -> . brackets expression
+    (2) expression -> . braces expression
+    (3) expression -> . command expression
+    (4) expression -> . NEWLINE expression
+    (5) expression -> . beginsong expression
+    (6) expression -> . word expression
+    (7) expression -> . SPACE expression
+    (8) expression -> . empty
+    (10) brackets -> . LBRACKET expression RBRACKET
+    (11) braces -> . LBRACE expression RBRACE
+    (12) command -> . COMMAND brackets_list braces_list
+    (22) beginsong -> . BEGINSONG separator songbraces separator songbrackets
+    (17) word -> . CHARACTER word_next
+    (18) word -> . COMMA word_next
+    (19) word -> . EQUAL word_next
+    (9) empty -> .
+
+    NEWLINE         shift and go to state 15
+    SPACE           shift and go to state 2
+    LBRACKET        shift and go to state 16
+    LBRACE          shift and go to state 7
+    COMMAND         shift and go to state 12
+    BEGINSONG       shift and go to state 11
+    CHARACTER       shift and go to state 1
+    COMMA           shift and go to state 8
+    EQUAL           shift and go to state 10
+    $end            reduce using rule 9 (empty -> .)
+    RBRACE          reduce using rule 9 (empty -> .)
+    RBRACKET        reduce using rule 9 (empty -> .)
+
+    beginsong                      shift and go to state 3
+    command                        shift and go to state 9
+    brackets                       shift and go to state 4
+    word                           shift and go to state 5
+    braces                         shift and go to state 6
+    expression                     shift and go to state 23
+    empty                          shift and go to state 14
+
+state 6
+
+    (2) expression -> braces . expression
+    (1) expression -> . brackets expression
+    (2) expression -> . braces expression
+    (3) expression -> . command expression
+    (4) expression -> . NEWLINE expression
+    (5) expression -> . beginsong expression
+    (6) expression -> . word expression
+    (7) expression -> . SPACE expression
+    (8) expression -> . empty
+    (10) brackets -> . LBRACKET expression RBRACKET
+    (11) braces -> . LBRACE expression RBRACE
+    (12) command -> . COMMAND brackets_list braces_list
+    (22) beginsong -> . BEGINSONG separator songbraces separator songbrackets
+    (17) word -> . CHARACTER word_next
+    (18) word -> . COMMA word_next
+    (19) word -> . EQUAL word_next
+    (9) empty -> .
+
+    NEWLINE         shift and go to state 15
+    SPACE           shift and go to state 2
+    LBRACKET        shift and go to state 16
+    LBRACE          shift and go to state 7
+    COMMAND         shift and go to state 12
+    BEGINSONG       shift and go to state 11
+    CHARACTER       shift and go to state 1
+    COMMA           shift and go to state 8
+    EQUAL           shift and go to state 10
+    $end            reduce using rule 9 (empty -> .)
+    RBRACE          reduce using rule 9 (empty -> .)
+    RBRACKET        reduce using rule 9 (empty -> .)
+
+    beginsong                      shift and go to state 3
+    command                        shift and go to state 9
+    brackets                       shift and go to state 4
+    word                           shift and go to state 5
+    braces                         shift and go to state 6
+    expression                     shift and go to state 24
+    empty                          shift and go to state 14
+
+state 7
+
+    (11) braces -> LBRACE . expression RBRACE
+    (1) expression -> . brackets expression
+    (2) expression -> . braces expression
+    (3) expression -> . command expression
+    (4) expression -> . NEWLINE expression
+    (5) expression -> . beginsong expression
+    (6) expression -> . word expression
+    (7) expression -> . SPACE expression
+    (8) expression -> . empty
+    (10) brackets -> . LBRACKET expression RBRACKET
+    (11) braces -> . LBRACE expression RBRACE
+    (12) command -> . COMMAND brackets_list braces_list
+    (22) beginsong -> . BEGINSONG separator songbraces separator songbrackets
+    (17) word -> . CHARACTER word_next
+    (18) word -> . COMMA word_next
+    (19) word -> . EQUAL word_next
+    (9) empty -> .
+
+    NEWLINE         shift and go to state 15
+    SPACE           shift and go to state 2
+    LBRACKET        shift and go to state 16
+    LBRACE          shift and go to state 7
+    COMMAND         shift and go to state 12
+    BEGINSONG       shift and go to state 11
+    CHARACTER       shift and go to state 1
+    COMMA           shift and go to state 8
+    EQUAL           shift and go to state 10
+    RBRACE          reduce using rule 9 (empty -> .)
+
+    beginsong                      shift and go to state 3
+    command                        shift and go to state 9
+    brackets                       shift and go to state 4
+    word                           shift and go to state 5
+    expression                     shift and go to state 25
+    braces                         shift and go to state 6
+    empty                          shift and go to state 14
+
+state 8
+
+    (18) word -> COMMA . word_next
+    (20) word_next -> . CHARACTER word_next
+    (21) word_next -> . empty
+    (9) empty -> .
+
+  ! shift/reduce conflict for CHARACTER resolved as shift
+    CHARACTER       shift and go to state 17
+    NEWLINE         reduce using rule 9 (empty -> .)
+    SPACE           reduce using rule 9 (empty -> .)
+    LBRACKET        reduce using rule 9 (empty -> .)
+    LBRACE          reduce using rule 9 (empty -> .)
+    COMMAND         reduce using rule 9 (empty -> .)
+    BEGINSONG       reduce using rule 9 (empty -> .)
+    COMMA           reduce using rule 9 (empty -> .)
+    EQUAL           reduce using rule 9 (empty -> .)
+    $end            reduce using rule 9 (empty -> .)
+    RBRACE          reduce using rule 9 (empty -> .)
+    RBRACKET        reduce using rule 9 (empty -> .)
+    SONG_RTITLE     reduce using rule 9 (empty -> .)
+
+  ! CHARACTER       [ reduce using rule 9 (empty -> .) ]
+
+    empty                          shift and go to state 18
+    word_next                      shift and go to state 26
+
+state 9
+
+    (3) expression -> command . expression
+    (1) expression -> . brackets expression
+    (2) expression -> . braces expression
+    (3) expression -> . command expression
+    (4) expression -> . NEWLINE expression
+    (5) expression -> . beginsong expression
+    (6) expression -> . word expression
+    (7) expression -> . SPACE expression
+    (8) expression -> . empty
+    (10) brackets -> . LBRACKET expression RBRACKET
+    (11) braces -> . LBRACE expression RBRACE
+    (12) command -> . COMMAND brackets_list braces_list
+    (22) beginsong -> . BEGINSONG separator songbraces separator songbrackets
+    (17) word -> . CHARACTER word_next
+    (18) word -> . COMMA word_next
+    (19) word -> . EQUAL word_next
+    (9) empty -> .
+
+    NEWLINE         shift and go to state 15
+    SPACE           shift and go to state 2
+    LBRACKET        shift and go to state 16
+    LBRACE          shift and go to state 7
+    COMMAND         shift and go to state 12
+    BEGINSONG       shift and go to state 11
+    CHARACTER       shift and go to state 1
+    COMMA           shift and go to state 8
+    EQUAL           shift and go to state 10
+    $end            reduce using rule 9 (empty -> .)
+    RBRACE          reduce using rule 9 (empty -> .)
+    RBRACKET        reduce using rule 9 (empty -> .)
+
+    beginsong                      shift and go to state 3
+    command                        shift and go to state 9
+    brackets                       shift and go to state 4
+    word                           shift and go to state 5
+    expression                     shift and go to state 27
+    braces                         shift and go to state 6
+    empty                          shift and go to state 14
+
+state 10
+
+    (19) word -> EQUAL . word_next
+    (20) word_next -> . CHARACTER word_next
+    (21) word_next -> . empty
+    (9) empty -> .
+
+  ! shift/reduce conflict for CHARACTER resolved as shift
+    CHARACTER       shift and go to state 17
+    NEWLINE         reduce using rule 9 (empty -> .)
+    SPACE           reduce using rule 9 (empty -> .)
+    LBRACKET        reduce using rule 9 (empty -> .)
+    LBRACE          reduce using rule 9 (empty -> .)
+    COMMAND         reduce using rule 9 (empty -> .)
+    BEGINSONG       reduce using rule 9 (empty -> .)
+    COMMA           reduce using rule 9 (empty -> .)
+    EQUAL           reduce using rule 9 (empty -> .)
+    $end            reduce using rule 9 (empty -> .)
+    RBRACE          reduce using rule 9 (empty -> .)
+    RBRACKET        reduce using rule 9 (empty -> .)
+    SONG_RTITLE     reduce using rule 9 (empty -> .)
+
+  ! CHARACTER       [ reduce using rule 9 (empty -> .) ]
+
+    empty                          shift and go to state 18
+    word_next                      shift and go to state 28
+
+state 11
+
+    (22) beginsong -> BEGINSONG . separator songbraces separator songbrackets
+    (31) separator -> . SPACE
+    (32) separator -> . empty
+    (9) empty -> .
+
+  ! shift/reduce conflict for SPACE resolved as shift
+    SPACE           shift and go to state 30
+    SONG_LTITLE     reduce using rule 9 (empty -> .)
+    SONG_LOPTIONS   reduce using rule 9 (empty -> .)
+    NEWLINE         reduce using rule 9 (empty -> .)
+    LBRACKET        reduce using rule 9 (empty -> .)
+    LBRACE          reduce using rule 9 (empty -> .)
+    COMMAND         reduce using rule 9 (empty -> .)
+    BEGINSONG       reduce using rule 9 (empty -> .)
+    CHARACTER       reduce using rule 9 (empty -> .)
+    COMMA           reduce using rule 9 (empty -> .)
+    EQUAL           reduce using rule 9 (empty -> .)
+    $end            reduce using rule 9 (empty -> .)
+    RBRACE          reduce using rule 9 (empty -> .)
+    RBRACKET        reduce using rule 9 (empty -> .)
+
+  ! SPACE           [ reduce using rule 9 (empty -> .) ]
+
+    separator                      shift and go to state 29
+    empty                          shift and go to state 31
+
+state 12
+
+    (12) command -> COMMAND . brackets_list braces_list
+    (13) brackets_list -> . brackets brackets_list
+    (14) brackets_list -> . empty
+    (10) brackets -> . LBRACKET expression RBRACKET
+    (9) empty -> .
+
+  ! shift/reduce conflict for LBRACKET resolved as shift
+    LBRACKET        shift and go to state 16
+    LBRACE          reduce using rule 9 (empty -> .)
+    NEWLINE         reduce using rule 9 (empty -> .)
+    SPACE           reduce using rule 9 (empty -> .)
+    COMMAND         reduce using rule 9 (empty -> .)
+    BEGINSONG       reduce using rule 9 (empty -> .)
+    CHARACTER       reduce using rule 9 (empty -> .)
+    COMMA           reduce using rule 9 (empty -> .)
+    EQUAL           reduce using rule 9 (empty -> .)
+    $end            reduce using rule 9 (empty -> .)
+    RBRACE          reduce using rule 9 (empty -> .)
+    RBRACKET        reduce using rule 9 (empty -> .)
+    SONG_RTITLE     reduce using rule 9 (empty -> .)
+
+  ! LBRACKET        [ reduce using rule 9 (empty -> .) ]
+
+    empty                          shift and go to state 32
+    brackets                       shift and go to state 33
+    brackets_list                  shift and go to state 34
+
+state 13
+
+    (0) S' -> expression .
+
+
+
+state 14
+
+    (8) expression -> empty .
+
+    $end            reduce using rule 8 (expression -> empty .)
+    RBRACE          reduce using rule 8 (expression -> empty .)
+    RBRACKET        reduce using rule 8 (expression -> empty .)
+
+
+state 15
+
+    (4) expression -> NEWLINE . expression
+    (1) expression -> . brackets expression
+    (2) expression -> . braces expression
+    (3) expression -> . command expression
+    (4) expression -> . NEWLINE expression
+    (5) expression -> . beginsong expression
+    (6) expression -> . word expression
+    (7) expression -> . SPACE expression
+    (8) expression -> . empty
+    (10) brackets -> . LBRACKET expression RBRACKET
+    (11) braces -> . LBRACE expression RBRACE
+    (12) command -> . COMMAND brackets_list braces_list
+    (22) beginsong -> . BEGINSONG separator songbraces separator songbrackets
+    (17) word -> . CHARACTER word_next
+    (18) word -> . COMMA word_next
+    (19) word -> . EQUAL word_next
+    (9) empty -> .
+
+    NEWLINE         shift and go to state 15
+    SPACE           shift and go to state 2
+    LBRACKET        shift and go to state 16
+    LBRACE          shift and go to state 7
+    COMMAND         shift and go to state 12
+    BEGINSONG       shift and go to state 11
+    CHARACTER       shift and go to state 1
+    COMMA           shift and go to state 8
+    EQUAL           shift and go to state 10
+    $end            reduce using rule 9 (empty -> .)
+    RBRACE          reduce using rule 9 (empty -> .)
+    RBRACKET        reduce using rule 9 (empty -> .)
+
+    beginsong                      shift and go to state 3
+    command                        shift and go to state 9
+    brackets                       shift and go to state 4
+    word                           shift and go to state 5
+    expression                     shift and go to state 35
+    braces                         shift and go to state 6
+    empty                          shift and go to state 14
+
+state 16
+
+    (10) brackets -> LBRACKET . expression RBRACKET
+    (1) expression -> . brackets expression
+    (2) expression -> . braces expression
+    (3) expression -> . command expression
+    (4) expression -> . NEWLINE expression
+    (5) expression -> . beginsong expression
+    (6) expression -> . word expression
+    (7) expression -> . SPACE expression
+    (8) expression -> . empty
+    (10) brackets -> . LBRACKET expression RBRACKET
+    (11) braces -> . LBRACE expression RBRACE
+    (12) command -> . COMMAND brackets_list braces_list
+    (22) beginsong -> . BEGINSONG separator songbraces separator songbrackets
+    (17) word -> . CHARACTER word_next
+    (18) word -> . COMMA word_next
+    (19) word -> . EQUAL word_next
+    (9) empty -> .
+
+    NEWLINE         shift and go to state 15
+    SPACE           shift and go to state 2
+    LBRACKET        shift and go to state 16
+    LBRACE          shift and go to state 7
+    COMMAND         shift and go to state 12
+    BEGINSONG       shift and go to state 11
+    CHARACTER       shift and go to state 1
+    COMMA           shift and go to state 8
+    EQUAL           shift and go to state 10
+    RBRACKET        reduce using rule 9 (empty -> .)
+
+    beginsong                      shift and go to state 3
+    command                        shift and go to state 9
+    brackets                       shift and go to state 4
+    word                           shift and go to state 5
+    expression                     shift and go to state 36
+    braces                         shift and go to state 6
+    empty                          shift and go to state 14
+
+state 17
+
+    (20) word_next -> CHARACTER . word_next
+    (20) word_next -> . CHARACTER word_next
+    (21) word_next -> . empty
+    (9) empty -> .
+
+  ! shift/reduce conflict for CHARACTER resolved as shift
+    CHARACTER       shift and go to state 17
+    NEWLINE         reduce using rule 9 (empty -> .)
+    SPACE           reduce using rule 9 (empty -> .)
+    LBRACKET        reduce using rule 9 (empty -> .)
+    LBRACE          reduce using rule 9 (empty -> .)
+    COMMAND         reduce using rule 9 (empty -> .)
+    BEGINSONG       reduce using rule 9 (empty -> .)
+    COMMA           reduce using rule 9 (empty -> .)
+    EQUAL           reduce using rule 9 (empty -> .)
+    $end            reduce using rule 9 (empty -> .)
+    RBRACE          reduce using rule 9 (empty -> .)
+    RBRACKET        reduce using rule 9 (empty -> .)
+    SONG_RTITLE     reduce using rule 9 (empty -> .)
+
+  ! CHARACTER       [ reduce using rule 9 (empty -> .) ]
+
+    empty                          shift and go to state 18
+    word_next                      shift and go to state 37
+
+state 18
+
+    (21) word_next -> empty .
+
+    NEWLINE         reduce using rule 21 (word_next -> empty .)
+    SPACE           reduce using rule 21 (word_next -> empty .)
+    LBRACKET        reduce using rule 21 (word_next -> empty .)
+    LBRACE          reduce using rule 21 (word_next -> empty .)
+    COMMAND         reduce using rule 21 (word_next -> empty .)
+    BEGINSONG       reduce using rule 21 (word_next -> empty .)
+    CHARACTER       reduce using rule 21 (word_next -> empty .)
+    COMMA           reduce using rule 21 (word_next -> empty .)
+    EQUAL           reduce using rule 21 (word_next -> empty .)
+    $end            reduce using rule 21 (word_next -> empty .)
+    RBRACE          reduce using rule 21 (word_next -> empty .)
+    RBRACKET        reduce using rule 21 (word_next -> empty .)
+    SONG_RTITLE     reduce using rule 21 (word_next -> empty .)
+
+
+state 19
+
+    (17) word -> CHARACTER word_next .
+
+    NEWLINE         reduce using rule 17 (word -> CHARACTER word_next .)
+    SPACE           reduce using rule 17 (word -> CHARACTER word_next .)
+    LBRACKET        reduce using rule 17 (word -> CHARACTER word_next .)
+    LBRACE          reduce using rule 17 (word -> CHARACTER word_next .)
+    COMMAND         reduce using rule 17 (word -> CHARACTER word_next .)
+    BEGINSONG       reduce using rule 17 (word -> CHARACTER word_next .)
+    CHARACTER       reduce using rule 17 (word -> CHARACTER word_next .)
+    COMMA           reduce using rule 17 (word -> CHARACTER word_next .)
+    EQUAL           reduce using rule 17 (word -> CHARACTER word_next .)
+    RBRACKET        reduce using rule 17 (word -> CHARACTER word_next .)
+    SONG_RTITLE     reduce using rule 17 (word -> CHARACTER word_next .)
+    RBRACE          reduce using rule 17 (word -> CHARACTER word_next .)
+    $end            reduce using rule 17 (word -> CHARACTER word_next .)
+
+
+state 20
+
+    (7) expression -> SPACE expression .
+
+    $end            reduce using rule 7 (expression -> SPACE expression .)
+    RBRACE          reduce using rule 7 (expression -> SPACE expression .)
+    RBRACKET        reduce using rule 7 (expression -> SPACE expression .)
+
+
+state 21
+
+    (5) expression -> beginsong expression .
+
+    $end            reduce using rule 5 (expression -> beginsong expression .)
+    RBRACE          reduce using rule 5 (expression -> beginsong expression .)
+    RBRACKET        reduce using rule 5 (expression -> beginsong expression .)
+
+
+state 22
+
+    (1) expression -> brackets expression .
+
+    $end            reduce using rule 1 (expression -> brackets expression .)
+    RBRACE          reduce using rule 1 (expression -> brackets expression .)
+    RBRACKET        reduce using rule 1 (expression -> brackets expression .)
+
+
+state 23
+
+    (6) expression -> word expression .
+
+    $end            reduce using rule 6 (expression -> word expression .)
+    RBRACE          reduce using rule 6 (expression -> word expression .)
+    RBRACKET        reduce using rule 6 (expression -> word expression .)
+
+
+state 24
+
+    (2) expression -> braces expression .
+
+    $end            reduce using rule 2 (expression -> braces expression .)
+    RBRACE          reduce using rule 2 (expression -> braces expression .)
+    RBRACKET        reduce using rule 2 (expression -> braces expression .)
+
+
+state 25
+
+    (11) braces -> LBRACE expression . RBRACE
+
+    RBRACE          shift and go to state 38
+
+
+state 26
+
+    (18) word -> COMMA word_next .
+
+    NEWLINE         reduce using rule 18 (word -> COMMA word_next .)
+    SPACE           reduce using rule 18 (word -> COMMA word_next .)
+    LBRACKET        reduce using rule 18 (word -> COMMA word_next .)
+    LBRACE          reduce using rule 18 (word -> COMMA word_next .)
+    COMMAND         reduce using rule 18 (word -> COMMA word_next .)
+    BEGINSONG       reduce using rule 18 (word -> COMMA word_next .)
+    CHARACTER       reduce using rule 18 (word -> COMMA word_next .)
+    COMMA           reduce using rule 18 (word -> COMMA word_next .)
+    EQUAL           reduce using rule 18 (word -> COMMA word_next .)
+    RBRACKET        reduce using rule 18 (word -> COMMA word_next .)
+    SONG_RTITLE     reduce using rule 18 (word -> COMMA word_next .)
+    RBRACE          reduce using rule 18 (word -> COMMA word_next .)
+    $end            reduce using rule 18 (word -> COMMA word_next .)
+
+
+state 27
+
+    (3) expression -> command expression .
+
+    $end            reduce using rule 3 (expression -> command expression .)
+    RBRACE          reduce using rule 3 (expression -> command expression .)
+    RBRACKET        reduce using rule 3 (expression -> command expression .)
+
+
+state 28
+
+    (19) word -> EQUAL word_next .
+
+    NEWLINE         reduce using rule 19 (word -> EQUAL word_next .)
+    SPACE           reduce using rule 19 (word -> EQUAL word_next .)
+    LBRACKET        reduce using rule 19 (word -> EQUAL word_next .)
+    LBRACE          reduce using rule 19 (word -> EQUAL word_next .)
+    COMMAND         reduce using rule 19 (word -> EQUAL word_next .)
+    BEGINSONG       reduce using rule 19 (word -> EQUAL word_next .)
+    CHARACTER       reduce using rule 19 (word -> EQUAL word_next .)
+    COMMA           reduce using rule 19 (word -> EQUAL word_next .)
+    EQUAL           reduce using rule 19 (word -> EQUAL word_next .)
+    RBRACKET        reduce using rule 19 (word -> EQUAL word_next .)
+    SONG_RTITLE     reduce using rule 19 (word -> EQUAL word_next .)
+    RBRACE          reduce using rule 19 (word -> EQUAL word_next .)
+    $end            reduce using rule 19 (word -> EQUAL word_next .)
+
+
+state 29
+
+    (22) beginsong -> BEGINSONG separator . songbraces separator songbrackets
+    (25) songbraces -> . SONG_LTITLE separator titles separator SONG_RTITLE
+    (26) songbraces -> . empty
+    (9) empty -> .
+
+    SONG_LTITLE     shift and go to state 41
+    SPACE           reduce using rule 9 (empty -> .)
+    SONG_LOPTIONS   reduce using rule 9 (empty -> .)
+    NEWLINE         reduce using rule 9 (empty -> .)
+    LBRACKET        reduce using rule 9 (empty -> .)
+    LBRACE          reduce using rule 9 (empty -> .)
+    COMMAND         reduce using rule 9 (empty -> .)
+    BEGINSONG       reduce using rule 9 (empty -> .)
+    CHARACTER       reduce using rule 9 (empty -> .)
+    COMMA           reduce using rule 9 (empty -> .)
+    EQUAL           reduce using rule 9 (empty -> .)
+    $end            reduce using rule 9 (empty -> .)
+    RBRACE          reduce using rule 9 (empty -> .)
+    RBRACKET        reduce using rule 9 (empty -> .)
+
+    empty                          shift and go to state 39
+    songbraces                     shift and go to state 40
+
+state 30
+
+    (31) separator -> SPACE .
+
+    SONG_RTITLE     reduce using rule 31 (separator -> SPACE .)
+    SONG_LOPTIONS   reduce using rule 31 (separator -> SPACE .)
+    NEWLINE         reduce using rule 31 (separator -> SPACE .)
+    SPACE           reduce using rule 31 (separator -> SPACE .)
+    LBRACKET        reduce using rule 31 (separator -> SPACE .)
+    LBRACE          reduce using rule 31 (separator -> SPACE .)
+    COMMAND         reduce using rule 31 (separator -> SPACE .)
+    BEGINSONG       reduce using rule 31 (separator -> SPACE .)
+    CHARACTER       reduce using rule 31 (separator -> SPACE .)
+    COMMA           reduce using rule 31 (separator -> SPACE .)
+    EQUAL           reduce using rule 31 (separator -> SPACE .)
+    $end            reduce using rule 31 (separator -> SPACE .)
+    RBRACE          reduce using rule 31 (separator -> SPACE .)
+    RBRACKET        reduce using rule 31 (separator -> SPACE .)
+    SONG_ROPTIONS   reduce using rule 31 (separator -> SPACE .)
+    SONG_LTITLE     reduce using rule 31 (separator -> SPACE .)
+
+
+state 31
+
+    (32) separator -> empty .
+
+    SONG_RTITLE     reduce using rule 32 (separator -> empty .)
+    SONG_LOPTIONS   reduce using rule 32 (separator -> empty .)
+    NEWLINE         reduce using rule 32 (separator -> empty .)
+    SPACE           reduce using rule 32 (separator -> empty .)
+    LBRACKET        reduce using rule 32 (separator -> empty .)
+    LBRACE          reduce using rule 32 (separator -> empty .)
+    COMMAND         reduce using rule 32 (separator -> empty .)
+    BEGINSONG       reduce using rule 32 (separator -> empty .)
+    CHARACTER       reduce using rule 32 (separator -> empty .)
+    COMMA           reduce using rule 32 (separator -> empty .)
+    EQUAL           reduce using rule 32 (separator -> empty .)
+    $end            reduce using rule 32 (separator -> empty .)
+    RBRACE          reduce using rule 32 (separator -> empty .)
+    RBRACKET        reduce using rule 32 (separator -> empty .)
+    SONG_ROPTIONS   reduce using rule 32 (separator -> empty .)
+    SONG_LTITLE     reduce using rule 32 (separator -> empty .)
+
+
+state 32
+
+    (14) brackets_list -> empty .
+
+    LBRACE          reduce using rule 14 (brackets_list -> empty .)
+    NEWLINE         reduce using rule 14 (brackets_list -> empty .)
+    SPACE           reduce using rule 14 (brackets_list -> empty .)
+    LBRACKET        reduce using rule 14 (brackets_list -> empty .)
+    COMMAND         reduce using rule 14 (brackets_list -> empty .)
+    BEGINSONG       reduce using rule 14 (brackets_list -> empty .)
+    CHARACTER       reduce using rule 14 (brackets_list -> empty .)
+    COMMA           reduce using rule 14 (brackets_list -> empty .)
+    EQUAL           reduce using rule 14 (brackets_list -> empty .)
+    $end            reduce using rule 14 (brackets_list -> empty .)
+    RBRACE          reduce using rule 14 (brackets_list -> empty .)
+    RBRACKET        reduce using rule 14 (brackets_list -> empty .)
+    SONG_RTITLE     reduce using rule 14 (brackets_list -> empty .)
+
+
+state 33
+
+    (13) brackets_list -> brackets . brackets_list
+    (13) brackets_list -> . brackets brackets_list
+    (14) brackets_list -> . empty
+    (10) brackets -> . LBRACKET expression RBRACKET
+    (9) empty -> .
+
+  ! shift/reduce conflict for LBRACKET resolved as shift
+    LBRACKET        shift and go to state 16
+    LBRACE          reduce using rule 9 (empty -> .)
+    NEWLINE         reduce using rule 9 (empty -> .)
+    SPACE           reduce using rule 9 (empty -> .)
+    COMMAND         reduce using rule 9 (empty -> .)
+    BEGINSONG       reduce using rule 9 (empty -> .)
+    CHARACTER       reduce using rule 9 (empty -> .)
+    COMMA           reduce using rule 9 (empty -> .)
+    EQUAL           reduce using rule 9 (empty -> .)
+    $end            reduce using rule 9 (empty -> .)
+    RBRACE          reduce using rule 9 (empty -> .)
+    RBRACKET        reduce using rule 9 (empty -> .)
+    SONG_RTITLE     reduce using rule 9 (empty -> .)
+
+  ! LBRACKET        [ reduce using rule 9 (empty -> .) ]
+
+    empty                          shift and go to state 32
+    brackets                       shift and go to state 33
+    brackets_list                  shift and go to state 42
+
+state 34
+
+    (12) command -> COMMAND brackets_list . braces_list
+    (15) braces_list -> . braces braces_list
+    (16) braces_list -> . empty
+    (11) braces -> . LBRACE expression RBRACE
+    (9) empty -> .
+
+  ! shift/reduce conflict for LBRACE resolved as shift
+    LBRACE          shift and go to state 7
+    NEWLINE         reduce using rule 9 (empty -> .)
+    SPACE           reduce using rule 9 (empty -> .)
+    LBRACKET        reduce using rule 9 (empty -> .)
+    COMMAND         reduce using rule 9 (empty -> .)
+    BEGINSONG       reduce using rule 9 (empty -> .)
+    CHARACTER       reduce using rule 9 (empty -> .)
+    COMMA           reduce using rule 9 (empty -> .)
+    EQUAL           reduce using rule 9 (empty -> .)
+    $end            reduce using rule 9 (empty -> .)
+    RBRACE          reduce using rule 9 (empty -> .)
+    RBRACKET        reduce using rule 9 (empty -> .)
+    SONG_RTITLE     reduce using rule 9 (empty -> .)
+
+  ! LBRACE          [ reduce using rule 9 (empty -> .) ]
+
+    braces                         shift and go to state 44
+    empty                          shift and go to state 45
+    braces_list                    shift and go to state 43
+
+state 35
+
+    (4) expression -> NEWLINE expression .
+
+    $end            reduce using rule 4 (expression -> NEWLINE expression .)
+    RBRACE          reduce using rule 4 (expression -> NEWLINE expression .)
+    RBRACKET        reduce using rule 4 (expression -> NEWLINE expression .)
+
+
+state 36
+
+    (10) brackets -> LBRACKET expression . RBRACKET
+
+    RBRACKET        shift and go to state 46
+
+
+state 37
+
+    (20) word_next -> CHARACTER word_next .
+
+    NEWLINE         reduce using rule 20 (word_next -> CHARACTER word_next .)
+    SPACE           reduce using rule 20 (word_next -> CHARACTER word_next .)
+    LBRACKET        reduce using rule 20 (word_next -> CHARACTER word_next .)
+    LBRACE          reduce using rule 20 (word_next -> CHARACTER word_next .)
+    COMMAND         reduce using rule 20 (word_next -> CHARACTER word_next .)
+    BEGINSONG       reduce using rule 20 (word_next -> CHARACTER word_next .)
+    CHARACTER       reduce using rule 20 (word_next -> CHARACTER word_next .)
+    COMMA           reduce using rule 20 (word_next -> CHARACTER word_next .)
+    EQUAL           reduce using rule 20 (word_next -> CHARACTER word_next .)
+    $end            reduce using rule 20 (word_next -> CHARACTER word_next .)
+    RBRACE          reduce using rule 20 (word_next -> CHARACTER word_next .)
+    RBRACKET        reduce using rule 20 (word_next -> CHARACTER word_next .)
+    SONG_RTITLE     reduce using rule 20 (word_next -> CHARACTER word_next .)
+
+
+state 38
+
+    (11) braces -> LBRACE expression RBRACE .
+
+    LBRACE          reduce using rule 11 (braces -> LBRACE expression RBRACE .)
+    NEWLINE         reduce using rule 11 (braces -> LBRACE expression RBRACE .)
+    SPACE           reduce using rule 11 (braces -> LBRACE expression RBRACE .)
+    LBRACKET        reduce using rule 11 (braces -> LBRACE expression RBRACE .)
+    COMMAND         reduce using rule 11 (braces -> LBRACE expression RBRACE .)
+    BEGINSONG       reduce using rule 11 (braces -> LBRACE expression RBRACE .)
+    CHARACTER       reduce using rule 11 (braces -> LBRACE expression RBRACE .)
+    COMMA           reduce using rule 11 (braces -> LBRACE expression RBRACE .)
+    EQUAL           reduce using rule 11 (braces -> LBRACE expression RBRACE .)
+    $end            reduce using rule 11 (braces -> LBRACE expression RBRACE .)
+    RBRACE          reduce using rule 11 (braces -> LBRACE expression RBRACE .)
+    RBRACKET        reduce using rule 11 (braces -> LBRACE expression RBRACE .)
+    SONG_RTITLE     reduce using rule 11 (braces -> LBRACE expression RBRACE .)
+    SONG_ROPTIONS   reduce using rule 11 (braces -> LBRACE expression RBRACE .)
+
+
+state 39
+
+    (26) songbraces -> empty .
+
+    SPACE           reduce using rule 26 (songbraces -> empty .)
+    SONG_LOPTIONS   reduce using rule 26 (songbraces -> empty .)
+    NEWLINE         reduce using rule 26 (songbraces -> empty .)
+    LBRACKET        reduce using rule 26 (songbraces -> empty .)
+    LBRACE          reduce using rule 26 (songbraces -> empty .)
+    COMMAND         reduce using rule 26 (songbraces -> empty .)
+    BEGINSONG       reduce using rule 26 (songbraces -> empty .)
+    CHARACTER       reduce using rule 26 (songbraces -> empty .)
+    COMMA           reduce using rule 26 (songbraces -> empty .)
+    EQUAL           reduce using rule 26 (songbraces -> empty .)
+    $end            reduce using rule 26 (songbraces -> empty .)
+    RBRACE          reduce using rule 26 (songbraces -> empty .)
+    RBRACKET        reduce using rule 26 (songbraces -> empty .)
+
+
+state 40
+
+    (22) beginsong -> BEGINSONG separator songbraces . separator songbrackets
+    (31) separator -> . SPACE
+    (32) separator -> . empty
+    (9) empty -> .
+
+  ! shift/reduce conflict for SPACE resolved as shift
+    SPACE           shift and go to state 30
+    SONG_LOPTIONS   reduce using rule 9 (empty -> .)
+    NEWLINE         reduce using rule 9 (empty -> .)
+    LBRACKET        reduce using rule 9 (empty -> .)
+    LBRACE          reduce using rule 9 (empty -> .)
+    COMMAND         reduce using rule 9 (empty -> .)
+    BEGINSONG       reduce using rule 9 (empty -> .)
+    CHARACTER       reduce using rule 9 (empty -> .)
+    COMMA           reduce using rule 9 (empty -> .)
+    EQUAL           reduce using rule 9 (empty -> .)
+    $end            reduce using rule 9 (empty -> .)
+    RBRACE          reduce using rule 9 (empty -> .)
+    RBRACKET        reduce using rule 9 (empty -> .)
+
+  ! SPACE           [ reduce using rule 9 (empty -> .) ]
+
+    separator                      shift and go to state 47
+    empty                          shift and go to state 31
+
+state 41
+
+    (25) songbraces -> SONG_LTITLE . separator titles separator SONG_RTITLE
+    (31) separator -> . SPACE
+    (32) separator -> . empty
+    (9) empty -> .
+
+  ! shift/reduce conflict for SPACE resolved as shift
+    SPACE           shift and go to state 30
+    LBRACKET        reduce using rule 9 (empty -> .)
+    LBRACE          reduce using rule 9 (empty -> .)
+    COMMAND         reduce using rule 9 (empty -> .)
+    CHARACTER       reduce using rule 9 (empty -> .)
+    COMMA           reduce using rule 9 (empty -> .)
+    EQUAL           reduce using rule 9 (empty -> .)
+    SONG_RTITLE     reduce using rule 9 (empty -> .)
+    NEWLINE         reduce using rule 9 (empty -> .)
+
+  ! SPACE           [ reduce using rule 9 (empty -> .) ]
+
+    separator                      shift and go to state 48
+    empty                          shift and go to state 31
+
+state 42
+
+    (13) brackets_list -> brackets brackets_list .
+
+    LBRACE          reduce using rule 13 (brackets_list -> brackets brackets_list .)
+    NEWLINE         reduce using rule 13 (brackets_list -> brackets brackets_list .)
+    SPACE           reduce using rule 13 (brackets_list -> brackets brackets_list .)
+    LBRACKET        reduce using rule 13 (brackets_list -> brackets brackets_list .)
+    COMMAND         reduce using rule 13 (brackets_list -> brackets brackets_list .)
+    BEGINSONG       reduce using rule 13 (brackets_list -> brackets brackets_list .)
+    CHARACTER       reduce using rule 13 (brackets_list -> brackets brackets_list .)
+    COMMA           reduce using rule 13 (brackets_list -> brackets brackets_list .)
+    EQUAL           reduce using rule 13 (brackets_list -> brackets brackets_list .)
+    $end            reduce using rule 13 (brackets_list -> brackets brackets_list .)
+    RBRACE          reduce using rule 13 (brackets_list -> brackets brackets_list .)
+    RBRACKET        reduce using rule 13 (brackets_list -> brackets brackets_list .)
+    SONG_RTITLE     reduce using rule 13 (brackets_list -> brackets brackets_list .)
+
+
+state 43
+
+    (12) command -> COMMAND brackets_list braces_list .
+
+    NEWLINE         reduce using rule 12 (command -> COMMAND brackets_list braces_list .)
+    SPACE           reduce using rule 12 (command -> COMMAND brackets_list braces_list .)
+    LBRACKET        reduce using rule 12 (command -> COMMAND brackets_list braces_list .)
+    LBRACE          reduce using rule 12 (command -> COMMAND brackets_list braces_list .)
+    COMMAND         reduce using rule 12 (command -> COMMAND brackets_list braces_list .)
+    BEGINSONG       reduce using rule 12 (command -> COMMAND brackets_list braces_list .)
+    CHARACTER       reduce using rule 12 (command -> COMMAND brackets_list braces_list .)
+    COMMA           reduce using rule 12 (command -> COMMAND brackets_list braces_list .)
+    EQUAL           reduce using rule 12 (command -> COMMAND brackets_list braces_list .)
+    $end            reduce using rule 12 (command -> COMMAND brackets_list braces_list .)
+    RBRACE          reduce using rule 12 (command -> COMMAND brackets_list braces_list .)
+    RBRACKET        reduce using rule 12 (command -> COMMAND brackets_list braces_list .)
+    SONG_RTITLE     reduce using rule 12 (command -> COMMAND brackets_list braces_list .)
+
+
+state 44
+
+    (15) braces_list -> braces . braces_list
+    (15) braces_list -> . braces braces_list
+    (16) braces_list -> . empty
+    (11) braces -> . LBRACE expression RBRACE
+    (9) empty -> .
+
+  ! shift/reduce conflict for LBRACE resolved as shift
+    LBRACE          shift and go to state 7
+    NEWLINE         reduce using rule 9 (empty -> .)
+    SPACE           reduce using rule 9 (empty -> .)
+    LBRACKET        reduce using rule 9 (empty -> .)
+    COMMAND         reduce using rule 9 (empty -> .)
+    BEGINSONG       reduce using rule 9 (empty -> .)
+    CHARACTER       reduce using rule 9 (empty -> .)
+    COMMA           reduce using rule 9 (empty -> .)
+    EQUAL           reduce using rule 9 (empty -> .)
+    $end            reduce using rule 9 (empty -> .)
+    RBRACE          reduce using rule 9 (empty -> .)
+    RBRACKET        reduce using rule 9 (empty -> .)
+    SONG_RTITLE     reduce using rule 9 (empty -> .)
+
+  ! LBRACE          [ reduce using rule 9 (empty -> .) ]
+
+    braces                         shift and go to state 44
+    empty                          shift and go to state 45
+    braces_list                    shift and go to state 49
+
+state 45
+
+    (16) braces_list -> empty .
+
+    NEWLINE         reduce using rule 16 (braces_list -> empty .)
+    SPACE           reduce using rule 16 (braces_list -> empty .)
+    LBRACKET        reduce using rule 16 (braces_list -> empty .)
+    LBRACE          reduce using rule 16 (braces_list -> empty .)
+    COMMAND         reduce using rule 16 (braces_list -> empty .)
+    BEGINSONG       reduce using rule 16 (braces_list -> empty .)
+    CHARACTER       reduce using rule 16 (braces_list -> empty .)
+    COMMA           reduce using rule 16 (braces_list -> empty .)
+    EQUAL           reduce using rule 16 (braces_list -> empty .)
+    $end            reduce using rule 16 (braces_list -> empty .)
+    RBRACE          reduce using rule 16 (braces_list -> empty .)
+    RBRACKET        reduce using rule 16 (braces_list -> empty .)
+    SONG_RTITLE     reduce using rule 16 (braces_list -> empty .)
+
+
+state 46
+
+    (10) brackets -> LBRACKET expression RBRACKET .
+
+    NEWLINE         reduce using rule 10 (brackets -> LBRACKET expression RBRACKET .)
+    SPACE           reduce using rule 10 (brackets -> LBRACKET expression RBRACKET .)
+    LBRACKET        reduce using rule 10 (brackets -> LBRACKET expression RBRACKET .)
+    LBRACE          reduce using rule 10 (brackets -> LBRACKET expression RBRACKET .)
+    COMMAND         reduce using rule 10 (brackets -> LBRACKET expression RBRACKET .)
+    BEGINSONG       reduce using rule 10 (brackets -> LBRACKET expression RBRACKET .)
+    CHARACTER       reduce using rule 10 (brackets -> LBRACKET expression RBRACKET .)
+    COMMA           reduce using rule 10 (brackets -> LBRACKET expression RBRACKET .)
+    EQUAL           reduce using rule 10 (brackets -> LBRACKET expression RBRACKET .)
+    RBRACE          reduce using rule 10 (brackets -> LBRACKET expression RBRACKET .)
+    $end            reduce using rule 10 (brackets -> LBRACKET expression RBRACKET .)
+    RBRACKET        reduce using rule 10 (brackets -> LBRACKET expression RBRACKET .)
+    SONG_RTITLE     reduce using rule 10 (brackets -> LBRACKET expression RBRACKET .)
+
+
+state 47
+
+    (22) beginsong -> BEGINSONG separator songbraces separator . songbrackets
+    (23) songbrackets -> . SONG_LOPTIONS separator dictionary separator SONG_ROPTIONS
+    (24) songbrackets -> . empty
+    (9) empty -> .
+
+    SONG_LOPTIONS   shift and go to state 51
+    NEWLINE         reduce using rule 9 (empty -> .)
+    SPACE           reduce using rule 9 (empty -> .)
+    LBRACKET        reduce using rule 9 (empty -> .)
+    LBRACE          reduce using rule 9 (empty -> .)
+    COMMAND         reduce using rule 9 (empty -> .)
+    BEGINSONG       reduce using rule 9 (empty -> .)
+    CHARACTER       reduce using rule 9 (empty -> .)
+    COMMA           reduce using rule 9 (empty -> .)
+    EQUAL           reduce using rule 9 (empty -> .)
+    $end            reduce using rule 9 (empty -> .)
+    RBRACE          reduce using rule 9 (empty -> .)
+    RBRACKET        reduce using rule 9 (empty -> .)
+
+    songbrackets                   shift and go to state 50
+    empty                          shift and go to state 52
+
+state 48
+
+    (25) songbraces -> SONG_LTITLE separator . titles separator SONG_RTITLE
+    (35) titles -> . title titles_next
+    (38) title -> . brackets title
+    (39) title -> . braces title
+    (40) title -> . command title
+    (41) title -> . word title
+    (42) title -> . SPACE title
+    (43) title -> . empty
+    (10) brackets -> . LBRACKET expression RBRACKET
+    (11) braces -> . LBRACE expression RBRACE
+    (12) command -> . COMMAND brackets_list braces_list
+    (17) word -> . CHARACTER word_next
+    (18) word -> . COMMA word_next
+    (19) word -> . EQUAL word_next
+    (9) empty -> .
+
+  ! shift/reduce conflict for SPACE resolved as shift
+    SPACE           shift and go to state 54
+    LBRACKET        shift and go to state 16
+    LBRACE          shift and go to state 7
+    COMMAND         shift and go to state 12
+    CHARACTER       shift and go to state 1
+    COMMA           shift and go to state 8
+    EQUAL           shift and go to state 10
+    NEWLINE         reduce using rule 9 (empty -> .)
+    SONG_RTITLE     reduce using rule 9 (empty -> .)
+
+  ! SPACE           [ reduce using rule 9 (empty -> .) ]
+
+    titles                         shift and go to state 53
+    title                          shift and go to state 60
+    command                        shift and go to state 58
+    brackets                       shift and go to state 55
+    word                           shift and go to state 57
+    braces                         shift and go to state 56
+    empty                          shift and go to state 59
+
+state 49
+
+    (15) braces_list -> braces braces_list .
+
+    NEWLINE         reduce using rule 15 (braces_list -> braces braces_list .)
+    SPACE           reduce using rule 15 (braces_list -> braces braces_list .)
+    LBRACKET        reduce using rule 15 (braces_list -> braces braces_list .)
+    LBRACE          reduce using rule 15 (braces_list -> braces braces_list .)
+    COMMAND         reduce using rule 15 (braces_list -> braces braces_list .)
+    BEGINSONG       reduce using rule 15 (braces_list -> braces braces_list .)
+    CHARACTER       reduce using rule 15 (braces_list -> braces braces_list .)
+    COMMA           reduce using rule 15 (braces_list -> braces braces_list .)
+    EQUAL           reduce using rule 15 (braces_list -> braces braces_list .)
+    $end            reduce using rule 15 (braces_list -> braces braces_list .)
+    RBRACE          reduce using rule 15 (braces_list -> braces braces_list .)
+    RBRACKET        reduce using rule 15 (braces_list -> braces braces_list .)
+    SONG_RTITLE     reduce using rule 15 (braces_list -> braces braces_list .)
+
+
+state 50
+
+    (22) beginsong -> BEGINSONG separator songbraces separator songbrackets .
+
+    NEWLINE         reduce using rule 22 (beginsong -> BEGINSONG separator songbraces separator songbrackets .)
+    SPACE           reduce using rule 22 (beginsong -> BEGINSONG separator songbraces separator songbrackets .)
+    LBRACKET        reduce using rule 22 (beginsong -> BEGINSONG separator songbraces separator songbrackets .)
+    LBRACE          reduce using rule 22 (beginsong -> BEGINSONG separator songbraces separator songbrackets .)
+    COMMAND         reduce using rule 22 (beginsong -> BEGINSONG separator songbraces separator songbrackets .)
+    BEGINSONG       reduce using rule 22 (beginsong -> BEGINSONG separator songbraces separator songbrackets .)
+    CHARACTER       reduce using rule 22 (beginsong -> BEGINSONG separator songbraces separator songbrackets .)
+    COMMA           reduce using rule 22 (beginsong -> BEGINSONG separator songbraces separator songbrackets .)
+    EQUAL           reduce using rule 22 (beginsong -> BEGINSONG separator songbraces separator songbrackets .)
+    $end            reduce using rule 22 (beginsong -> BEGINSONG separator songbraces separator songbrackets .)
+    RBRACE          reduce using rule 22 (beginsong -> BEGINSONG separator songbraces separator songbrackets .)
+    RBRACKET        reduce using rule 22 (beginsong -> BEGINSONG separator songbraces separator songbrackets .)
+
+
+state 51
+
+    (23) songbrackets -> SONG_LOPTIONS . separator dictionary separator SONG_ROPTIONS
+    (31) separator -> . SPACE
+    (32) separator -> . empty
+    (9) empty -> .
+
+    SPACE           shift and go to state 30
+    CHARACTER       reduce using rule 9 (empty -> .)
+    EQUAL           reduce using rule 9 (empty -> .)
+
+    separator                      shift and go to state 61
+    empty                          shift and go to state 31
+
+state 52
+
+    (24) songbrackets -> empty .
+
+    NEWLINE         reduce using rule 24 (songbrackets -> empty .)
+    SPACE           reduce using rule 24 (songbrackets -> empty .)
+    LBRACKET        reduce using rule 24 (songbrackets -> empty .)
+    LBRACE          reduce using rule 24 (songbrackets -> empty .)
+    COMMAND         reduce using rule 24 (songbrackets -> empty .)
+    BEGINSONG       reduce using rule 24 (songbrackets -> empty .)
+    CHARACTER       reduce using rule 24 (songbrackets -> empty .)
+    COMMA           reduce using rule 24 (songbrackets -> empty .)
+    EQUAL           reduce using rule 24 (songbrackets -> empty .)
+    $end            reduce using rule 24 (songbrackets -> empty .)
+    RBRACE          reduce using rule 24 (songbrackets -> empty .)
+    RBRACKET        reduce using rule 24 (songbrackets -> empty .)
+
+
+state 53
+
+    (25) songbraces -> SONG_LTITLE separator titles . separator SONG_RTITLE
+    (31) separator -> . SPACE
+    (32) separator -> . empty
+    (9) empty -> .
+
+    SPACE           shift and go to state 30
+    SONG_RTITLE     reduce using rule 9 (empty -> .)
+
+    separator                      shift and go to state 62
+    empty                          shift and go to state 31
+
+state 54
+
+    (42) title -> SPACE . title
+    (38) title -> . brackets title
+    (39) title -> . braces title
+    (40) title -> . command title
+    (41) title -> . word title
+    (42) title -> . SPACE title
+    (43) title -> . empty
+    (10) brackets -> . LBRACKET expression RBRACKET
+    (11) braces -> . LBRACE expression RBRACE
+    (12) command -> . COMMAND brackets_list braces_list
+    (17) word -> . CHARACTER word_next
+    (18) word -> . COMMA word_next
+    (19) word -> . EQUAL word_next
+    (9) empty -> .
+
+  ! shift/reduce conflict for SPACE resolved as shift
+    SPACE           shift and go to state 54
+    LBRACKET        shift and go to state 16
+    LBRACE          shift and go to state 7
+    COMMAND         shift and go to state 12
+    CHARACTER       shift and go to state 1
+    COMMA           shift and go to state 8
+    EQUAL           shift and go to state 10
+    NEWLINE         reduce using rule 9 (empty -> .)
+    SONG_RTITLE     reduce using rule 9 (empty -> .)
+
+  ! SPACE           [ reduce using rule 9 (empty -> .) ]
+
+    word                           shift and go to state 57
+    braces                         shift and go to state 56
+    empty                          shift and go to state 59
+    title                          shift and go to state 63
+    command                        shift and go to state 58
+    brackets                       shift and go to state 55
+
+state 55
+
+    (38) title -> brackets . title
+    (38) title -> . brackets title
+    (39) title -> . braces title
+    (40) title -> . command title
+    (41) title -> . word title
+    (42) title -> . SPACE title
+    (43) title -> . empty
+    (10) brackets -> . LBRACKET expression RBRACKET
+    (11) braces -> . LBRACE expression RBRACE
+    (12) command -> . COMMAND brackets_list braces_list
+    (17) word -> . CHARACTER word_next
+    (18) word -> . COMMA word_next
+    (19) word -> . EQUAL word_next
+    (9) empty -> .
+
+  ! shift/reduce conflict for SPACE resolved as shift
+    SPACE           shift and go to state 54
+    LBRACKET        shift and go to state 16
+    LBRACE          shift and go to state 7
+    COMMAND         shift and go to state 12
+    CHARACTER       shift and go to state 1
+    COMMA           shift and go to state 8
+    EQUAL           shift and go to state 10
+    NEWLINE         reduce using rule 9 (empty -> .)
+    SONG_RTITLE     reduce using rule 9 (empty -> .)
+
+  ! SPACE           [ reduce using rule 9 (empty -> .) ]
+
+    word                           shift and go to state 57
+    braces                         shift and go to state 56
+    empty                          shift and go to state 59
+    title                          shift and go to state 64
+    command                        shift and go to state 58
+    brackets                       shift and go to state 55
+
+state 56
+
+    (39) title -> braces . title
+    (38) title -> . brackets title
+    (39) title -> . braces title
+    (40) title -> . command title
+    (41) title -> . word title
+    (42) title -> . SPACE title
+    (43) title -> . empty
+    (10) brackets -> . LBRACKET expression RBRACKET
+    (11) braces -> . LBRACE expression RBRACE
+    (12) command -> . COMMAND brackets_list braces_list
+    (17) word -> . CHARACTER word_next
+    (18) word -> . COMMA word_next
+    (19) word -> . EQUAL word_next
+    (9) empty -> .
+
+  ! shift/reduce conflict for SPACE resolved as shift
+    SPACE           shift and go to state 54
+    LBRACKET        shift and go to state 16
+    LBRACE          shift and go to state 7
+    COMMAND         shift and go to state 12
+    CHARACTER       shift and go to state 1
+    COMMA           shift and go to state 8
+    EQUAL           shift and go to state 10
+    NEWLINE         reduce using rule 9 (empty -> .)
+    SONG_RTITLE     reduce using rule 9 (empty -> .)
+
+  ! SPACE           [ reduce using rule 9 (empty -> .) ]
+
+    word                           shift and go to state 57
+    braces                         shift and go to state 56
+    empty                          shift and go to state 59
+    title                          shift and go to state 65
+    command                        shift and go to state 58
+    brackets                       shift and go to state 55
+
+state 57
+
+    (41) title -> word . title
+    (38) title -> . brackets title
+    (39) title -> . braces title
+    (40) title -> . command title
+    (41) title -> . word title
+    (42) title -> . SPACE title
+    (43) title -> . empty
+    (10) brackets -> . LBRACKET expression RBRACKET
+    (11) braces -> . LBRACE expression RBRACE
+    (12) command -> . COMMAND brackets_list braces_list
+    (17) word -> . CHARACTER word_next
+    (18) word -> . COMMA word_next
+    (19) word -> . EQUAL word_next
+    (9) empty -> .
+
+  ! shift/reduce conflict for SPACE resolved as shift
+    SPACE           shift and go to state 54
+    LBRACKET        shift and go to state 16
+    LBRACE          shift and go to state 7
+    COMMAND         shift and go to state 12
+    CHARACTER       shift and go to state 1
+    COMMA           shift and go to state 8
+    EQUAL           shift and go to state 10
+    NEWLINE         reduce using rule 9 (empty -> .)
+    SONG_RTITLE     reduce using rule 9 (empty -> .)
+
+  ! SPACE           [ reduce using rule 9 (empty -> .) ]
+
+    braces                         shift and go to state 56
+    word                           shift and go to state 57
+    empty                          shift and go to state 59
+    title                          shift and go to state 66
+    command                        shift and go to state 58
+    brackets                       shift and go to state 55
+
+state 58
+
+    (40) title -> command . title
+    (38) title -> . brackets title
+    (39) title -> . braces title
+    (40) title -> . command title
+    (41) title -> . word title
+    (42) title -> . SPACE title
+    (43) title -> . empty
+    (10) brackets -> . LBRACKET expression RBRACKET
+    (11) braces -> . LBRACE expression RBRACE
+    (12) command -> . COMMAND brackets_list braces_list
+    (17) word -> . CHARACTER word_next
+    (18) word -> . COMMA word_next
+    (19) word -> . EQUAL word_next
+    (9) empty -> .
+
+  ! shift/reduce conflict for SPACE resolved as shift
+    SPACE           shift and go to state 54
+    LBRACKET        shift and go to state 16
+    LBRACE          shift and go to state 7
+    COMMAND         shift and go to state 12
+    CHARACTER       shift and go to state 1
+    COMMA           shift and go to state 8
+    EQUAL           shift and go to state 10
+    NEWLINE         reduce using rule 9 (empty -> .)
+    SONG_RTITLE     reduce using rule 9 (empty -> .)
+
+  ! SPACE           [ reduce using rule 9 (empty -> .) ]
+
+    word                           shift and go to state 57
+    braces                         shift and go to state 56
+    empty                          shift and go to state 59
+    title                          shift and go to state 67
+    command                        shift and go to state 58
+    brackets                       shift and go to state 55
+
+state 59
+
+    (43) title -> empty .
+
+    NEWLINE         reduce using rule 43 (title -> empty .)
+    SPACE           reduce using rule 43 (title -> empty .)
+    SONG_RTITLE     reduce using rule 43 (title -> empty .)
+
+
+state 60
+
+    (35) titles -> title . titles_next
+    (36) titles_next -> . NEWLINE title titles_next
+    (37) titles_next -> . empty
+    (9) empty -> .
+
+    NEWLINE         shift and go to state 70
+    SPACE           reduce using rule 9 (empty -> .)
+    SONG_RTITLE     reduce using rule 9 (empty -> .)
+
+    titles_next                    shift and go to state 68
+    empty                          shift and go to state 69
+
+state 61
+
+    (23) songbrackets -> SONG_LOPTIONS separator . dictionary separator SONG_ROPTIONS
+    (27) dictionary -> . identifier EQUAL braces dictionary_next
+    (28) dictionary -> . identifier EQUAL error dictionary_next
+    (29) identifier -> . CHARACTER identifier
+    (30) identifier -> . empty
+    (9) empty -> .
+
+    CHARACTER       shift and go to state 74
+    EQUAL           reduce using rule 9 (empty -> .)
+
+    dictionary                     shift and go to state 71
+    identifier                     shift and go to state 73
+    empty                          shift and go to state 72
+
+state 62
+
+    (25) songbraces -> SONG_LTITLE separator titles separator . SONG_RTITLE
+
+    SONG_RTITLE     shift and go to state 75
+
+
+state 63
+
+    (42) title -> SPACE title .
+
+    NEWLINE         reduce using rule 42 (title -> SPACE title .)
+    SPACE           reduce using rule 42 (title -> SPACE title .)
+    SONG_RTITLE     reduce using rule 42 (title -> SPACE title .)
+
+
+state 64
+
+    (38) title -> brackets title .
+
+    NEWLINE         reduce using rule 38 (title -> brackets title .)
+    SPACE           reduce using rule 38 (title -> brackets title .)
+    SONG_RTITLE     reduce using rule 38 (title -> brackets title .)
+
+
+state 65
+
+    (39) title -> braces title .
+
+    NEWLINE         reduce using rule 39 (title -> braces title .)
+    SPACE           reduce using rule 39 (title -> braces title .)
+    SONG_RTITLE     reduce using rule 39 (title -> braces title .)
+
+
+state 66
+
+    (41) title -> word title .
+
+    NEWLINE         reduce using rule 41 (title -> word title .)
+    SPACE           reduce using rule 41 (title -> word title .)
+    SONG_RTITLE     reduce using rule 41 (title -> word title .)
+
+
+state 67
+
+    (40) title -> command title .
+
+    NEWLINE         reduce using rule 40 (title -> command title .)
+    SPACE           reduce using rule 40 (title -> command title .)
+    SONG_RTITLE     reduce using rule 40 (title -> command title .)
+
+
+state 68
+
+    (35) titles -> title titles_next .
+
+    SPACE           reduce using rule 35 (titles -> title titles_next .)
+    SONG_RTITLE     reduce using rule 35 (titles -> title titles_next .)
+
+
+state 69
+
+    (37) titles_next -> empty .
+
+    SPACE           reduce using rule 37 (titles_next -> empty .)
+    SONG_RTITLE     reduce using rule 37 (titles_next -> empty .)
+
+
+state 70
+
+    (36) titles_next -> NEWLINE . title titles_next
+    (38) title -> . brackets title
+    (39) title -> . braces title
+    (40) title -> . command title
+    (41) title -> . word title
+    (42) title -> . SPACE title
+    (43) title -> . empty
+    (10) brackets -> . LBRACKET expression RBRACKET
+    (11) braces -> . LBRACE expression RBRACE
+    (12) command -> . COMMAND brackets_list braces_list
+    (17) word -> . CHARACTER word_next
+    (18) word -> . COMMA word_next
+    (19) word -> . EQUAL word_next
+    (9) empty -> .
+
+  ! shift/reduce conflict for SPACE resolved as shift
+    SPACE           shift and go to state 54
+    LBRACKET        shift and go to state 16
+    LBRACE          shift and go to state 7
+    COMMAND         shift and go to state 12
+    CHARACTER       shift and go to state 1
+    COMMA           shift and go to state 8
+    EQUAL           shift and go to state 10
+    NEWLINE         reduce using rule 9 (empty -> .)
+    SONG_RTITLE     reduce using rule 9 (empty -> .)
+
+  ! SPACE           [ reduce using rule 9 (empty -> .) ]
+
+    braces                         shift and go to state 56
+    empty                          shift and go to state 59
+    title                          shift and go to state 76
+    command                        shift and go to state 58
+    brackets                       shift and go to state 55
+    word                           shift and go to state 57
+
+state 71
+
+    (23) songbrackets -> SONG_LOPTIONS separator dictionary . separator SONG_ROPTIONS
+    (31) separator -> . SPACE
+    (32) separator -> . empty
+    (9) empty -> .
+
+    SPACE           shift and go to state 30
+    SONG_ROPTIONS   reduce using rule 9 (empty -> .)
+
+    separator                      shift and go to state 77
+    empty                          shift and go to state 31
+
+state 72
+
+    (30) identifier -> empty .
+
+    EQUAL           reduce using rule 30 (identifier -> empty .)
+
+
+state 73
+
+    (27) dictionary -> identifier . EQUAL braces dictionary_next
+    (28) dictionary -> identifier . EQUAL error dictionary_next
+
+    EQUAL           shift and go to state 78
+
+
+state 74
+
+    (29) identifier -> CHARACTER . identifier
+    (29) identifier -> . CHARACTER identifier
+    (30) identifier -> . empty
+    (9) empty -> .
+
+    CHARACTER       shift and go to state 74
+    EQUAL           reduce using rule 9 (empty -> .)
+
+    empty                          shift and go to state 72
+    identifier                     shift and go to state 79
+
+state 75
+
+    (25) songbraces -> SONG_LTITLE separator titles separator SONG_RTITLE .
+
+    SPACE           reduce using rule 25 (songbraces -> SONG_LTITLE separator titles separator SONG_RTITLE .)
+    SONG_LOPTIONS   reduce using rule 25 (songbraces -> SONG_LTITLE separator titles separator SONG_RTITLE .)
+    NEWLINE         reduce using rule 25 (songbraces -> SONG_LTITLE separator titles separator SONG_RTITLE .)
+    LBRACKET        reduce using rule 25 (songbraces -> SONG_LTITLE separator titles separator SONG_RTITLE .)
+    LBRACE          reduce using rule 25 (songbraces -> SONG_LTITLE separator titles separator SONG_RTITLE .)
+    COMMAND         reduce using rule 25 (songbraces -> SONG_LTITLE separator titles separator SONG_RTITLE .)
+    BEGINSONG       reduce using rule 25 (songbraces -> SONG_LTITLE separator titles separator SONG_RTITLE .)
+    CHARACTER       reduce using rule 25 (songbraces -> SONG_LTITLE separator titles separator SONG_RTITLE .)
+    COMMA           reduce using rule 25 (songbraces -> SONG_LTITLE separator titles separator SONG_RTITLE .)
+    EQUAL           reduce using rule 25 (songbraces -> SONG_LTITLE separator titles separator SONG_RTITLE .)
+    $end            reduce using rule 25 (songbraces -> SONG_LTITLE separator titles separator SONG_RTITLE .)
+    RBRACE          reduce using rule 25 (songbraces -> SONG_LTITLE separator titles separator SONG_RTITLE .)
+    RBRACKET        reduce using rule 25 (songbraces -> SONG_LTITLE separator titles separator SONG_RTITLE .)
+
+
+state 76
+
+    (36) titles_next -> NEWLINE title . titles_next
+    (36) titles_next -> . NEWLINE title titles_next
+    (37) titles_next -> . empty
+    (9) empty -> .
+
+    NEWLINE         shift and go to state 70
+    SPACE           reduce using rule 9 (empty -> .)
+    SONG_RTITLE     reduce using rule 9 (empty -> .)
+
+    titles_next                    shift and go to state 80
+    empty                          shift and go to state 69
+
+state 77
+
+    (23) songbrackets -> SONG_LOPTIONS separator dictionary separator . SONG_ROPTIONS
+
+    SONG_ROPTIONS   shift and go to state 81
+
+
+state 78
+
+    (27) dictionary -> identifier EQUAL . braces dictionary_next
+    (28) dictionary -> identifier EQUAL . error dictionary_next
+    (11) braces -> . LBRACE expression RBRACE
+
+    error           shift and go to state 83
+    LBRACE          shift and go to state 7
+
+    braces                         shift and go to state 82
+
+state 79
+
+    (29) identifier -> CHARACTER identifier .
+
+    EQUAL           reduce using rule 29 (identifier -> CHARACTER identifier .)
+
+
+state 80
+
+    (36) titles_next -> NEWLINE title titles_next .
+
+    SPACE           reduce using rule 36 (titles_next -> NEWLINE title titles_next .)
+    SONG_RTITLE     reduce using rule 36 (titles_next -> NEWLINE title titles_next .)
+
+
+state 81
+
+    (23) songbrackets -> SONG_LOPTIONS separator dictionary separator SONG_ROPTIONS .
+
+    NEWLINE         reduce using rule 23 (songbrackets -> SONG_LOPTIONS separator dictionary separator SONG_ROPTIONS .)
+    SPACE           reduce using rule 23 (songbrackets -> SONG_LOPTIONS separator dictionary separator SONG_ROPTIONS .)
+    LBRACKET        reduce using rule 23 (songbrackets -> SONG_LOPTIONS separator dictionary separator SONG_ROPTIONS .)
+    LBRACE          reduce using rule 23 (songbrackets -> SONG_LOPTIONS separator dictionary separator SONG_ROPTIONS .)
+    COMMAND         reduce using rule 23 (songbrackets -> SONG_LOPTIONS separator dictionary separator SONG_ROPTIONS .)
+    BEGINSONG       reduce using rule 23 (songbrackets -> SONG_LOPTIONS separator dictionary separator SONG_ROPTIONS .)
+    CHARACTER       reduce using rule 23 (songbrackets -> SONG_LOPTIONS separator dictionary separator SONG_ROPTIONS .)
+    COMMA           reduce using rule 23 (songbrackets -> SONG_LOPTIONS separator dictionary separator SONG_ROPTIONS .)
+    EQUAL           reduce using rule 23 (songbrackets -> SONG_LOPTIONS separator dictionary separator SONG_ROPTIONS .)
+    $end            reduce using rule 23 (songbrackets -> SONG_LOPTIONS separator dictionary separator SONG_ROPTIONS .)
+    RBRACE          reduce using rule 23 (songbrackets -> SONG_LOPTIONS separator dictionary separator SONG_ROPTIONS .)
+    RBRACKET        reduce using rule 23 (songbrackets -> SONG_LOPTIONS separator dictionary separator SONG_ROPTIONS .)
+
+
+state 82
+
+    (27) dictionary -> identifier EQUAL braces . dictionary_next
+    (33) dictionary_next -> . separator COMMA separator dictionary
+    (34) dictionary_next -> . empty
+    (31) separator -> . SPACE
+    (32) separator -> . empty
+    (9) empty -> .
+
+  ! shift/reduce conflict for SPACE resolved as shift
+    SPACE           shift and go to state 30
+    SONG_ROPTIONS   reduce using rule 9 (empty -> .)
+    COMMA           reduce using rule 9 (empty -> .)
+
+  ! SPACE           [ reduce using rule 9 (empty -> .) ]
+
+    separator                      shift and go to state 84
+    dictionary_next                shift and go to state 85
+    empty                          shift and go to state 86
+
+state 83
+
+    (28) dictionary -> identifier EQUAL error . dictionary_next
+    (33) dictionary_next -> . separator COMMA separator dictionary
+    (34) dictionary_next -> . empty
+    (31) separator -> . SPACE
+    (32) separator -> . empty
+    (9) empty -> .
+
+  ! shift/reduce conflict for SPACE resolved as shift
+    SPACE           shift and go to state 30
+    SONG_ROPTIONS   reduce using rule 9 (empty -> .)
+    COMMA           reduce using rule 9 (empty -> .)
+
+  ! SPACE           [ reduce using rule 9 (empty -> .) ]
+
+    separator                      shift and go to state 84
+    dictionary_next                shift and go to state 87
+    empty                          shift and go to state 86
+
+state 84
+
+    (33) dictionary_next -> separator . COMMA separator dictionary
+
+    COMMA           shift and go to state 88
+
+
+state 85
+
+    (27) dictionary -> identifier EQUAL braces dictionary_next .
+
+    SPACE           reduce using rule 27 (dictionary -> identifier EQUAL braces dictionary_next .)
+    SONG_ROPTIONS   reduce using rule 27 (dictionary -> identifier EQUAL braces dictionary_next .)
+
+
+state 86
+
+    (34) dictionary_next -> empty .
+    (32) separator -> empty .
+
+    SPACE           reduce using rule 34 (dictionary_next -> empty .)
+    SONG_ROPTIONS   reduce using rule 34 (dictionary_next -> empty .)
+    COMMA           reduce using rule 32 (separator -> empty .)
+
+
+state 87
+
+    (28) dictionary -> identifier EQUAL error dictionary_next .
+
+    SPACE           reduce using rule 28 (dictionary -> identifier EQUAL error dictionary_next .)
+    SONG_ROPTIONS   reduce using rule 28 (dictionary -> identifier EQUAL error dictionary_next .)
+
+
+state 88
+
+    (33) dictionary_next -> separator COMMA . separator dictionary
+    (31) separator -> . SPACE
+    (32) separator -> . empty
+    (9) empty -> .
+
+    SPACE           shift and go to state 30
+    CHARACTER       reduce using rule 9 (empty -> .)
+    EQUAL           reduce using rule 9 (empty -> .)
+
+    separator                      shift and go to state 89
+    empty                          shift and go to state 31
+
+state 89
+
+    (33) dictionary_next -> separator COMMA separator . dictionary
+    (27) dictionary -> . identifier EQUAL braces dictionary_next
+    (28) dictionary -> . identifier EQUAL error dictionary_next
+    (29) identifier -> . CHARACTER identifier
+    (30) identifier -> . empty
+    (9) empty -> .
+
+    CHARACTER       shift and go to state 74
+    EQUAL           reduce using rule 9 (empty -> .)
+
+    dictionary                     shift and go to state 90
+    identifier                     shift and go to state 73
+    empty                          shift and go to state 72
+
+state 90
+
+    (33) dictionary_next -> separator COMMA separator dictionary .
+
+    SPACE           reduce using rule 33 (dictionary_next -> separator COMMA separator dictionary .)
+    SONG_ROPTIONS   reduce using rule 33 (dictionary_next -> separator COMMA separator dictionary .)
+
+WARNING: 
+WARNING: Conflicts:
+WARNING: 
+WARNING: shift/reduce conflict for CHARACTER in state 1 resolved as shift
+WARNING: shift/reduce conflict for CHARACTER in state 8 resolved as shift
+WARNING: shift/reduce conflict for CHARACTER in state 10 resolved as shift
+WARNING: shift/reduce conflict for SPACE in state 11 resolved as shift
+WARNING: shift/reduce conflict for LBRACKET in state 12 resolved as shift
+WARNING: shift/reduce conflict for CHARACTER in state 17 resolved as shift
+WARNING: shift/reduce conflict for LBRACKET in state 33 resolved as shift
+WARNING: shift/reduce conflict for LBRACE in state 34 resolved as shift
+WARNING: shift/reduce conflict for SPACE in state 40 resolved as shift
+WARNING: shift/reduce conflict for SPACE in state 41 resolved as shift
+WARNING: shift/reduce conflict for LBRACE in state 44 resolved as shift
+WARNING: shift/reduce conflict for SPACE in state 48 resolved as shift
+WARNING: shift/reduce conflict for SPACE in state 54 resolved as shift
+WARNING: shift/reduce conflict for SPACE in state 55 resolved as shift
+WARNING: shift/reduce conflict for SPACE in state 56 resolved as shift
+WARNING: shift/reduce conflict for SPACE in state 57 resolved as shift
+WARNING: shift/reduce conflict for SPACE in state 58 resolved as shift
+WARNING: shift/reduce conflict for SPACE in state 70 resolved as shift
+WARNING: shift/reduce conflict for SPACE in state 82 resolved as shift
+WARNING: shift/reduce conflict for SPACE in state 83 resolved as shift
