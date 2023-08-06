@@ -1,0 +1,147 @@
+Metadata-Version: 1.1
+Name: pu
+Version: 0.4.3
+Summary: Python utils
+Home-page: https://github.com/huyx/pu
+Author: yuxin
+Author-email: ycyuxin@gmail.com
+License: GNU Library or Lesser General Public License (LGPL)
+Description: Python Utilities
+        ================
+        
+        Python 编程工具集，本着实用、简单的原则，尽量减少对其他模块的依赖。
+        
+        由于内容比较杂，所以并不过分追求兼容性。
+        
+        pu.aio
+        ------
+        
+        asyncio 相关扩展和工具。
+        
+        pu.aio.timer
+        ~~~~~~~~~~~~
+        
+        提供一个简单的 Timer。
+        
+        - class Timer
+        
+        pu.aio.client
+        ~~~~~~~~~~~~~
+        
+        简单的 Client 类和支持重连的 ReconnectingClient
+        
+        - class Client
+        - class ReconnectingClient
+        
+        pu.aio.virtualprotocol
+        ~~~~~~~~~~~~~~~~~~~~~~
+        
+        支持动态协议识别，根据收到的数据判断连接实际采用的协议。
+        
+        - class VirtualProtocolFactory
+        - class VirtualProtocol
+        - class RealProtocol
+        
+        util
+        ----
+        
+        - shorten
+        
+        dictutil
+        --------
+        
+        - repr_dict
+        - Dot
+        - DotDict
+        - OrderedDict
+        - DotOrderedDict
+        
+        manager
+        -------
+        
+        - class Manager: 对象管理器
+        
+        
+        用法::
+        
+            manager = Manager()
+        
+            manager.register(1, 'ONE')
+        
+            @manager.register
+            def a(): pass
+        
+            @manager.named('funcb', 'FUNCB')
+            def b(): pass
+        
+            @manager.register
+            class A: pass
+        
+            @manager.named('clsb', 'CLSB')
+            class B: pass
+        
+        
+        0.4.3(2014-10-30)
+        -----------------
+        
+        - client.Client: 修改 connect 方法为 coroutine
+        - 版本: Alpha 改为 Beta
+        
+        0.4.2(2014-10-29)
+        -----------------
+        
+        - 允许指定 yaml 文件编码（缺省为 utf-8）
+        
+        0.4.1(2014-10-29)
+        -----------------
+        
+        - virtualprotocol: 允许指定缺省协议，去除原来一个应用只能使用一个虚拟协议的限制
+        
+        0.4.0(2014-10-28)
+        -----------------
+        
+        - 添加 manager 模块
+        
+        0.3.2(2014-10-27)
+        -----------------
+        
+        - BUGFIX: dictutil.Dot 应该支持 [key] 方式访问
+        
+        0.3.1(2014-10-27)
+        -----------------
+        
+        - 完善软件包版本信息
+        
+        0.3.0(2014-10-26)
+        -----------------
+        
+        - dictutil -- repr_dict, Dot, DotDict, OrderedDict, DotOrderedDict
+        
+        0.2.0(2014-10-25)
+        -----------------
+        
+        - yamlfile -- add !include tag
+        
+        0.1.1(2014-10-25)
+        -----------------
+        
+        - Add MANIFEST.in
+        
+        0.1.0(2014-10-25)
+        -----------------
+        
+        - pu.aio.client
+        - pu.aio.timer
+        - pu.aio.virtualprotocol
+        
+        - pu.util.shorten
+Keywords: python,util
+Platform: UNKNOWN
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 2
+Classifier: Programming Language :: Python :: 3
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: GNU Library or Lesser General Public License (LGPL)
+Classifier: Operating System :: OS Independent
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
