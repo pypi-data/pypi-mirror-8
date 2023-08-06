@@ -1,0 +1,20 @@
+Metadata-Version: 1.0
+Name: lockdir
+Version: 0.1
+Summary: Lock class based on the creation of directories in a folder
+Home-page: http://www.grycap.upv.es
+Author: Carlos de Alfonso
+Author-email: caralla@upv.es
+License: MIT License
+Description: This is a class that tries to limit the number of multiple simultaneous executions of a python script, on a local computer. It works by creating folders (using a pattern) under a folder. If the folder is successfully created, the execution gains the lock. Otherwise the script waits up to a configurable time to try to create the folder.
+        
+        Example:
+        
+        from lockdir import LockDir
+        lock = lockdir.LockDir(parallelruns=5, secondswait=300, lockdir="/tmp/lockdir.lock")
+        if not lock.acquire_lock():
+            print "Error acquiring lock"
+            sys.exit(1)
+        # do the job
+        lock.clean_lock()
+Platform: UNKNOWN
