@@ -1,0 +1,49 @@
+Metadata-Version: 1.1
+Name: unidbm
+Version: 0.0.1
+Summary: Dict-style key value wrapper around some embeded databases
+Home-page: https://github.com/imbolc/unidbm
+Author: Imbolc
+Author-email: imbolc@imbolc.name
+License: ISC
+Description: Dict-style key value wrapper around some embeded databases
+        ==========================================================
+        
+        Usage
+        =====
+        
+            >>> import unidbm
+            >>> db = unidbm.open('sqlite', path=':memory:')
+        
+        Set and get data:
+        
+            >>> db['foo'] = ['bar', {'baz': 1}]
+            >>> db['foo']
+            ['bar', {'baz': 1}]
+        
+        Iterate:
+        
+            >>> [str(key) for key in db]
+            ['foo']
+        
+        Delete:
+        
+            >>> del db['foo']
+            >>> len(db)
+            0
+        
+        Backends
+        ========
+        - sqlite
+        - kyoto cabinet
+        - semidbm
+Platform: UNKNOWN
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: ISC License (ISCL)
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 2.6
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.3
+Classifier: Programming Language :: Python :: 3.4
