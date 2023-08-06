@@ -1,0 +1,33 @@
+{% load viewform %}
+<div class="row {% if field.required%}required{% endif %} {% viewpart field add_group_class %}{% endviewpart %}">
+    <div class="large-12 columns">
+        <label for="{{ bound_field.id_for_label }}"
+               class="{% if bound_field.errors %}error{% endif %}">
+            {% viewpart field label %}{{ bound_field.label }}{% endviewpart %}
+            <div class="row collapse">
+                {% viewpart field prepend %}{% endviewpart %}
+                {% viewpart field control %}
+                <div class="{% viewpart field field_width %}small-12{% endviewpart %} columns">
+                    {% for value, choice in field.choices %}
+                    <div class="radio">
+                        <label for="id_{{ bound_field.html_name }}_{{ forloop.counter0 }}">
+                            <input {% tagattrs %}
+                                   id="id_{{ bound_field.html_name }}_{{ forloop.counter0 }}"
+                                   name="{{ bound_field.html_name }}"
+                                   type="radio"
+                                   value="{{ value }}"
+                                   {% if value == bound_field.value %}checked{% endif %}{% endtagattrs %}/> {{ choice }}
+                        </label>
+                    </div>
+                    {% endfor %}
+                    {{ hidden_initial }}
+                </div>
+                {% endviewpart %}
+                {% viewpart field append %}{% endviewpart %}
+            </div>
+            {% viewpart field errors %}{% if bound_field.errors %}
+            {% include  'viewform/foundation5/field_errors.html' %}
+            {% endif %}{% endviewpart %}
+        </label>
+    </div>
+</div>

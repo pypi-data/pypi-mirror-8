@@ -1,0 +1,31 @@
+{% load viewform %}
+<div class="row {% if field.required%}required{% endif %} {% viewpart field add_group_class %}{% endviewpart %}">
+    <div class="large-12 columns">
+        <label for="{{ bound_field.id_for_label }}_1"
+               class="{% if bound_field.errors %}error{% endif %}">
+            {% viewpart field label %}{{ bound_field.label }}{% endviewpart %}
+            <div class="row collapse">
+                {% viewpart field prepend %}{% endviewpart %}
+                {% viewpart field control %}
+                <div class="{% viewpart field field_width %}small-12{% endviewpart %} columns">
+                    <div class="switch small" style="margin-top:2px">
+                    <input {% tagattrs %}
+                           type="checkbox"
+                           class="{% viewpart field add_control_class %}{% endviewpart %}"
+                           name="{{ bound_field.html_name }}"
+                           placeholder="{{ field.help_text }}"
+                           id="id_{{ bound_field.html_name }}"
+                           {% if bound_field.value %}checked{% endif %}{% endtagattrs %}/>
+                    <label for="{{ bound_field.id_for_label }}"></label>
+                    </div>
+                    {{ hidden_initial }}
+                </div>
+                {% endviewpart %}
+                {% viewpart field append %}{% endviewpart %}
+            </div>
+            {% viewpart field errors %}{% if bound_field.errors %}
+            {% include  'viewform/foundation5/field_errors.html' %}
+            {% endif %}{% endviewpart %}
+        </label>
+    </div>
+</div>

@@ -1,0 +1,30 @@
+{% load viewform %}
+<div class="row {% if field.required%}required{% endif %} {% viewpart field add_group_class %}{% endviewpart %}">
+    <div class="large-12 columns">
+        <label for="{{ bound_field.id_for_label }}"
+               class="{% if bound_field.errors %}error{% endif %}">
+            {% viewpart field label %}{{ bound_field.label }}{% endviewpart %}
+            <div class="row collapse">
+                {% viewpart field prepend %}{% endviewpart %}
+                {% viewpart field control %}
+                <div class="{% viewpart field field_width %}small-12{% endviewpart %} columns">
+                    <select {% tagattrs %}
+                            data-viewform-control="multiselect"
+                            class="{% viewpart field add_control_class %}{% endviewpart %}"
+                            name="{{ bound_field.html_name }}"
+                            id="id_{{ bound_field.html_name }}" multiple{% endtagattrs %}>
+                        {% for value, choice in field.widget.choices %}
+                        <option value="{{ value }}" {% if value|force_text == bound_field.value|force_text %}selected="selected"{% endif %}>{{ choice }}</option>
+                        {% endfor %}
+                    </select>
+                    {{ hidden_initial }}
+                </div>
+                {% endviewpart %}
+                {% viewpart field append %}{% endviewpart %}
+            </div>
+            {% viewpart field errors %}{% if bound_field.errors %}
+            {% include  'viewform/foundation5/field_errors.html' %}
+            {% endif %}{% endviewpart %}
+        </label>
+    </div>
+</div>
