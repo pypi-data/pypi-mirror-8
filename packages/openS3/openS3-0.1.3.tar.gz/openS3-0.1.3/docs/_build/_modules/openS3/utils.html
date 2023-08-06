@@ -1,0 +1,388 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>openS3.utils &mdash; openS3 0.1.3 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1.3',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="openS3 0.1.3 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">openS3 0.1.3 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for openS3.utils</h1><div class="highlight"><pre>
+<span class="kn">from</span> <span class="nn">base64</span> <span class="kn">import</span> <span class="n">b64encode</span>
+<span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">closing</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">import</span> <span class="nn">hashlib</span>
+<span class="kn">import</span> <span class="nn">hmac</span>
+<span class="kn">from</span> <span class="nn">http.client</span> <span class="kn">import</span> <span class="n">HTTPConnection</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">urllib.parse</span>
+<span class="kn">from</span> <span class="nn">wsgiref.handlers</span> <span class="kn">import</span> <span class="n">format_date_time</span>
+
+<span class="kn">from</span> <span class="nn">.constants</span> <span class="kn">import</span> <span class="n">MEDIA_TYPES</span><span class="p">,</span> <span class="n">ENCODING</span><span class="p">,</span> <span class="n">AWS_DATETIME_FORMAT</span>
+
+
+<div class="viewcode-block" id="b64_string"><a class="viewcode-back" href="../../utils.html#openS3.utils.b64_string">[docs]</a><span class="k">def</span> <span class="nf">b64_string</span><span class="p">(</span><span class="n">byte_string</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return an base64 encoded byte string as an ENCODING decoded string</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">b64encode</span><span class="p">(</span><span class="n">byte_string</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">ENCODING</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="get_valid_filename"><a class="viewcode-back" href="../../utils.html#openS3.utils.get_valid_filename">[docs]</a><span class="k">def</span> <span class="nf">get_valid_filename</span><span class="p">(</span><span class="n">string_to_clean</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns the given string converted to a string that can be used for a clean</span>
+<span class="sd">    filename. Specifically, leading and trailing spaces are removed; other</span>
+<span class="sd">    spaces are converted to underscores; and anything that is not a unicode</span>
+<span class="sd">    alphanumeric, dash, underscore, or dot, is removed.</span>
+
+<span class="sd">    &gt;&gt;&gt; get_valid_filename(&quot;john&#39;s portrait in 2004.jpg&quot;)</span>
+<span class="sd">    &#39;johns_portrait_in_2004.jpg&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">string_to_clean</span> <span class="o">=</span> <span class="n">string_to_clean</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39; &#39;</span><span class="p">,</span> <span class="s">&#39;_&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s">r&#39;(?u)[^-\w.]&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="n">string_to_clean</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="validate_values"><a class="viewcode-back" href="../../utils.html#openS3.utils.validate_values">[docs]</a><span class="k">def</span> <span class="nf">validate_values</span><span class="p">(</span><span class="n">validation_func</span><span class="p">,</span> <span class="n">dic</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Validate each value in ``dic`` by passing it through ``func``.</span>
+<span class="sd">    Raise a ``ValueError`` if ``validation_func`` does not return ``True``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">value_name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">dic</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">validation_func</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;{} can not be {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">value_name</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
+
+</div>
+<div class="viewcode-block" id="strpawstime"><a class="viewcode-back" href="../../utils.html#openS3.utils.strpawstime">[docs]</a><span class="k">def</span> <span class="nf">strpawstime</span><span class="p">(</span><span class="n">timestamp</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return datetime from parsed AWS header timestamp string.</span>
+<span class="sd">    AWS Datetime Format:  Wed, 28 Oct 2009 22:32:00 GMT</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">timestamp</span><span class="p">,</span> <span class="n">AWS_DATETIME_FORMAT</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="S3IOError"><a class="viewcode-back" href="../../utils.html#openS3.utils.S3IOError">[docs]</a><span class="k">class</span> <span class="nc">S3IOError</span><span class="p">(</span><span class="ne">IOError</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generic exception class for S3 communication errors.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+</div>
+<span class="k">class</span> <span class="nc">S3FileDoesNotExistError</span><span class="p">(</span><span class="n">S3IOError</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="n">total_msg</span> <span class="o">=</span> <span class="s">&#39;File does not exist: {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">msg</span><span class="p">:</span>
+            <span class="n">total_msg</span> <span class="o">+=</span> <span class="s">&#39; {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">total_msg</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="OpenS3"><a class="viewcode-back" href="../../utils.html#openS3.utils.OpenS3">[docs]</a><span class="k">class</span> <span class="nc">OpenS3</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A context manager for interfacing with S3.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bucket</span><span class="p">,</span> <span class="n">access_key</span><span class="p">,</span> <span class="n">secret_key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a new context manager for interfacing with S3.</span>
+
+<span class="sd">        :param bucket: An S3 bucket</span>
+<span class="sd">        :param access_key: An AWS access key (eg. AEIFKEKWEFJFWA)</span>
+<span class="sd">        :param secret_key: An AWS secret key.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bucket</span> <span class="o">=</span> <span class="n">bucket</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">access_key</span> <span class="o">=</span> <span class="n">access_key</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">secret_key</span> <span class="o">=</span> <span class="n">secret_key</span>
+        <span class="n">validate_values</span><span class="p">(</span><span class="n">validation_func</span><span class="o">=</span><span class="k">lambda</span> <span class="n">value</span><span class="p">:</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">,</span> <span class="n">dic</span><span class="o">=</span><span class="nb">locals</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">netloc</span> <span class="o">=</span> <span class="s">&#39;{}.s3.amazonaws.com&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">bucket</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">acl</span> <span class="o">=</span> <span class="s">&#39;public-read&#39;</span>
+
+        <span class="c"># File like attributes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">object_key</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mimetype</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">headers</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">object_key</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s">&#39;r&#39;</span><span class="p">,</span> <span class="n">mimetype</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">acl</span><span class="o">=</span><span class="s">&#39;public-read&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Configure :py:class:`OpenS3` object to write to a specific file in S3.</span>
+
+<span class="sd">        :param object_key:</span>
+<span class="sd">        :param mode:</span>
+<span class="sd">        :param mimetype:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">mode</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">object_key</span> <span class="o">=</span> <span class="n">object_key</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mimetype</span> <span class="o">=</span> <span class="n">mimetype</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">acl</span> <span class="o">=</span> <span class="n">acl</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">def</span> <span class="nf">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">def</span> <span class="nf">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s">&#39;w&#39;</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="p">:</span>
+            <span class="c"># TODO Does the old file need to be deleted</span>
+            <span class="c"># TODO from S3 before we write over it?</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_put</span><span class="p">()</span>
+
+<div class="viewcode-block" id="OpenS3.read"><a class="viewcode-back" href="../../utils.html#openS3.utils.OpenS3.read">[docs]</a>    <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a bytes object with the contents of the remote S3 object.</span>
+
+<span class="sd">        :rtype bytes:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_get</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span>
+</div>
+<div class="viewcode-block" id="OpenS3.write"><a class="viewcode-back" href="../../utils.html#openS3.utils.OpenS3.write">[docs]</a>    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">content</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Write content to file in S3.</span>
+
+<span class="sd">        :param content:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">!=</span> <span class="s">&#39;w&#39;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&#39;Must open file in write mode to write to file.&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span> <span class="o">=</span> <span class="n">content</span>
+        <span class="c"># TODO handle multiple writes to same file.</span>
+</div>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">mimetype</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return mimetype of file. If file does not</span>
+<span class="sd">        have a mimetype, make a guess.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mimetype</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mimetype</span>
+
+        <span class="n">mimetype</span> <span class="o">=</span> <span class="s">&#39;binary/octet-stream&#39;</span>
+        <span class="c"># get file extension</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">object_key</span><span class="p">:</span>
+            <span class="n">_</span><span class="p">,</span> <span class="n">extension</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">object_key</span><span class="p">)</span>
+            <span class="n">extension</span> <span class="o">=</span> <span class="n">extension</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s">&#39;.&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">extension</span> <span class="ow">in</span> <span class="n">MEDIA_TYPES</span><span class="p">:</span>
+                <span class="c"># Make an educated guess about what the Content-Type should be.</span>
+                <span class="n">mimetype</span> <span class="o">=</span> <span class="n">MEDIA_TYPES</span><span class="p">[</span><span class="n">extension</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">mimetype</span>
+
+    <span class="nd">@mimetype.setter</span>
+<div class="viewcode-block" id="OpenS3.mimetype"><a class="viewcode-back" href="../../utils.html#openS3.utils.OpenS3.mimetype">[docs]</a>    <span class="k">def</span> <span class="nf">mimetype</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mimetype</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mimetype</span> <span class="o">=</span> <span class="n">mimetype</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="OpenS3.size"><a class="viewcode-back" href="../../utils.html#openS3.utils.OpenS3.size">[docs]</a>    <span class="k">def</span> <span class="nf">size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the size of the buffer, in bytes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="p">)</span>  <span class="c"># TODO is the right way to get size of buffer (bytes)</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="OpenS3.url"><a class="viewcode-back" href="../../utils.html#openS3.utils.OpenS3.url">[docs]</a>    <span class="k">def</span> <span class="nf">url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return URL of resource&quot;&quot;&quot;</span>
+        <span class="n">scheme</span> <span class="o">=</span> <span class="s">&#39;http&#39;</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">object_key</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+        <span class="n">fragment</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+        <span class="n">url_tuple</span> <span class="o">=</span> <span class="p">(</span><span class="n">scheme</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">netloc</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">fragment</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">urlunsplit</span><span class="p">(</span><span class="n">url_tuple</span><span class="p">)</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="OpenS3.md5hash"><a class="viewcode-back" href="../../utils.html#openS3.utils.OpenS3.md5hash">[docs]</a>    <span class="k">def</span> <span class="nf">md5hash</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the MD5 hash string of the file content&quot;&quot;&quot;</span>
+        <span class="n">digest</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">md5</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">ENCODING</span><span class="p">))</span><span class="o">.</span><span class="n">digest</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">b64_string</span><span class="p">(</span><span class="n">digest</span><span class="p">)</span>
+</div>
+    <span class="k">def</span> <span class="nf">_head</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">request_headers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_request_headers</span><span class="p">(</span><span class="s">&#39;HEAD&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">object_key</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">closing</span><span class="p">(</span><span class="n">HTTPConnection</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">netloc</span><span class="p">))</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+            <span class="n">conn</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s">&#39;HEAD&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">request_headers</span><span class="p">)</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">getresponse</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">response</span>
+
+    <span class="k">def</span> <span class="nf">_get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        GET contents of remote S3 object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">request_headers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_request_headers</span><span class="p">(</span><span class="s">&#39;GET&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">object_key</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">closing</span><span class="p">(</span><span class="n">HTTPConnection</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">netloc</span><span class="p">))</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+            <span class="n">conn</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s">&#39;GET&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">object_key</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">request_headers</span><span class="p">)</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">getresponse</span><span class="p">()</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">response</span><span class="o">.</span><span class="n">status</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">200</span><span class="p">,):</span>
+                <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">length</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                    <span class="c"># length == None seems to be returned from GET requests</span>
+                    <span class="c"># to non-existing files</span>
+                    <span class="k">raise</span> <span class="n">S3FileDoesNotExistError</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">object_key</span><span class="p">)</span>
+                <span class="c"># catch all other cases</span>
+                <span class="k">raise</span> <span class="n">S3IOError</span><span class="p">(</span>
+                    <span class="s">&#39;openS3 GET error. &#39;</span>
+                    <span class="s">&#39;Response status: {}. &#39;</span>
+                    <span class="s">&#39;Reason: {}. &#39;</span>
+                    <span class="s">&#39;Response Text: </span><span class="se">\n</span><span class="s">&#39;</span>
+                    <span class="s">&#39;{}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">status</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">reason</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">read</span><span class="p">()))</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">headers</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">headers</span>
+
+    <span class="k">def</span> <span class="nf">_put</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;PUT contents of file to remote S3 object.&quot;&quot;&quot;</span>
+
+        <span class="n">request_headers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_request_headers</span><span class="p">(</span><span class="s">&#39;PUT&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">object_key</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">closing</span><span class="p">(</span><span class="n">HTTPConnection</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">netloc</span><span class="p">))</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+            <span class="n">conn</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s">&#39;PUT&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">object_key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">request_headers</span><span class="p">)</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">getresponse</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">200</span><span class="p">,):</span>
+                <span class="k">raise</span> <span class="n">S3IOError</span><span class="p">(</span>
+                    <span class="s">&#39;openS3 PUT error. &#39;</span>
+                    <span class="s">&#39;Response status: {}. &#39;</span>
+                    <span class="s">&#39;Reason: {}. &#39;</span>
+                    <span class="s">&#39;Response Text: </span><span class="se">\n</span><span class="s">&#39;</span>
+                    <span class="s">&#39;{}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">status</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">reason</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">read</span><span class="p">()))</span>
+
+<div class="viewcode-block" id="OpenS3.delete"><a class="viewcode-back" href="../../utils.html#openS3.utils.OpenS3.delete">[docs]</a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Remove file from its S3 bucket.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">headers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_request_headers</span><span class="p">(</span><span class="s">&#39;DELETE&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">object_key</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">closing</span><span class="p">(</span><span class="n">HTTPConnection</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">netloc</span><span class="p">))</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+            <span class="n">conn</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s">&#39;DELETE&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">object_key</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">getresponse</span><span class="p">()</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">response</span><span class="o">.</span><span class="n">status</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">204</span><span class="p">,):</span>
+                <span class="k">raise</span> <span class="n">S3IOError</span><span class="p">(</span>
+                    <span class="s">&#39;openS3 DELETE error. &#39;</span>
+                    <span class="s">&#39;Response status: {}. &#39;</span>
+                    <span class="s">&#39;Reason: {}. &#39;</span>
+                    <span class="s">&#39;Response Text: </span><span class="se">\n</span><span class="s">&#39;</span>
+                    <span class="s">&#39;{}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">status</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">reason</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">read</span><span class="p">()))</span>
+</div>
+<div class="viewcode-block" id="OpenS3.exists"><a class="viewcode-back" href="../../utils.html#openS3.utils.OpenS3.exists">[docs]</a>    <span class="k">def</span> <span class="nf">exists</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return ``True`` if file exists in S3 bucket.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_head</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="mi">404</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">S3IOError</span><span class="p">(</span>
+                <span class="s">&#39;openS3 HEAD error. &#39;</span>
+                <span class="s">&#39;Response status: {}. &#39;</span>
+                <span class="s">&#39;Reason: {}. &#39;</span>
+                <span class="s">&#39;Response Text: </span><span class="se">\n</span><span class="s">&#39;</span>
+                <span class="s">&#39;{}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">status</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">reason</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">read</span><span class="p">()))</span>
+</div>
+    <span class="k">def</span> <span class="nf">_request_signature</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">string_to_sign</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Construct a signature by making an RFC2104 HMAC-SHA1</span>
+<span class="sd">        of the following and converting it to Base64 UTF-8 encoded string.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">digest</span> <span class="o">=</span> <span class="n">hmac</span><span class="o">.</span><span class="n">new</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">secret_key</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">ENCODING</span><span class="p">),</span>
+            <span class="n">string_to_sign</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">ENCODING</span><span class="p">),</span>
+            <span class="n">hashlib</span><span class="o">.</span><span class="n">sha1</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">digest</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">b64_string</span><span class="p">(</span><span class="n">digest</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_build_request_headers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">object_key</span><span class="p">):</span>
+        <span class="n">headers</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+        <span class="n">headers</span><span class="p">[</span><span class="s">&#39;Date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">format_date_time</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">timestamp</span><span class="p">())</span>
+        <span class="n">headers</span><span class="p">[</span><span class="s">&#39;Content-Length&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span>
+        <span class="n">headers</span><span class="p">[</span><span class="s">&#39;Content-MD5&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">md5hash</span>
+        <span class="n">headers</span><span class="p">[</span><span class="s">&#39;Content-Type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mimetype</span>
+        <span class="n">headers</span><span class="p">[</span><span class="s">&#39;x-amz-acl&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">acl</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">access_key</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">secret_key</span><span class="p">:</span>
+            <span class="n">string_to_sign_list</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">method</span><span class="p">,</span>
+                <span class="n">headers</span><span class="p">[</span><span class="s">&#39;Content-MD5&#39;</span><span class="p">],</span>
+                <span class="n">headers</span><span class="p">[</span><span class="s">&#39;Content-Type&#39;</span><span class="p">],</span>
+                <span class="n">headers</span><span class="p">[</span><span class="s">&#39;Date&#39;</span><span class="p">],</span>
+                <span class="s">&#39;x-amz-acl:{}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">headers</span><span class="p">[</span><span class="s">&#39;x-amz-acl&#39;</span><span class="p">]),</span>
+                <span class="s">&#39;/&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">bucket</span> <span class="o">+</span> <span class="n">object_key</span>
+            <span class="p">]</span>
+            <span class="n">signature</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request_signature</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">string_to_sign_list</span><span class="p">))</span>
+            <span class="n">headers</span><span class="p">[</span><span class="s">&#39;Authorization&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s">&#39;AWS&#39;</span> <span class="o">+</span> <span class="s">&#39; &#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">access_key</span><span class="p">,</span> <span class="s">&#39;:&#39;</span><span class="p">,</span> <span class="n">signature</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">headers</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">openS3 0.1.3 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Paul Logston.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>
