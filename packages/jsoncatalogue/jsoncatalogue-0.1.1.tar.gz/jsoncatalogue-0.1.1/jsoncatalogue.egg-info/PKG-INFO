@@ -1,0 +1,89 @@
+Metadata-Version: 1.0
+Name: jsoncatalogue
+Version: 0.1.1
+Summary: Local filesystem based JSON catalogue, usable e.g. with package `jsonschema`
+Home-page: https://bitbucket.org/vlcinsky/sh-jsoncatalogue
+Author: Jan Vlcinsky
+Author-email: jan.vlcinsky@cdv.cz
+License: MIT
+Description: =============
+        jsoncatalogue
+        =============
+        
+        Package `jsoncatalogue` allows reading set of JSON files from directory structure resembling urls.
+        
+        Files are loaded and provided as simple url: jsoncontent dictionary.
+        
+        Such a dictionary can be used as catalogue of JSON schemas for JSON Schema validation.
+        
+        Installation
+        ============
+        ::
+        
+           $ pip install jsoncatalogue 
+        
+        
+        Structure of directory with JSON files
+        ======================================
+        
+        If you want to have catalogue for Swagger v1.2 validation::
+        
+            ./catalogue/http/wordnik.github.io/schemas/v1.2/apiDeclaration.json
+            ./catalogue/http/wordnik.github.io/schemas/v1.2/infoObject.json
+            ./catalogue/http/wordnik.github.io/schemas/v1.2/authorizationObject.json
+            ./catalogue/http/wordnik.github.io/schemas/v1.2/modelsObject.json
+            ./catalogue/http/wordnik.github.io/schemas/v1.2/operationObject.json
+            ./catalogue/http/wordnik.github.io/schemas/v1.2/parameterObject.json
+            ./catalogue/http/wordnik.github.io/schemas/v1.2/dataTypeBase.json
+            ./catalogue/http/wordnik.github.io/schemas/v1.2/oauth2GrantType.json
+            ./catalogue/http/wordnik.github.io/schemas/v1.2/resourceObject.json
+            ./catalogue/http/wordnik.github.io/schemas/v1.2/dataType.json
+            ./catalogue/http/wordnik.github.io/schemas/v1.2/resourceListing.json
+        
+        where
+        
+        - `catalogue` - is catalogue "home" directory (can be deeper)
+        - `http`- is protocol name. Can be any other, like `ftp`...
+        - `wordnik.github.io` - domain name
+        - `schemas/v1.2` - local path to JSON files
+        - `apiDeclaration.json` - actual JSON file - must be valid JSON file (no other requirement exist)
+        
+        As you see, there are no complex rules to follow, just have uri leading to valid JSON file (which is not even required to have an extension ".json")
+        
+        
+        Loading JSON Catalogue from directory
+        -------------------------------------
+        ::
+        
+            >>> from jsoncatalogue import Catalogue
+            >>> catalogue = Catalogue()
+            >>> catalogue.add_directory("catalog")
+            >>> catalogue.add_directory("../other/catalog")
+            >>> catalogue.store
+            {"http://exam.ple/schema/one.json": {...},
+             "http://exam.ple/schema/two.json": {...},
+             "http://wordnik.github.io/schema/v1.2/apiAuthentication.json": {...}
+             "http://no.extensi.on/schema/pets": {...}
+             }
+        
+        And this is all. You now have a dictionary with uris and related JSON content. The JSON content is already loaded and is represented as dictionary.
+        
+        Using catalogue for JSON Schema validator
+        -----------------------------------------
+        
+        This catalogue.store can be assigned e.g. to `jsonschema` validator::
+        
+            >>> from jsonschema import Draft4Validator
+            >>> validator = Draft4Validator()
+            >>> validator.resolver.store = catalogue.store
+        
+        From now on, validator will know about schemas from catalogue
+        
+        .. note:: Initial development done during work for CDV_ on project SUPERHUB_. The package is published under MIT license with permision of CDV_.
+        
+        .. _CDV: http://www.cdv.cz
+        
+        .. _SUPERHUB: http://www.superhub-project.eu
+        
+        
+Platform: UNKNOWN
