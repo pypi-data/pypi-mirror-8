@@ -1,0 +1,63 @@
+# vim: syntax=rst
+
+=======================
+Python 3 CQRS Framework
+=======================
+
+
+Synopsis
+========
+
+
+Installation
+============
+
+
+Basic usage
+===========
+
+
+.. code::
+
+    import cqrs
+
+
+    class MakePizzaCommand(cqrs.Command):
+
+        #: Specifies the type of pizza we want.
+        pizza_type = cqrs.CharField(
+            choices=['margarita','tonno','calzone']
+        )
+
+        #: A boolean indicating if the pizza needs extra cheese.
+        extra_cheese = cqrs.BooleanField(
+            default=False
+        )
+
+
+
+
+.. code::
+
+    handler.handle(command)
+
+
+Advanced usage
+==============
+This section describes the usage of the ``cqrs`` module in the context
+of a distributed system. Sovereign, the reference implementation of the
+TNG Enterprise Management System, is the assumed environment.
+
+
+.. code::
+
+    from neural import Neural
+    import stomp
+    import cqrs
+
+    neural = Neural(stomp.transport_factory())
+
+
+    command = MakePizzaCommand(pizza_type='tonno')
+    neural.send_command(command)
+
