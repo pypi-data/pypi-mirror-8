@@ -1,0 +1,85 @@
+Metadata-Version: 1.1
+Name: Kunai
+Version: 0.8
+Summary: Kunai is a service discovery tool
+Home-page: http://kunai.io
+Author: Gabes Jean
+Author-email: naparuba@gmail.com
+License: MIT
+Description: Kunai
+        ======
+        
+        This is a **preview** of the kunai project about a service discovery / monitoring / light cfg management / command execution tool.
+        
+        [![Build Status](https://travis-ci.org/naparuba/kunai.svg)](https://travis-ci.org/naparuba/kunai)
+        
+        
+        Prereqs
+        ========
+        
+        You will need:
+        
+          * python >= 2.6 (but not 3)
+          * python-leveldb
+          * python-requests
+        
+        
+        Quik and dirty 
+        ==============
+        
+        You need to create the directories:
+        
+           /var/lib/kunai/data
+           /var/lib/kunai/libexec/
+        
+        and copy the cli directory into the /var/lib/kunai/
+        
+        
+        First launch
+        ============
+        
+        You can quick launch manually your daemon with:
+        
+           python tanuki.py
+        
+        (a real launcher will be available soon)
+        
+        
+        And check that the 6768 port is open (http)
+        
+        
+        Is there an UI?
+        ===============
+        
+        Yes. There is a (simple) UI available in the ui/ directory. It's just flat file and so you can just export the directory with apache/nginx and play with it.
+        
+        
+        How to add new nodes in the node cluster?
+        =========================================
+        
+        First you need to install and launch the node in another server.
+        
+        Then in this other server you can launch:
+          
+           bin/kunai join  OTHER-IP:6768
+        
+        You can list the cluster members on all nodes with :
+        
+          bin/kunai  members
+        
+        And you will see the new node on the UI.
+        
+        
+Platform: UNKNOWN
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Environment :: Console
+Classifier: Intended Audience :: System Administrators
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: MacOS :: MacOS X
+Classifier: Operating System :: Microsoft :: Windows
+Classifier: Operating System :: POSIX
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 2 :: Only
+Classifier: Topic :: System :: Monitoring
+Classifier: Topic :: System :: Networking :: Monitoring
+Classifier: Topic :: System :: Distributed Computing
