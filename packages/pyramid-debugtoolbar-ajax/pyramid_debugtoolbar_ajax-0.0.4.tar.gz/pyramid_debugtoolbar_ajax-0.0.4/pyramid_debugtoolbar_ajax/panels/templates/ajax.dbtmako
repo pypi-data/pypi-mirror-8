@@ -1,0 +1,108 @@
+<h4>Request HotLink</h4>
+
+<%
+	base_url = "%s://%s" % (request.scheme, request.environ['HTTP_HOST'])
+%>
+
+% if request.method == 'GET':
+	<div class="alert alert-info">
+		<h5>
+			<i class="glyphicon glyphicon-info-sign"></i> `GET` request.  Replay Supported
+		</h5>
+		<p>
+			<a
+				href="${base_url}${request.path}?${request.query_string}"
+				target="_blank"
+				class="btn btn-info"
+			>
+				<i class="glyphicon glyphicon-play-circle"></i> Replay Request (new window)
+			</a>
+		</p>
+		<h5>
+			Replay Data
+		</h5>
+		<table class="table table-striped table-condensed">
+			<tr>
+				<td>base url</td>
+				<td>${base_url}</td>
+			</tr>
+			<tr>
+				<td>full url</td>
+				<td>${request.path}?${request.query_string}</td>
+			</tr>
+			<tr>
+				<td>request.path</td>
+				<td>${request.path}</td>
+			</tr>
+			% for (k, v) in request.GET.iteritems():
+				<tr>
+					<td>GET: ${k}</td>
+					<td>${v}</td>
+				</tr>
+			% endfor
+		</table>
+	</div>
+% elif request.method == 'POST':
+	<div class="alert alert-danger">
+		<h5>
+			<i class="glyphicon glyphicon-warning-sign"></i> `POST` request.  Replay Not Fully Supported
+		</h5>
+		<p>
+			<em>It's not possible to replay a post request, as it could expect a multipart file upload.  But we'll do our best!  The POST fields below are editable, beware that the `_csrf` (if any) may be invalid</em>
+		</p>
+		<form action="${base_url}${request.path}?${request.query_string}" method="POST" target="_blank" role="form">
+			<p>
+				<button
+					role="submit"
+					class="btn btn-info"
+				>
+					<i class="glyphicon glyphicon-play-circle"></i> Replay Request (new window)
+				</button>
+			</p>
+
+			<h5>
+				Replay Data
+			</h5>
+			<table class="table table-striped table-condensed">
+				<tr>
+					<td>base url</td>
+					<td>${base_url}</td>
+				</tr>
+				<tr>
+					<td>full url</td>
+					<td>${request.path}?${request.query_string}</td>
+				</tr>
+				<tr>
+					<td>request.path</td>
+					<td>${request.path}</td>
+				</tr>
+				% for (k, v) in request.GET.iteritems():
+					<tr>
+						<td>GET: ${k}</td>
+						<td>${v}</td>
+					</tr>
+				% endfor
+				% for (k, v) in request.POST.iteritems():
+					<tr>
+						<td>POST: ${k}</td>
+						<td>
+							<input
+								type="text"
+								name="${k}"
+								value="${v}"
+								class="form-control"
+							/>
+						</td>
+					</tr>
+				% endfor
+			</table>
+
+
+
+		</form>
+	</div>
+% else:
+	<p>
+		unsupported `request.method` (${request.method})
+	</p>
+% endif
