@@ -1,0 +1,104 @@
+@extends("d3/base.svg")
+@require(htmlbase, figure)
+
+@def styles():
+<style><![CDATA[
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.line {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 1px;
+} 
+
+.identity-line {
+    text-anchor:start;
+    fill:steelblue;
+    stroke:none;
+    opacity:0.2;
+    
+}
+
+.identity-label {
+  fill: steelblue;
+  font-size:7pt;
+}
+
+.label-line {
+    text-anchor:start;
+    fill:steelblue;
+    stroke:none;
+    opacity:0.2;
+}
+
+.label-label {
+  fill:  lightgray;
+  font-size:7pt;
+}
+
+
+
+]]></style>
+@end
+
+        
+@def script():
+<script></script>
+@end
+
+
+@def generate():
+    @#...
+    <script>
+        id = 'svg';
+         data = [
+            @for d in figure['data']:
+                {
+                'x':@d[0]!s,
+                'y':{
+                @for n,i in enumerate( d[1] ):
+                    "@n!s": @i!s,
+                @endfor
+                    },
+                },
+            @endfor
+            ];
+         entities = [
+            @for d in figure['entities']:
+                @if d[2]:
+                    {
+                    'x':@d[0]!s,
+                    'x_end':@d[1]!s,
+                    'entity':{
+                        'id':'@d[2].id!s',
+                        'name':"@d[2].name!s",
+                        'url':"@d[2].url!s",
+                        }
+                    },
+                @endif
+            @endfor
+            ];
+             labels = [
+            @for d in figure['labels']:
+                @if d[2]:
+                    {
+                    'x':@d[0]!s,
+                    'x_end':@d[1]!s,
+                    'label':"@d[2]!s"
+                    },
+                @endif
+            @endfor
+            ];      
+        function _pathomx_render_trigger(){
+            lineplot(id, data, entities, labels);
+        }
+    </script>
+
+
+@end

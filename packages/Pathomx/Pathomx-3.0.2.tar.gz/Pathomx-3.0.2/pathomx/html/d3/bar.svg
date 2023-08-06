@@ -1,0 +1,210 @@
+@extends("d3/base.svg")
+@require(htmlbase, figure)
+
+@def styles():
+<style><![CDATA[
+
+/* Bar */
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.bar {
+  fill: steelblue;
+}
+
+.x.axis path {
+  display: none;
+}
+
+.errorbar {
+    stroke-width:1;
+}
+
+]]></style>
+@end
+
+        
+@def script():
+<script>
+
+// Scatter plot
+function bar(id, data, y_axis_label) {
+
+    idxy = getElementSize(id)
+    var width_c = idxy[0],
+        height_c = idxy[1];
+    
+    var margin = {top: 50, right: 50, bottom: 80, left: 50};
+    var width = width_c - margin.left - margin.right,
+        height = height_c - margin.top - margin.bottom;
+        
+    var x0 = d3.scale.ordinal()
+        .rangeRoundBands([0, width], .1);
+
+    var x1 = d3.scale.ordinal();
+
+    var y = d3.scale.linear()
+        .nice()
+        .range([height, 0]);
+
+    //var color = d3.scale.ordinal()
+    //    .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
+
+    var color = d3.scale.category20();
+
+    var xAxis = d3.svg.axis()
+        .scale(x0)
+        .orient("bottom");
+
+    var yAxis = d3.svg.axis()
+        .scale(y)
+        .orient("left")
+        .tickFormat(d3.format(".2s"));
+
+    var svg = d3.select(id)//.insert("svg",':first-child')
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .attr("viewBox", "0 0 " + (width + margin.left + margin.right) + " " + (height + margin.top + margin.bottom) )
+        .append("g")
+            .attr("id", "graph")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    samples = d3.keys( data[0].value ) 
+
+    var s_value_range = [
+            //Math.min.apply(null, d3.min(data, function(d) { var values = Object.keys(d.value).map(function(key){ return d.value[key]; }); return values; } ) ), 
+            0, // Not supporting under 0 at present (FIXME)
+            Math.max.apply(null, d3.max(data, function(d) { var values = Object.keys(d.value).map(function(key){ return d.value[key] + d.error[key] }); return values; } ) ),
+            /* Add 10% to max value */
+            ]
+
+    x0.domain(data.map(function(d) { return d.group; }));
+    x1.domain(samples).rangeRoundBands([0, x0.rangeBand()]);
+    y.domain(s_value_range);
+
+    svg.append("g")
+        .attr('id','xaxis')
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + height + ")")
+        .call(xAxis);
+            /*
+            .selectAll("text")  
+            .style("text-anchor", "end")
+            .attr("dx", "-.8em")
+            .attr("dy", ".15em")
+            .attr("transform", "rotate(-60) translate(-10,0)")
+            ;*/
+
+    d3.select('#xaxis')
+        .selectAll('text')
+            .each(function(d,i){ insertLinebreaks(this, d, x1.rangeBand()*samples.length ); });
+
+    
+
+    svg.append("g")
+        .attr("class", "y axis")
+        .call(yAxis)
+    .append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 6)
+        .attr("dy", ".71em")
+        .style("text-anchor", "end")
+        .text(y_axis_label);
+
+    var state = svg.selectAll(".groups")
+        .data(data)
+    .enter().append("g")
+        .attr("class", "g")
+        .attr("transform", function(d) { return "translate(" + x0(d.group) + ",0)"; });
+
+    state.selectAll("rect")
+        .data(function(d) { return Object.keys(d.value).map(function(key) {
+            return {"name" : key, "value" : d.value[key] }
+            })
+    })
+    .enter().append("rect")
+        .attr("width", x1.rangeBand())
+        .attr("x", function(d) { return x1(d.name); })
+        .attr("y", function(d) { return y(d.value); })
+        .attr("height", function(d) { return height - y(d.value); })
+        .style("fill", function(d) { return color(d.name); });
+
+    state.selectAll("path.errorbar")
+        .data(function(d) { return Object.keys(d.value).map(function(key) {
+            return {"name" : key, "value" : d.value[key], "error": d.error[key] }
+            })
+    })
+    .enter().append("path")
+        .attr("class","errorbar")
+        .style("stroke", function(d) { return color(d.name); })
+        .attr('d', function(d){ 
+            return 'M ' + ( x1(d.name) + x1.rangeBand()/2 ) + ' ' + y(d.value) +
+                   'L ' + ( x1(d.name) + x1.rangeBand()/2 ) + ' ' +  ( y(d.value + d.error) ) + 
+                   'M ' + ( x1(d.name) + x1.rangeBand()/2 - x1.rangeBand()/5) + ' ' +  ( y(d.value + d.error) ) + 
+                   'L ' + ( x1(d.name) + x1.rangeBand()/2 + x1.rangeBand()/5) + ' ' +  ( y(d.value + d.error) ) });
+        // Can't use markers without error bars being different colour to line?!                   
+        //.attr("x1", function(d) { return x1(d.name) + x1.rangeBand()/2; })
+        //.attr("y1", function(d) { return y(d.value); })
+        //.attr("x2", function(d) { return x1(d.name) + x1.rangeBand()/2; })
+        //.attr("y2", function(d) { return y(d.value+d.error); })
+        //.attr('marker-end','url(#errorstub)')
+
+    var legend = svg.selectAll(".legend")
+        .data(samples.slice().reverse())
+    .enter().append("g")
+        .attr("class", "legend")
+        .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+
+    legend.append("rect")
+        .attr("x", width - 18)
+        .attr("width", 18)
+        .attr("height", 18)
+        .style("fill", color);
+
+    legend.append("text")
+        .attr("x", width - 24)
+        .attr("y", 9)
+        .attr("dy", ".35em")
+        .style("text-anchor", "end")
+        .text(function(d) { return d; });
+          
+}
+
+</script>
+@end
+
+
+@def generate():
+    @#...
+    <script>
+        id = 'svg';
+         data = [
+            @for d in figure['data']:
+                {
+                'group':'@d[0]!s',
+                'value':{
+                @for n,i in d[1].items():
+                    "@n!s": @i!s,
+                @endfor
+                    },
+                'error':{
+                @for n,i in d[2].items():
+                    "@n!s": @i!s,
+                @endfor
+                    },
+                },
+            @endfor
+            ];
+
+        function _pathomx_render_trigger(){
+            bar(id, data, "µM");
+        }
+    </script>
+
+
+@end

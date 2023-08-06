@@ -1,0 +1,413 @@
+<html>
+<head>
+<style>
+* {
+     color: WindowText
+}
+
+body {
+    font-family: sans-serif;
+    font-size: 100%;
+    color: #000;
+    padding: 0;
+    -webkit-user-select: none;
+} 
+
+#db {
+    margin: 20px;
+    background-color:#fff;
+}
+
+#figure {
+    margin:0;
+    padding:0;
+    text-align:center;
+}
+
+embed {
+    
+}
+
+#mainwindow {
+    margin: 20px;
+    background-color:#fff;
+}
+
+h1 { font-size: 130%; }
+h2 { font-size: 110%; }
+h3 { font-size: 100%; }
+h4 { font-size: 90%; }
+h5 { font-size: 80%; }
+h6 { font-size: 70%; }
+
+h1 {
+    margin:16px 0 0 0;
+    padding:0;
+}
+
+h5 {
+    margin-bottom:0.5em;
+}
+
+#sidebar h1 {
+    margin:0;
+}
+
+/*'#348ABD', '#7A68A6', '#A60628', '#467821', '#CF4457', '#188487', '#E24A33' */
+/*
+    1f78b4  33a02c  e31a1c  ff7f00  6a3d9a  ffff99
+    a6cee3  b2df8a  fb9a99  fdbf6f  cab2d6  b15928
+*/
+a {
+    text-decoration:none;
+    color:#1f78b4;
+    }
+
+ul,ol {
+    margin-left: 0;
+    padding-left: 1em;
+    }
+
+#db ul {
+    list-style: none;
+}
+
+ li {
+    vertical-align:absmiddle;
+    }
+    
+ p {
+    text-align:justify;
+ }  
+
+.btn {
+    display: inline-block;
+    outline: none;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+
+    padding: 0.2em 0.5em 0.2em;
+    font-size: 0.6875em;
+ 
+    -webkit-border-radius: 3px; 
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+    color:ButtonText;
+    border:1px solid ButtonFace;
+    background:url('../img/nav-bg.gif');
+}
+.btn:hover {
+    color:ButtonText;
+    text-decoration: none;
+    background:url('../img/nav-bg-lighter.gif');
+}
+.btn:active {
+    color:ButtonText;
+    text-decoration: none;
+    background:url('../img/nav-bg-reverse.gif');
+}
+
+.synonyms {
+    font-size:0.9em;
+    color:GrayText;
+}
+
+.button img {
+    vertical-align:absmiddle;
+}
+
+.datasq {
+    display:inline-block;
+    background-color:none;
+    width:0.8em;
+    height:0.8em;
+    margin-right:0.2em;
+    margin-left:-1em; /* Adjust back to line up */
+    vertical-align:absmiddle;
+    text-align:center;
+}
+
+.rdbu9-1{ background-color: #b2182b; }
+.rdbu9-2{ background-color: #d6604d; }
+.rdbu9-3{ background-color: #f4a582; }
+.rdbu9-4{ background-color: #fddbc7; }
+.rdbu9-5{ background-color: #ccc; } /*#f7f7f7; } */
+.rdbu9-6{ background-color: #d1e5f0; }
+.rdbu9-7{ background-color: #92c5de; }
+.rdbu9-8{ background-color: #4393c3; }
+.rdbu9-9{ background-color: #2166ac; }
+
+.text-rdbu9-1{ color: #b2182b; }
+.text-rdbu9-2{ color: #d6604d; }
+.text-rdbu9-3{ color: #f4a582; }
+.text-rdbu9-4{ color: #fddbc7; }
+.text-rdbu9-5{ color: #ccc; } /*#f7f7f7; } */
+.text-rdbu9-6{ color: #d1e5f0; }
+.text-rdbu9-7{ color: #92c5de; }
+.text-rdbu9-8{ color: #4393c3; }
+.text-rdbu9-9{ color: #2166ac; }
+
+.scalebar .datasq {
+    margin-left:0;
+}
+
+.scalebar-inset {
+    position:fixed;
+    top:0; right:0;
+    border-radius:5px;
+    padding:2px 5px;
+    margin:5px;
+    background-color:#eee;
+    font-family:"Calibri", sans-serif;
+    z-index:100;
+}
+
+.scalebar td {
+    text-align:center;
+}
+
+.scalebar .scale-type {
+    font-style:italic;
+}
+
+.hilite {
+    background-color: #d1e5f0;
+    padding:1em;
+}
+
+
+.releases * {
+    vertical-align:top;
+    padding:0.5em;
+}
+
+.release_version {
+    font-weight:bold;
+}
+
+.release_date {
+    font-size:0.8em;
+    font-style:italic;
+    vertical-align:baseline;
+}
+
+code {
+    font-family:monospace;
+    vertical-align:baseline;
+    cursor:help;
+}
+
+.svg {
+    position:absolute;
+    top:0px; left:0px;
+    opacity:0;
+    visibility:0;
+}
+.svgno {
+    position:fixed;
+    top:0; left:0;
+    border-radius:5px;
+    padding:2px 5px;
+    margin:5px;
+    background-color:#eee;
+    font-family:"Calibri", sans-serif;
+}
+
+.pre-visible {
+    opacity: 0;
+}
+
+.visible {
+    z-index:10;
+    opacity: 1;
+    -webkit-transition: opacity 0.5s linear 0s;
+}
+.hidden {
+  z-index: 9;
+  opacity: 0;
+    -webkit-transition: opacity 0s linear 0.5s;
+}
+    
+.legend {
+    font-size:0.8em;
+    padding:0.5em;
+    height:4em;
+    vertical-align:bottom;
+}
+
+div.row {
+   width:100%; 
+}
+
+.ref {
+    vertical-align:super;
+    font-size:0.8em;
+}
+</style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-text"><h1>Pathomx</h1>
+        <span>Metabolic pathway visualisation and analysis</span><br />
+        <span class="author_list">
+            <a href="http://martinfitzpatrick.name/">Martin A. Fitzpatrick</a>,
+            Catherine M. McGrath,
+            <a href="http://www.birmingham.ac.uk/staff/profiles/iandi/young-stephen.aspx">Stephen P. Young</a>
+        </span>    
+        </div>
+    </div>
+
+    <h2>Welcome to Pathomx v3.0.0a</h2>
+    <p>Pathomx is a workflow-based tool for the analysis of data. It is interactive, visual, extensible and free for any use.</p>
+
+    <p>This release brings:</p>
+    <ul>
+    <li>IPython-notebook based tools</li>
+    <li>Snap to grid, show/hide grid and workflow-image export</li>
+    <li>Improvements to spectra-plot annotations</li>
+    <li>Support for European-style semicolon-delimited CSV and format autodetection</li>
+    <li>Legacy tool import filters allowing modified tools to provide a backwards-compatible interface for loading</li>
+    <li>A number of small performance improvements and bugfixes</li>
+    </ul>    
+
+    <p>To report bugs, or request features see our <a href="http://github.com/pathomx/pathomx/issues">issue tracker on Github</a>, to 
+    get tips see the <a href="http://docs.pathomx.org">online documentation</a>, or 
+    for more information see <a href="http://pathomx.org">the Pathomx project website</a>.
+
+    <h2>Introduction</h2>
+    
+    <p>The key to analysis with Pathomx is the <em>workflow</em>. In data analysis it is common to perform a number of repeated steps in order,
+    taking outputs of one action and feeding them into the next step in the analysis. In many cases the conversion from the output of one
+    application to the input of another must be performed manually. For complex datasets this can significantly extend the time taken from
+    getting data to finding results. Pathomx aims to solve this problem through the use of reusable, customisable, workflows. Workflows allow a number of processing
+    steps to be connected together into a complex, parallel, system.</p>
+
+    <img src="file:///@htmlbase/img/help-workspace.png">
+
+    <h2>Quick Start</h2>
+
+    <p>To get started, simply click on the sidebar and select 'Import'. Here you can select the type of data to import using one of the 
+    provided import plugins. There are a number of example datafiles available on the <a href="http://pathomx.org">Pathomx website</a>.</p>
+
+    <img src="file:///@htmlbase/img/help-data-import.png">
+
+
+
+    <p>Once you've imported a dataset, you can then proceed to analyse it. Click on the Analysis tab and select PCA to perform Principal Components Analysis. The Scores plot
+    will be shown immediately, with the principal component weight plots available on the tabs below.</p>
+
+    <img src="file:///@htmlbase/img/help-data-pca-wrong.png">
+    
+    <p>If you click back to the Home tab, you will now see the Workspace view - showing your data source connected to the PCA analysis app. 
+    This is how all analysis is performed in Pathomx, by connecting apps to data sources (or the outputs of other apps). You'll notice
+    that these two have been connected automatically for you by making a best guess of what you want. If something is connected wrongly
+    it is simple to fix - simply drag the yellow output port onto the orange input port.</p>
+
+    <img src="file:///@htmlbase/img/help-data-pca.png">
+    
+    <p>If your input data is not mean centred you may have noticed the PCA weights plots are a not centred around a zero-point. To fix this
+    we need to mean center the data before applying the PCA. Click on the Processing tab and select 'Transform' to launch a simple app providing 
+    basic data-transformation options. On the Transform toolbar select 'Mean centre' from the drop down menu (containing 'log2').</p>
+
+    <p>If you go back to your workspace you'll see that the application has guessed wrongly and connected the mean centring to the output 
+    of the PCA. It has made this assumption on the basis of the order you have added the applications. So correct the order by first dragging from the
+    output of your data input to the input of the Mean Centre app, then from the output of the Mean Centre app to the input for PCA.</p>
+
+    <img src="file:///@htmlbase/img/help-data-pca-mc-wrong.png"> 
+    <img src="file:///@htmlbase/img/help-data-pca-mc-fixing.png">
+    <img src="file:///@htmlbase/img/help-data-pca-mc-done.png">
+    
+    <p>If you now return to the PCA app (click on it) you'll see the corrected, mean centered PCA.</p>
+    
+    <img src="file:///@htmlbase/img/help-data-pca-correct.png">
+    
+    <p>While this has taken a few minutes to set up, you can save this workflow for future use by using <em>File > Save Workflow As...</em>.
+
+
+    <img src="file:///@htmlbase/img/help-data-pca-mc-inline-view.png">
+    
+    <p>Another useful features is the inline views that are available from most tools. Simply right-click and select a view from the drop
+    down list under Views, and it will be pinned onto the current workflow. These views automatically update as processing occurs, so you 
+    can get a instant overview of what is happening under the hood.</p>
+    
+
+    <h2>More</h2>
+    <p>More information and demo workflows are available on the <a href="http://pathomx.org">Pathomx website</a>. 
+    We've also put together a number of <a href="http://pathomx.org/demos">demo videos</a> to demonstrate these functions in more detail.
+    </p>
+
+    <h2>License</h2>
+    <p>Pathomx is available free for any use, licensed under the GPLv3.</p>
+    <p class="hilite">Pathomx is built on the <a href="http://metacyc.org">MetaCyc</a> pathway database itself part of the <a href="http://biocyc.org">BioCyc</a> and <a href="http://humancyc.org">HumanCyc</a> family.
+    The supplied database is generated via the MetaCyc API and stored locally. Licenses for the entire MetaCyc database <a href="http://metacyc.org/contact.shtml">are also available</a>
+    free of charge for academic and government use.</p>
+    
+    <p class="hilite">Molecular structures are derived from the KEGG database, developed by Kanehisa Laboratories. 
+    If using molecular structure annotations please cite the following article(s):
+    Kanehisa, M. and Goto, S.; KEGG: Kyoto Encyclopedia of Genes and Genomes. Nucleic Acids Res. 28, 27-30 (2000).</p>
+    <h2>Publications</h2>
+    <p>tbc.</p>
+
+    <h2>Troubleshooting</h2>
+    <p>Pathomx is under continued development. If you spot bugs, or have suggestions for improvement, please submit them via our <a href="">github bug tracker</a>.
+    
+    <h2>Updates & Changelog</h2>
+    <p>Releases of Pathomx are available for download <a href="http://pathomx.org">from our website</a> packaged for both MacOS X and Windows x64 (XP, 7 and 8). Unpackaged source files are also available for manual installation or development from our <a href="">github repository</a>.</p>
+
+    <table class="releases">    
+    <tr>
+        <td class="release_version">2.1.0</td>
+        <td>Renamed 'Pathomx' due to name clash with existing software. Adds interactive configuration panels to tool windows.
+        <span class="release_date">(04/02/2014)</span>
+        </td>
+    </tr>    <tr>
+        <td class="release_version">2.0.0</td>
+        <td>New Visual workflow editor, Matplotlib-based graphing, improved interface, API improvements
+        <span class="release_date">(12/01/2014)</span>
+        </td>
+    </tr>    <tr>
+        <td class="release_version">1.0.0</td>
+        <td>Interactive workflow analysis support, plugins, Windows and Mac support, multithreading.
+        <span class="release_date">(18/12/2013)</span>
+        </td>
+    </tr>    <tr>
+        <td class="release_version">0.7.0</td>
+        <td>GPML visualisation support, data heatmaps introduced.
+        <span class="release_date">(01/07/2013)</span>
+        </td>
+    </tr>
+    <tr>
+        <td class="release_version">0.6.0</td>
+        <td>GPML support, compartmentalisation of reactions and molecular structure images introduced.
+        <span class="release_date">(01/06/2013)</span>
+        </td>
+    </tr>
+    <tr>
+        <td class="release_version">0.5.2</td>
+        <td>Fixing packaging via PyPi. Some small bugfixes for map generation speedups.
+        <span class="release_date">(01/02/2013)</span>
+        </td>
+    </tr>
+    <tr>
+        <td class="release_version">0.5.1</td>
+        <td>Initial release supporting metabolic pathway exploration and annotation with metabolic data. Basic implementaiton of pathway pruning for identification of key metabolic networks within a dataset.
+        <span class="release_date">(01/01/2013)</span>
+        </td>
+    </tr>
+    </table>
+    </p>
+    
+    <h2>Contact</h2>
+    <p>Please direct all correspondence to 
+    <a href="mailto:mxf793@@bham.ac.uk">Martin Fitzpatrick</a>,
+    Rheumatology Research Group,
+    Centre for Translational Inflammation Research,
+    Queen Elizabeth Hospital,
+    Mindelsohn Way,
+    Birmingham,
+    B15 2WB,
+    United Kingdom
+    </p>
+</body>
+</html>
