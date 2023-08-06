@@ -1,0 +1,60 @@
+Metadata-Version: 1.1
+Name: timeout_wrapper
+Version: 0.1.0
+Summary: Timeout decorator with defaults and exceptions.
+Home-page: https://github.com/Bystroushaak/timeout_wrapper
+Author: Bystroushaak
+Author-email: bystrousak@kitakitsune.org
+License: MIT
+Description: Timeout wrapper
+        ===============
+        
+        .. image:: https://badge.fury.io/py/timeout_wrapper.png
+            :target: http://badge.fury.io/py/timeout_wrapper
+        
+        .. image:: https://pypip.in/d/timeout_wrapper/badge.png
+                :target: https://pypi.python.org/pypi/timeout_wrapper
+        
+        
+        Timeout decorator with defaults and exceptions.
+        
+        Documentation
+        -------------
+        
+        Usage of this decorator is really simple - to set the timeout, just add
+        ``@timeout(time)`` decorator to your function definition::
+        
+            @timeout(3)  # 3 seconds
+            def myfunc(..):
+                ..
+        
+        If the ``myfunc()`` call timeouts, ``TimeoutException`` is raised.
+        
+        Optionally, you can also set your own message for exception::
+        
+            @timeout(3, exception_message="Oh noez")
+            def myfunc(..):
+                ..
+        
+        or use default value, instead of exception::
+        
+            @timeout(3, False):
+            def myfunc(..):
+                ..
+        
+        Thats all.
+        
+        Changelog
+        =========
+        
+        
+        
+        0.1.0
+        -----
+            - Project created.
+        
+Platform: UNKNOWN
+Classifier: Intended Audience :: Developers
+Classifier: Programming Language :: Python :: 2
+Classifier: Programming Language :: Python :: 2.7
+Classifier: License :: OSI Approved :: MIT License
