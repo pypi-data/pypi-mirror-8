@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Airtest Watch Log</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!--link rel="stylesheet/less" href="less/bootstrap.less" type="text/css" /-->
+    <!--link rel="stylesheet/less" href="less/responsive.less" type="text/css" /-->
+    <!--script src="js/less-1.3.3.min.js"></script-->
+    <!--append ‘#!watch’ to the browser URL, then refresh the page. -->
+
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/watch.css" rel="stylesheet">
+
+    <script src="js/Chart.js"></script>
+
+    <script src="data.js"></script>
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+    <script src="js/html5shiv.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+
+    <link rel="shortcut icon" type="image/x-icon" href="img/neteae_100.png" media="screen"/>
+
+    <script type="text/javascript" src="js/jquery.min.js"></script>
+    <script type="text/javascript" src="js/bootstrap.min.js"></script>
+
+
+</head>
+
+<body>
+
+<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-navbar-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#top">Air Test Watch Log Report</a>
+        </div>
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li><a href="#canvas_cpu">CPU</a></li>
+                <li><a href="#canvas_mem">Mem</a></li>
+                <li><a href="#canvas_tem">Temperature</a></li>
+                <li><a href="#canvas_fps">FPS</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="http://git.mt.nie.netease.com/hzsunshx/airtest">Airtest</a></li>
+                <li><img src="img/neteae_100.png" height="60" width="60"/></li>
+            </ul>
+        </div>
+        <div class="row clearfix">
+            <div class="col-md-12 column">
+            </div>
+        </div>
+
+    </div>
+</nav>
+
+
+<div class="container">
+    <div style="margin-top: 100px;">
+    </div>
+
+    <div class="row clearfix">
+        <div id="cpu_div" class="col-md-6 column" style="box-shadow: 0 0 8px rgba(0, 0, 0, .4);" onclick="show_cpu()">
+
+            <canvas id="canvas_cpu" style="padding-left: 10px; padding-right: 30px;"></canvas>
+
+            <div style="border-color: rgb(243, 134, 48); background-color: rgb(255, 0, 0); width: 10px; height: 10px;
+						float: left;margin-top: 6px; border-radius:5px ;"></div>
+            <div style="display:inline; float: left;">&nbsp;&nbsp;CPU&nbsp;</div>
+			<div style="display:inline; float: left" id = "div_cpu_info"></div>
+
+            <div style="display: inline;float: right;"><b align="middle">CPU %</b></div>
+
+        </div>
+
+        <div id="mem_div" class="col-md-6 column" style="box-shadow: 0 0 8px rgba(0, 0, 0, .4); margin-left: 10px;"
+             onclick="show_mem()">
+            <canvas id="canvas_mem" style="padding-left: 10px; padding-right: 30px;"></canvas>
+
+            <div style="background-color: rgb(204, 0, 51); width: 10px; height: 10px; float:left;margin-top: 6px;
+					     border-radius:5px ;"></div>
+            <div style="  display:inline; float: left;">&nbsp;&nbsp;RSS&nbsp;&nbsp;</div>
+			<div style="display:inline; float: left" id = "div_rss_info"></div>
+
+            <div style="background-color: rgb(51, 0, 204); width: 10px; height: 10px; float:left;margin-top: 6px;
+            border-radius:5px ;"></div>
+            <div style="  display:inline; float: left;">&nbsp;&nbsp;VSS&nbsp;&nbsp;</div>
+			<div style="display:inline; float: left" id = "div_vss_info"></div>
+
+            <div style="background-color: rgb(0, 204, 51); width: 10px; height: 10px; float:left;margin-top: 6px;
+            border-radius:5px ;"></div>
+            <div style="  display:inline; float: left;">&nbsp;&nbsp;PSS&nbsp;&nbsp;</div>
+			<div style="display:inline; float: left" id = "div_pss_info"></div>
+
+            <div style="display: inline;float: right;"><b align="middle">Memory /MB</b></div>
+        </div>
+
+    </div>
+    <div class="row clearfix" style="margin-top:10px ;">
+        <div id="tem_div" class="col-md-6 column" style="box-shadow: 0 0 8px rgba(0, 0, 0, .4);" onclick="show_tem()">
+            <canvas id="canvas_tem" style="padding-left: 10px; padding-right: 30px;"></canvas>
+
+            <div style="background-color: rgb(0, 153, 220); width: 10px; height: 10px; float:left;margin-top: 6px;
+            border-radius:5px ;"></div>
+            <div style="  display:inline; float: left;">&nbsp;&nbsp;CPU&nbsp;&nbsp;</div>
+			<div style="display:inline; float: left" id = "div_tem_cpu_info"></div>
+
+            <div style="background-color: rgb(0, 153, 102); width: 10px; height: 10px; float:left;margin-top: 6px;
+            border-radius:5px ;"></div>
+            <div style="  display:inline; float: left;">&nbsp;&nbsp;Battery&nbsp;&nbsp;</div>
+			<div style="display:inline; float: left" id = "div_tem_bat_info"></div>
+
+
+            <div style="display: inline;float: right;"><b align="middle">Temperature /℃</b></div>
+
+        </div>
+        <div id="fps_div" class="col-md-6 column" style="box-shadow: 0 0 8px rgba(0, 0, 0, .4); margin-left: 10px;"
+             onclick="show_fps()">
+            <canvas id="canvas_fps" style="padding-left: 10px; padding-right: 30px;"></canvas>
+
+            <div style="background-color: rgb(51, 51, 153); width: 10px; height: 10px; float:left;margin-top: 6px;
+            border-radius:5px ;"></div>
+            <div style="  display:inline; float: left;">&nbsp;&nbsp;Frame&nbsp;&nbsp;</div>
+			<div style="display:inline; float: left" id = "div_fps_info"></div>
+
+            <div style="display: inline;float: right;"><b align="middle">FPS /s</b></div>
+
+        </div>
+    </div>
+    <div class="row clearfix" style="margin-top: 10px;">
+        <div id="bat_div" class="col-md-6 column" style="box-shadow: 0 0 8px rgba(0, 0, 0, .4);" onclick="show_bat()">
+            <canvas id="canvas_bat" style="padding-left: 10px; padding-right: 30px;"></canvas>
+
+            <div style="background-color: rgb(255, 0, 0); width: 10px; height: 10px; float:left;margin-top: 6px;
+            border-radius:5px ;"></div>
+            <div style="  display:inline; float: left;">&nbsp;&nbsp;Battery&nbsp;&nbsp;</div>
+			<div style="display:inline; float: left" id = "div_bat_info"></div>
+
+
+            <div style="display: inline;float: right;"><b align="middle">Battery /Jiffy</b></div>
+
+
+        </div>
+        <div id="dat_div" class="col-md-6 column" style="box-shadow: 0 0 8px rgba(0, 0, 0, .4); margin-left: 10px;"
+             onclick="show_dat()">
+            <canvas id="canvas_dat" style="padding-left: 10px; padding-right: 30px;"></canvas>
+
+            <div style="background-color: rgb(255, 0, 51); width: 10px; height: 10px; float:left;margin-top: 6px;
+            border-radius:5px ;"></div>
+            <div style="  display:inline; float: left;">&nbsp;&nbsp;upload&nbsp;&nbsp;</div>
+			<div style="display:inline; float: left" id = "div_up_info"></div>
+
+            <div style="background-color: rgb(0, 153, 102); width: 10px; height: 10px; float:left;margin-top: 6px;
+            border-radius:5px ;"></div>
+            <div style="  display:inline; float: left;">&nbsp;&nbsp;dwload&nbsp;&nbsp;</div>
+			<div style="display:inline; float: left" id = "div_dw_info"></div>
+
+            <div style="display: inline;float: right;"><b align="middle">Data /KB</b></div>
+
+        </div>
+    </div>
+    <!--<div style="margin-bottom: 80px;"/>-->
+</div>
+
+<div id="white" class="white_content">
+
+    <div align="right"
+         style="background-color: #CC3333; width: 30px; float: right; margin-right: 4px; margin-top: 4px; padding-right: 10px;"
+         onclick="hide()">
+        <a style="color: #FFFFFF;" href="javascript:void(0)" onclick="hide()">X</a>
+    </div>
+
+    <h2 align="center">
+        <label id="title">hell world</label></h2>
+
+    <canvas id="canvas_all_cpu" style="padding-left: 10px; padding-right: 30px;"></canvas>
+    <canvas id="canvas_all_mem" style="padding-left: 10px; padding-right: 30px;"></canvas>
+    <canvas id="canvas_all_dat" style="padding-left: 10px; padding-right: 30px;"></canvas>
+    <canvas id="canvas_all_tem" style="padding-left: 10px; padding-right: 30px;"></canvas>
+    <canvas id="canvas_all_bat" style="padding-left: 10px; padding-right: 30px;"></canvas>
+    <canvas id="canvas_all_fps" style="padding-left: 10px; padding-right: 30px;"></canvas>
+
+</div>
+
+<div id="fade" class="black_overlay"></div>
+
+<!--<nav class="navbar navbar-default navbar-fixed-bottom" role="navigation">
+	<div class="container">
+	   <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-navbar-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#top">com.netaese.h9</a>
+          
+        </div>
+        <ul class="nav navbar-nav navbar-right">
+            <li><img src="img/neteae_100.png"  height="60" width="60"/></li>
+      </div>
+      
+</nav>-->
+
+
+<script>
+
+		var lineChartData_cpu = {
+			labels :  x_time,
+			datasets : [
+				{
+					label: "CPU",
+					fillColor : "rgba(220,220,220,0.2)",
+					strokeColor : "rgba(204,20,80,1)",
+					pointColor : "rgba(204,20,80,1)",
+
+					pointStrokeColor : "#CC3333",
+
+					pointHighlightFill : "#FF0000",
+					pointHighlightStroke : "rgba(255,0,0,1)",
+					data :  cpu_list
+				}
+			]
+
+		}
+
+		var lineChartData_mem = {
+			labels : x_time,
+			datasets : [
+				{
+					label: "My First dataset",
+					fillColor : "rgba(204,0,51,0.2)",
+					strokeColor : "rgba(204,0,51,1)",
+					pointColor : "rgba(204,0,51,1)",
+					pointStrokeColor : "#fff",
+					pointHighlightFill : "#fff",
+					pointHighlightStroke : "rgba(220,220,220,1)",
+					data : rss_list
+				},
+				{
+					label: "My Second dataset",
+					fillColor : "rgba(0,204,51,0.2)",
+					strokeColor : "rgba(0,204,51,1)",
+					pointColor : "rgba(0,204,51,1)",
+					pointStrokeColor : "#fff",
+					pointHighlightFill : "#fff",
+					pointHighlightStroke : "rgba(151,187,205,1)",
+					data : pss_list
+				},
+				{
+					label: "My Third dataset",
+					fillColor : "rgba(51,0,204,0.2)",
+					strokeColor : "rgba(51,0,204,1)",
+					pointColor : "rgba(51,0,204,1)",
+					pointStrokeColor : "#fff",
+					pointHighlightFill : "#fff",
+					pointHighlightStroke : "rgba(151,187,205,1)",
+					data : vss_list
+				}
+
+		]
+	}
+
+		var lineChartData_tem = {
+			labels : x_time,
+			datasets : [
+				{
+					label: "My First dataset",
+					fillColor : "rgba(0,153,220,0.2)",
+					strokeColor : "rgba(0,153,220,1)",
+					pointColor : "rgba(0,153,220,1)",
+					pointStrokeColor : "#0099CC",
+					pointHighlightFill : "#0099CC",
+					pointHighlightStroke : "rgba(0,153,204,1)",
+					data : cpu_tem_list
+				},
+				{
+					label: "My Second dataset",
+					fillColor : "rgba(0,187,102,0.2)",
+					strokeColor : "rgba(0,153,102,1)",
+					pointColor : "rgba(0,187,102,1)",
+					pointStrokeColor : "##009966",
+					pointHighlightFill : "##009966",
+					pointHighlightStroke : "rgba(151,187,205,1)",
+					data : bat_tem_list
+				}
+
+		]
+	}
+
+		var lineChartData_dat = {
+			labels : x_time,
+			datasets : [
+				{
+					label: "My First dataset",
+					fillColor : "rgba(255,0,51,0.2)",
+					strokeColor : "rgba(255,0,51,1)",
+					pointColor : "rgba(255,0,51,1)",
+					pointStrokeColor : "#FF0033",
+					pointHighlightFill : "#FF0033",
+					pointHighlightStroke : "rgba(0,153,204,1)",
+					data : up_list
+				},
+				{
+					label: "My Second dataset",
+					fillColor : "rgba(0,153,102,0.2)",
+					strokeColor : "rgba(0,153,102,1)",
+					pointColor : "rgba(0,153,102,1)",
+					pointStrokeColor : "##009966",
+					pointHighlightFill : "##009966",
+					pointHighlightStroke : "rgba(151,187,205,1)",
+					data : dw_list
+				}
+
+		]
+	}
+
+	var lineChartData_fps = {
+			labels : fps_time_list,
+			datasets : [
+				{
+					label: "My Second dataset",
+					fillColor : "rgba(255,255,255,0.2)",
+					strokeColor : "rgba(51,51,153,1)",
+					pointColor : "rgba(51,51,153,1)",
+					pointStrokeColor : "##009966",
+					pointHighlightFill : "##009966",
+					pointHighlightStroke : "rgba(151,187,205,1)",
+					data : fps_list
+				}
+
+		]
+	}
+
+	var lineChartData_bat = {
+			labels : x_time,
+			datasets : [
+				{
+					label: "My Second dataset",
+					fillColor : "rgba(102,0,102,0.2)",
+					strokeColor : "rgba(102,0,102,1)",
+					pointColor : "rgba(102,0,102,1)",
+					pointStrokeColor : "##009966",
+					pointHighlightFill : "##009966",
+					pointHighlightStroke : "rgba(151,187,205,1)",
+					data : bat_time_list
+				}
+
+		]
+	}
+
+	//var sum = times.reduce(function(a, b) { return a + b });
+	//var avg = sum / times.length
+
+	time_length = x_time.length
+	fps_array_length = fps_time_list.length
+
+	// Get the max of an array
+	function getMaxOfArray(numArray) {
+    	return Math.max.apply(null, numArray);
+	}
+
+	// Get the min of an array
+	function getMinOfArray(numArray) {
+		return Math.min.apply(null, numArray);
+	}
+
+	// Get avg of an array
+	function getAvgOfArray(numArray) {
+		return Number(((numArray.reduce(function(a, b) { return a + b }))/numArray.length).toFixed(2));
+	}
+
+
+	window.onload = function(){
+
+		document.getElementById("div_cpu_info").innerText = "(" + getMaxOfArray(cpu_list) + "," +
+																  getAvgOfArray(cpu_list) + ")"
+		var ctx_cpu = document.getElementById("canvas_cpu").getContext("2d");
+		line_cpu = new Chart(ctx_cpu).Line(lineChartData_cpu, {
+			responsive: true
+		});
+
+		document.getElementById("div_rss_info").innerText = "(" + getMaxOfArray(rss_list) + "," +
+	                                                              getAvgOfArray(rss_list) + ")";
+		document.getElementById("div_vss_info").innerText = "(" + getMaxOfArray(vss_list) + "," +
+																  getAvgOfArray(vss_list) + ")"
+		document.getElementById("div_pss_info").innerText = "(" + getMaxOfArray(pss_list) + "," +
+																  getAvgOfArray(pss_list) + ")"
+
+		var ctx_mem = document.getElementById("canvas_mem").getContext("2d");
+		line_mem = new Chart(ctx_mem).Line(lineChartData_mem, {
+			responsive: true
+		});
+
+	    document.getElementById("div_tem_cpu_info").innerText = "(" + getMaxOfArray(cpu_tem_list) + "," +
+																      getAvgOfArray(cpu_tem_list) + ")"
+		document.getElementById("div_tem_bat_info").innerText = "(" + getMaxOfArray(bat_tem_list) + "," +
+														              getAvgOfArray(bat_tem_list) + ")"
+		var ctx_tem = document.getElementById("canvas_tem").getContext("2d");
+		line_tem = new Chart(ctx_tem).Line(lineChartData_tem, {
+			responsive: true
+		});
+
+		document.getElementById("div_fps_info").innerText = "(" + getMaxOfArray(fps_list) + "," +
+																  getAvgOfArray(fps_list) + ")"
+		var ctx_fps = document.getElementById("canvas_fps").getContext("2d");
+		line_fps = new Chart(ctx_fps).Line(lineChartData_fps, {
+			responsive: true
+		});
+
+	    document.getElementById("div_up_info").innerText = "(" + getMaxOfArray(up_list) + "," +
+	                                                             getAvgOfArray(up_list) + ")"
+		document.getElementById("div_dw_info").innerText = "(" + getMaxOfArray(dw_list) + "," +
+														         getAvgOfArray(dw_list) + ")"
+		var ctx_dat = document.getElementById("canvas_dat").getContext("2d");
+		line_dat = new Chart(ctx_dat).Line(lineChartData_dat, {
+			responsive: true
+		});
+
+		document.getElementById("div_bat_info").innerText = "(" + getMaxOfArray(bat_time_list) + "," +
+														          getAvgOfArray(bat_time_list) + ")"
+		var ctx_bat = document.getElementById("canvas_bat").getContext("2d");
+		line_bat = new Chart(ctx_bat).Line(lineChartData_bat, {
+			responsive: true
+		});
+
+	}
+
+	function show() {
+		document.getElementById('fade').style.display='block';
+		document.getElementById('white').style.display='block';
+
+		document.getElementById('canvas_all_cpu').style.display='none';
+		document.getElementById('canvas_all_fps').style.display='none';
+		document.getElementById('canvas_all_bat').style.display='none';
+		document.getElementById('canvas_all_tem').style.display='none';
+		document.getElementById('canvas_all_dat').style.display='none';
+		document.getElementById('canvas_all_mem').style.display='none';
+
+
+	}
+
+	function show_cpu() {
+		show()
+
+		var context = document.getElementById("canvas_all_cpu").getContext("2d");
+		document.getElementById('title').innerText = "CPU"
+		document.getElementById('canvas_all_cpu').style.display='block';
+
+		line_cpu = new Chart(context).Line(lineChartData_cpu, {
+			responsive: true
+		});
+	}
+
+	function show_mem() {
+		show()
+		var context = document.getElementById("canvas_all_mem").getContext("2d");
+		document.getElementById('canvas_all_mem').style.display='block';
+		document.getElementById('title').innerText = "Memory"
+
+		line_mem = new Chart(context).Line(lineChartData_mem, {
+			responsive: true
+		});
+	}
+
+	function show_dat() {
+		show()
+		var context = document.getElementById("canvas_all_dat").getContext("2d");
+		document.getElementById('canvas_all_dat').style.display='block';
+		document.getElementById('title').innerText = "Data"
+
+		line_dat = new Chart(context).Line(lineChartData_dat, {
+			responsive: true
+		});
+	}
+
+	function show_fps() {
+		show()
+		var context = document.getElementById("canvas_all_fps").getContext("2d");
+		document.getElementById('canvas_all_fps').style.display='block';
+		document.getElementById('title').innerText = "FPS"
+		line_fps = new Chart(context).Line(lineChartData_fps, {
+			responsive: true
+		});
+	}
+
+	function show_bat() {
+		show()
+		var context = document.getElementById("canvas_all_bat").getContext("2d");
+		document.getElementById('canvas_all_bat').style.display='block';
+		document.getElementById('title').innerText = "Battery"
+
+		line_bat = new Chart(context).Line(lineChartData_bat, {
+			responsive: true
+		});
+	}
+
+	function show_tem() {
+		show()
+		var context = document.getElementById("canvas_all_tem").getContext("2d");
+		document.getElementById('canvas_all_tem').style.display='block';
+		document.getElementById('title').innerText = "Temperature"
+
+		line_tem = new Chart(context).Line(lineChartData_tem, {
+			responsive: true
+		});
+	}
+
+	function hide(){
+		document.getElementById('fade').style.display='none'
+		document.getElementById('white').style.display='none'
+	}
+
+
+
+</script>
+</body>
+</html>
