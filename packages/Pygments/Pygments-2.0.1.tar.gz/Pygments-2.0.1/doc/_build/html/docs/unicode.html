@@ -1,0 +1,167 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Unicode and Encodings &mdash; Pygments 2.0pre documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.0pre',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="top" title="Pygments 2.0pre documentation" href="../index.html" />
+    <link rel="up" title="Pygments documentation" href="index.html" />
+    <link rel="next" title="Builtin Tokens" href="tokens.html" />
+    <link rel="prev" title="Styles" href="styles.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="tokens.html" title="Builtin Tokens"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="styles.html" title="Styles"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">Pygments 2.0pre documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Pygments documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="unicode-and-encodings">
+<h1>Unicode and Encodings<a class="headerlink" href="#unicode-and-encodings" title="Permalink to this headline">¶</a></h1>
+<p>Since Pygments 0.6, all lexers use unicode strings internally. Because of that
+you might encounter the occasional <code class="xref py py-exc docutils literal"><span class="pre">UnicodeDecodeError</span></code> if you pass strings
+with the wrong encoding.</p>
+<p>Per default all lexers have their input encoding set to <cite>guess</cite>.  This means
+that the following encodings are tried:</p>
+<ul class="simple">
+<li>UTF-8 (including BOM handling)</li>
+<li>The locale encoding (i.e. the result of <cite>locale.getpreferredencoding()</cite>)</li>
+<li>As a last resort, <cite>latin1</cite></li>
+</ul>
+<p>If you pass a lexer a byte string object (not unicode), it tries to decode the
+data using this encoding.</p>
+<p>You can override the encoding using the <cite>encoding</cite> or <cite>inencoding</cite> lexer
+options.  If you have the <a class="reference external" href="http://chardet.feedparser.org/">chardet</a> library installed and set the encoding to
+<code class="docutils literal"><span class="pre">chardet</span></code> if will ananlyse the text and use the encoding it thinks is the
+right one automatically:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">pygments.lexers</span> <span class="kn">import</span> <span class="n">PythonLexer</span>
+<span class="n">lexer</span> <span class="o">=</span> <span class="n">PythonLexer</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="s">&#39;chardet&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The best way is to pass Pygments unicode objects. In that case you can&#8217;t get
+unexpected output.</p>
+<p>The formatters now send Unicode objects to the stream if you don&#8217;t set the
+output encoding. You can do so by passing the formatters an <cite>encoding</cite> option:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">pygments.formatters</span> <span class="kn">import</span> <span class="n">HtmlFormatter</span>
+<span class="n">f</span> <span class="o">=</span> <span class="n">HtmlFormatter</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="s">&#39;utf-8&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>You will have to set this option if you have non-ASCII characters in the
+source and the output stream does not accept Unicode written to it!</strong>
+This is the case for all regular files and for terminals.</p>
+<p>Note: The Terminal formatter tries to be smart: if its output stream has an
+<cite>encoding</cite> attribute, and you haven&#8217;t set the option, it will encode any
+Unicode string with this encoding before writing it. This is the case for
+<cite>sys.stdout</cite>, for example. The other formatters don&#8217;t have that behavior.</p>
+<p>Another note: If you call Pygments via the command line (<cite>pygmentize</cite>),
+encoding is handled differently, see <a class="reference internal" href="cmdline.html"><em>the command line docs</em></a>.</p>
+<div class="versionadded">
+<p><span class="versionmodified">New in version 0.7: </span>The formatters now also accept an <cite>outencoding</cite> option which will override
+the <cite>encoding</cite> option if given. This makes it possible to use a single
+options dict with lexers and formatters, and still have different input and
+output encodings.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="styles.html"
+                        title="previous chapter">Styles</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="tokens.html"
+                        title="next chapter">Builtin Tokens</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/docs/unicode.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<strong>&laquo; <a href="index.html">Back to docs index</a></strong>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="tokens.html" title="Builtin Tokens"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="styles.html" title="Styles"
+             >previous</a> |</li>
+        <li><a href="../index.html">Pygments 2.0pre documentation</a> &raquo;</li>
+          <li><a href="index.html" >Pygments documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2014, Georg Brandl.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3b2.
+    </div>
+  </body>
+</html>
