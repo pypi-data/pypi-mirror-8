@@ -1,0 +1,102 @@
+#!python
+
+import sys
+import os.path
+dev_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
+sys.path.insert(0, dev_path)
+
+import argparse
+
+import mr.config.log
+import mr.trace
+import mr.models.kv.request
+
+description = "Print the invocation-graph for a request"
+
+parser = argparse.ArgumentParser(description=description)
+
+parser.add_argument('workflow_name', help='Workflow name')
+parser.add_argument('request_id', help='Request ID')
+
+args = parser.parse_args()
+
+workflow = mr.models.kv.workflow.get(args.workflow_name)
+request_id = args.request_id
+
+request = mr.models.kv.request.get(workflow, request_id)
+
+#for child_info, is_loop_to_self \
+#        in mr.trace.invocation_graph_with_data_gen(workflow, request):
+#    (child_invocation, argument_data, post_combine_data, 
+#     post_reduce_data, parent_invocation) = child_info
+#    print("[%s]: PARENT=[%s] DS_ARGS=[%s] DS_POSTCOMBINE=[%s] "
+#          "DS_POSTREDUCE=[%s]" % 
+#          (str(child_invocation), str(parent_invocation), bool(argument_data), 
+#           bool(post_combine_data), bool(post_reduce_data)))
+#
+
+relationships = {}
+invocations = {}
+
+for child_info, is_loop_to_self \
+        in mr.trace.invocation_graph_with_data_gen(workflow, request):
+    (child_invocation, argument_data, post_combine_data, 
+     post_reduce_data, parent_invocation) = child_info
+
+    invocations[child_invocation.invocation_id] = (
+        child_invocation.direction,
+        child_invocation.step_name,
+        argument_data, 
+        post_combine_data, 
+        post_reduce_data,
+        is_loop_to_self)
+
+    parent_invocation_id = parent_invocation.invocation_id \
+                            if parent_invocation is not None \
+                            else None
+
+    try:
+        relationships[parent_invocation_id].append(
+            child_invocation.invocation_id)
+    except KeyError:
+        relationships[parent_invocation_id] = [
+            child_invocation.invocation_id]
+
+if len(relationships[None]) > 1:
+    raise ValueError("More then one root node was identified.")
+
+visited_s = set()
+
+def print_invocation(invocation_id, indent=0):
+    already_visited = invocation_id in visited_s
+    already_visited_suffix = '*' if already_visited else ''
+
+    sys.stdout.write(' ' * indent + invocation_id + already_visited_suffix)
+
+    if already_visited is True:
+        sys.stdout.write('\n')
+        return
+
+    (direction, step_name, argument_data, post_combine_data, post_reduce_data,
+     is_loop_to_self) = invocations[invocation_id]
+
+    sys.stdout.write(' ' + direction[0].upper() + ' [')
+    sys.stdout.write('X' if argument_data else '-')
+    sys.stdout.write('X' if post_combine_data else '-')
+    sys.stdout.write('X' if post_reduce_data else '-')
+    sys.stdout.write(']')
+    sys.stdout.write(' ' + step_name)
+    sys.stdout.write('\n')
+
+    visited_s.add(invocation_id)
+
+    try:
+        children = relationships[invocation_id]
+    except KeyError:
+        pass
+    else:
+        for child_id in children:
+            print_invocation(child_id, indent + 2)
+
+root_id = relationships[None][0]
+print_invocation(root_id)
