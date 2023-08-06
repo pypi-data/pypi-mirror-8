@@ -1,0 +1,59 @@
+streamcorpus_pipeline:
+  root_path:
+  tmp_dir_path:  tmp
+  reader: yaml_files_list  #from_local_chunks
+
+  log_level: DEBUG
+
+  incremental_transforms:
+  - language
+  - guess_media_type
+  - clean_html
+  - hyperlink_labels
+  - clean_visible
+  - title
+
+  batch_transforms: [serif]
+
+  writers: [to_local_chunks]
+
+  clean_html:
+    require_language_code: en
+    included_language_codes: ["en", ""]
+
+  hyperlink_labels:
+    require_clean_html: true
+    require_abs_url: true
+    all_domains: true
+    offset_types: [BYTES]
+
+  clean_visible:
+    require_clean_html: true
+
+  to_local_chunks:
+    output_type: otherdir
+    output_path: data
+    output_name: "politicians-%(source)s-%(num)d-%(md5)s"
+
+
+  third_dir_path: /third
+
+  serif:
+    exit_code_on_out_of_memory: 1
+    path_in_third: serif/serif-latest
+    offset_types: [CHARS]
+    offset_debugging: true
+    cleanup_tmp_files: true
+
+    par: streamcorpus_one_step
+
+    ## convert all doc-level Rating objects into Label objects on all
+    ## Tokens that appear in a coref chain that meets the criterion
+    align_labels_by: names_in_chains
+    aligner_data:
+      ## apply Label to each Token in any chain for which ALL|ANY of
+      ## the strings in Rating.mentions appear as substrings in at
+      ## least one Token.token string of the coref chain
+      chain_selector:  ANY_MULTI_TOKEN
+      ## identifier of annotator to find in the doc-level Ratings
+      annotator_id: diffeo
