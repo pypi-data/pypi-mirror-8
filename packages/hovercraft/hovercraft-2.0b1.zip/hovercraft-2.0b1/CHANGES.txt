@@ -1,0 +1,79 @@
+Changes
+=======
+
+2.0b1 (2014-11-27)
+------------------
+
+- IMPORTANT! The positioning has been reimplemented. The most important change
+  is that there is no longer any calculation of relative movement when you use
+  absolute coordinates. Therefore, if you use absolute coordinates on some slides
+  and then have no coordinates on other slides, your positioning may no longer
+  be correct with version 2.0.
+
+- Relative coordinates (starting with r) are now supported for all positioning,
+  attributes including rotation and scaling.
+
+- Images can now also have a :class: attribute.
+
+- Having the "Requires Python 3" error when setup.py runs messes with some
+  tools, so I moved it to a custom install class instead.
+
+- Now includes a server-mode, that will serve the presentation via http and
+  also re-generate the presentation if the source-files change.
+
+- Added support for multiple levels of slides. This is to make it able
+  to support for example Reveal.js through external templates.
+
+- Moved the "note" XML transformation into the templates, as this is an
+  impress.js feature, and other libraries, such as Reveal.js, will render
+  it differently.
+
+
+1.1 (2013-03-15)
+----------------
+
+- ReST comments are no longer rendered to HTML. [carljm]
+
+- Fixed a bug in the path handling for CSS resources. [carljm]
+
+- Various fixes and improvements in ReST handling. [cjw296]
+
+
+1.0 (2013-02-22)
+----------------
+
+- #1, #2: Add key-binding to pop up the help, a parameter and a presentation
+  field setting to not show the help at load.
+
+- Added documentation for #8: Naming steps.
+
+- #7: You can now define CSS-files to be included with a :css:-field in the
+  presentation.
+
+- #3: You can now leave out the presenter notes from the output with the
+  parameter -n or --skip-notes
+
+- Added a "simple" template that has no presenter console.
+
+- Updated to impress-console 1.1, fixing a Firefox bug.
+
+- Added support for more HTML metadata.
+
+- Finished documentation and examples.
+
+
+1.0b2 (2013-02-13)
+------------------
+
+- Added syntax highlighting support.
+
+- #9: All positioning variables except data-x and data-y are now "sticky" so
+      they will keep their previous value if not defined.
+
+- Documentation on https://hovercraft.readthedocs.org/
+
+
+1.0b1 (2013-02-07)
+------------------
+
+- Initial release.
