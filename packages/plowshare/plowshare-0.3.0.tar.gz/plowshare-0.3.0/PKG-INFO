@@ -1,0 +1,135 @@
+Metadata-Version: 1.1
+Name: plowshare
+Version: 0.3.0
+Summary: Manages multi-host uploads using plowshare.
+Home-page: https://github.com/storj/plowshare-wrapper
+Author: Hugo Peixoto
+Author-email: hugo.peixoto@gmail.com
+License: The MIT License (MIT)
+
+Copyright (c) 2014 Storj Labs
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+the Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+Download-URL: https://github.com/storj/plowshare-wrapper/tarball/0.3.0
+Description: Plowshare Wrapper
+        =================
+        
+        |Build Status| |Coverage Status|
+        
+        Python wrapper for managing multi-host uploads and downloads using
+        `plowshare`_. After uploading it returns an object with links to the
+        file it uploaded. This wrapper contains both a Python module and a
+        command line tool.
+        
+        Installation
+        ------------
+        
+        Check `INSTALL.md`_ for installation instructions.
+        
+        Module Usage
+        ------------
+        
+        Upload
+        ~~~~~~
+        
+        This module is composed of a single class, which can be used to upload a
+        file to multiple hosts at once. Example:
+        
+        ::
+        
+            import plowshare
+        
+            p = plowshare.Plowshare()
+            p.upload('/home/jessie/documents/README.md', 3)
+        
+        The above example uploads the given file to three different hosts,
+        chosen at random from a predefined list. This list is a subset of the
+        available plowshare modules, limited to the ones that allow anonymous
+        access. You can check it in plowshare/hosts.py
+        
+        You can also specify a list of hosts (plowshare module names) to use:
+        
+        ::
+        
+            import plowshare
+        
+            p = plowshare.Plowshare(['turbobit', 'multiupload', 'exoshare', 'rghost', 'bayfiles'])
+            p.upload('/home/jessie/documents/README.md', 3)
+        
+        The upload method returns an array of objects with the hosts and URLs to
+        which it uploaded the file. If some of the uploads fail, it doesn’t
+        return an URL, but an error flag instead.
+        
+        Here’s an example:
+        
+        ::
+        
+            [
+                { "host_name": "mediafire",  "url":   "http://www.mediafire.com/?qorncpzfe74s9" },
+                { "host_name": "rapidshare", "url":   "http://rapidshare.com/files/130403982" },
+                { "host_name": "anonfiles",  "error": true }
+            ]
+        
+        Download
+        ~~~~~~~~
+        
+        You can also download uploaded files, by providing the object that the
+        upload method generated, and the directory and filename where to
+        download the file. This method returns an object that contains the path
+        where the file was downloaded, or an object with the error message.
+        Example:
+        
+        ::
+        
+            import plowshare
+        
+            uploads = [
+                { 'host_name': 'mediafire',  'url':'http://www.mediafire.com/?qorncpzfe74s9' },
+                { 'host_name': 'rapidshare', 'url':'http://rapidshare.com/files/130403982' },
+                { 'host_name': 'anonfiles',  'error':true }
+            ]
+        
+            p = plowshare.Plowshare()
+            p.download(info, '/tmp/', 'readme_copy.md')
+        
+        If multiple sources are provided, they are used as failovers for
+        downloading the file. If at least one source is successful, the others
+        won’t be attempted and ``download()`` will return an object with the
+        full path filename and the first host it successfuly downloaded it from:
+        
+        ::
+        
+            { "host_name": "mediafire", "filename": "/tmp/readme_copy.md" }
+        
+        There are multiple errors that can occur. Here’s a list of the currently
+        supported errors:
+        
+        ::
+        
+            { "error": "no valid sources" }     # the provided object does not contain a valid source.
+        
+        .. _plowshare: https://code.google.com/p/plowshare/
+        .. _INSTALL.md: INSTALL.md
+        
+        .. |Build Status| image:: https://travis-ci.org/Storj/plowshare-wrapper.svg
+           :target: https://travis-ci.org/Storj/plowshare-wrapper
+        .. |Coverage Status| image:: https://coveralls.io/repos/Storj/plowshare-wrapper/badge.png?branch=master
+           :target: https://coveralls.io/r/Storj/plowshare-wrapper?branch=master
+Keywords: storj,metadisk,plowshare,plowshare wrapper
+Platform: UNKNOWN
