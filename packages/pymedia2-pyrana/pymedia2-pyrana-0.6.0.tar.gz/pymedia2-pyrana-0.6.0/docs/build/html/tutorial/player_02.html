@@ -1,0 +1,231 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Pygame and Video &mdash; pyrana 0.6 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.6',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="pyrana 0.6 documentation" href="../index.html" />
+    <link rel="up" title="Introduction" href="index.html" />
+    <link rel="next" title="errors" href="../errors.html" />
+    <link rel="prev" title="Overview" href="player_01.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../errors.html" title="errors"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="player_01.html" title="Overview"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">pyrana 0.6 documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Introduction</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="pygame-and-video">
+<h1>Pygame and Video<a class="headerlink" href="#pygame-and-video" title="Permalink to this headline">¶</a></h1>
+<p>To draw to the screen, we&#8217;re going to use pygame. pygame is an excellent
+and well known module which advertises itself as</p>
+<div class="highlight-python"><pre>Pygame is a set of Python modules designed for writing games. Pygame adds functionality
+on top of the excellent SDL library. This allows you to create fully featured games and
+multimedia programs in the python language. Pygame is highly portable and runs on
+nearly every platform and operating system.</pre>
+</div>
+<p>You can get the package at the <a class="reference external" href="http://www.pygame.org">official
+website</a> or on PyPI.</p>
+<p>Pygame has various methods for drawing images to the screen, and it has
+one in particularly well suited for displaying movies on the screen -
+what it calls a YUV overlay. YUV (technically not YUV but YCbCr:
+generally speaking, YUV is an analog format and YCbCr is a digital
+format. However, they are often -and incorrectly- used as synonims) is a
+way of storing raw image data like RGB. Roughly speaking, Y is the
+brightness (or &#8220;luma&#8221;) component, and U and V are the color components.
+pygame&#8217;s YUV overlay takes in a triplet of bytes (strings in py2.x)
+containing the YUV data and displays it. It accepts an handful of
+different kinds of YUV formats, but YV12 is most often the fastest.
+There is another YUV format called YUV420P that is the same as YV12,
+except the U and V arrays are switched. The 420 means it is subsampled,
+at a ratio of 4:2:0, basically meaning there is 1 color sample for every
+4 luma samples, so the color information is quartered. This is a good
+way of saving bandwidth, as the human eye does not percieve this change.
+The &#8220;P&#8221; in the name means that the format is &#8220;planar&#8221; &#8211; simply meaning
+that the Y, U, and V components are in separate arrays. pyrana can
+convert images to YUV420P, with the added bonus that many video streams
+are in that format already, or are easily converted to that format.</p>
+<p>So our current plan is to replace the <tt class="docutils literal"><span class="pre">ppm_write</span></tt> function from <a class="reference external" href="http://mojaves.github.io/pyrana-player-tutorial-part-1.html">part
+1</a>, and
+instead output our frame to the screen. But first we have to start by
+seeing how to use the pygame package. First we have to import and to
+initialize it, once again one time only:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">pygame</span>
+<span class="o">...</span>
+<span class="n">pygame</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="creating-and-using-an-overlay">
+<h1>Creating and using an Overlay<a class="headerlink" href="#creating-and-using-an-overlay" title="Permalink to this headline">¶</a></h1>
+<p>Now we need a place on the screen to put stuff. The basic area for
+displaying images with SDL is called an <em>overlay</em>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">pygame</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">set_mode</span><span class="p">((</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">))</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">_ovl</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Overlay</span><span class="p">(</span><span class="n">pygame</span><span class="o">.</span><span class="n">YV12_OVERLAY</span><span class="p">,</span> <span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">))</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">_ovl</span><span class="o">.</span><span class="n">set_location</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">wwidth</span><span class="p">,</span> <span class="n">height</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>As we said before, we are using YV12 to display the image:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="bp">self</span><span class="o">.</span><span class="n">_ovl</span><span class="o">.</span><span class="n">display</span><span class="p">((</span><span class="n">Y</span><span class="p">,</span> <span class="n">U</span><span class="p">,</span> <span class="n">V</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>The overlay object takes care of locking, so we don&#8217;t have to. The
+<tt class="docutils literal"><span class="pre">Y</span></tt>, <tt class="docutils literal"><span class="pre">U</span></tt> and <tt class="docutils literal"><span class="pre">V</span></tt> objects are bytes() (strings in py2.x) filled
+with the actual data to display. Of course since we are dealing with
+YUV420P here, we only have 3 channels, and therefore only 3 sets of
+data. Other formats might have a fourth pointer for an alpha channel or
+something.</p>
+<p>The code which draws using the pygame overlays can be packed in an handy
+class:</p>
+<div class="highlight-python"><pre>class PygameViewer(object):
+def __init__(self):
+    self._ovl = None
+    self._frames = 0
+
+@property
+def frames(self):
+    return self._frames
+
+def setup(self, w, h):
+    pygame.display.set_mode((w, h))
+    self._ovl = pygame.Overlay(pygame.YV12_OVERLAY, (w, h))
+    self._ovl.set_location(0, 0, w, h)
+
+def show(self, Y, U, V):
+    self._ovl.display((Y, U, V))
+    self._frames += 1</pre>
+</div>
+</div>
+<div class="section" id="drawing-the-image">
+<h1>Drawing the Image<a class="headerlink" href="#drawing-the-image" title="Permalink to this headline">¶</a></h1>
+<p>What is stil left is to fetch the plane data and pass it to pygame&#8217;s
+overlay in order to actually display it. No worries, this is very simple
+as well:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+    <span class="n">frame</span> <span class="o">=</span> <span class="n">vdec</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">dmx</span><span class="o">.</span><span class="n">stream</span><span class="p">(</span><span class="n">sid</span><span class="p">))</span>
+    <span class="n">img</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">image</span><span class="p">()</span>
+    <span class="n">view</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">plane</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">img</span><span class="o">.</span><span class="n">plane</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">img</span><span class="o">.</span><span class="n">plane</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Where <tt class="docutils literal"><span class="pre">view</span></tt> is of course an instance -already set up and ready- of a
+<tt class="docutils literal"><span class="pre">PygameViewer</span></tt> defined above. This is actually the whole decoding
+loop! The Image objects provides an handy <tt class="docutils literal"><span class="pre">plane()</span></tt> method with just
+returns the <tt class="docutils literal"><span class="pre">bytes()</span></tt> of the selected plane.</p>
+<p>What happens when you run this program? The video is going crazy! In
+fact, we&#8217;re just displaying all the video frames as fast as we can
+extract them from the movie file. We don&#8217;t have any code right now for
+figuring out <em>when</em> we need to display video. Eventually (in part 5),
+we&#8217;ll get around to syncing the video. But first we&#8217;re missing something
+even more important: sound!</p>
+<p>The full working code (well, a slightly enhanced version of) used in
+this post is <a class="reference external" href="https://github.com/mojaves/pyrana/blob/master/examples/11_compat_video_pygame.py">available
+here</a>.</p>
+<script src="https://gist.github.com/mojaves/6980465.js"></script></div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Pygame and Video</a></li>
+<li><a class="reference internal" href="#creating-and-using-an-overlay">Creating and using an Overlay</a></li>
+<li><a class="reference internal" href="#drawing-the-image">Drawing the Image</a></li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="player_01.html"
+                        title="previous chapter">Overview</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../errors.html"
+                        title="next chapter">errors</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/tutorial/player_02.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../errors.html" title="errors"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="player_01.html" title="Overview"
+             >previous</a> |</li>
+        <li><a href="../index.html">pyrana 0.6 documentation</a> &raquo;</li>
+          <li><a href="index.html" >Introduction</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Francesco Romani.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

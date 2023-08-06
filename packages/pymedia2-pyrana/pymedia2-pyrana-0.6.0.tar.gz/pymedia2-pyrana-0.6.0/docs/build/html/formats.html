@@ -1,0 +1,271 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>formats &mdash; pyrana 0.6 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.6',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="pyrana 0.6 documentation" href="index.html" />
+    <link rel="next" title="audio" href="audio.html" />
+    <link rel="prev" title="packets" href="packets.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="audio.html" title="audio"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="packets.html" title="packets"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">pyrana 0.6 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-pyrana.formats">
+<span id="formats"></span><h1>formats<a class="headerlink" href="#module-pyrana.formats" title="Permalink to this headline">¶</a></h1>
+<p>This module provides the transport layer interface: encoded packets,
+Muxer, Demuxers and their support code.</p>
+<dl class="class">
+<dt id="pyrana.formats.AVFmtFlags">
+<em class="property">class </em><tt class="descclassname">pyrana.formats.</tt><tt class="descname">AVFmtFlags</tt><a class="headerlink" href="#pyrana.formats.AVFmtFlags" title="Permalink to this definition">¶</a></dt>
+<dd><p>wrapper for the (wannabe)enum
+in libavformat/avformat.h</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="pyrana.formats.Demuxer">
+<em class="property">class </em><tt class="descclassname">pyrana.formats.</tt><tt class="descname">Demuxer</tt><big>(</big><em>src</em>, <em>name=None</em>, <em>delay_open=False</em>, <em>streaming=False</em><big>)</big><a class="headerlink" href="#pyrana.formats.Demuxer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Demuxer object. Use a file-like for real I/O.
+The file-like must be already open, and must support read()
+returning bytes (not strings).
+If the file format is_seekable but the file-like doesn&#8217;t support
+seek, expect weird things.</p>
+<dl class="method">
+<dt id="pyrana.formats.Demuxer.close">
+<tt class="descname">close</tt><big>(</big><big>)</big><a class="headerlink" href="#pyrana.formats.Demuxer.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>close the underlying demuxer.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyrana.formats.Demuxer.next">
+<tt class="descname">next</tt><big>(</big><big>)</big><a class="headerlink" href="#pyrana.formats.Demuxer.next" title="Permalink to this definition">¶</a></dt>
+<dd><p>python 2.x iterator hook.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyrana.formats.Demuxer.open">
+<tt class="descname">open</tt><big>(</big><em>name=None</em><big>)</big><a class="headerlink" href="#pyrana.formats.Demuxer.open" title="Permalink to this definition">¶</a></dt>
+<dd><p>open the underlying demuxer.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyrana.formats.Demuxer.open_decoder">
+<tt class="descname">open_decoder</tt><big>(</big><em>stream_id</em><big>)</big><a class="headerlink" href="#pyrana.formats.Demuxer.open_decoder" title="Permalink to this definition">¶</a></dt>
+<dd><p>create and returns a full-blown decoder Instance capable
+to decode the selected stream.
+Like doing things manually, just easily.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyrana.formats.Demuxer.read_frame">
+<tt class="descname">read_frame</tt><big>(</big><em>stream_id=-1</em><big>)</big><a class="headerlink" href="#pyrana.formats.Demuxer.read_frame" title="Permalink to this definition">¶</a></dt>
+<dd><p>reads and returns a new complete encoded frame (enclosed in a Packet)
+from the demuxer.
+if the optional <a href="#id1"><span class="problematic" id="id2">`</span></a>stream_id&#8217; argument is !ANY, returns a frame
+belonging to the specified streams.</p>
+<p>raises EndOfStreamError if
+- a stream id is specified, and such streams doesn&#8217;t exists.
+- the streams ends.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyrana.formats.Demuxer.seek_frame">
+<tt class="descname">seek_frame</tt><big>(</big><em>frameno</em>, <em>stream_id=-1</em><big>)</big><a class="headerlink" href="#pyrana.formats.Demuxer.seek_frame" title="Permalink to this definition">¶</a></dt>
+<dd><p>seek to the given frame number in the stream.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyrana.formats.Demuxer.seek_ts">
+<tt class="descname">seek_ts</tt><big>(</big><em>tstamp</em>, <em>stream_id=-1</em><big>)</big><a class="headerlink" href="#pyrana.formats.Demuxer.seek_ts" title="Permalink to this definition">¶</a></dt>
+<dd><p>seek to the given timestamp (msecs) in the stream.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyrana.formats.Demuxer.stream">
+<tt class="descname">stream</tt><big>(</big><em>sid=-1</em><big>)</big><a class="headerlink" href="#pyrana.formats.Demuxer.stream" title="Permalink to this definition">¶</a></dt>
+<dd><p>generator that returns all packets that belong to a
+specified stream id.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pyrana.formats.Demuxer.streams">
+<tt class="descname">streams</tt><a class="headerlink" href="#pyrana.formats.Demuxer.streams" title="Permalink to this definition">¶</a></dt>
+<dd><p>streams: read-only attribute
+list of StreamInfo objects describing the streams found by
+the demuxer (as in old pyrana, no changes)</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pyrana.formats.FormatFlags">
+<em class="property">class </em><tt class="descclassname">pyrana.formats.</tt><tt class="descname">FormatFlags</tt><a class="headerlink" href="#pyrana.formats.FormatFlags" title="Permalink to this definition">¶</a></dt>
+<dd><p>wrapper for the (wannabe)enum of AVFormatFlags
+in libavformat/avformat.h</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="pyrana.formats.Muxer">
+<em class="property">class </em><tt class="descclassname">pyrana.formats.</tt><tt class="descname">Muxer</tt><big>(</big><em>sink</em>, <em>name=None</em>, <em>streaming=True</em><big>)</big><a class="headerlink" href="#pyrana.formats.Muxer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Muxer object. Use a file-like for real I/O.
+The file-like must be already open, and must support write()
+returning bytes (not strings).
+If the file format is_seekable but the file-like doesn&#8217;t support
+seek, expect weird things.</p>
+<dl class="method">
+<dt id="pyrana.formats.Muxer.add_stream">
+<tt class="descname">add_stream</tt><big>(</big><em>encoder</em><big>)</big><a class="headerlink" href="#pyrana.formats.Muxer.add_stream" title="Permalink to this definition">¶</a></dt>
+<dd><p>register a new stream into the Muxer for the given
+Encoder. XXX add more docs</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyrana.formats.Muxer.open_encoder">
+<tt class="descname">open_encoder</tt><big>(</big><em>output_codec</em>, <em>params</em><big>)</big><a class="headerlink" href="#pyrana.formats.Muxer.open_encoder" title="Permalink to this definition">¶</a></dt>
+<dd><p>create and returns a full-blown enccoder Instance capable,
+given the encoder parameters, already bound and registered
+as stream in the Muxer.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyrana.formats.Muxer.write_frame">
+<tt class="descname">write_frame</tt><big>(</big><em>packet</em><big>)</big><a class="headerlink" href="#pyrana.formats.Muxer.write_frame" title="Permalink to this definition">¶</a></dt>
+<dd><p>writes a data frame, enclosed into an encoded Packet,
+in the stream.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyrana.formats.Muxer.write_header">
+<tt class="descname">write_header</tt><big>(</big><big>)</big><a class="headerlink" href="#pyrana.formats.Muxer.write_header" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes the header into the output stream.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyrana.formats.Muxer.write_trailer">
+<tt class="descname">write_trailer</tt><big>(</big><big>)</big><a class="headerlink" href="#pyrana.formats.Muxer.write_trailer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes the trailer (if any) into the output stream.
+Requires the header to be written (and, likely, some data)
+Must be the last operation before to release the Muxer.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pyrana.formats.SeekFlags">
+<em class="property">class </em><tt class="descclassname">pyrana.formats.</tt><tt class="descname">SeekFlags</tt><a class="headerlink" href="#pyrana.formats.SeekFlags" title="Permalink to this definition">¶</a></dt>
+<dd><p>wrapper for the (wannabe)enum of AVSeekFlags
+in libavformat/avformat.h</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyrana.formats.find_stream">
+<tt class="descclassname">pyrana.formats.</tt><tt class="descname">find_stream</tt><big>(</big><em>streams</em>, <em>nth</em>, <em>media</em><big>)</big><a class="headerlink" href="#pyrana.formats.find_stream" title="Permalink to this definition">¶</a></dt>
+<dd><p>find the nth stream of the specified media a streams info
+(as in Demuxer().streams).
+Return the corresponding stream_id.
+Raise NotFoundError otherwise.</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="packets.html"
+                        title="previous chapter">packets</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="audio.html"
+                        title="next chapter">audio</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/formats.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="audio.html" title="audio"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="packets.html" title="packets"
+             >previous</a> |</li>
+        <li><a href="index.html">pyrana 0.6 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Francesco Romani.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

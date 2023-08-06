@@ -1,0 +1,207 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>packets &mdash; pyrana 0.6 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.6',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="pyrana 0.6 documentation" href="index.html" />
+    <link rel="next" title="formats" href="formats.html" />
+    <link rel="prev" title="errors" href="errors.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="formats.html" title="formats"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="errors.html" title="errors"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">pyrana 0.6 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-pyrana.packet">
+<span id="packets"></span><h1>packets<a class="headerlink" href="#module-pyrana.packet" title="Permalink to this headline">¶</a></h1>
+<p>This module provides the transport layer Packet support code.
+For internal usage only: do not use nor import directly.</p>
+<dl class="class">
+<dt id="pyrana.packet.Packet">
+<em class="property">class </em><tt class="descclassname">pyrana.packet.</tt><tt class="descname">Packet</tt><big>(</big><em>stream_id=None</em>, <em>data=None</em>, <em>pts=-9223372036854775808</em>, <em>dts=-9223372036854775808</em>, <em>is_key=False</em><big>)</big><a class="headerlink" href="#pyrana.packet.Packet" title="Permalink to this definition">¶</a></dt>
+<dd><p>a Packet object represents an immutable, encoded packet of a
+multimedia stream.</p>
+<dl class="method">
+<dt id="pyrana.packet.Packet.blob">
+<tt class="descname">blob</tt><big>(</big><big>)</big><a class="headerlink" href="#pyrana.packet.Packet.blob" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns the bytes() dump of the object</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pyrana.packet.Packet.data">
+<tt class="descname">data</tt><a class="headerlink" href="#pyrana.packet.Packet.data" title="Permalink to this definition">¶</a></dt>
+<dd><p>the raw data (bytes) this packet carries.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pyrana.packet.Packet.dts">
+<tt class="descname">dts</tt><a class="headerlink" href="#pyrana.packet.Packet.dts" title="Permalink to this definition">¶</a></dt>
+<dd><p>the Decoding TimeStamp of this packet.</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="pyrana.packet.Packet.from_cdata">
+<em class="property">classmethod </em><tt class="descname">from_cdata</tt><big>(</big><em>cpkt</em><big>)</big><a class="headerlink" href="#pyrana.packet.Packet.from_cdata" title="Permalink to this definition">¶</a></dt>
+<dd><p>builds a pyrana Packet from (around) a (cffi-wrapped) libav*
+packet object.
+The libav object must be already initialized and ready to go.
+WARNING: raw access. Use with care.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pyrana.packet.Packet.is_key">
+<tt class="descname">is_key</tt><a class="headerlink" href="#pyrana.packet.Packet.is_key" title="Permalink to this definition">¶</a></dt>
+<dd><p>boolean flag. Is this packet a key frame?
+(provided by libav*)</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pyrana.packet.Packet.pts">
+<tt class="descname">pts</tt><a class="headerlink" href="#pyrana.packet.Packet.pts" title="Permalink to this definition">¶</a></dt>
+<dd><p>the Presentation TimeStamp of this packet.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyrana.packet.Packet.raw_pkt">
+<tt class="descname">raw_pkt</tt><big>(</big><em>*args</em>, <em>**kwds</em><big>)</big><a class="headerlink" href="#pyrana.packet.Packet.raw_pkt" title="Permalink to this definition">¶</a></dt>
+<dd><p>raw access to the underlying FFmpeg packet.
+used by decoders in some corner but important cases.
+For internal usage only.
+TODO: ensure R/O and (thus) simplify</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pyrana.packet.Packet.size">
+<tt class="descname">size</tt><a class="headerlink" href="#pyrana.packet.Packet.size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Size of the packet data (bytes)</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pyrana.packet.Packet.stream_id">
+<tt class="descname">stream_id</tt><a class="headerlink" href="#pyrana.packet.Packet.stream_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>the identifier of the logical stream which this packet belongs to.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pyrana.packet.PacketFlags">
+<em class="property">class </em><tt class="descclassname">pyrana.packet.</tt><tt class="descname">PacketFlags</tt><a class="headerlink" href="#pyrana.packet.PacketFlags" title="Permalink to this definition">¶</a></dt>
+<dd><p>wrapper for the (wannabe)enum of AVPktFlag
+in libavcodec/avcodec.h</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyrana.packet.bind_packet">
+<tt class="descclassname">pyrana.packet.</tt><tt class="descname">bind_packet</tt><big>(</big><em>*args</em>, <em>**kwds</em><big>)</big><a class="headerlink" href="#pyrana.packet.bind_packet" title="Permalink to this definition">¶</a></dt>
+<dd><p>allocates an AVPacket and cleans it up on exception.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyrana.packet.raw_packet">
+<tt class="descclassname">pyrana.packet.</tt><tt class="descname">raw_packet</tt><big>(</big><em>*args</em>, <em>**kwds</em><big>)</big><a class="headerlink" href="#pyrana.packet.raw_packet" title="Permalink to this definition">¶</a></dt>
+<dd><p>context manager for a raw ffmpeg packet of the given size.</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="errors.html"
+                        title="previous chapter">errors</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="formats.html"
+                        title="next chapter">formats</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/packets.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="formats.html" title="formats"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="errors.html" title="errors"
+             >previous</a> |</li>
+        <li><a href="index.html">pyrana 0.6 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Francesco Romani.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>
