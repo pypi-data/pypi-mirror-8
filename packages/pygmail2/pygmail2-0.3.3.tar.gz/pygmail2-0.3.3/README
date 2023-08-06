@@ -1,0 +1,118 @@
+Description
+-----------
+
+This is a very simple package that enables you to send mail through
+gmail using python. It’s not a big deal, it does not read your emails,
+no calendars, no drafts… It does just one thing, sending emails (possibly with attachments).
+
+Requirements
+------------
+
+-  Python 3
+-  pip3 for installation
+
+Install
+-------
+
+Using ``setup.py``
+~~~~~~~~~~~~~~~~~~
+
+::
+
+    git clone https://github.com/kindlychung/pygmail.git
+    cd pygmail
+    python3 setup.py install
+
+
+Using pip:
+~~~~~~~~~~
+
+From github:
+
+::
+
+    pip3 install --upgrade git+https://github.com/kindlychung/pygmail.git
+
+or from PyPI:
+
+::
+
+    pip3 install --upgrade pygmail2
+
+
+Security
+--------
+
+It uses smtp, that’s all. You can always check the source code, of
+course
+
+Usage
+-----
+
+You need put your gmail account and password in ~/.pygmailrc, for example:
+
+::
+
+    xyz@gmail.com
+    xyz_super_secret
+
+From the shell:
+
+::
+    echo "hi there" | gmailsend xxx@yyy.com --subj hi --attach /path/to/file
+    gmailsend xxx@yyy.com --subj hi --attach /path/to/file --body_file /path/to/bodyfile
+    ## for help
+    gmailsend -h
+
+From python shell you can do things like:
+
+::
+
+    from pygmail2.Pygmail import mo
+    from pygmail2.Addr import ad
+    # send to one address
+    mo.sm(to_addr = "xyz@example.com", subject= "test", text = "<b>hi there</b>")
+    # send attachments
+    mo.sm(to_addr = "xyz@example.com", subject= "test", text = "<b>hi there</b>", attachments = ["/tmp/x.txt", "/tmp/y.png"])
+    # send to multiple addresses
+    mo.sm(to_addr = ["xyz@example.com", "aaa@bbb.org"], subject= "test", text = "<b>hi there</b>", attachments = ["/tmp/x.txt", "/tmp/y.png"])
+    # use html file as mail body
+    mo.smf(to_addr = ["xyz@example.com", "aaa@bbb.org"], subject= "test", mailfile = "/tmp/x.html", attachments = ["/tmp/x.txt", "/tmp/y.png"])
+
+You can store an address book in the csv format in the ~/.pygmail/email.csv file. For example:
+
+::
+
+    Xiao Lu,xl@eepcxx.org
+
+Then you access this email address by:
+
+::
+
+    ad.xiao_lu_xl_eepcxx_org
+
+The advantage of this is that you got autocompletion for free.
+
+To save some typing, you can put the following lines in ~/.pygmail/startup.py:
+
+::
+
+    from pygmail2.Pygmail import mo
+    from pygmail2.Addr import ad
+
+And in your ~/.bash_aliases you can say:
+
+::
+
+    alias pym='PYTHONSTARTUP=~/.pygmail/startup.py ipython3'
+
+Then every time you want to send an email, you can just start it up by pym.
+
+
+Change log
+----------
+
+- single recipient and single attachment now don't require using list
+- Enabled attachments
+- Email address autocompletion
+
