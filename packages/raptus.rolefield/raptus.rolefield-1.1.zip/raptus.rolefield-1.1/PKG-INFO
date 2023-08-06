@@ -1,0 +1,59 @@
+Metadata-Version: 1.1
+Name: raptus.rolefield
+Version: 1.1
+Summary: Provides two archetypes fields which assign local roles to one or multiple users
+Home-page: https://github.com/Raptus/raptus.rolefield
+Author: Raptus AG
+Author-email: dev@raptus.com
+License: GPL
+Description: Introduction
+        ============
+        
+        raptus.rolefield provides two archetypes fields which assign
+        local roles to one or multiple users.
+        
+        Example
+        -------
+        
+        ::
+        
+            RoleField(
+                name='editor',
+                required=1,
+                acquire=False,
+                role='Editor',
+                write_permission=DelegateEditorRole,
+                vocabulary=SomeVocabularyProvidingUserIds,
+                widget=SelectionWidget(
+                    label=_('label_editor', default=u'Editor'),
+                ),
+            ),
+            MultiRoleField(
+                name='reviewers',
+                required=1,
+                acquire=False,
+                role='Reviewer',
+                write_permission=DelegateReviewerRole,
+                vocabulary=SomeVocabularyProvidingUserIds,
+                widget=MultiSelectionWidget(
+                    label=_('label_reviewers', default=u'Rreviewers'),
+                ),
+            ),
+        
+        Changelog
+        =========
+        
+        1.1 (2014-12-05)
+        ----------------
+        
+        * Default role acquisition now gets the matching role of the closest parent object
+        
+        
+        1.0b1 - (2010-10-21)
+        --------------------
+        
+        * First public release
+        
+Platform: UNKNOWN
+Classifier: Programming Language :: Python
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
