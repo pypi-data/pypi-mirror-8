@@ -1,0 +1,62 @@
+{% extends "waliki/base.html" %}
+{% load i18n %}
+{% load waliki_tags %}
+{% check_perms "delete_page" for request.user in page.slug as "can_delete" %}
+
+
+{% block extra_head %}
+  {{ block.super }}
+ {% entry_point 'detail_extra_head' %}
+{% endblock %}
+
+
+
+{% block header %}
+    {% entry_point 'detail_pre_header' %}
+
+    <div class="pull-right">
+    {% entry_point 'detail_actions' %}
+
+    {% block actions %}
+        <div class="btn-group">
+
+            <a href="{% url 'waliki_edit' slug=page.slug|default:slug %}" class="btn btn-default">{% trans "Edit" %}</a>
+            <button class="btn dropdown-toggle btn-default" data-toggle="dropdown">
+                <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+            <!-- dropdown menu links -->
+
+            {% if page %}
+                {% extra_page_actions page %}
+
+                <li><a href="{% url "waliki_detail_raw" page.slug %}">{% trans "Raw" %}</a></li>
+
+                {% if can_delete %}
+                <li class="divider"></li>
+                <li><a id="confirmDelete" class="text-error">{% trans "Delete" %}</a></li>
+
+                {% endif %}
+
+            {% endif %}
+            </ul>
+        </div>
+    {% endblock actions %}
+    </div>
+    {% block page_title %}<h1>{{ page.title|default:'' }}</h1>{% endblock page_title %}
+{% endblock header %}
+
+{% block content %}
+    {% entry_point 'detail_pre_content' %}
+
+    {% if page %}
+        {{ page.body|safe }}
+    {% else %}
+        <p>{% trans "This page doesn't exist yet." %}</p>
+        <p><form action="{% url 'waliki_edit' slug=page.slug|default:slug %}" method="post">{% csrf_token %}<button type="submit" class="btn btn-success">{% trans "Create it" %}</button></form></p>
+    {% endif %}
+
+
+    {% entry_point 'detail_post_content' %}
+{% endblock content %}
+
