@@ -1,0 +1,47 @@
+Metadata-Version: 1.1
+Name: pyope
+Version: 0.0.1
+Summary: Implementation of symmetric order-preserving encryption scheme
+Home-page: https://github.com/rev112/pyope/
+Author: Anton Ovchinnikov
+Author-email: anton.ovchi2nikov@gmail.com
+License: MIT
+Description: pyope
+        =====
+        
+        This is an implementation of Boldyreva symmetric order-preserving encryption scheme (http://www.cc.gatech.edu/~aboldyre/papers/bclo.pdf).
+        
+        Quick example
+        -------------
+        
+        ::
+        
+          from pyope.ope import OPE
+          cipher = OPE('key goes here')
+          assert cipher.encrypt(1000) < cipher.encrypt(2000) < cipher.encrypt(3000)
+          assert cipher.decrypt(cipher.encrypt(1337)) == 1337
+        
+        
+        Running tests
+        -------------
+        
+        `$ py.test tests/`
+        
+        TODO
+        ----
+        
+        - More tests
+        - Nice README
+        - Get rid of numpy dependency (rewrite hypergeometric sampling code?)
+        - Optimize speed
+        - PyPi package
+        - Security guarantees
+        
+        
+        
+        
+        
+Platform: UNKNOWN
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python
+Classifier: Topic :: Security :: Cryptography
