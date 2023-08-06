@@ -1,0 +1,628 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Integrating a simulation model into the mosaik ecosystem &mdash; mosaik 2.0 documentation</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  
+  
+
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:'../',
+        VERSION:'2.0',
+        COLLAPSE_INDEX:false,
+        FILE_SUFFIX:'.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+    <link rel="top" title="mosaik 2.0 documentation" href="../index.html"/>
+        <link rel="up" title="Tutorial" href="index.html"/>
+        <link rel="next" title="Creating and running simple simulation scenarios" href="demo1.html"/>
+        <link rel="prev" title="Tutorial" href="index.html"/> 
+
+  <script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        <a href="../index.html" class="icon icon-home"> mosaik</a>
+        <form class="wy-form" action="../search.html" method="get">
+  <input type="text" name="q" placeholder="Search docs" />
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix">
+        
+        
+            <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../installation.html#linux">Linux</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../installation.html#os-x">OS X</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../installation.html#windows">Windows</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../overview.html#what-s-mosaik-supposed-to-do">What&#8217;s mosaik supposed to do?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../overview.html#mosaik-s-main-components">Mosaik&#8217;s main components</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosystem.html">The mosaik ecosystem</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Tutorial</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="">Integrating a simulation model into the mosaik ecosystem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="demo1.html">Creating and running simple simulation scenarios</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examplectrl.html">Adding a control mechanism to a scenario</a></li>
+<li class="toctree-l2"><a class="reference internal" href="demo2.html">Integrating a control mechanism</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../mosaik-api/index.html">The mosaik API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../mosaik-api/overview.html">How mosaik communicates with a simulator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../mosaik-api/low-level.html">The low-level API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../mosaik-api/high-level.html">The high-level API</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../scenario-definition.html">Scenario definition</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../scenario-definition.html#the-setup">The setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../scenario-definition.html#starting-simulators">Starting simulators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../scenario-definition.html#instantiating-simulation-models">Instantiating simulation models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../scenario-definition.html#connecting-entities">Connecting entities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../scenario-definition.html#running-the-simulation">Running the simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../scenario-definition.html#how-to-achieve-bi-directional-data-flows">How to achieve bi-directional data-flows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../scenario-definition.html#how-to-filter-entity-sets">How to filter entity sets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../scenario-definition.html#how-to-create-user-defined-connection-rules">How to create user-defined connection rules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../scenario-definition.html#how-to-retrieve-static-data-from-entities">How to retrieve static data from entities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../scenario-definition.html#how-to-access-topology-and-data-flow-information">How to access topology and data-flow information</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../scenario-definition.html#how-to-destroy-a-world">How to destroy a world</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../scenario-definition.html#how-to-to-real-time-simulations">How to to real-time simulations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../scenario-definition.html#how-to-call-extra-methods-of-a-simulator">How to call extra methods of a simulator</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../simmanager.html">The simulator manager</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../scheduler.html">Scheduling and simulation execution</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../scheduler.html#anatomy-of-a-step">Anatomy of a step</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../scheduler.html#synchronization-and-data-flows">Synchronization and data-flows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../scheduler.html#cyclic-data-flows">Cyclic data-flows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../scheduler.html#stepping-and-simulation-duration">Stepping and simulation duration</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">FAQ</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#general-questions">General questions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#coupling-models-with-mosaik">Coupling models with mosaik</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#the-mosaik-demo">The mosaik demo</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../dev/index.html">Developer&#8217;s Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../dev/setup.html">Development setup and tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dev/release_process.html">Release Process</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dev/requirements.html">Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dev/design-decisions.html">Discussion of design decisions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dev/logo-ci.html">Logo and corporate identity</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api_reference/index.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/mosaik.html"><tt class="docutils literal"><span class="pre">mosaik</span></tt> &#8212; The ende-user API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/mosaik.exceptions.html"><tt class="docutils literal"><span class="pre">mosaik.exceptions</span></tt> &#8212; mosaik specific error types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/mosaik.scenario.html"><tt class="docutils literal"><span class="pre">mosaik.scenario</span></tt> &#8212; Classes related to the scenario creation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/mosaik.scheduler.html"><tt class="docutils literal"><span class="pre">mosaik.scheduler</span></tt> &#8212; Coordinate and execute simulators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/mosaik.simmanager.html"><tt class="docutils literal"><span class="pre">mosaik.simmanager</span></tt> &#8212; Management of external processes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/mosaik.util.html"><tt class="docutils literal"><span class="pre">mosaik.util</span></tt> &#8212; Utility classes and functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../about/index.html">About mosaik</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../about/acknowledgements.html">Acknowledgments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../about/history.html">The history of mosaik</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../glossary.html">Glossary</a></li>
+</ul>
+
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top">
+        <i data-toggle="wy-nav-top" class="icon icon-reorder"></i>
+        <a href="/">mosaik</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <ul class="wy-breadcrumbs">
+  <li><a href="../index.html">Docs</a> &raquo;</li>
+  <li><a href="">Integrating a simulation model into the mosaik ecosystem</a></li>
+  
+</ul>
+<hr/>
+
+          
+  <div class="section" id="integrating-a-simulation-model-into-the-mosaik-ecosystem">
+<span id="examplesim"></span><h1>Integrating a simulation model into the mosaik ecosystem<a class="headerlink" href="#integrating-a-simulation-model-into-the-mosaik-ecosystem" title="Permalink to this headline">¶</a></h1>
+<p>In this section we&#8217;ll first implement a simple example simulator. We&#8217;ll then
+implement mosaik&#8217;s SimAPI step-by-step</p>
+<div class="section" id="the-simulator">
+<h2>The simulator<a class="headerlink" href="#the-simulator" title="Permalink to this headline">¶</a></h2>
+<p>We want to implement a simulator for a very simple model with a discrete step
+size of 1. Our model will have the following behavior:</p>
+<ul class="simple">
+<li><em>val</em><sub>0</sub> = <em>init_val</em></li>
+<li><em>val</em><sub>i</sub> = <em>val</em><sub>i − 1</sub> + <em>delta</em> for <em>i</em> ∈ <strong>N</strong>, <em>i</em> &gt; 0, <em>delta</em>
+∈ <strong>Z</strong></li>
+</ul>
+<p>That simply means our model has a value <em>val</em> to which we add some <em>delta</em>
+(which is a positive or negative integer) at every simulation step. Our model
+has the (optional) input <em>delta</em> which can be used by control mechanisms to
+alter the behavior of the model. It has the output <em>val</em> which is its current
+value.</p>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="../_images/example-model.svg"><img alt="Schematic diagram of our example model." src="../_images/example-model.svg" width="225" /></a>
+<p class="caption">Schematic diagram of our example model. You can change the <em>delta</em> input and
+collect the <em>val</em> output.</p>
+</div>
+<p>Here is a possible implementation of that simulation model in Python:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># simulator.py</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module contains a simple example simulator.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<span class="k">class</span> <span class="nc">Model</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Simple model that increases its value *val* with some *delta* every</span>
+<span class="sd">    step.</span>
+
+<span class="sd">    You can optionally set the initial value *init_val*. It defaults to ``0``.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">init_val</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">val</span> <span class="o">=</span> <span class="n">init_val</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">delta</span> <span class="o">=</span> <span class="mi">1</span>
+
+    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Perform a simulation step by adding *delta* to *val*.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">val</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">delta</span>
+
+
+<span class="k">class</span> <span class="nc">Simulator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Simulates a number of ``Model`` models and collects some data.&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">models</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span> <span class="nf">add_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">init_val</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create an instances of ``Model`` with *init_val*.&quot;&quot;&quot;</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span><span class="n">init_val</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">([])</span>  <span class="c"># Add list for simulation data</span>
+
+    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">deltas</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set new model inputs from *deltas* to the models and perform a</span>
+<span class="sd">        simulatino step.</span>
+
+<span class="sd">        *deltas* is a dictionary that maps model indices to new delta values</span>
+<span class="sd">        for the model.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">deltas</span><span class="p">:</span>
+            <span class="c"># Set new deltas to model instances</span>
+            <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">delta</span> <span class="ow">in</span> <span class="n">deltas</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">models</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">delta</span> <span class="o">=</span> <span class="n">delta</span>
+
+        <span class="c"># Step models and collect data</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">model</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">models</span><span class="p">):</span>
+            <span class="n">model</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">val</span><span class="p">)</span>
+
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="c"># This is how the simulator could be used:</span>
+    <span class="n">sim</span> <span class="o">=</span> <span class="n">Simulator</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
+        <span class="n">sim</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">init_val</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">sim</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+    <span class="n">sim</span><span class="o">.</span><span class="n">step</span><span class="p">({</span><span class="mi">0</span><span class="p">:</span> <span class="mi">23</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="mi">42</span><span class="p">})</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">&#39;Simulation finished with data:&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">inst</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">data</span><span class="p">):</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&#39;</span><span class="si">%d</span><span class="s">: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">inst</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>If you run this script, you&#8217;ll get the following output:</p>
+<div class="highlight-python"><div class="highlight"><pre>Simulation finished with data:
+0: [1, 24]
+1: [1, 43]
+</pre></div>
+</div>
+</div>
+<div class="section" id="setup-for-the-api-implementation">
+<h2>Setup for the API implementation<a class="headerlink" href="#setup-for-the-api-implementation" title="Permalink to this headline">¶</a></h2>
+<p>So lets start implementing mosaik&#8217;s Sim API for this simulator. We can use the
+Python <a class="reference internal" href="../mosaik-api/high-level.html"><em>high-level API</em></a> for this. This package
+eases our workload, because it already implements everything necessary for
+communicating with mosaik. It provides an abstract base class which we can
+sub-class. So we only need to implement four methods and we are done.</p>
+<p>If you already <a class="reference internal" href="../installation.html"><em>installed</em></a> mosaik and the demo, you
+already have this package installed in your mosaik virtualenv.</p>
+<p>We start by creating a new <tt class="file docutils literal"><span class="pre">simulator_mosaik.py</span></tt> and import the module
+containing the mosaik API as well as our simulator:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># simulator_mosaik.py</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Mosaik interface for the example simulator.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">mosaik_api</span>
+
+<span class="kn">import</span> <span class="nn">simulator</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="simulator-meta-data">
+<h2>Simulator meta data<a class="headerlink" href="#simulator-meta-data" title="Permalink to this headline">¶</a></h2>
+<p>Next, we prepare the meta data dictionary that tells mosaik which models our
+simulator implements and which parameters and attributes it has. Since this
+data usually constant, we defines this at module level (which improves
+readability):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">META</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">&#39;models&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s">&#39;ExampleModel&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s">&#39;public&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">,</span>
+            <span class="s">&#39;params&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;init_val&#39;</span><span class="p">],</span>
+            <span class="s">&#39;attrs&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;delta&#39;</span><span class="p">,</span> <span class="s">&#39;val&#39;</span><span class="p">],</span>
+        <span class="p">},</span>
+    <span class="p">},</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>We added our &#8220;Model&#8221; model with the parameter <em>init_val</em> and the attributes
+<em>delta</em> and <em>val</em>. At this point we don&#8217;t care if they are read-only or not. We
+just list everything we can read or write.  The <em>public</em> flag should usually be
+<tt class="docutils literal"><span class="pre">True</span></tt>. You can read more about it in the <a class="reference internal" href="../mosaik-api/low-level.html#api-init"><em>Sim API docs</em></a>.
+From this information, mosaik deduces that our model could be used in the
+following way:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># Model name and &quot;params&quot; are used for constructing instances:</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">ExampleModel</span><span class="p">(</span><span class="n">init_val</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
+<span class="c"># &quot;attrs&quot; are normal attributes:</span>
+<span class="k">print</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">val</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">delta</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="the-simulator-class">
+<h2>The <tt class="docutils literal"><span class="pre">Simulator</span></tt> class<a class="headerlink" href="#the-simulator-class" title="Permalink to this headline">¶</a></h2>
+<p>The package <tt class="docutils literal"><span class="pre">mosaik_api</span></tt> defines a base class <tt class="docutils literal"><span class="pre">Simulator</span></tt> for which we now
+need to write a sub-class:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ExampleSim</span><span class="p">(</span><span class="n">mosaik_api</span><span class="o">.</span><span class="n">Simulator</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">META</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span> <span class="o">=</span> <span class="n">simulator</span><span class="o">.</span><span class="n">Simulator</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">eid_prefix</span> <span class="o">=</span> <span class="s">&#39;Model_&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">entities</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c"># Maps EIDs to model indices in self.simulator</span>
+</pre></div>
+</div>
+<p>In our simulator&#8217;s <tt class="docutils literal"><span class="pre">__init__()</span></tt> method (the constructor) we need to call
+<tt class="docutils literal"><span class="pre">Simulator.__init__()</span></tt> and pass the meta data dictionary to it.
+<tt class="docutils literal"><span class="pre">Simulator.__init__()</span></tt> will add some more information to the meta data and
+set it as <tt class="docutils literal"><span class="pre">self.meta</span></tt> to our instance.</p>
+<p>We also initialize our actual simulator class, set a prefix for our entity IDs
+and prepare a dictionary which will hold some information about the entities
+that we gonna create.</p>
+<p>We can now start to implement the four API calls <tt class="docutils literal"><span class="pre">init</span></tt>, <tt class="docutils literal"><span class="pre">create</span></tt>, <tt class="docutils literal"><span class="pre">step</span></tt>
+and <tt class="docutils literal"><span class="pre">get_data</span></tt>:</p>
+</div>
+<div class="section" id="init">
+<h2>init()<a class="headerlink" href="#init" title="Permalink to this headline">¶</a></h2>
+<p>This method will be called exactly once after the simulator has been started.
+It is used for additional initialization tasks (e.g., it can handle parameters
+that you pass to a simulator in your scenario definition). It must return the
+meta data dictionary <tt class="docutils literal"><span class="pre">self.meta</span></tt>:</p>
+<div class="highlight-python"><div class="highlight"><pre>    <span class="k">def</span> <span class="nf">init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sid</span><span class="p">,</span> <span class="n">eid_prefix</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">eid_prefix</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">eid_prefix</span> <span class="o">=</span> <span class="n">eid_prefix</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">meta</span>
+</pre></div>
+</div>
+<p>The first argument is the ID that mosaik gave to that simulator instance. In
+addition to that, you can define further (optional) parameters which you can
+later set in your scenario. In this case, we can optionally overwrite the
+<tt class="docutils literal"><span class="pre">eid_prefix</span></tt> that we defined in <tt class="docutils literal"><span class="pre">__init__()</span></tt>.</p>
+</div>
+<div class="section" id="create">
+<h2>create()<a class="headerlink" href="#create" title="Permalink to this headline">¶</a></h2>
+<p><tt class="docutils literal"><span class="pre">create()</span></tt> is called in order to initialize a number of simulation model
+instances <em>(entities)</em> within that simulator. It must return a list with some
+information about each entity created:</p>
+<div class="highlight-python"><div class="highlight"><pre>    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">init_val</span><span class="p">):</span>
+        <span class="n">next_eid</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">entities</span><span class="p">)</span>
+        <span class="n">entities</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">next_eid</span><span class="p">,</span> <span class="n">next_eid</span> <span class="o">+</span> <span class="n">num</span><span class="p">):</span>
+            <span class="n">eid</span> <span class="o">=</span> <span class="s">&#39;</span><span class="si">%s%d</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">eid_prefix</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">init_val</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">entities</span><span class="p">[</span><span class="n">eid</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span>
+            <span class="n">entities</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s">&#39;eid&#39;</span><span class="p">:</span> <span class="n">eid</span><span class="p">,</span> <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="n">model</span><span class="p">})</span>
+
+        <span class="k">return</span> <span class="n">entities</span>
+</pre></div>
+</div>
+<p>The first two parameters tell you how many instances of which model you should
+create. As in <tt class="docutils literal"><span class="pre">init()</span></tt>, you can specify additional parameters for your model.
+They must also appear in the <em>params</em> list in the simulator meta data or mosaik
+will reject them. In this case, we allow setting the initial value <em>init_val</em>
+for the model instances.</p>
+<p>For each entity, we create a new entity ID <a class="footnote-reference" href="#id2" id="id1">[1]</a> and a model instance. We also
+create a mapping (<tt class="docutils literal"><span class="pre">self.entities</span></tt>) from the entity ID to our model. For each
+entity we create we also add a dictionary containing its ID and type to the
+<tt class="docutils literal"><span class="pre">entities</span></tt> list which is returned to mosaik. In this example, it has <em>num</em>
+entries for the model <em>model</em>, but it may get more complicated if you have,
+e.g., hierarchical models.</p>
+<table class="docutils footnote" frame="void" id="id2" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id1">[1]</a></td><td>Although entity IDs can be plain integers, it is advisable to use
+something more meaningful to ease debugging and analysis.</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="step">
+<h2>step()<a class="headerlink" href="#step" title="Permalink to this headline">¶</a></h2>
+<p>The <tt class="docutils literal"><span class="pre">step()</span></tt> method tells your simulator to perform a simulation step. It
+returns to mosaik the time at which it it wants to to its next step. It
+receives its current simulation time as well as a dictionary with input values
+from other simulators (if there are any):</p>
+<div class="highlight-python"><div class="highlight"><pre>    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">inputs</span><span class="p">):</span>
+        <span class="c"># Get inputs</span>
+        <span class="n">deltas</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">eid</span><span class="p">,</span> <span class="n">attrs</span> <span class="ow">in</span> <span class="n">inputs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">attr</span><span class="p">,</span> <span class="n">values</span> <span class="ow">in</span> <span class="n">attrs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">model_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">entities</span><span class="p">[</span><span class="n">eid</span><span class="p">]</span>
+                <span class="n">new_delta</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">values</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+                <span class="n">deltas</span><span class="p">[</span><span class="n">model_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_delta</span>
+
+        <span class="c"># Perform simulation step</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">deltas</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">time</span> <span class="o">+</span> <span class="mi">60</span>  <span class="c"># Step size is 1 minute</span>
+</pre></div>
+</div>
+<p>In this example, the <em>inputs</em> could be something like this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s">&#39;Model_0&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s">&#39;delta&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;src_eid_0&#39;</span><span class="p">:</span> <span class="mi">23</span><span class="p">},</span>
+    <span class="p">},</span>
+    <span class="s">&#39;Model_1&#39;</span><span class="p">:</span>
+        <span class="s">&#39;delta&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;src_eid_1&#39;</span><span class="p">:</span> <span class="mi">42</span><span class="p">},</span>
+    <span class="p">},</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The inner dictionaries containing the actual values may contain multiple
+entries if multiple source entities provide input for another entity. The
+simulator receiving these inputs is responsible for aggregating them (e.g., by
+taking their sum, minimum or maximum. Since we are not interested in the
+source&#8217;s IDs, we convert that dict to a list with <tt class="docutils literal"><span class="pre">values.values()</span></tt> before we
+calculate the sum of all input values.</p>
+<p>After we converted the inputs to something that our simulator can work with,
+we let it finally perform its next simulation step.</p>
+<p>The return value <tt class="docutils literal"><span class="pre">time</span> <span class="pre">+</span> <span class="pre">60</span></tt> tells mosaik that we wish to perform the next
+step in one minute (in simulation time).</p>
+</div>
+<div class="section" id="get-data">
+<h2>get_data()<a class="headerlink" href="#get-data" title="Permalink to this headline">¶</a></h2>
+<p>The <tt class="docutils literal"><span class="pre">get_data()</span></tt> call allows other simulators to get the values of the
+<tt class="docutils literal"><span class="pre">delta</span></tt> and <tt class="docutils literal"><span class="pre">val</span></tt> attributes of our models (the attributes we listed in
+the simulator meta data):</p>
+<div class="highlight-python"><div class="highlight"><pre>    <span class="k">def</span> <span class="nf">get_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outputs</span><span class="p">):</span>
+        <span class="n">models</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">models</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">eid</span><span class="p">,</span> <span class="n">attrs</span> <span class="ow">in</span> <span class="n">outputs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">model_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">entities</span><span class="p">[</span><span class="n">eid</span><span class="p">]</span>
+            <span class="n">data</span><span class="p">[</span><span class="n">eid</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">attrs</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">attr</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">meta</span><span class="p">[</span><span class="s">&#39;models&#39;</span><span class="p">][</span><span class="s">&#39;ExampleModel&#39;</span><span class="p">][</span><span class="s">&#39;attrs&#39;</span><span class="p">]:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;Unknown output attribute: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">attr</span><span class="p">)</span>
+
+                <span class="c"># Get model.val or model.delta:</span>
+                <span class="n">data</span><span class="p">[</span><span class="n">eid</span><span class="p">][</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">models</span><span class="p">[</span><span class="n">model_idx</span><span class="p">],</span> <span class="n">attr</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">data</span>
+</pre></div>
+</div>
+<p>The <em>outputs</em> parameter contains the query and may in our case look like this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s">&#39;Model_0&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;delta&#39;</span><span class="p">,</span> <span class="s">&#39;value&#39;</span><span class="p">],</span>
+    <span class="s">&#39;Model_1&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;value&#39;</span><span class="p">],</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The expected return value would then be:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s">&#39;Model_0&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;delta&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s">&#39;value&#39;</span><span class="p">:</span> <span class="mi">24</span><span class="p">},</span>
+    <span class="s">&#39;Model_1&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;value&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">},</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>In our implementation we loop over each entity ID for which data is requested.
+We then loop over all requested attributes and check if they are valid. If so,
+we dynamically get the requested value from our model instance via
+<tt class="docutils literal"><span class="pre">getattr(obj,</span> <span class="pre">'attr')</span></tt>. We store all values in the <tt class="docutils literal"><span class="pre">data</span></tt> dictionary and
+return it when we are done.</p>
+</div>
+<div class="section" id="making-it-executable">
+<h2>Making it executable<a class="headerlink" href="#making-it-executable" title="Permalink to this headline">¶</a></h2>
+<p>The last step is adding a <tt class="docutils literal"><span class="pre">main()</span></tt> method to make our simulator executable
+(e.g., via <tt class="docutils literal"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">simulator_mosaik</span> <span class="pre">HOST:PORT</span></tt>). The package
+<tt class="docutils literal"><span class="pre">mosaik_api</span></tt> contains the method <tt class="docutils literal"><span class="pre">start_simulation()</span></tt> which creates
+a socket, connects to mosaik and listens for requests from it. You just call it
+in your <tt class="docutils literal"><span class="pre">main()</span></tt> and pass an instance of your simulator class to it:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">mosaik_api</span><span class="o">.</span><span class="n">start_simulation</span><span class="p">(</span><span class="n">ExampleSim</span><span class="p">())</span>
+
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Permalink to this headline">¶</a></h2>
+<p>We have now implemented the mosaik Sim API for our simulator. The following
+listing combines all the bits explained above:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># simulator_mosaik.py</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Mosaik interface for the example simulator.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">mosaik_api</span>
+
+<span class="kn">import</span> <span class="nn">simulator</span>
+
+
+<span class="n">META</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">&#39;models&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s">&#39;ExampleModel&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s">&#39;public&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">,</span>
+            <span class="s">&#39;params&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;init_val&#39;</span><span class="p">],</span>
+            <span class="s">&#39;attrs&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;delta&#39;</span><span class="p">,</span> <span class="s">&#39;val&#39;</span><span class="p">],</span>
+        <span class="p">},</span>
+    <span class="p">},</span>
+<span class="p">}</span>
+
+
+<span class="k">class</span> <span class="nc">ExampleSim</span><span class="p">(</span><span class="n">mosaik_api</span><span class="o">.</span><span class="n">Simulator</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">META</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span> <span class="o">=</span> <span class="n">simulator</span><span class="o">.</span><span class="n">Simulator</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">eid_prefix</span> <span class="o">=</span> <span class="s">&#39;Model_&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">entities</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c"># Maps EIDs to model indices in self.simulator</span>
+
+    <span class="k">def</span> <span class="nf">init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sid</span><span class="p">,</span> <span class="n">eid_prefix</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">eid_prefix</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">eid_prefix</span> <span class="o">=</span> <span class="n">eid_prefix</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">meta</span>
+
+    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">init_val</span><span class="p">):</span>
+        <span class="n">next_eid</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">entities</span><span class="p">)</span>
+        <span class="n">entities</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">next_eid</span><span class="p">,</span> <span class="n">next_eid</span> <span class="o">+</span> <span class="n">num</span><span class="p">):</span>
+            <span class="n">eid</span> <span class="o">=</span> <span class="s">&#39;</span><span class="si">%s%d</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">eid_prefix</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">init_val</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">entities</span><span class="p">[</span><span class="n">eid</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span>
+            <span class="n">entities</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s">&#39;eid&#39;</span><span class="p">:</span> <span class="n">eid</span><span class="p">,</span> <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="n">model</span><span class="p">})</span>
+
+        <span class="k">return</span> <span class="n">entities</span>
+
+    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">inputs</span><span class="p">):</span>
+        <span class="c"># Get inputs</span>
+        <span class="n">deltas</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">eid</span><span class="p">,</span> <span class="n">attrs</span> <span class="ow">in</span> <span class="n">inputs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">attr</span><span class="p">,</span> <span class="n">values</span> <span class="ow">in</span> <span class="n">attrs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">model_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">entities</span><span class="p">[</span><span class="n">eid</span><span class="p">]</span>
+                <span class="n">new_delta</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">values</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+                <span class="n">deltas</span><span class="p">[</span><span class="n">model_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_delta</span>
+
+        <span class="c"># Perform simulation step</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">deltas</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">time</span> <span class="o">+</span> <span class="mi">60</span>  <span class="c"># Step size is 1 minute</span>
+
+    <span class="k">def</span> <span class="nf">get_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outputs</span><span class="p">):</span>
+        <span class="n">models</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">models</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">eid</span><span class="p">,</span> <span class="n">attrs</span> <span class="ow">in</span> <span class="n">outputs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">model_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">entities</span><span class="p">[</span><span class="n">eid</span><span class="p">]</span>
+            <span class="n">data</span><span class="p">[</span><span class="n">eid</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">attrs</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">attr</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">meta</span><span class="p">[</span><span class="s">&#39;models&#39;</span><span class="p">][</span><span class="s">&#39;ExampleModel&#39;</span><span class="p">][</span><span class="s">&#39;attrs&#39;</span><span class="p">]:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;Unknown output attribute: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">attr</span><span class="p">)</span>
+
+                <span class="c"># Get model.val or model.delta:</span>
+                <span class="n">data</span><span class="p">[</span><span class="n">eid</span><span class="p">][</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">models</span><span class="p">[</span><span class="n">model_idx</span><span class="p">],</span> <span class="n">attr</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">data</span>
+
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">mosaik_api</span><span class="o">.</span><span class="n">start_simulation</span><span class="p">(</span><span class="n">ExampleSim</span><span class="p">())</span>
+
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>We can now start to write our first scenario, which is exactly what the next
+section is about.</p>
+</div>
+</div>
+
+
+          <footer>
+  
+    <div class="rst-footer-buttons">
+      
+        <a href="demo1.html" class="btn btn-neutral float-right" title="Creating and running simple simulation scenarios"/>Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="index.html" class="btn btn-neutral" title="Tutorial"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <p>
+      &copy; Copyright 2013, Stefan Scherfke.
+  </p>
+
+  <a href="https://www.github.com/snide/sphinx_rtd_theme">Sphinx theme</a> provided by <a href="http://readthedocs.org">Read the Docs</a>
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+</body>
+</html>
