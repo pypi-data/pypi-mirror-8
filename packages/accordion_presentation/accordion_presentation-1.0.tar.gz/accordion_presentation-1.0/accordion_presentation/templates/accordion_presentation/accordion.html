@@ -1,0 +1,78 @@
+{% load i18n static cms_tags menu_tags sekizai_tags  %}
+
+
+{%addtoblock "js" %} <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"> </script> {%endaddtoblock%}
+
+
+{%addtoblock "js" %} <script src="{% static 'accordion_presentation/js/jquery.cycle2.min.js' %}"> </script> {%endaddtoblock%}
+
+{%addtoblock "css" %}<link href="{% static 'accordion_presentation/css/accordion_presentation.css' %}" rel="stylesheet">{%endaddtoblock "css"%}
+
+{%addtoblock "js" %}<script src="{{ STATIC_URL }}accordion_presentation/js/accordion.js" > </script>{%endaddtoblock "js"%}
+
+		
+<div class="ap_content {{accordion.custom_classes}}" data-maxcol="{{ accordion.child_plugin_instances|length }}" >
+
+		<div class="cycle-slideshow ap_slide"  
+		    data-cycle-fx="{{accordion.cycle_fx}}"
+		    data-cycle-timeout=0
+		    {% if request.toolbar.edit_mode %}
+		    data-cycle-slides="> div"
+		    {%else%}
+		    data-cycle-slides="> a"
+		    {%endif%}
+		    {% if accordion.custom_duration%}
+		    manual-speed={{accordion.custom_duration}}
+		    {%endif%}
+		    >
+			{%with 1 as step %}
+			    {% for plugin in accordion.child_plugin_instances %}
+					{% with forloop as parentloop %}{% render_plugin plugin %}{% endwith %}
+			    {% endfor %} 
+			
+			{% endwith %}
+		</div>
+	
+			{%with 2 as step %}
+			    {% for plugin in accordion.child_plugin_instances %}
+					{% with forloop as parentloop %}{% render_plugin plugin %}{% endwith %}
+			    {% endfor %} 
+			
+			{% endwith %}
+	
+
+</div>
+
+{%addtoblock "js" %} 
+<script>
+
+resize_image(  ($ || CMS.$)('.ap_content')[0]);
+
+
+($ || CMS.$)( window ).resize(function() {
+	resize_image($('.ap_content')[0]);
+});
+
+</script>
+{%endaddtoblock%}  
+{%addtoblock "css" %}
+<style>
+	{% if accordion.background_color %}
+		body{background: {{accordion.background_color}};}
+	{%endif%}
+	
+	{% if accordion.custom_height or accordion.custom_width %}
+	  .ap_content{
+		{%if accordion.custom_height %}
+			height:{{accordion.custom_height}}%;
+		{%endif%}
+		{%if accordion.custom_width %}
+			width:{{accordion.custom_width}}%;
+		{%endif%}
+	  }
+	{%endif%}
+</style>
+{%endaddtoblock%}
+
+
+
