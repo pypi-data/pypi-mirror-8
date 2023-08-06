@@ -1,0 +1,15 @@
+#!/usr/bin/env python
+
+import argparse
+import gitpull
+
+parser = argparse.ArgumentParser(
+    description='Recursive, parallel git pull that makes life beautiful.',
+    version='0.2', epilog='Adam Matan, 2015')
+
+parser.add_argument('BASE_DIR', type=str, nargs='?', default='.',
+                    help="Base directory in which git repos are searched. "
+                         "Defaults to the current directory ('.')")
+args = parser.parse_args()
+
+gitpull.run_git_concurrently(args.BASE_DIR)
