@@ -1,0 +1,68 @@
+#!/bin/bash
+
+
+HELP_MESSAGE="Imap-CLI.
+
+Usage: imapcli [options] <command> [<command_options>...]
+
+Available commands are:
+    status      List unseen, recent and total number of mail per directory in IMAP account
+    list        List mail within a specified directory
+    search      Search for mail
+    read        Display Header and Body of specified mail(s)
+    flag        Set or unset flag on specified mail(s)
+    copy        Copy (or move) mail from one mailbox to another
+    delete      Remove mails (or move to Trash mailbox by default)
+
+
+Options:
+    -h, --help              Show help options
+    --version               Print program version
+
+See 'imapcli help <command>' to get further information about specified command"
+
+VERSION_MESSAGE="
+imap-cli 0.6
+Copyright (C) 2014 Romain Soufflet
+License MIT
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law."
+
+
+while [[ $# -gt 0 ]]; do
+    key="$1"
+    shift
+
+    case $key in
+        status|list|search|read|flag|copy|delete|help)
+            COMMAND="${key}"
+            break
+            ;;
+        -h|--help)
+            HELP="true"
+            shift
+            ;;
+        --version)
+            VERSION="true"
+            shift
+            ;;
+        *)
+            echo "${HELP_MESSAGE}"
+            exit 1
+            ;;
+    esac
+done
+
+[ "${HELP}" = "true" ] && echo "${HELP_MESSAGE}" && exit 0
+[ "${VERSION}" = "true" ] && echo "${VERSION_MESSAGE}" && exit 0
+
+if [ "${COMMAND}" = "help" ]; then
+    imap-cli-${1} --help
+    exit $?
+fi
+
+
+COMMAND="imap-cli-${COMMAND}"
+${COMMAND} "$@"
+
+exit $?
