@@ -1,0 +1,65 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  i18n:domain="rg.infocard"
+  >
+  <dl class="portlet portletSearch infocardPortletSearch">
+    <dt class="portletHeader" tal:condition="view/display_title">
+        <span class="portletTopLeft"></span>
+        <a class="tile" tal:attributes="href string:${here/portal_url}${view/data/target}" tal:content="view/data/name"></a>
+        <span class="portletTopRight"></span>
+    </dt>
+    <dd class="portletItem">
+      <div tal:condition="view/text_before" tal:content="structure view/text_before"></div>
+      <div>
+        <form class="enableUnloadProtection" method="get" enctype="multipart/form-data"
+          tal:attributes="action python:view.target.absolute_url()">
+          <tal:not_display_filters tal:condition="not:view/display_filters">
+            <div data-fieldname="form.widgets.text">
+              <input class="searchField portlet-search-gadget" name="form.widgets.text" value="" type="text" size="15" />
+              <input i18n:domain="plone" i18n:attributes="value" name="form.buttons.label_search" class="submit-widget button-field" value="label_search" type="submit" />
+            </div>
+          </tal:not_display_filters>
+          <tal:display_filters tal:condition="view/display_filters">
+            <tal:define>
+              <div class="field" data-fieldname="form.widgets.text">
+                <label for="form-widgets-servicetype" class="horizontal" style="display:inline-block;width:48%" i18n:translate="label_search_text">Search text</label>
+                <input class="searchField portlet-search-gadget" name="form.widgets.text" value="" type="text" size="15" style="width:48%" />
+              </div>
+              <div class="field" data-fieldname="form.widgets.servicetype">
+                <label for="form-widgets-servicetype" class="horizontal" style="display:inline-block;width:48%" i18n:translate="label_servicetype">Service type</label>
+                <select name="form.widgets.servicetype:list" class="select-widget choice-field" size="1" style="width:48%">
+                  <option value="--NOVALUE--">-</option>
+                  <tal:repeat repeat="servicetype view/servicetypes">
+                    <option tal:attributes="value servicetype/value" tal:content="servicetype/title">Casa</option>
+                  </tal:repeat>
+                </select>
+              </div>
+              <div class="field" data-fieldname="form.widgets.recipient" id="formfield-form-widgets-recipient">
+                <label for="form-widgets-recipient" class="horizontal" style="display:inline-block;width:48%" i18n:translate="label_for_who_is_it">
+                  For who is it?
+                </label>
+                <select name="form.widgets.recipient:list" class="select-widget choice-field" style="width:48%" size="1">
+                  <option value="--NOVALUE--">-</option>
+                  <tal:repeat repeat="recipient view/recipients">
+                    <option tal:attributes="value recipient/value" tal:content="recipient/title">Casa</option>
+                  </tal:repeat>
+                </select>
+              </div>
+              <div>
+                <input i18n:domain="plone" i18n:attributes="value" name="form.buttons.label_search" class="submit-widget button-field" value="label_search" type="submit" />
+              </div>
+            </tal:define>
+          </tal:display_filters>
+        </form>
+      </div>
+      <div tal:condition="view/text_after" tal:content="structure view/text_after"></div>
+      <div class="visualClear"></div>
+    </dd>
+    <dd class="portletFooter">
+        <span class="portletBottomLeft"></span>
+        <span class="portletBottomRight"></span>
+    </dd>
+  </dl>
+</html>
