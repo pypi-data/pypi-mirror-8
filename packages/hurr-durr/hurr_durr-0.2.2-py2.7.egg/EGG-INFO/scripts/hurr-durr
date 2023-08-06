@@ -1,0 +1,35 @@
+#!/home/thechosenone/Envs/hurr-durr-durr/bin/python
+from argparse import ArgumentParser
+import logging
+import hurr_durr
+from hurr_durr.handlers import SQLiteHandler, FileHandler
+from hurr_durr.watcher import ChanWatcher
+
+
+def main():
+    parser = ArgumentParser(description='Scrape some 4chan.')
+    parser.add_argument('-d', '--directory', type=str, required=True,
+                        help='the file root to output the scraped content to')
+    parser.add_argument('-f', '--format', type=str, default='sqlite', choices=('sqlite', 'file'),
+                        help='the output format, either file (stores value/date/thread/thread.json or '
+                             'SQLite (stores value/date.db')
+    parser.add_argument('-b', '--board', type=str, required=True, help='the board to scrape')
+    parser.add_argument('-i', '--images', action='store_true', help='if given, images will be downloaded as well')
+    parser.add_argument('-v', '--verbose', action='store_true', help='output info about stuff going on')
+    parser.add_argument('-V', '--version', action='version', help='output the version number and exit',
+                        version=hurr_durr.__version__)
+    args = parser.parse_args()
+
+    if args.verbose:
+        logging.basicConfig(
+            format='%(asctime)-15s %(levelname)s [%(filename)s:%(lineno)s - %(funcName)s] %(message)s',
+            level=logging.INFO
+        )
+
+    handler = SQLiteHandler(args.directory) if args.format == 'sqlite' else FileHandler(args.directory)
+    watcher = ChanWatcher(handler, args.board, args.images)
+    watcher.start()
+
+
+if __name__ == '__main__':
+    main()
