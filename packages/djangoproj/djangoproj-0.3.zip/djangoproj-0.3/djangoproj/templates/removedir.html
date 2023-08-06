@@ -1,0 +1,40 @@
+
+{% block content %}
+<html>
+<head>
+    <title>removedir</title>
+	<meta charset = "utf-8"/>
+	{% load bootstrap_toolkit %}{%bootstrap_stylesheet_tag %}
+	<style type = "text/css" media = "screen">
+		.container {width: 800px; }
+		.navbar .container {width: 800px}
+	</style>
+</head>
+<body>
+<h1> Remove Empty Directory </h1>
+<form method="post" action="/removdir/">{% csrf_token %}
+	<table width="100%" cellpadding="5">
+	<tr>
+		<td width="15%">
+			<h4>Nama Directory</h4>
+		</td>
+		<td>
+			<input type="text" name="namadir">
+		</td>
+	</tr>
+	<tr>
+		<td width="15%"></td>
+		<td>
+			<input type="submit" name="Submit" value="Submit">
+		</td>
+	</tr>
+	<tr>
+	
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	</table>
+</form>
+</body>
+</html>
+{% endblock %}

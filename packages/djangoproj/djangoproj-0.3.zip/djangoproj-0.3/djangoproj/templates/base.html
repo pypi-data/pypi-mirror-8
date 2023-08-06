@@ -1,0 +1,36 @@
+
+<html>
+<head>
+	<title>Django App
+	</title>
+	<meta charset = "utf-8"/>
+	{% load bootstrap_toolkit %}{%bootstrap_stylesheet_tag %}
+	<style type = "text/css" media = "screen">
+		.container {width: 800px; }
+		.navbar .container {width: 800px}
+	</style>
+</head>
+<body>
+<div class = "navbar navbar-inverse">
+	<div class= "navbar-inner">
+		<div class= "container">
+			<a class = "brand" href = "/">Django App</a></div>
+		</div>
+	</div>
+</div>
+<div class = "container">
+	<div id = "content" class = "flex">
+	<li><a class="btn" href="{% url 'contact' %}">Contact</a></li><br/>
+	<li><a class="btn" href="{% url 'form' %}">Form</a></li><br/>
+	<li><a class="btn" href="{% url 'copyform' %}">Copy</a></li><br/>
+	<li><a class="btn" href="{% url 'makedirform' %}">Make Directory</a></li><br/>
+	<li><a class="btn" href="{% url 'removdirform' %}">Remove Empty Directory</a></li><br/>	
+	<li><a class="btn" href="{% url 'deletedirform' %}">Delete Entire Directory</a></li><br/>
+	<li><a class="btn" href="{% url 'createfileform' %}">Create a new file</a></li><br/>
+	<li><a class="btn" href="{% url 'deletefileform' %}">Delete a file</a></li><br/>
+		{% block content %}{% endblock %}
+	</div>
+</div>
+
+</body>
+</html>
