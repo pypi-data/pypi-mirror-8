@@ -1,0 +1,666 @@
+<html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="icon" href="/static/favicon-32.png" sizes="32x32">
+<link rel="apple-touch-icon-precomposed" href="/static/favicon-152.png">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    
+    <title>Documentation &#x2014; Teleport 0.2.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css">
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css">
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.2.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Teleport 0.2.1 documentation" href="#"> 
+  <script type="text/javascript" src="/static/jquery.min.js"></script><script type="text/javascript">(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-12144432-3', 'auto');
+ga('send', 'pageview');</script><script type="text/javascript" src="/static/bootstrap/js/bootstrap.min.js"></script><link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css" type="text/css">
+
+</head>
+  <body><div class="bs">
+
+<nav class="navbar navbar-static-top navbar-default" role="navigation">
+  <div class="container">
+    <div class="navbar-header" style="width:70px">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-collapse">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a href="/">
+        <img src="/static/teleport-logo.svg" class="hide-xs" style="height:50px;width:50px">
+      </a> 
+    </div>
+    <div class="collapse navbar-collapse" id="bs-collapse">
+      <ul class="nav navbar-nav">
+        <li>
+          <a href="/">About</a>
+        </li>
+        <li class="active">
+          <a href="/python/latest/">Python</a>
+        </li>
+        <li>
+          <a href="/spec/latest/">Specification</a>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+          <li class="hidden-xs"><a href="https://github.com/cosmic-api/teleport" style="padding-left:0px"> &nbsp;cosmic-api/teleport</a></li>
+          <li class="hidden-xs">
+            <iframe src="http://ghbtns.com/github-btn.html?user=cosmic-api&amp;repo=teleport&amp;type=watch&amp;count=true" style="margin-top:15px" allowtransparency="true" frameborder="0" scrolling="0" width="85" height="20"></iframe>
+          </li>
+            <li class="dropdown">
+              <a class="dropdown-toggle" href="#" data-toggle="dropdown">latest
+                <b class="caret"></b>
+              </a>
+              <ul class="dropdown-menu">
+                    <li>
+                        <a href="/python/latest/">
+                          latest
+                        </a>
+                    </li>
+                    <li class="divider"></li>
+                    <li>
+                        <a href="/python/0.2/">
+                          0.2
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/python/0.1/">
+                          0.1
+                        </a>
+                    </li>
+              </ul>
+            </li>
+      </ul>
+    </div>
+  </div>
+</nav></div>
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index" accesskey="I">index</a></li>
+        <li><a href="#">Teleport 0.2.1 documentation</a> &#xBB;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="documentation">
+<h1>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">&#xB6;</a></h1>
+<p>To install, run:</p>
+<div class="code bash highlight-python"><div class="highlight"><pre>pip install teleport
+</pre></div>
+</div>
+<p>Teleport&#x2019;s primary object is the <em>serializer</em>. A serializer corresponds to a
+certain data type and lets the user convert values of this type between their
+two representations: the <em>JSON form</em> and the <em>native form</em>. In order to do
+this, a serializer must provide a <tt class="xref py py-meth docutils literal"><span class="pre">to_json()</span></tt> and a <tt class="xref py py-meth docutils literal"><span class="pre">from_json()</span></tt>
+method.</p>
+<p>The <em>JSON form</em> represents a valid JSON string, however, for convenience, our
+implementation uses an intermediate format, namely the format expected by
+<tt class="xref py py-meth docutils literal"><span class="pre">json.dumps()</span></tt> from the Python standard library. It is limited to
+dictionaries, lists, numbers, booleans, strings and <tt class="docutils literal"><span class="pre">None</span></tt>.</p>
+<p>Internally, your application will use the <em>native form</em>. It can be as rich as
+you want, however, for the most basic types, it happens to be the same as the
+JSON form. Even when there is nothing to convert, the serializer is useful
+as a way of validating input.</p>
+<p>Here is a simple serializer:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">teleport</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Integer</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="go">1</span>
+</pre></div>
+</div>
+<p><strong>Integer</strong> is a <em>basic type</em>, it is represented by the <a class="reference internal" href="#teleport.Integer" title="teleport.Integer"><tt class="xref py py-class docutils literal"><span class="pre">Integer</span></tt></a>
+class, which does not need to be instantiated because the type takes no
+parameters. <strong>Array</strong> is a <em>parametrized type</em>, it is represented by the
+<a class="reference internal" href="#teleport.Array" title="teleport.Array"><tt class="xref py py-class docutils literal"><span class="pre">Array</span></tt></a> class, which is instantiated with a parameter:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">Array</span><span class="p">(</span><span class="n">Integer</span><span class="p">)</span><span class="o">.</span><span class="n">from_json</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
+<span class="go">[1, 2, 3, 4, 5]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Array</span><span class="p">(</span><span class="n">Integer</span><span class="p">)</span><span class="o">.</span><span class="n">from_json</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mf">5.1</span><span class="p">])</span>
+<span class="gt">Traceback (most recent call last):</span>
+  File <span class="nb">"&lt;stdin&gt;"</span>, line <span class="m">1</span>, in <span class="n">&lt;module&gt;</span>
+  File <span class="nb">"teleport.py"</span>, line <span class="m">349</span>, in <span class="n">from_json</span>
+    <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="n">item</span><span class="p">))</span>
+  File <span class="nb">"teleport.py"</span>, line <span class="m">208</span>, in <span class="n">from_json</span>
+    <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span><span class="s">"Invalid Integer"</span><span class="p">,</span> <span class="n">datum</span><span class="p">)</span>
+<span class="gr">teleport.ValidationError</span>: <span class="n">Item at [4] Invalid Integer: 5.1</span>
+</pre></div>
+</div>
+<p><tt class="docutils literal"><span class="pre">Array(Integer)</span></tt> is an interesting object. It may be useful to send it over
+the wire, and with Teleport it is actually very easy to do. Teleport provides
+a special serializer <a class="reference internal" href="#teleport.Schema" title="teleport.Schema"><tt class="xref py py-class docutils literal"><span class="pre">Schema</span></tt></a> for serializing other serializers:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">Schema</span><span class="o">.</span><span class="n">to_json</span><span class="p">(</span><span class="n">Array</span><span class="p">(</span><span class="n">Integer</span><span class="p">))</span>
+<span class="go">{'type': 'Array', 'param': {'type': 'Integer'}}</span>
+</pre></div>
+</div>
+<p>The client that receives this JSON object can then deserialize it:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">Schema</span><span class="o">.</span><span class="n">from_json</span><span class="p">({</span><span class="s">'type'</span><span class="p">:</span> <span class="s">'Array'</span><span class="p">,</span> <span class="s">'param'</span><span class="p">:</span> <span class="p">{</span><span class="s">'type'</span><span class="p">:</span> <span class="s">'Integer'</span><span class="p">}})</span>
+<span class="go">&lt;teleport.Array object at 0xb7189d6c&gt;</span>
+</pre></div>
+</div>
+<p>Pretty cool, huh? But actually, <a class="reference internal" href="#teleport.Schema" title="teleport.Schema"><tt class="xref py py-class docutils literal"><span class="pre">Schema</span></tt></a> isn&#x2019;t all <em>that</em> special. You
+can use it just like any other serializer. For instance, here is an array of
+schemas:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">Array</span><span class="p">(</span><span class="n">Schema</span><span class="p">)</span><span class="o">.</span><span class="n">to_json</span><span class="p">([</span><span class="n">Integer</span><span class="p">,</span> <span class="n">Boolean</span><span class="p">,</span> <span class="n">Float</span><span class="p">])</span>
+<span class="go">[{'type': 'Integer'}, {'type': 'Boolean'}, {'type': 'Float'}]</span>
+</pre></div>
+</div>
+<p>Another parametrized type is the <a class="reference internal" href="#teleport.Struct" title="teleport.Struct"><tt class="xref py py-class docutils literal"><span class="pre">Struct</span></tt></a>. It is used for dicts with
+non-arbitrary keys:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">teleport</span> <span class="kn">import</span> <span class="n">Struct</span><span class="p">,</span> <span class="n">required</span><span class="p">,</span> <span class="n">optional</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">Struct</span><span class="p">([</span>
+<span class="gp">... </span>    <span class="n">required</span><span class="p">(</span><span class="s">"name"</span><span class="p">,</span> <span class="n">String</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">optional</span><span class="p">(</span><span class="s">"scores"</span><span class="p">,</span> <span class="n">Array</span><span class="p">(</span><span class="n">Integer</span><span class="p">))</span>
+<span class="gp">... </span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">from_json</span><span class="p">({</span><span class="s">"name"</span><span class="p">:</span> <span class="s">"Bob"</span><span class="p">})</span>
+<span class="go">{"name": u"Bob"}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">from_json</span><span class="p">({</span><span class="s">"name"</span><span class="p">:</span> <span class="s">"Bob"</span><span class="p">,</span> <span class="s">"scores"</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mf">3.1</span><span class="p">]})</span>
+<span class="gt">Traceback (most recent call last):</span>
+  File <span class="nb">"&lt;stdin&gt;"</span>, line <span class="m">1</span>, in <span class="n">&lt;module&gt;</span>
+  File <span class="nb">"teleport.py"</span>, line <span class="m">406</span>, in <span class="n">from_json</span>
+    <span class="n">ret</span><span class="p">[</span><span class="n">field</span><span class="p">]</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="n">datum</span><span class="p">[</span><span class="n">field</span><span class="p">])</span>
+  File <span class="nb">"teleport.py"</span>, line <span class="m">349</span>, in <span class="n">from_json</span>
+    <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="n">item</span><span class="p">))</span>
+  File <span class="nb">"teleport.py"</span>, line <span class="m">208</span>, in <span class="n">from_json</span>
+    <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span><span class="s">"Invalid Integer"</span><span class="p">,</span> <span class="n">datum</span><span class="p">)</span>
+<span class="gr">teleport.ValidationError</span>: <span class="n">Item at ['scores'][2] Invalid Integer: 3.1</span>
+</pre></div>
+</div>
+<div class="section" id="creating-custom-types">
+<h2>Creating Custom Types<a class="headerlink" href="#creating-custom-types" title="Permalink to this headline">&#xB6;</a></h2>
+<p>To create a custom type, define a serializer class:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">YesNoMaybe</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">from_json</span><span class="p">(</span><span class="n">datum</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">datum</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="bp">True</span><span class="p">,</span> <span class="bp">False</span><span class="p">,</span> <span class="bp">None</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span><span class="s">"Invalid YesNoMaybe"</span><span class="p">,</span> <span class="n">datum</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">datum</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">to_json</span><span class="p">(</span><span class="n">datum</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">datum</span>
+</pre></div>
+</div>
+<p><tt class="xref py py-class docutils literal"><span class="pre">YesNoMaybe</span></tt> is a <em>primitive serializer</em> as it defines functions to
+convert data directly to and from JSON. Another option is a <em>wrapper
+serializer</em>, which relies on an internal serializer for dealing with JSON and
+builds on top of it by defining <tt class="xref py py-meth docutils literal"><span class="pre">assemble()</span></tt> and <tt class="xref py py-meth docutils literal"><span class="pre">disassemble()</span></tt>
+methods.</p>
+<p>The <tt class="xref py py-meth docutils literal"><span class="pre">assemble()</span></tt> method may be used to perform additional validation that
+the internal serializer doesn&#x2019;t take care of:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Suit</span><span class="p">(</span><span class="n">BasicWrapper</span><span class="p">):</span>
+    <span class="n">schema</span> <span class="o">=</span> <span class="n">String</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">assemble</span><span class="p">(</span><span class="n">datum</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">datum</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s">"hearts"</span><span class="p">,</span> <span class="s">"spades"</span><span class="p">,</span> <span class="s">"clubs"</span><span class="p">,</span> <span class="s">"diamonds"</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span><span class="s">"Invalid Suit"</span><span class="p">,</span> <span class="n">datum</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">datum</span>
+</pre></div>
+</div>
+<p>Note that the <tt class="xref py py-class docutils literal"><span class="pre">BasicWrapper</span></tt> mixin defines the <tt class="xref py py-meth docutils literal"><span class="pre">to_json()</span></tt> and
+<tt class="xref py py-meth docutils literal"><span class="pre">from_json()</span></tt> functions for you:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">Suit</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s">"hearts"</span><span class="p">)</span>
+<span class="go">"hearts"</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Suit</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s">"heart"</span><span class="p">)</span>
+<span class="gt">Traceback (most recent call last):</span>
+  File <span class="nb">"&lt;stdin&gt;"</span>, line <span class="m">1</span>, in <span class="n">&lt;module&gt;</span>
+  File <span class="nb">"teleport.py"</span>, line <span class="m">406</span>, in <span class="n">from_json</span>
+    <span class="n">ret</span><span class="p">[</span><span class="n">field</span><span class="p">]</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="n">datum</span><span class="p">[</span><span class="n">field</span><span class="p">])</span>
+  File <span class="nb">"teleport.py"</span>, line <span class="m">349</span>, in <span class="n">from_json</span>
+    <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="n">item</span><span class="p">))</span>
+<span class="gr">teleport.ValidationError</span>: <span class="n">Invalid Suit: "heart"</span>
+</pre></div>
+</div>
+<p>When the native form of the data type is a class instance,
+<tt class="xref py py-class docutils literal"><span class="pre">BasicWrapper</span></tt> can be used to teach the class to serialize itself:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Player</span><span class="p">(</span><span class="n">BasicWrapper</span><span class="p">):</span>
+    <span class="n">schema</span> <span class="o">=</span> <span class="n">Struct</span><span class="p">([</span>
+        <span class="n">required</span><span class="p">(</span><span class="s">"name"</span><span class="p">,</span> <span class="n">String</span><span class="p">),</span>
+        <span class="c"># Note how struct fields can accept an optional doc parameter</span>
+        <span class="n">required</span><span class="p">(</span><span class="s">"level"</span><span class="p">,</span> <span class="n">Integer</span><span class="p">,</span> <span class="s">"0-100"</span><span class="p">)</span>
+    <span class="p">])</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">assemble</span><span class="p">(</span><span class="n">datum</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">Player</span><span class="p">(</span><span class="o">**</span><span class="n">datum</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">disassemble</span><span class="p">(</span><span class="n">player</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s">"name"</span><span class="p">:</span> <span class="n">player</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="s">"level"</span><span class="p">:</span> <span class="n">player</span><span class="o">.</span><span class="n">level</span>
+        <span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="custom-types-with-parameters">
+<h2>Custom Types With Parameters<a class="headerlink" href="#custom-types-with-parameters" title="Permalink to this headline">&#xB6;</a></h2>
+<p>Both primitive and wrapper types can also be parametrized, which means that their
+serializers will have to be instantiated with parameters and that their JSON form
+will have an additional attribute <em>param</em>.</p>
+<p>Take a look at the source code of <a class="reference internal" href="#teleport.Array" title="teleport.Array"><tt class="xref py py-class docutils literal"><span class="pre">Array</span></tt></a> for an example of a primitive
+parametrized type, and <a class="reference internal" href="#teleport.OrderedMap" title="teleport.OrderedMap"><tt class="xref py py-class docutils literal"><span class="pre">OrderedMap</span></tt></a> for an example of a wrapper
+parametrized type.</p>
+</div>
+<div class="section" id="extending-teleport">
+<span id="id1"></span><h2>Extending Teleport<a class="headerlink" href="#extending-teleport" title="Permalink to this headline">&#xB6;</a></h2>
+<p>The types we created above will mostly work, however, if you expect to deserialize
+their schema from JSON, you will be faced with an error:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">Schema</span><span class="o">.</span><span class="n">from_json</span><span class="p">({</span><span class="s">"type"</span><span class="p">:</span> <span class="s">"Player"</span><span class="p">})</span>
+<span class="gt">Traceback (most recent call last):</span>
+  File <span class="nb">"&lt;stdin&gt;"</span>, line <span class="m">1</span>, in <span class="n">&lt;module&gt;</span>
+  File <span class="nb">"teleport.py"</span>, line <span class="m">178</span>, in <span class="n">from_json</span>
+    <span class="k">raise</span> <span class="n">UnknownTypeValidationError</span><span class="p">(</span><span class="s">"Unknown type"</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+<span class="gr">teleport.UnknownTypeValidationError</span>: <span class="n">Unknown type: 'Player'</span>
+</pre></div>
+</div>
+<p>The <a class="reference internal" href="#teleport.Schema" title="teleport.Schema"><tt class="xref py py-class docutils literal"><span class="pre">Schema</span></tt></a> class that you imported from the <tt class="xref py py-mod docutils literal"><span class="pre">teleport</span></tt> module
+will never be aware of the custom types you&#x2019;ve created. In order to extend
+Teleport, you need to recreate all the built-in types (including
+<a class="reference internal" href="#teleport.Schema" title="teleport.Schema"><tt class="xref py py-class docutils literal"><span class="pre">Schema</span></tt></a>) in a separate module. This sounds like a complicated task,
+but <a class="reference internal" href="#teleport.standard_types" title="teleport.standard_types"><tt class="xref py py-func docutils literal"><span class="pre">standard_types()</span></tt></a> makes it very easy.</p>
+<dl class="function">
+<dt id="teleport.standard_types">
+<tt class="descclassname">teleport.</tt><tt class="descname">standard_types</tt><big>(</big><em>type_getter=None</em>, <em>include=None</em><big>)</big><a class="headerlink" href="#teleport.standard_types" title="Permalink to this definition">&#xB6;</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<colgroup><col class="field-name">
+<col class="field-body">
+</colgroup><tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>type_getter</strong> &#x2013; A function that, given a custom type name, returns the
+corresponding serializer.</li>
+<li><strong>include</strong> &#x2013; A list of names of the built-in serializers that you want to
+be included in your custom Teleport module.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A dict, mapping class names to classes.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<p>Create an empty module in your Python application, say <tt class="xref py py-mod docutils literal"><span class="pre">myapp.types</span></tt>.</p>
+<div class="code python highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">teleport</span> <span class="kn">import</span> <span class="n">standard_types</span>
+
+<span class="k">def</span> <span class="nf">getter</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s">"Suit"</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">Suit</span>
+    <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">()</span>
+
+<span class="k">class</span> <span class="nc">Suit</span><span class="p">(</span><span class="n">BasicWrapper</span><span class="p">):</span>
+    <span class="n">schema</span> <span class="o">=</span> <span class="n">String</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">assemble</span><span class="p">(</span><span class="n">datum</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">datum</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s">"hearts"</span><span class="p">,</span> <span class="s">"spades"</span><span class="p">,</span> <span class="s">"clubs"</span><span class="p">,</span> <span class="s">"diamonds"</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span><span class="s">"Invalid Suit"</span><span class="p">,</span> <span class="n">datum</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">datum</span>
+
+<span class="nb">globals</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">standard_types</span><span class="p">(</span><span class="n">getter</span><span class="p">))</span>
+</pre></div>
+</div>
+<p><a class="reference internal" href="#teleport.standard_types" title="teleport.standard_types"><tt class="xref py py-func docutils literal"><span class="pre">standard_types()</span></tt></a> will inject your custom models into Teleport
+via the <em>getter</em> parameter. The return value is a dict of freshly recreated
+Teleport serializers. Now, instead of doing:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">teleport</span> <span class="kn">import</span> <span class="o">*</span>
+</pre></div>
+</div>
+<p>you do:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">myapp.types</span> <span class="kn">import</span> <span class="o">*</span>
+</pre></div>
+</div>
+<p>Note that by default, Teleport will use the class name as the name of the
+serializer. If your new type&#x2019;s class name is different from its actual type
+name, let Teleport know by setting the <tt class="xref py py-attr docutils literal"><span class="pre">type_name</span></tt> property on the
+class.</p>
+</div>
+<div class="section" id="built-in-serializers">
+<h2>Built-In Serializers<a class="headerlink" href="#built-in-serializers" title="Permalink to this headline">&#xB6;</a></h2>
+<dl class="class">
+<dt id="teleport.Integer">
+<em class="property">class </em><tt class="descclassname">teleport.</tt><tt class="descname">Integer</tt><a class="headerlink" href="#teleport.Integer" title="Permalink to this definition">&#xB6;</a></dt>
+<dd><dl class="staticmethod">
+<dt id="teleport.Integer.from_json">
+<em class="property">static </em><tt class="descname">from_json</tt><big>(</big><em>datum</em><big>)</big><a class="headerlink" href="#teleport.Integer.from_json" title="Permalink to this definition">&#xB6;</a></dt>
+<dd><p>If <em>datum</em> is an integer, return it; if it is a float with a 0 for
+its fractional part, return the integer part as an int. Otherwise,
+raise a <a class="reference internal" href="#teleport.ValidationError" title="teleport.ValidationError"><tt class="xref py py-exc docutils literal"><span class="pre">ValidationError</span></tt></a>.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="teleport.Float">
+<em class="property">class </em><tt class="descclassname">teleport.</tt><tt class="descname">Float</tt><a class="headerlink" href="#teleport.Float" title="Permalink to this definition">&#xB6;</a></dt>
+<dd><dl class="staticmethod">
+<dt id="teleport.Float.from_json">
+<em class="property">static </em><tt class="descname">from_json</tt><big>(</big><em>datum</em><big>)</big><a class="headerlink" href="#teleport.Float.from_json" title="Permalink to this definition">&#xB6;</a></dt>
+<dd><p>If <em>datum</em> is a float, return it; if it is an integer, cast it to a
+float and return it. Otherwise, raise a <a class="reference internal" href="#teleport.ValidationError" title="teleport.ValidationError"><tt class="xref py py-exc docutils literal"><span class="pre">ValidationError</span></tt></a>.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="teleport.Boolean">
+<em class="property">class </em><tt class="descclassname">teleport.</tt><tt class="descname">Boolean</tt><a class="headerlink" href="#teleport.Boolean" title="Permalink to this definition">&#xB6;</a></dt>
+<dd><dl class="staticmethod">
+<dt id="teleport.Boolean.from_json">
+<em class="property">static </em><tt class="descname">from_json</tt><big>(</big><em>datum</em><big>)</big><a class="headerlink" href="#teleport.Boolean.from_json" title="Permalink to this definition">&#xB6;</a></dt>
+<dd><p>If <em>datum</em> is a boolean, return it. Otherwise, raise a
+<a class="reference internal" href="#teleport.ValidationError" title="teleport.ValidationError"><tt class="xref py py-exc docutils literal"><span class="pre">ValidationError</span></tt></a>.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="teleport.String">
+<em class="property">class </em><tt class="descclassname">teleport.</tt><tt class="descname">String</tt><a class="headerlink" href="#teleport.String" title="Permalink to this definition">&#xB6;</a></dt>
+<dd><dl class="staticmethod">
+<dt id="teleport.String.from_json">
+<em class="property">static </em><tt class="descname">from_json</tt><big>(</big><em>datum</em><big>)</big><a class="headerlink" href="#teleport.String.from_json" title="Permalink to this definition">&#xB6;</a></dt>
+<dd><p>If <em>datum</em> is of unicode type, return it. If it is a string, decode
+it as UTF-8 and return the result. Otherwise, raise a
+<a class="reference internal" href="#teleport.ValidationError" title="teleport.ValidationError"><tt class="xref py py-exc docutils literal"><span class="pre">ValidationError</span></tt></a>. Unicode errors are dealt
+with strictly by raising <a class="reference internal" href="#teleport.UnicodeDecodeValidationError" title="teleport.UnicodeDecodeValidationError"><tt class="xref py py-exc docutils literal"><span class="pre">UnicodeDecodeValidationError</span></tt></a>, a
+subclass of the above.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="teleport.Binary">
+<em class="property">class </em><tt class="descclassname">teleport.</tt><tt class="descname">Binary</tt><a class="headerlink" href="#teleport.Binary" title="Permalink to this definition">&#xB6;</a></dt>
+<dd><p>This type may be useful when you wish to send a binary file. The
+byte string will be base64-encoded for safety.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s">'pixel.png'</span><span class="p">,</span> <span class="s">'rb'</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Binary</span><span class="o">.</span><span class="n">to_json</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+<span class="go">'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAACXBIWXMAAAsTAAALE</span>
+<span class="go">wEAmpwYAAAAB3RJTUUH3QoSBggTmj6VgAAAABl0RVh0Q29tbWVudABDcmVhdGVkIHd</span>
+<span class="go">pdGggR0lNUFeBDhcAAAAMSURBVAjXY/j//z8ABf4C/tzMWecAAAAASUVORK5CYII='</span>
+</pre></div>
+</div>
+<dl class="staticmethod">
+<dt id="teleport.Binary.from_json">
+<em class="property">static </em><tt class="descname">from_json</tt><big>(</big><em>datum</em><big>)</big><a class="headerlink" href="#teleport.Binary.from_json" title="Permalink to this definition">&#xB6;</a></dt>
+<dd><p>If <em>datum</em> is a base64-encoded string, decode and return it. If not
+a string, or encoding is wrong, raise <a class="reference internal" href="#teleport.ValidationError" title="teleport.ValidationError"><tt class="xref py py-exc docutils literal"><span class="pre">ValidationError</span></tt></a>.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="teleport.Binary.to_json">
+<em class="property">static </em><tt class="descname">to_json</tt><big>(</big><em>datum</em><big>)</big><a class="headerlink" href="#teleport.Binary.to_json" title="Permalink to this definition">&#xB6;</a></dt>
+<dd><p>Encode <em>datum</em> using base64.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="teleport.DateTime">
+<em class="property">class </em><tt class="descclassname">teleport.</tt><tt class="descname">DateTime</tt><a class="headerlink" href="#teleport.DateTime" title="Permalink to this definition">&#xB6;</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">teleport.legacy.BasicWrapper</span></tt></p>
+<p>Wraps the <a class="reference internal" href="#teleport.String" title="teleport.String"><tt class="xref py py-class docutils literal"><span class="pre">String</span></tt></a> type.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">DateTime</span><span class="o">.</span><span class="n">to_json</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">())</span>
+<span class="go">u'2013-10-18T01:58:24.904349'</span>
+</pre></div>
+</div>
+<dl class="classmethod">
+<dt id="teleport.DateTime.assemble">
+<em class="property">classmethod </em><tt class="descname">assemble</tt><big>(</big><em>datum</em><big>)</big><a class="headerlink" href="#teleport.DateTime.assemble" title="Permalink to this definition">&#xB6;</a></dt>
+<dd><p>Parse <em>datum</em> as an ISO 8601-encoded time and return a
+<tt class="xref py py-class docutils literal"><span class="pre">datetime</span></tt> object. If the string is invalid, raise a
+<a class="reference internal" href="#teleport.ValidationError" title="teleport.ValidationError"><tt class="xref py py-exc docutils literal"><span class="pre">ValidationError</span></tt></a>.</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="teleport.DateTime.disassemble">
+<em class="property">classmethod </em><tt class="descname">disassemble</tt><big>(</big><em>datum</em><big>)</big><a class="headerlink" href="#teleport.DateTime.disassemble" title="Permalink to this definition">&#xB6;</a></dt>
+<dd><p>Given a datetime object, return an ISO 8601-encoded string.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="teleport.JSON">
+<em class="property">class </em><tt class="descclassname">teleport.</tt><tt class="descname">JSON</tt><a class="headerlink" href="#teleport.JSON" title="Permalink to this definition">&#xB6;</a></dt>
+<dd><p>This type may be used as a kind of wildcard that will accept any
+JSON value and return it untouched. Presumably you still want to
+interpret the meaning of this arbitrary JSON data, you just don&#x2019;t want
+to do it through Teleport.</p>
+<dl class="staticmethod">
+<dt id="teleport.JSON.from_json">
+<em class="property">static </em><tt class="descname">from_json</tt><big>(</big><em>datum</em><big>)</big><a class="headerlink" href="#teleport.JSON.from_json" title="Permalink to this definition">&#xB6;</a></dt>
+<dd><p>Return the JSON value wrapped in a <a class="reference internal" href="#teleport.Box" title="teleport.Box"><tt class="xref py py-class docutils literal"><span class="pre">Box</span></tt></a>.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="teleport.Box">
+<em class="property">class </em><tt class="descclassname">teleport.</tt><tt class="descname">Box</tt><big>(</big><em>datum</em><big>)</big><a class="headerlink" href="#teleport.Box" title="Permalink to this definition">&#xB6;</a></dt>
+<dd><p>Used as a wrapper around JSON data to disambiguate None as a JSON value
+(<tt class="docutils literal"><span class="pre">null</span></tt>) from None as an absence of value. Its <tt class="xref py py-attr docutils literal"><span class="pre">datum</span></tt> attribute
+will hold the actual JSON value.</p>
+<p>For example, an HTTP request body may be empty in which case your function
+may return <tt class="docutils literal"><span class="pre">None</span></tt> or it may be &#x201C;null&#x201D;, in which case the function can
+return a <a class="reference internal" href="#teleport.Box" title="teleport.Box"><tt class="xref py py-class docutils literal"><span class="pre">Box</span></tt></a> instance with <tt class="docutils literal"><span class="pre">None</span></tt> inside.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="teleport.Array">
+<em class="property">class </em><tt class="descclassname">teleport.</tt><tt class="descname">Array</tt><big>(</big><em>param</em><big>)</big><a class="headerlink" href="#teleport.Array" title="Permalink to this definition">&#xB6;</a></dt>
+<dd><p>The argument <em>param</em> is a serializer that defines the type of each item
+in the array.</p>
+<dl class="method">
+<dt id="teleport.Array.from_json">
+<tt class="descname">from_json</tt><big>(</big><em>datum</em><big>)</big><a class="headerlink" href="#teleport.Array.from_json" title="Permalink to this definition">&#xB6;</a></dt>
+<dd><p>If <em>datum</em> is a list, construct a new list by putting each element
+of <em>datum</em> through a serializer provided as <em>param</em>. This serializer
+may raise a <a class="reference internal" href="#teleport.ValidationError" title="teleport.ValidationError"><tt class="xref py py-exc docutils literal"><span class="pre">ValidationError</span></tt></a>. If <em>datum</em> is not a
+list, <a class="reference internal" href="#teleport.ValidationError" title="teleport.ValidationError"><tt class="xref py py-exc docutils literal"><span class="pre">ValidationError</span></tt></a> will also be raised.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="teleport.Array.to_json">
+<tt class="descname">to_json</tt><big>(</big><em>datum</em><big>)</big><a class="headerlink" href="#teleport.Array.to_json" title="Permalink to this definition">&#xB6;</a></dt>
+<dd><p>Serialize each item in the <em>datum</em> iterable using <em>param</em>. Return
+the resulting values in a list.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="teleport.Map">
+<em class="property">class </em><tt class="descclassname">teleport.</tt><tt class="descname">Map</tt><big>(</big><em>param</em><big>)</big><a class="headerlink" href="#teleport.Map" title="Permalink to this definition">&#xB6;</a></dt>
+<dd><p>The argument <em>param</em> is a serializer that defines the type of each item
+in the map.</p>
+<dl class="method">
+<dt id="teleport.Map.from_json">
+<tt class="descname">from_json</tt><big>(</big><em>datum</em><big>)</big><a class="headerlink" href="#teleport.Map.from_json" title="Permalink to this definition">&#xB6;</a></dt>
+<dd><p>If <em>datum</em> is a dict, deserialize it, otherwise raise a
+<a class="reference internal" href="#teleport.ValidationError" title="teleport.ValidationError"><tt class="xref py py-exc docutils literal"><span class="pre">ValidationError</span></tt></a>. The keys of the dict must be unicode, and the
+values will be deserialized using <em>param</em>.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="teleport.OrderedMap">
+<em class="property">class </em><tt class="descclassname">teleport.</tt><tt class="descname">OrderedMap</tt><big>(</big><em>param</em><big>)</big><a class="headerlink" href="#teleport.OrderedMap" title="Permalink to this definition">&#xB6;</a></dt>
+<dd><p>The argument <em>param</em> is a serializer that defines the type of each item
+in the map.</p>
+<p>Internal schema:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">Struct</span><span class="p">([</span>
+    <span class="n">required</span><span class="p">(</span><span class="s">u"map"</span><span class="p">,</span> <span class="n">Map</span><span class="p">(</span><span class="n">param</span><span class="p">)),</span>
+    <span class="n">required</span><span class="p">(</span><span class="s">u"order"</span><span class="p">,</span> <span class="n">Array</span><span class="p">(</span><span class="n">String</span><span class="p">))</span>
+<span class="p">])</span>
+</pre></div>
+</div>
+<p>The order of the items in <em>map</em> is not preserved by JSON, hence the
+existence of <em>order</em>, an array of keys in <em>map</em>.</p>
+<dl class="method">
+<dt id="teleport.OrderedMap.assemble">
+<tt class="descname">assemble</tt><big>(</big><em>datum</em><big>)</big><a class="headerlink" href="#teleport.OrderedMap.assemble" title="Permalink to this definition">&#xB6;</a></dt>
+<dd><p><a class="reference internal" href="#teleport.ValidationError" title="teleport.ValidationError"><tt class="xref py py-exc docutils literal"><span class="pre">ValidationError</span></tt></a> is raised if <em>order</em> does not correspond to
+the keys in <em>map</em>. The native form is Python&#x2019;s <tt class="xref py py-class docutils literal"><span class="pre">OrderedDict</span></tt>.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="teleport.Struct">
+<em class="property">class </em><tt class="descclassname">teleport.</tt><tt class="descname">Struct</tt><big>(</big><em>param</em><big>)</big><a class="headerlink" href="#teleport.Struct" title="Permalink to this definition">&#xB6;</a></dt>
+<dd><p><em>param</em> must be an <tt class="xref py py-class docutils literal"><span class="pre">OrderedDict</span></tt>, where the keys are field
+names, and values are dicts with two items: <em>schema</em> (serializer) and
+<em>required</em> (Boolean). For each pair, <em>schema</em> is used to serialize and
+deserialize a dict value matched by the corresponding key.</p>
+<p>For convenience, <a class="reference internal" href="#teleport.Struct" title="teleport.Struct"><tt class="xref py py-class docutils literal"><span class="pre">Struct</span></tt></a> can be instantiated with a list of tuples
+like the constructor of <tt class="xref py py-class docutils literal"><span class="pre">OrderedDict</span></tt>.</p>
+<dl class="method">
+<dt id="teleport.Struct.from_json">
+<tt class="descname">from_json</tt><big>(</big><em>datum</em><big>)</big><a class="headerlink" href="#teleport.Struct.from_json" title="Permalink to this definition">&#xB6;</a></dt>
+<dd><p>If <em>datum</em> is a dict, deserialize it against <em>param</em> and return
+the resulting dict. Otherwise raise a <a class="reference internal" href="#teleport.ValidationError" title="teleport.ValidationError"><tt class="xref py py-exc docutils literal"><span class="pre">ValidationError</span></tt></a>.</p>
+<p>A <a class="reference internal" href="#teleport.ValidationError" title="teleport.ValidationError"><tt class="xref py py-exc docutils literal"><span class="pre">ValidationError</span></tt></a> will be raised if:</p>
+<ol class="arabic simple">
+<li><em>datum</em> is missing a required field</li>
+<li><em>datum</em> has a field not declared in <em>param</em>.</li>
+<li>One of the values of <em>datum</em> does not pass validation as defined
+by the <em>schema</em> of the corresponding field.</li>
+</ol>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="teleport.Schema">
+<em class="property">class </em><tt class="descclassname">teleport.</tt><tt class="descname">Schema</tt><a class="headerlink" href="#teleport.Schema" title="Permalink to this definition">&#xB6;</a></dt>
+<dd><dl class="staticmethod">
+<dt id="teleport.Schema.from_json">
+<em class="property">static </em><tt class="descname">from_json</tt><big>(</big><em>datum</em><big>)</big><a class="headerlink" href="#teleport.Schema.from_json" title="Permalink to this definition">&#xB6;</a></dt>
+<dd><p>Expects a JSON object with a <em>type</em> attribute and an optional
+<em>param</em> attribute. Uses <em>type</em> to find the serializer. If the type
+is simple, returns the serializer, if parametrized, deserializes
+<em>param</em> and uses it to instatiate the serializer class before
+returning it.</p>
+<p>After looking in the built-in types, this method will attempt to
+find the serializer via <em>type_getter</em>, an argument of
+<a class="reference internal" href="#teleport.standard_types" title="teleport.standard_types"><tt class="xref py py-func docutils literal"><span class="pre">standard_types()</span></tt></a>. See <a class="reference internal" href="#extending-teleport"><em>Extending Teleport</em></a>. If no
+serializer is found, <a class="reference internal" href="#teleport.UnknownTypeValidationError" title="teleport.UnknownTypeValidationError"><tt class="xref py py-exc docutils literal"><span class="pre">UnknownTypeValidationError</span></tt></a> will be
+raised.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="teleport.Schema.to_json">
+<em class="property">static </em><tt class="descname">to_json</tt><big>(</big><em>datum</em><big>)</big><a class="headerlink" href="#teleport.Schema.to_json" title="Permalink to this definition">&#xB6;</a></dt>
+<dd><p>If given a serializer representing a simple type, return a JSON
+object with a single attribute <em>type</em>, if a parametrized one, also
+include an attribute <em>param</em>.</p>
+<p>By default <em>type</em> is the class name of the serializer, but it can
+be overridden by the serializer&#x2019;s <tt class="xref py py-data docutils literal"><span class="pre">type_name</span></tt> property.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="exceptions">
+<h2>Exceptions<a class="headerlink" href="#exceptions" title="Permalink to this headline">&#xB6;</a></h2>
+<dl class="class">
+<dt id="teleport.ValidationError">
+<em class="property">class </em><tt class="descclassname">teleport.</tt><tt class="descname">ValidationError</tt><big>(</big><em>message</em>, <em>*args</em><big>)</big><a class="headerlink" href="#teleport.ValidationError" title="Permalink to this definition">&#xB6;</a></dt>
+<dd><p>Raised during deserialization. Stores the location of the error in the
+JSON document relative to its root.</p>
+<p>First argument is the error message, second optional argument is the
+object that failed validation.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="teleport.UnicodeDecodeValidationError">
+<em class="property">class </em><tt class="descclassname">teleport.</tt><tt class="descname">UnicodeDecodeValidationError</tt><big>(</big><em>message</em>, <em>*args</em><big>)</big><a class="headerlink" href="#teleport.UnicodeDecodeValidationError" title="Permalink to this definition">&#xB6;</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">teleport.legacy.ValidationError</span></tt></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="teleport.UnknownTypeValidationError">
+<em class="property">class </em><tt class="descclassname">teleport.</tt><tt class="descname">UnknownTypeValidationError</tt><big>(</big><em>message</em>, <em>*args</em><big>)</big><a class="headerlink" href="#teleport.UnknownTypeValidationError" title="Permalink to this definition">&#xB6;</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">teleport.legacy.ValidationError</span></tt></p>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="#">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Documentation</a><ul>
+<li><a class="reference internal" href="#creating-custom-types">Creating Custom Types</a></li>
+<li><a class="reference internal" href="#custom-types-with-parameters">Custom Types With Parameters</a></li>
+<li><a class="reference internal" href="#extending-teleport">Extending Teleport</a></li>
+<li><a class="reference internal" href="#built-in-serializers">Built-In Serializers</a></li>
+<li><a class="reference internal" href="#exceptions">Exceptions</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/index.txt" rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q">
+      <input type="submit" value="Go">
+      <input type="hidden" name="check_keywords" value="yes">
+      <input type="hidden" name="area" value="default">
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index">index</a></li>
+        <li><a href="#">Teleport 0.2.1 documentation</a> &#xBB;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &#xA9; Copyright 2013, 8313547 Canada Inc..
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  
+</body></html>
