@@ -1,0 +1,121 @@
+Metadata-Version: 1.1
+Name: simplebst
+Version: 0.4.1
+Summary: Simple Binary Search Tree is a simple implementation of a binary search tree
+Home-page: https://github.com/drincruz/simplebst
+Author: Adrian Cruz
+Author-email: drincruz at gmail dot com
+License: MIT
+Description: ===============================
+        Simple Binary Search Tree
+        ===============================
+        
+        .. image:: https://badge.fury.io/py/simplebst.png
+            :target: http://badge.fury.io/py/simplebst
+        
+        .. image:: https://travis-ci.org/drincruz/simplebst.png?branch=master
+                :target: https://travis-ci.org/drincruz/simplebst
+        
+        .. image:: https://pypip.in/d/simplebst/badge.png
+                :target: https://pypi.python.org/pypi/simplebst
+        
+        
+        Simple Binary Search Tree is a simple implementation of a binary search tree
+        
+        * Free software: MIT license
+        * Documentation: https://simplebst.readthedocs.org.
+        
+        Features
+        --------
+        
+            To use Simple Binary Search Tree in a project::
+        
+                # At minimal, you'll need to import simplebst.Node
+                from simplebst import Node
+        
+                # Create a single element tree with value of 23
+                # Its left and right sub-trees are set to None
+                tree = Node(23)
+        
+        
+            Get the value of a Node::
+        
+                tree.get_value()
+        
+        
+            Get the left/right child Node of a Node::
+        
+                tree.get_left()
+                tree.get_right()
+        
+        
+            Insert a new node into the tree::
+        
+                # Import simplebst.utils.insert_node
+                from simplebst.utils import insert_node
+        
+                # Insert a node will modify the tree you specify
+                # So, we'll use our previous example of "tree"
+                insert_node(tree, 17)
+        
+                # If you were curious you should see the correct
+                # value if you do the following
+                tree.get_left().get_value()
+        
+                # Let's fill the tree with values
+                for value in [18, 27, 53, 11]:
+                    insert_node(tree, value)
+        
+        
+            For more detailed usage, please see the usage documentation: https://simplebst.readthedocs.org/en/latest/usage.html
+        
+        
+        
+        
+        History
+        -------
+        
+        0.1.0 (2014-09-11)
+        ---------------------
+        
+        * First release on Github.
+        
+        0.2.0 (2014-09-19)
+        ---------------------
+        
+        * Code cleanup and updated utils and traversals
+        
+        0.3.0 (2014-10-08)
+        ---------------------
+        
+        * Added the following traversals:
+            - Pre-order
+        
+            - Post-order
+        
+            - Level-order
+        
+        0.4.0 (2014-10-16)
+        ---------------------
+        
+        * Added tree_height() util
+        
+        * Added insert_node() unit tests that I missed previously (yay for code coverage!)
+        
+        0.4.1 (2014-10-22)
+        ---------------------
+        
+        * Updated setup.py to support nose as its test suite So ```python setup.py test``` can be run successfully.
+        
+Keywords: simplebst
+Platform: UNKNOWN
+Classifier: Development Status :: 2 - Pre-Alpha
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Natural Language :: English
+Classifier: Programming Language :: Python :: 2
+Classifier: Programming Language :: Python :: 2.6
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.3
+Classifier: Programming Language :: Python :: 3.4
