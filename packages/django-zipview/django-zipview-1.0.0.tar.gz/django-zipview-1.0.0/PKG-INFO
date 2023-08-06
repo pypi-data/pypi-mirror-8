@@ -1,0 +1,80 @@
+Metadata-Version: 1.1
+Name: django-zipview
+Version: 1.0.0
+Summary: A simple Django base view to zip and stream several files.
+Home-page: https://github.com/thibault/django-zipview/
+Author: Thibault Jouannic
+Author-email: thibault@miximum.fr
+License: MIT License
+Description: Django ZipView
+        ==============
+        
+        A base view to zip and stream several files.
+        
+        Installation
+        ------------
+        
+            pip install django-zipview
+        
+        Usage and examples
+        ------------------
+        
+        To create a zip download view:
+        
+         * Extend BaseZipView
+         * implement `get_files`
+         * That's it
+        
+        The `get_files` method must return a list of Django's File objects.
+        
+        Example:
+        
+        ```python
+        from zipview.views import BaseZipView
+        
+        from reviews import Review
+        
+        
+        class CommentsArchiveView(BaseZipView):
+            """Download at once all comments for a review."""
+        
+            def get_files(self):
+                document_key = self.kwargs.get('document_key')
+                reviews = Review.objects \
+                    .filter(document__document_key=document_key) \
+                    .exclude(comments__isnull=True)
+        
+                return [review.comments.file for review in reviews if review.comments.name]
+        ```
+        
+        Testing
+        -------
+        
+        Django ZipView uses [tox, the testing automation tool](https://tox.readthedocs.org/en/latest/),
+        to run tests.
+        
+        To launch tests:
+        
+            pip install tox
+            tox
+        
+        
+        Author
+        ------
+        
+        Crafted with love by [Thibault Jouannic](http://www.miximum.fr). You can
+        contact him for [Python / Django freelancing gigs](http://www.miximum.fr/a-propos/).
+        
+Platform: UNKNOWN
+Classifier: Environment :: Web Environment
+Classifier: Framework :: Django
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 2
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.3
+Classifier: Topic :: Internet :: WWW/HTTP
+Classifier: Topic :: Internet :: WWW/HTTP :: Dynamic Content
