@@ -1,0 +1,301 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Layers &mdash; django-wms 0.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="django-wms 0.1.0 documentation" href="index.html" />
+    <link rel="next" title="Maps" href="maps.html" />
+    <link rel="prev" title="Django WMS Framework" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="maps.html" title="Maps"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Django WMS Framework"
+             accesskey="P">previous</a> |</li>
+        <li><a href="toc.html">django-wms 0.1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="layers">
+<h1>Layers<a class="headerlink" href="#layers" title="Permalink to this headline">¶</a></h1>
+<p>The first step in creating a map service with django-wms is to setup at least one WmsLayer sublcass. The WmsLayer class represents the <a class="reference external" href="http://mapserver.org/mapfile/layer.html">LAYER</a> directive from a mapserver map file. Each layer that will be offered as a service end point will be a subclass of WmsLayer.</p>
+<div class="section" id="layer-attributes">
+<h2>Layer attributes<a class="headerlink" href="#layer-attributes" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="spatial-field">
+<h3>Spatial field<a class="headerlink" href="#spatial-field" title="Permalink to this headline">¶</a></h3>
+<p>The main component of a WmsLayer is a django model that has at least one spatial field, which has to specified when sublclassing. For example</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># In myapp.wmslayers</span>
+
+<span class="kn">from</span> <span class="nn">wms.layers</span> <span class="kn">import</span> <span class="n">WmsLayer</span>
+<span class="kn">from</span> <span class="nn">myapp.models</span> <span class="kn">import</span> <span class="n">MySpatialModel</span>
+
+<span class="k">class</span> <span class="nc">MyLayer</span><span class="p">(</span><span class="n">WmsLayer</span><span class="p">):</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">MySpatialModel</span>
+</pre></div>
+</div>
+<p>The WmsLayer class auto-detects the first spatial field it can find in the model specified, for models with several spatial fields, the name of the spatial field can be specified explicitly using the <tt class="docutils literal"><span class="pre">geo_field_name</span></tt> attribute of the class.</p>
+</div>
+<div class="section" id="layer-name">
+<h3>Layer name<a class="headerlink" href="#layer-name" title="Permalink to this headline">¶</a></h3>
+<p>By default, the spatial field name will be used as the layer&#8217;s name. For a custom layer name, set the <tt class="docutils literal"><span class="pre">name</span></tt> attribute of the class.</p>
+</div>
+<div class="section" id="where-clause">
+<h3>Where clause<a class="headerlink" href="#where-clause" title="Permalink to this headline">¶</a></h3>
+<p>This attribute can be used to preselect or filter the data from the model table that is shown on the layer. It can be used analogue to the where clause in a SQL select query such as <tt class="docutils literal"><span class="pre">SELECT</span> <span class="pre">FROM</span> <span class="pre">...</span> <span class="pre">WHERE</span></tt>. An example is <tt class="docutils literal"><span class="pre">where='quality&gt;50'</span></tt>.</p>
+</div>
+<div class="section" id="class-item">
+<h3>Class item<a class="headerlink" href="#class-item" title="Permalink to this headline">¶</a></h3>
+<p>The <tt class="docutils literal"><span class="pre">class_item</span></tt> attribute can be used to specify a column of the specified model as a selector for coloring the map (analogue to the CLASSITEM directive in mapserver layers). To adopt coloring of the map according to the specified class_item field, the <tt class="docutils literal"><span class="pre">cartograpy</span></tt> attribute has to be specified, as described below.</p>
+</div>
+<div class="section" id="cartography">
+<h3>Cartography<a class="headerlink" href="#cartography" title="Permalink to this headline">¶</a></h3>
+<p>The cartography of a layer is defined as an array of dictionaries, where each dictionary has a <em>name</em>, a <em>expression</em> and a <em>color</em>. The name will be the name used in the legend when requested, the expression is a class expression for the <tt class="docutils literal"><span class="pre">class_item</span></tt> attribute that needs to be specified for the WmsLayer subclass (see above). The expression is SQL like, but not the same. The syntax is defined through the <a class="reference external" href="http://mapserver.org/mapfile/expressions.html">MapServer Expressions</a>. Finally, the color used for this category can be specified as RGB with white spaces as separators (<tt class="docutils literal"><span class="pre">255</span> <span class="pre">0</span> <span class="pre">0</span></tt>) or as hexadecimal color (<tt class="docutils literal"><span class="pre">#FF0000</span></tt>).</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">mycartograpy</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span>
+        <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;Category A&#39;</span><span class="p">,</span>
+        <span class="s">&#39;expression&#39;</span><span class="p">:</span> <span class="s">&#39;1&#39;</span><span class="p">,</span>
+        <span class="s">&#39;color&#39;</span><span class="p">:</span> <span class="s">&#39;0 0 255&#39;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;Category B&#39;</span><span class="p">,</span>
+        <span class="s">&#39;expression&#39;</span><span class="p">:</span> <span class="s">&#39;2&#39;</span><span class="p">,</span>
+        <span class="s">&#39;color&#39;</span><span class="p">:</span> <span class="s">&#39;255 0 0&#39;</span>
+    <span class="p">}</span>
+<span class="p">]</span>
+
+<span class="k">class</span> <span class="nc">MySpatialModel</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">quality</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">FloatField</span><span class="p">()</span>
+    <span class="n">geom</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">PolygonField</span><span class="p">()</span>
+
+<span class="k">class</span> <span class="nc">MyLayer</span><span class="p">(</span><span class="n">WmsLayer</span><span class="p">):</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">MySpatialModel</span>
+    <span class="n">class_item</span> <span class="o">=</span> <span class="s">&#39;quality&#39;</span>
+    <span class="n">where</span> <span class="o">=</span> <span class="s">&#39;quality &gt; 0&#39;</span>
+    <span class="n">cartograpy</span> <span class="o">=</span> <span class="n">mycartography</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="vector-layers">
+<h2>Vector layers<a class="headerlink" href="#vector-layers" title="Permalink to this headline">¶</a></h2>
+<p>Supported spatial vector data types are Points, Lines, Polygons and MultiPolygons. Any of those field types are automatically detected in models or can be specifically set as explained above.</p>
+<p>For points and polygons a set of predefined symbols can be used to render them (<em>circle</em>, <em>square</em>, <em>triangle</em>, <em>cross</em> and <em>diagonal</em>), for polygon a hatch fill symbology is available as well (<em>hatch</em>). To use those symbols, add the symbol attribute to the cartography array. For example</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">mycartograpy</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span>
+        <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;Category A&#39;</span><span class="p">,</span>
+        <span class="s">&#39;expression&#39;</span><span class="p">:</span> <span class="s">&#39;1&#39;</span><span class="p">,</span>
+        <span class="s">&#39;color&#39;</span><span class="p">:</span> <span class="s">&#39;0 0 255&#39;</span><span class="p">,</span>
+        <span class="s">&#39;symbol&#39;</span><span class="p">:</span> <span class="s">&#39;hatch&#39;</span>
+    <span class="p">}</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p>Custom symbols can be added to display data, see <a class="reference external" href="http://mapserver.org/mapfile/symbology/construction.html">this tutorial</a> for guidance on symbol definitions. After creating custom mapscript symbols, the symbols can be added by subclassing the WmsSymbolSet class and setting an array of symbols in the <tt class="docutils literal"><span class="pre">custom_symbols</span></tt> attribute. When creating the WmsMap subclass, the custom symbol set needs to be specified as well. Below is a simple example</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">mapscript</span>
+<span class="kn">from</span> <span class="nn">wms.symbols</span> <span class="kn">import</span> <span class="n">WmsSymbolSet</span>
+
+<span class="n">symb</span> <span class="o">=</span> <span class="n">mapscript</span><span class="o">.</span><span class="n">symbolObj</span><span class="p">(</span><span class="s">&#39;v-line&#39;</span><span class="p">)</span>
+<span class="n">symb</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">mapscript</span><span class="o">.</span><span class="n">MS_SYMBOL_VECTOR</span>
+<span class="n">symb</span><span class="o">.</span><span class="n">filled</span> <span class="o">=</span> <span class="n">mapscript</span><span class="o">.</span><span class="n">MS_FALSE</span>
+<span class="n">line</span> <span class="o">=</span> <span class="n">mapscript</span><span class="o">.</span><span class="n">lineObj</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">pnt</span> <span class="ow">in</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">0</span><span class="p">)]:</span>
+    <span class="n">line</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">mapscript</span><span class="o">.</span><span class="n">pointObj</span><span class="p">(</span><span class="n">pnt</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">pnt</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+<span class="n">symb</span><span class="o">.</span><span class="n">setPoints</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+<span class="n">symb</span><span class="o">.</span><span class="n">sizex</span> <span class="o">=</span> <span class="mi">50</span>
+<span class="n">symb</span><span class="o">.</span><span class="n">sizey</span> <span class="o">=</span> <span class="mi">50</span>
+
+<span class="k">class</span> <span class="nc">MyCustomSymbols</span><span class="p">(</span><span class="n">WmsSymbolSet</span><span class="p">):</span>
+    <span class="n">custom_symbols</span> <span class="o">=</span> <span class="p">[</span><span class="n">symb</span><span class="p">]</span>
+
+<span class="k">class</span> <span class="nc">MyWmsMap</span><span class="p">(</span><span class="n">maps</span><span class="o">.</span><span class="n">WmsMap</span><span class="p">):</span>
+    <span class="n">symbolset_class</span> <span class="o">=</span> <span class="n">MyCustomSymbols</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="raster-layers">
+<h2>Raster layers<a class="headerlink" href="#raster-layers" title="Permalink to this headline">¶</a></h2>
+<p>Raster layers are supported if the <a class="reference external" href="https://pypi.python.org/pypi/django-raster/">django-raster</a> package is installed. The django-raster package allows loading raster files into django, which can then be served through map services with this package.</p>
+<p>After uploading a rasterfile to the RasterLayer model, that specific raster layer can be filtered for using the rasterlayer_id or the rasterfile name. Below is an example for a layer using raster data from the RasterTile table, which is generated by the django-raster package through the RasterTile model. The cartography can be equal to the definition in the previous example above.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyRasterLayer</span><span class="p">(</span><span class="n">WmsLayer</span><span class="p">):</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">RasterTile</span>
+    <span class="n">where</span><span class="o">=</span><span class="s">&quot;filename=</span><span class="se">\\\&#39;</span><span class="s">myrasterfile.tif</span><span class="se">\\\&#39;</span><span class="s">&quot;</span>
+    <span class="n">nodata</span> <span class="o">=</span> <span class="s">&#39;0&#39;</span>
+    <span class="n">cartography</span> <span class="o">=</span> <span class="n">mycartograpy</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="module-docs">
+<h2>Module docs<a class="headerlink" href="#module-docs" title="Permalink to this headline">¶</a></h2>
+<p>Auto-generated part of the module documentation.</p>
+<span class="target" id="module-wms.layers"></span><dl class="class">
+<dt id="wms.layers.WmsLayer">
+<em class="property">class </em><tt class="descclassname">wms.layers.</tt><tt class="descname">WmsLayer</tt><a class="reference internal" href="_modules/wms/layers.html#WmsLayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wms.layers.WmsLayer" title="Permalink to this definition">¶</a></dt>
+<dd><p>WMS Layer class representing mapserver layers. Use this class to serve data
+from models as WMS layers.</p>
+<p>By default, WmsLayer will use the first spatial field it finds, but the
+field to use can also be specified explicitly using geo_field_name.</p>
+<dl class="method">
+<dt id="wms.layers.WmsLayer.dispatch_by_type">
+<tt class="descname">dispatch_by_type</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/wms/layers.html#WmsLayer.dispatch_by_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wms.layers.WmsLayer.dispatch_by_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Instantiates layer based on type of spatial field. Finds spatial field
+automatically if not set explicitly.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="wms.layers.WmsLayer.get_base_layer">
+<tt class="descname">get_base_layer</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/wms/layers.html#WmsLayer.get_base_layer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wms.layers.WmsLayer.get_base_layer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Instantiates and returns a base WMS layer with attributes that are
+not specific to data types.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="wms.layers.WmsLayer.get_name">
+<tt class="descname">get_name</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/wms/layers.html#WmsLayer.get_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wms.layers.WmsLayer.get_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns WMS layer name, defaults to model name if not provided.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="wms.layers.WmsLayer.get_raster_layer">
+<tt class="descname">get_raster_layer</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/wms/layers.html#WmsLayer.get_raster_layer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wms.layers.WmsLayer.get_raster_layer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Connect this layer to a raster model.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="wms.layers.WmsLayer.get_spatial_field">
+<tt class="descname">get_spatial_field</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/wms/layers.html#WmsLayer.get_spatial_field"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wms.layers.WmsLayer.get_spatial_field" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the spatial type for the given model based on field types.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="wms.layers.WmsLayer.get_srs">
+<tt class="descname">get_srs</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/wms/layers.html#WmsLayer.get_srs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wms.layers.WmsLayer.get_srs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns srs for this layer based on field specification.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="wms.layers.WmsLayer.get_vector_layer">
+<tt class="descname">get_vector_layer</tt><big>(</big><em>field_name</em><big>)</big><a class="reference internal" href="_modules/wms/layers.html#WmsLayer.get_vector_layer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wms.layers.WmsLayer.get_vector_layer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Connect this layer to a vector data model.</p>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-wms.symbols"></span><dl class="class">
+<dt id="wms.symbols.WmsSymbolSet">
+<em class="property">class </em><tt class="descclassname">wms.symbols.</tt><tt class="descname">WmsSymbolSet</tt><a class="reference internal" href="_modules/wms/symbols.html#WmsSymbolSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wms.symbols.WmsSymbolSet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Symbol set for rendering data using different cartograpy styles.
+This includes styles for Points, Lines and Polygons (fills and outlines).</p>
+<p>Initiates the preset symbols for the symbolset</p>
+<dl class="method">
+<dt id="wms.symbols.WmsSymbolSet.get_symbols">
+<tt class="descname">get_symbols</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/wms/symbols.html#WmsSymbolSet.get_symbols"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wms.symbols.WmsSymbolSet.get_symbols" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an array of mapscript symbols</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<h3><a href="toc.html">Table Of Contents</a></h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="index.html">Django WMS Framework</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Layers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#layer-attributes">Layer attributes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#vector-layers">Vector layers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#raster-layers">Raster layers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-docs">Module docs</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="maps.html">Maps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="views.html">Map Views</a></li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/layers.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="maps.html" title="Maps"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Django WMS Framework"
+             >previous</a> |</li>
+        <li><a href="toc.html">django-wms 0.1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Daniel Wiesmann.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>
