@@ -1,0 +1,24 @@
+CHANGES
+=======
+
+* added more tests
+* Update README.rst
+* max retries for jobs, error handling for jobs in FAILED_USER_ERROR state
+* added retries field for jobs, update seen field for job
+* due to AMQ message transformations the fields of the messages must be serialized in certain order
+* removed unused import
+* use SQLAlchemy context managers to encapsulate transactions
+* better scoping for DB sessions
+* terminate process when connect fails
+* fixed process to shutdown properly upon AMQ connection errors
+* add heartbeat field to result messages
+* send correct result message for cancelled jobs in the session when the client starts
+* added a parameter for logging
+* fixed bug with submit timestamps missing when resubmitting
+* AMQ topics can be modified in configuration file
+* added handler for cmd/cancel messages
+* removed offer messages from being delivered to clients
+* renamed queue.py -> manager.py
+* added missing dependency to tox.ini
+* initial commit
+* Initial commit
