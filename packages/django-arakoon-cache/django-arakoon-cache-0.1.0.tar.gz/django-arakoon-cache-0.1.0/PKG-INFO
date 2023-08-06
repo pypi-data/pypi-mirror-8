@@ -1,0 +1,88 @@
+Metadata-Version: 1.1
+Name: django-arakoon-cache
+Version: 0.1.0
+Summary: Arakoon cache backend for Django.
+Home-page: https://github.com/mohabusama/django-arakoon-cache
+Author: Mohab Usama
+Author-email: mohab.usama@gmail.com
+License: The MIT License (MIT)
+
+Copyright (c) 2014 Mohab Usama
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+
+Description: ====================
+        Django Arakoon Cache
+        ====================
+        
+        `Arakoon <http://arakoon.org/>`_ cache backend for Django.
+        
+        Install
+        -------
+        
+        ::
+        
+            pip install https://github.com/Incubaid/arakoon/archive/1.6.0.tar.gz
+            pip install django-arakoon-cache
+        
+        
+        Development
+        -----------
+        
+        To run tests, there is a test django app **cache_app** used for testing ArakoonCache.
+        
+        Make sure you run an Arakoon cluster with 3 nodes, running on the sample config found in **arakoon/conf/arakoon.ini**.
+        
+        ::
+        
+            pip install -r requirements.txt
+            python tests/manage.py test cache_app
+        
+        
+        Django settings
+        ---------------
+        
+        This is an example of configuring django to use **ArakoonCache** as a cache backend.
+        
+        Assuming we are running an Arakoon cluster of 3 nodes.
+        
+        ::
+        
+            CACHES = {
+                'default': {
+                    'BACKEND': 'django_arakoon_cache.cache.ArakoonCache',
+                    'LOCATION': {
+                        'arakoon_0': ('127.0.0.1', 4000),
+                        'arakoon_1': ('127.0.0.1', 4001),
+                        'arakoon_2': ('127.0.0.1', 4002)
+                    },
+                    'OPTIONS': {
+                        'cluster': 'django'
+                    }
+                }
+            }
+        
+Platform: UNKNOWN
+Classifier: Development Status :: 3 - Alpha
+Classifier: Environment :: Web Environment
+Classifier: Framework :: Django
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
