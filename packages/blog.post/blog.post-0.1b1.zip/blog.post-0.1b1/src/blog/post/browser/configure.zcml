@@ -1,0 +1,35 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:plone="http://namespaces.plone.org/plone"
+    i18n_domain="blog.post">
+
+    <!-- Publish static files -->
+    <browser:resourceDirectory
+        name="blog.post"
+        directory="static"
+        />
+
+    <include package="Products.CMFCore" file="permissions.zcml"/>
+
+    <include package="plone.app.contentmenu" />
+
+    <browser:page
+        for="*"
+        name="blogs_view"
+        layer="..interfaces.IBlogPostLayer"
+        class=".blogs_view.BlogsView"
+        template="templates/blogs_view.pt"
+        permission="zope2.View"
+        />
+    
+    <browser:page
+        for="blog.post.blog_post.IBlogPost"
+        name="blog_view"
+        layer="..interfaces.IBlogPostLayer"
+        class=".blog_view.BlogView"
+        template="templates/blog_view.pt"
+        permission="zope2.View"
+        />
+
+</configure>
