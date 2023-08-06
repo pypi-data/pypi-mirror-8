@@ -1,0 +1,151 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Using Pygments with MoinMoin &mdash; Pygments 2.0pre documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.0pre',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="top" title="Pygments 2.0pre documentation" href="../index.html" />
+    <link rel="up" title="Pygments documentation" href="index.html" />
+    <link rel="next" title="Use Pygments in Java" href="java.html" />
+    <link rel="prev" title="Using Pygments in ReST documents" href="rstdirective.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="java.html" title="Use Pygments in Java"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="rstdirective.html" title="Using Pygments in ReST documents"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">Pygments 2.0pre documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Pygments documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="using-pygments-with-moinmoin">
+<h1>Using Pygments with MoinMoin<a class="headerlink" href="#using-pygments-with-moinmoin" title="Permalink to this headline">¶</a></h1>
+<p>From Pygments 0.7, the source distribution ships a <a class="reference external" href="http://moinmoin.wikiwikiweb.de/">Moin</a> parser plugin that
+can be used to get Pygments highlighting in Moin wiki pages.</p>
+<p>To use it, copy the file <cite>external/moin-parser.py</cite> from the Pygments
+distribution to the <cite>data/plugin/parser</cite> subdirectory of your Moin instance.
+Edit the options at the top of the file (currently <code class="docutils literal"><span class="pre">ATTACHMENTS</span></code> and
+<code class="docutils literal"><span class="pre">INLINESTYLES</span></code>) and rename the file to the name that the parser directive
+should have. For example, if you name the file <code class="docutils literal"><span class="pre">code.py</span></code>, you can get a
+highlighted Python code sample with this Wiki markup:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{{{</span>
+<span class="c">#!code python</span>
+<span class="p">[</span><span class="o">...</span><span class="p">]</span>
+<span class="p">}}}</span>
+</pre></div>
+</div>
+<p>where <code class="docutils literal"><span class="pre">python</span></code> is the Pygments name of the lexer to use.</p>
+<p>Additionally, if you set the <code class="docutils literal"><span class="pre">ATTACHMENTS</span></code> option to True, Pygments will also
+be called for all attachments for whose filenames there is no other parser
+registered.</p>
+<p>You are responsible for including CSS rules that will map the Pygments CSS
+classes to colors. You can output a stylesheet file with <cite>pygmentize</cite>, put it
+into the <cite>htdocs</cite> directory of your Moin instance and then include it in the
+<cite>stylesheets</cite> configuration option in the Moin config, e.g.:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">stylesheets</span> <span class="o">=</span> <span class="p">[(</span><span class="s">&#39;screen&#39;</span><span class="p">,</span> <span class="s">&#39;/htdocs/pygments.css&#39;</span><span class="p">)]</span>
+</pre></div>
+</div>
+<p>If you do not want to do that and are willing to accept larger HTML output, you
+can set the <code class="docutils literal"><span class="pre">INLINESTYLES</span></code> option to True.</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="rstdirective.html"
+                        title="previous chapter">Using Pygments in ReST documents</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="java.html"
+                        title="next chapter">Use Pygments in Java</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/docs/moinmoin.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<strong>&laquo; <a href="index.html">Back to docs index</a></strong>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="java.html" title="Use Pygments in Java"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="rstdirective.html" title="Using Pygments in ReST documents"
+             >previous</a> |</li>
+        <li><a href="../index.html">Pygments 2.0pre documentation</a> &raquo;</li>
+          <li><a href="index.html" >Pygments documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2014, Georg Brandl.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3b2.
+    </div>
+  </body>
+</html>

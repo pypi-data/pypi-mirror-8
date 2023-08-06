@@ -1,0 +1,203 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Register Plugins &mdash; Pygments 2.0pre documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.0pre',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="top" title="Pygments 2.0pre documentation" href="../index.html" />
+    <link rel="up" title="Pygments documentation" href="index.html" />
+    <link rel="next" title="Using Pygments in ReST documents" href="rstdirective.html" />
+    <link rel="prev" title="Write your own filter" href="filterdevelopment.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="rstdirective.html" title="Using Pygments in ReST documents"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="filterdevelopment.html" title="Write your own filter"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">Pygments 2.0pre documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Pygments documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="register-plugins">
+<h1>Register Plugins<a class="headerlink" href="#register-plugins" title="Permalink to this headline">¶</a></h1>
+<p>If you want to extend Pygments without hacking the sources, but want to
+use the lexer/formatter/style/filter lookup functions (<cite>lexers.get_lexer_by_name</cite>
+et al.), you can use <a class="reference external" href="http://peak.telecommunity.com/DevCenter/setuptools">setuptools</a> entrypoints to add new lexers, formatters
+or styles as if they were in the Pygments core.</p>
+<p>That means you can use your highlighter modules with the <cite>pygmentize</cite> script,
+which relies on the mentioned functions.</p>
+<div class="section" id="entrypoints">
+<h2>Entrypoints<a class="headerlink" href="#entrypoints" title="Permalink to this headline">¶</a></h2>
+<p>Here is a list of setuptools entrypoints that Pygments understands:</p>
+<p><cite>pygments.lexers</cite></p>
+<blockquote>
+<div><p>This entrypoint is used for adding new lexers to the Pygments core.
+The name of the entrypoint values doesn&#8217;t really matter, Pygments extracts
+required metadata from the class definition:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[pygments.lexers]</span>
+<span class="na">yourlexer</span> <span class="o">=</span> <span class="s">yourmodule:YourLexer</span>
+</pre></div>
+</div>
+<p>Note that you have to define <code class="docutils literal"><span class="pre">name</span></code>, <code class="docutils literal"><span class="pre">aliases</span></code> and <code class="docutils literal"><span class="pre">filename</span></code>
+attributes so that you can use the highlighter from the command line:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">YourLexer</span><span class="p">(</span><span class="o">...</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s">&#39;Name Of Your Lexer&#39;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;alias&#39;</span><span class="p">]</span>
+    <span class="n">filenames</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;*.ext&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p><cite>pygments.formatters</cite></p>
+<blockquote>
+<div><p>You can use this entrypoint to add new formatters to Pygments. The
+name of an entrypoint item is the name of the formatter. If you
+prefix the name with a slash it&#8217;s used as a filename pattern:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[pygments.formatters]</span>
+<span class="na">yourformatter</span> <span class="o">=</span> <span class="s">yourmodule:YourFormatter</span>
+<span class="na">/.ext</span> <span class="o">=</span> <span class="s">yourmodule:YourFormatter</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p><cite>pygments.styles</cite></p>
+<blockquote>
+<div><p>To add a new style you can use this entrypoint. The name of the entrypoint
+is the name of the style:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[pygments.styles]</span>
+<span class="na">yourstyle</span> <span class="o">=</span> <span class="s">yourmodule:YourStyle</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p><cite>pygments.filters</cite></p>
+<blockquote>
+<div><p>Use this entrypoint to register a new filter. The name of the
+entrypoint is the name of the filter:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[pygments.filters]</span>
+<span class="na">yourfilter</span> <span class="o">=</span> <span class="s">yourmodule:YourFilter</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="how-to-use-entrypoints">
+<h2>How To Use Entrypoints<a class="headerlink" href="#how-to-use-entrypoints" title="Permalink to this headline">¶</a></h2>
+<p>This documentation doesn&#8217;t explain how to use those entrypoints because this is
+covered in the <a class="reference external" href="http://peak.telecommunity.com/DevCenter/setuptools">setuptools documentation</a>. That page should cover everything
+you need to write a plugin.</p>
+</div>
+<div class="section" id="extending-the-core">
+<h2>Extending The Core<a class="headerlink" href="#extending-the-core" title="Permalink to this headline">¶</a></h2>
+<p>If you have written a Pygments plugin that is open source, please inform us
+about that. There is a high chance that we&#8217;ll add it to the Pygments
+distribution.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Register Plugins</a><ul>
+<li><a class="reference internal" href="#entrypoints">Entrypoints</a></li>
+<li><a class="reference internal" href="#how-to-use-entrypoints">How To Use Entrypoints</a></li>
+<li><a class="reference internal" href="#extending-the-core">Extending The Core</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="filterdevelopment.html"
+                        title="previous chapter">Write your own filter</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="rstdirective.html"
+                        title="next chapter">Using Pygments in ReST documents</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/docs/plugins.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<strong>&laquo; <a href="index.html">Back to docs index</a></strong>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="rstdirective.html" title="Using Pygments in ReST documents"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="filterdevelopment.html" title="Write your own filter"
+             >previous</a> |</li>
+        <li><a href="../index.html">Pygments 2.0pre documentation</a> &raquo;</li>
+          <li><a href="index.html" >Pygments documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2014, Georg Brandl.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3b2.
+    </div>
+  </body>
+</html>
