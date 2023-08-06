@@ -1,0 +1,199 @@
+
+<!DOCTYPE html>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>clusterlib.scheduler.submit &mdash; clusterlib 0.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/bootswatch-3.1.0/lumen/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-3.1.0/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
+    <link rel="top" title="clusterlib 0.1.0 documentation" href="../index.html" />
+    <link rel="up" title="References" href="../references.html" />
+    <link rel="next" title="clusterlib.storage.sqlite3_loads" href="clusterlib.storage.sqlite3_loads.html" />
+    <link rel="prev" title="clusterlib.scheduler.queued_or_running_jobs" href="clusterlib.scheduler.queued_or_running_jobs.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head>
+  <body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          Clusterlib</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.1</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            <li class="divider-vertical"></li>
+            
+                <li><a href="../user_guide.html">User guide</a></li>
+                <li><a href="../references.html">References</a></li>
+                <li><a href="../whats_new.html">What's new?</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"></ul>
+</li>
+              
+            
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container content-container">
+  
+  <div class="section" id="clusterlib-scheduler-submit">
+<h1>clusterlib.scheduler.submit<a class="headerlink" href="#clusterlib-scheduler-submit" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="clusterlib.scheduler.submit">
+<tt class="descclassname">clusterlib.scheduler.</tt><tt class="descname">submit</tt><big>(</big><em>job_command</em>, <em>job_name='job'</em>, <em>time='24:00:00'</em>, <em>memory=4000</em>, <em>email=None</em>, <em>email_options=None</em>, <em>log_directory=None</em>, <em>backend='slurm'</em>, <em>shell_script='#!/bin/bash'</em><big>)</big><a class="headerlink" href="#clusterlib.scheduler.submit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write the submission query (without script)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>job_command</strong> : str,</p>
+<blockquote>
+<div><p>Command associated to the job, e.g. &#8216;python main.py&#8217;.</p>
+</div></blockquote>
+<p><strong>job_name</strong> : str, optional (default=&#8221;job&#8221;)</p>
+<blockquote>
+<div><p>Name of the job.</p>
+</div></blockquote>
+<p><strong>time</strong> : str, optional (default=&#8221;24:00:00&#8221;)</p>
+<blockquote>
+<div><p>Maximum time format &#8220;HH:MM:SS&#8221;.</p>
+</div></blockquote>
+<p><strong>memory</strong> : str, optional (default=4000)</p>
+<blockquote>
+<div><p>Maximum virtual memory in mega-bytes</p>
+</div></blockquote>
+<p><strong>email</strong> : str, optional (default=None)</p>
+<blockquote>
+<div><p>Email where job information is sent. If None, no email is asked
+to be sent.</p>
+</div></blockquote>
+<p><strong>email_options</strong> : str, optional (default=None)</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>Specify email options:</dt>
+<dd><ul class="first last simple">
+<li>SGE : Format char from beas (begin,end,abort,stop) for SGE.</li>
+<li>SLURM : either BEGIN, END, FAIL, REQUEUE or ALL.</li>
+</ul>
+</dd>
+</dl>
+<p>See the documenation for more information</p>
+</div></blockquote>
+<p><strong>log_directory</strong> : str, optional (default=None)</p>
+<blockquote>
+<div><p>Specify the log directory. If None, no log directory is specified.</p>
+</div></blockquote>
+<p><strong>backend</strong> : {&#8216;sge&#8217;, &#8216;slurm&#8217;}, optional (default=&#8221;slurm&#8221;)</p>
+<blockquote>
+<div><p>Backend where the job will be submitted</p>
+</div></blockquote>
+<p><strong>shell_script</strong> : str, optional (default=&#8221;#!/bin/bash&#8221;)</p>
+<blockquote>
+<div><p>Specify shell that is used by the script.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>submission_query</strong> : str,</p>
+<blockquote class="last">
+<div><p>Return the submission query in the appropriate format.
+The obtained query could be directly launch using os.subprocess.
+Further options could be appended at the end of the string.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<p>First, let&#8217;s generate a command for SLURM to launch the program
+<tt class="docutils literal"><span class="pre">main.py</span></tt>.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">clusterlib.scheduler</span> <span class="kn">import</span> <span class="n">submit</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">script</span> <span class="o">=</span> <span class="n">submit</span><span class="p">(</span><span class="s">&quot;python main.py --args 1&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">script</span><span class="p">)</span>
+<span class="go">echo &#39;#!/bin/bash</span>
+<span class="go">python main.py --args 1&#39; | sbatch --job-name=job --time=24:00:00 --mem=4000</span>
+</pre></div>
+</div>
+<p>The job can be latter launched using for instance <tt class="docutils literal"><span class="pre">os.system(script)</span></tt>.</p>
+</dd></dl>
+
+</div>
+
+
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2014, Arnaud Joly.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

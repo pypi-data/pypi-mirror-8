@@ -1,0 +1,185 @@
+
+<!DOCTYPE html>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>clusterlib.storage.sqlite3_loads &mdash; clusterlib 0.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/bootswatch-3.1.0/lumen/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-3.1.0/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
+    <link rel="top" title="clusterlib 0.1.0 documentation" href="../index.html" />
+    <link rel="up" title="References" href="../references.html" />
+    <link rel="next" title="clusterlib.storage.sqlite3_dumps" href="clusterlib.storage.sqlite3_dumps.html" />
+    <link rel="prev" title="clusterlib.scheduler.submit" href="clusterlib.scheduler.submit.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head>
+  <body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          Clusterlib</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.1</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            <li class="divider-vertical"></li>
+            
+                <li><a href="../user_guide.html">User guide</a></li>
+                <li><a href="../references.html">References</a></li>
+                <li><a href="../whats_new.html">What's new?</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"></ul>
+</li>
+              
+            
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container content-container">
+  
+  <div class="section" id="clusterlib-storage-sqlite3-loads">
+<h1>clusterlib.storage.sqlite3_loads<a class="headerlink" href="#clusterlib-storage-sqlite3-loads" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="clusterlib.storage.sqlite3_loads">
+<tt class="descclassname">clusterlib.storage.</tt><tt class="descname">sqlite3_loads</tt><big>(</big><em>file_name</em>, <em>key=None</em>, <em>timeout=7200.0</em><big>)</big><a class="headerlink" href="#clusterlib.storage.sqlite3_loads" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load value with key from sqlite3 stored at fname</p>
+<p>In order to improve performance, it&#8217;s advised to
+query the database using a (small) list of keys. Otherwise by calling
+this functions repeatedly, you might run into the <a class="reference external" href="http://beets.radbox.org/blog/sqlite-nightmare.html">SQlite lock timeout</a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>file_name</strong> : str</p>
+<blockquote>
+<div><p>Path to the sqlite database.</p>
+</div></blockquote>
+<p><strong>key</strong> : str or list of str or None, optional (default=None)</p>
+<blockquote>
+<div><p>Key used when the value was stored or list of keys. If None, all
+key, value pair from the database are returned.</p>
+</div></blockquote>
+<p><strong>timeout</strong> : float, optional (default=7200.0)</p>
+<blockquote>
+<div><p>The timeout parameter specifies how long the connection should wait
+for the lock to go away until raising an exception.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>out</strong> : dict</p>
+<blockquote class="last">
+<div><p>Return a dict where each key point is associated to the stored object.
+If a key from key is missing in the sqlite3, then there is no
+entry in out for this key. If there is no sqlite3 database at
+<tt class="docutils literal"><span class="pre">file_name</span></tt>, then an empty dictionary is returned.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<p>Here, we generate a temporary sqlite3 database, dump then load some
+data from it.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">tempfile</span> <span class="kn">import</span> <span class="n">NamedTemporaryFile</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">clusterlib.storage</span> <span class="kn">import</span> <span class="n">sqlite3_dumps</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">clusterlib.storage</span> <span class="kn">import</span> <span class="n">sqlite3_loads</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">NamedTemporaryFile</span><span class="p">()</span> <span class="k">as</span> <span class="n">fhandle</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="n">sqlite3_dumps</span><span class="p">({</span><span class="s">&quot;3&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s">&quot;2&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">},</span> <span class="n">fhandle</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">out</span> <span class="o">=</span> <span class="n">sqlite3_loads</span><span class="p">(</span><span class="n">fhandle</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="p">[</span><span class="s">&quot;7&quot;</span><span class="p">,</span> <span class="s">&quot;3&quot;</span><span class="p">])</span>
+<span class="gp">... </span>    <span class="k">print</span><span class="p">(</span><span class="n">out</span><span class="p">[</span><span class="s">&#39;3&#39;</span><span class="p">])</span>
+<span class="gp">... </span>    <span class="k">print</span><span class="p">(</span><span class="s">&quot;7&quot;</span> <span class="ow">in</span> <span class="n">out</span><span class="p">)</span>  <span class="c"># &quot;7&quot; is not in the database</span>
+<span class="go">3</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+<p>It&#8217;s also possible to get all key-value pairs from the database without
+specifying the keys.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">NamedTemporaryFile</span><span class="p">()</span> <span class="k">as</span> <span class="n">fhandle</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="n">sqlite3_dumps</span><span class="p">({</span><span class="s">&#39;first&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span> <span class="n">fhandle</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">out</span> <span class="o">=</span> <span class="n">sqlite3_loads</span><span class="p">(</span><span class="n">fhandle</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="k">print</span><span class="p">(</span><span class="n">out</span><span class="p">[</span><span class="s">&#39;first&#39;</span><span class="p">])</span>
+<span class="go">1</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+
+
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2014, Arnaud Joly.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

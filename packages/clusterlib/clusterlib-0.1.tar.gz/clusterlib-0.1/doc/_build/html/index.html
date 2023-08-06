@@ -1,0 +1,171 @@
+
+<!DOCTYPE html>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Embarrasingly distributed parallel loop &mdash; clusterlib 0.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="_static/bootswatch-3.1.0/lumen/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="_static/bootstrap-3.1.0/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
+    <link rel="top" title="clusterlib 0.1.0 documentation" href="#" />
+    <link rel="next" title="dev" href="whats_new.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head>
+  <body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#">
+          Clusterlib</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.1</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            <li class="divider-vertical"></li>
+            
+                <li><a href="user_guide.html">User guide</a></li>
+                <li><a href="references.html">References</a></li>
+                <li><a href="whats_new.html">What's new?</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"></ul>
+</li>
+              
+            
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container content-container">
+  
+  <div class="section" id="embarrasingly-distributed-parallel-loop">
+<h1>Embarrasingly distributed parallel loop<a class="headerlink" href="#embarrasingly-distributed-parallel-loop" title="Permalink to this headline">¶</a></h1>
+<a class="reference external image-reference" href="https://secure.travis-ci.org/clusterlib/clusterlib"><img alt="Build status" src="https://secure.travis-ci.org/clusterlib/clusterlib.png?branch=master" /></a>
+<a class="reference external image-reference" href="https://coveralls.io/r/clusterlib/clusterlib"><img alt="Coverage status" src="https://coveralls.io/repos/clusterlib/clusterlib/badge.png?branch=master" /></a>
+<a class="reference external image-reference" href="https://landscape.io/github/clusterlib/clusterlib/master"><img alt="Code Health" src="https://landscape.io/github/clusterlib/clusterlib/master/landscape.svg" /></a>
+<p>Warnings: the package is still in development. Backward compatibility might
+not be preserved.</p>
+<p>Aims:  simple, pure python</p>
+<p>This library works well with <a class="reference external" href="https://pythonhosted.org/joblib/">joblib</a>,
+which is intended to solve similar issues in shared memory architecture.</p>
+<div class="section" id="getting-the-latest-code">
+<h2>Getting the latest code<a class="headerlink" href="#getting-the-latest-code" title="Permalink to this headline">¶</a></h2>
+<p>To get the latest code using git, simply type:</p>
+<blockquote>
+<div>git clone git://github.com/clusterlib/clusterlib.git</div></blockquote>
+<p>If you don&#8217;t have git installed, you can download a zip or tarball of the
+latest code: <a class="reference external" href="https://github.com/clusterlib/clusterlib/archive/master.zip">https://github.com/clusterlib/clusterlib/archive/master.zip</a></p>
+</div>
+<div class="section" id="installing">
+<h2>Installing<a class="headerlink" href="#installing" title="Permalink to this headline">¶</a></h2>
+<p>As any Python packages, to install clusterlib, simply do:</p>
+<blockquote>
+<div>python setup.py install</div></blockquote>
+<p>in the source code directory.</p>
+</div>
+<div class="section" id="how-to-contribute">
+<h2>How to contribute?<a class="headerlink" href="#how-to-contribute" title="Permalink to this headline">¶</a></h2>
+<p>To contribute to clusterlib, first create a github account. Then you can
+fork the <a class="reference external" href="https://github.com/clusterlib/clusterlib">clusterlib repository</a>.
+Once this is done, you can make clone of your fork, make your changes and
+whenever you are happy, send us a pull request to the main repository.</p>
+</div>
+<div class="section" id="running-the-test-suite">
+<h2>Running the test suite<a class="headerlink" href="#running-the-test-suite" title="Permalink to this headline">¶</a></h2>
+<p>To run the test suite, you need nosetests and the coverage modules.
+Run the test suite using:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">nosetests</span>
+</pre></div>
+</div>
+<p>from the root of the project.</p>
+</div>
+<div class="section" id="documentation">
+<h2>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h2>
+<p>For making the documentation, Sphinx==1.2.2 and sphinx-bootstrap-theme==0.4.0
+are needed. Then, you can do</p>
+<blockquote>
+<div>make doc</div></blockquote>
+<p>To update the documentation on <a class="reference external" href="http://clusterlib.github.io/clusterlib/">http://clusterlib.github.io/clusterlib/</a>, simply
+do</p>
+<blockquote>
+<div>make gh-pages</div></blockquote>
+<div class="toctree-wrapper compound">
+</div>
+</div>
+</div>
+
+
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2014, Arnaud Joly.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>
