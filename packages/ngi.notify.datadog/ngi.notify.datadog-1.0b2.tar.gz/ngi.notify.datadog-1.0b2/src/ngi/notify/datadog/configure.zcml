@@ -1,0 +1,105 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+    xmlns:plone="http://namespaces.plone.org/plone"
+    xmlns:zcml="http://namespaces.zope.org/zcml"
+    i18n_domain="ngi.notify.datadog">
+
+    <i18n:registerTranslations directory="locales" />
+
+    <!-- browser -->
+    <include package=".browser" />
+
+    <!-- control panel -->
+    <include
+        file="controlpanel.zcml" />
+
+    <!-- Resource directory for images -->
+    <plone:static
+        directory="static"
+        type="theme"
+        />
+
+    <genericsetup:registerProfile
+        name="default"
+        title="Notify events to DataDog"
+        directory="profiles/default"
+        description=""
+        provides="Products.GenericSetup.interfaces.EXTENSION"
+        />
+
+    <!-- subscriber -->
+    <subscriber
+        zcml:condition="installed ngi.notify.datadog"
+        for="zope.processlifetime.IProcessStarting"
+        handler=".events.processStart"
+        />
+
+    <subscriber
+        zcml:condition="installed ngi.notify.datadog"
+        for="zope.processlifetime.IDatabaseOpened"
+        handler=".events.databaseOpened"
+        />
+
+    <subscriber
+        zcml:condition="installed ngi.notify.datadog"
+        for="Products.CMFCore.interfaces.IContentish
+             Products.CMFCore.interfaces.IActionRaisedExceptionEvent"
+        handler=".events.actionRaisedEvent"
+        />
+
+    <subscriber
+        zcml:condition="installed ngi.notify.datadog"
+        for="Products.CMFCore.interfaces.IContentish
+             Products.CMFCore.interfaces.IActionSucceededEvent"
+        handler=".events.actionRaisedEvent"
+        />
+
+    <subscriber
+        zcml:condition="installed ngi.notify.datadog"
+        for="Products.CMFCore.interfaces.IContentish
+             zope.lifecycleevent.interfaces.IObjectCreatedEvent"
+        handler=".events.createdContent"
+        />
+
+    <subscriber
+        zcml:condition="installed ngi.notify.datadog"
+        for="Products.CMFCore.interfaces.IContentish
+             zope.lifecycleevent.interfaces.IObjectModifiedEvent"
+        handler=".events.modifiedContent"
+        />
+
+    <subscriber
+        zcml:condition="installed ngi.notify.datadog"
+        for="zope.interface.Interface
+             Products.PlonePAS.events.UserLoggedInEvent"
+        handler=".events.loggedIn"
+        />
+
+    <subscriber
+        zcml:condition="installed ngi.notify.datadog"
+        for="zope.interface.Interface
+             Products.PlonePAS.events.UserLoggedOutEvent"
+        handler=".events.loggedOut"
+        />
+
+    <subscriber
+        zcml:condition="installed ngi.notify.datadog"
+        for="Products.PluggableAuthService.interfaces.events.IPrincipalCreatedEvent"
+        handler=".events.userCreated"
+        />
+
+    <subscriber
+        zcml:condition="installed ngi.notify.datadog"
+        for="Products.PluggableAuthService.interfaces.events.IPrincipalDeletedEvent"
+        handler=".events.userDeleted"
+        />
+
+    <subscriber
+        zcml:condition="installed ngi.notify.datadog"
+        for="plone.app.controlpanel.interfaces.IConfigurationChangedEvent"
+        handler=".events.cpChanged"
+        />
+
+</configure>
