@@ -1,0 +1,16 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    i18n_domain="collective.lastmodified">
+
+    <browser:viewlet
+        for="Products.ATContentTypes.interface.IATDocument"
+        name="collective.lastmodified"
+        manager="plone.app.layout.viewlets.interfaces.IBelowContentBody"
+        class=".viewlets.LastModifiedViewlet"
+        template="templates/lastmodified.pt"
+        layer="..interfaces.IAddOnInstalled"
+        permission="zope2.View"
+        />
+
+</configure>
