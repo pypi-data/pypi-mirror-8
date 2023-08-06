@@ -1,0 +1,34 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:plone="http://namespaces.plone.org/plone"
+i18n_domain="collective.slickslideshow">
+	
+	<browser:page
+         for="plone.dexterity.interfaces.IDexterityContainer"
+         name="slick_slideshow_view"
+         class=".views.SlickSlideshowView"
+         template="templates/slick_slideshow_view.pt"
+         layer="..interfaces.ISlickSlideshowSpecific"
+         permission="zope2.View"
+    />
+
+    <browser:menuItem
+        for="plone.dexterity.interfaces.IDexterityContainer"
+        menu="plone_displayviews"
+        title="Slick Slideshow View"
+        action="slick_slideshow_view"
+        layer="..interfaces.ISlickSlideshowSpecific"
+        description="View with Slick Slideshow displayed"
+    />
+
+	<browser:resourceDirectory
+      name="collective.slickslideshow.js"
+      directory="js"
+    />
+      
+	<browser:resourceDirectory
+      name="collective.slickslideshow.css"
+      directory="css"/>
+
+</configure>
