@@ -1,0 +1,59 @@
+#!/usr/bin/env python
+
+"""
+Examples of usage:
+
+Source data will be read from the specified file and the result will be
+written to the specified file using custom elements mapping:
+
+    $ html2bbcode --map map.conf source.html destination.bbcode
+
+Source data will be read from the specified file and the result will be
+written to the standart destination:
+
+    $ html2bbcode source.html
+
+Source data will be read from the standard source and the result will be
+written to the specified file:
+
+    $ cat source.html | html2bbcode destination.bbcode
+
+Source data will be read from the standard source and the result will be
+written to the standard destination:
+
+    $ cat source.html | html2bbcode
+
+"""
+import argparse
+import sys
+from html2bbcode.parser import HTML2BBCode
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(
+        description='HTML to BBCode converter',
+        formatter_class=argparse.RawTextHelpFormatter,
+        epilog=__doc__)
+    parser.add_argument('file1', default=None, nargs='?',
+                        help='Source file')
+    parser.add_argument('file2', default=None, nargs='?',
+                        help='Destination file')
+    parser.add_argument('--map', '--config', default=None,
+                        help='Mapping file elements')
+    args = parser.parse_args()
+
+    if sys.stdin.isatty():
+        if not args.file1:
+            parser.print_help()
+            exit()
+        source = open(args.file1, 'r').read()
+        file2 = args.file2
+    else:
+        source = sys.stdin.read()
+        file2 = args.file1
+
+    destination = HTML2BBCode(config=args.map).feed(source)
+    if file2:
+        with open(file2, 'w') as f:
+            f.write(destination)
+    else:
+        sys.stdout.write(destination)
