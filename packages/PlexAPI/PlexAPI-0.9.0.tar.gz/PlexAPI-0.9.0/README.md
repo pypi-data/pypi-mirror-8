@@ -1,0 +1,55 @@
+## PlexAPI ##
+Python bindings for the Plex API.
+
+* Navigate your Plex library.
+* Mark shows watched or unwatched.
+* Request rescan, analyze, empty trash.
+* Play media on connected clients.
+
+Planned features:
+
+* Create and maintain playlists.
+* Use API from another network.
+* Navigate shared libraries.
+* List active sessions.
+* Play trailers and extras.
+* Provide useful utility scripts.
+* Better support for Music and Photos?
+
+#### Install ###
+
+    pip install plexapi
+
+#### Examples ####
+
+    from plexapi.server import PlexServer
+    server = PlexServer()
+
+    # Example 1: List all unwatched content in library
+    for section in server.library.sections():
+        print 'Unwatched content in %s:' % section.title
+        for video in section.unwatched():
+            print '  %s' % video.title
+
+    # Example 2: Mark all Conan episodes watched
+    server.library.find('Conan (2010)').markWatched()
+
+    # Example 3: List all Clients connected to the Server
+    for client in server.clients():
+        print client.name
+
+    # Example 4: Play the Movie Avatar on my iPhone
+    avatar = server.library.section('Movies').find('Avatar')
+    client = server.client("Michael's iPhone")
+    client.playMedia(avatar)
+
+    # Example 5: List all content with the word 'Game' in the title
+    for video in server.search('Game'):
+        print '%s (%s)' % (video.title, video.TYPE)
+    
+    
+   
+
+    
+    
+
