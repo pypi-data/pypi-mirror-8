@@ -1,0 +1,346 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>spacepy.pycdf.Attr &mdash; SpacePy v0.1.4 Manual (DRAFT)</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1.4',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/copybutton.js"></script>
+    <link rel="shortcut icon" href="../_static/lanl_favicon.ico"/>
+    <link rel="top" title="SpacePy v0.1.4 Manual (DRAFT)" href="../index.html" />
+    <link rel="up" title="pycdf - Python interface to CDF files" href="../pycdf.html" />
+    <link rel="next" title="spacepy.pycdf.Library" href="spacepy.pycdf.Library.html" />
+    <link rel="prev" title="spacepy.pycdf.AttrList" href="spacepy.pycdf.AttrList.html" /> 
+  </head>
+  <body>
+
+<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../index.html"><img src="../_static/spacepy_logo.jpg" border="0" alt="spacepy_logo"/></a>
+</div>
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="spacepy.pycdf.Library.html" title="spacepy.pycdf.Library"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="spacepy.pycdf.AttrList.html" title="spacepy.pycdf.AttrList"
+             accesskey="P">previous</a> |</li>
+        <li><a href="http://spacepy.lanl.gov/index.shtml">homepage</a>|&nbsp;</li>
+        <li><a href="../search.html">search</a>|&nbsp;</li>
+       <li><a href="../index.html">documentation </a> &raquo;</li>
+
+          <li><a href="../pycdf.html" accesskey="U">pycdf - Python interface to CDF files</a> &raquo;</li> 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo.png" alt="Logo"/>
+            </a></p>
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="spacepy.pycdf.AttrList.html"
+                        title="previous chapter">spacepy.pycdf.AttrList</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="spacepy.pycdf.Library.html"
+                        title="next chapter">spacepy.pycdf.Library</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/autosummary/spacepy.pycdf.Attr.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="spacepy-pycdf-attr">
+<h1>spacepy.pycdf.Attr<a class="headerlink" href="#spacepy-pycdf-attr" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="spacepy.pycdf.Attr">
+<em class="property">class </em><tt class="descclassname">spacepy.pycdf.</tt><tt class="descname">Attr</tt><big>(</big><em>cdf_file</em>, <em>attr_name</em>, <em>create=False</em><big>)</big><a class="reference internal" href="../_modules/spacepy/pycdf.html#Attr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spacepy.pycdf.Attr" title="Permalink to this definition">¶</a></dt>
+<dd><p>An attribute, g or z, for a CDF</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">This class should not be used directly, but only in its
+subclasses, <a class="reference internal" href="spacepy.pycdf.gAttr.html#spacepy.pycdf.gAttr" title="spacepy.pycdf.gAttr"><tt class="xref py py-class docutils literal"><span class="pre">gAttr</span></tt></a> and <a class="reference internal" href="spacepy.pycdf.zAttr.html#spacepy.pycdf.zAttr" title="spacepy.pycdf.zAttr"><tt class="xref py py-class docutils literal"><span class="pre">zAttr</span></tt></a>. The methods
+listed here are safe to use in the subclasses.</p>
+</div>
+<p>Represents a CDF attribute, providing access to the Entries in a format
+that looks like a Python
+list. General list information is available in the python docs:
+<a class="reference external" href="http://docs.python.org/tutorial/introduction.html#lists">1</a>,
+<a class="reference external" href="http://docs.python.org/tutorial/datastructures.html#more-on-lists">2</a>,
+<a class="reference external" href="http://docs.python.org/library/stdtypes.html#typesseq">3</a>.</p>
+<p>An introduction to CDF attributes can be found in section 2.4 of
+the CDF user&#8217;s guide.</p>
+<p>Each element of the list is a single Entry of the appropriate type.
+The index to the elements is the Entry number.</p>
+<p>Multi-dimensional slicing is <em>not</em> supported; an Entry with multiple
+elements will have all elements returned (and can thus be sliced itself).
+Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">first_three</span> <span class="o">=</span> <span class="n">attribute</span><span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span> <span class="c">#will fail</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">first_three</span> <span class="o">=</span> <span class="n">attribute</span><span class="p">[</span><span class="mi">5</span><span class="p">][</span><span class="mi">0</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span> <span class="c">#first three elements of 5th Entry</span>
+</pre></div>
+</div>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#spacepy.pycdf.Attr.has_entry" title="spacepy.pycdf.Attr.has_entry"><tt class="xref py py-obj docutils literal"><span class="pre">has_entry</span></tt></a>(number)</td>
+<td>Check if this attribute has a particular Entry number</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#spacepy.pycdf.Attr.max_idx" title="spacepy.pycdf.Attr.max_idx"><tt class="xref py py-obj docutils literal"><span class="pre">max_idx</span></tt></a>()</td>
+<td>Maximum index of Entries for this Attr</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#spacepy.pycdf.Attr.new" title="spacepy.pycdf.Attr.new"><tt class="xref py py-obj docutils literal"><span class="pre">new</span></tt></a>(data[,&nbsp;type,&nbsp;number])</td>
+<td>Create a new Entry in this Attribute</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#spacepy.pycdf.Attr.number" title="spacepy.pycdf.Attr.number"><tt class="xref py py-obj docutils literal"><span class="pre">number</span></tt></a>()</td>
+<td>Find the attribute number for this attribute</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#spacepy.pycdf.Attr.rename" title="spacepy.pycdf.Attr.rename"><tt class="xref py py-obj docutils literal"><span class="pre">rename</span></tt></a>(new_name)</td>
+<td>Rename this attribute</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#spacepy.pycdf.Attr.type" title="spacepy.pycdf.Attr.type"><tt class="xref py py-obj docutils literal"><span class="pre">type</span></tt></a>(number[,&nbsp;new_type])</td>
+<td>Find or change the CDF type of a particular Entry number</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="spacepy.pycdf.Attr.has_entry">
+<tt class="descname">has_entry</tt><big>(</big><em>number</em><big>)</big><a class="reference internal" href="../_modules/spacepy/pycdf.html#Attr.has_entry"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spacepy.pycdf.Attr.has_entry" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if this attribute has a particular Entry number</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>number</strong> : int</p>
+<blockquote>
+<div><p>number of Entry to check or change</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>out</strong> : bool</p>
+<blockquote class="last">
+<div><p>True if <tt class="docutils literal"><span class="pre">number</span></tt> is a valid entry number; False if not</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="spacepy.pycdf.Attr.max_idx">
+<tt class="descname">max_idx</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/spacepy/pycdf.html#Attr.max_idx"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spacepy.pycdf.Attr.max_idx" title="Permalink to this definition">¶</a></dt>
+<dd><p>Maximum index of Entries for this Attr</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>out</strong> : int</p>
+<blockquote class="last">
+<div><p>maximum Entry number</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="spacepy.pycdf.Attr.new">
+<tt class="descname">new</tt><big>(</big><em>data</em>, <em>type=None</em>, <em>number=None</em><big>)</big><a class="reference internal" href="../_modules/spacepy/pycdf.html#Attr.new"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spacepy.pycdf.Attr.new" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new Entry in this Attribute</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If <tt class="docutils literal"><span class="pre">number</span></tt> is provide and an Entry with that number
+already exists, it will be overwritten.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>data</strong> :</p>
+<blockquote>
+<div><p>data to put in the Entry</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Other Parameters:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body"><p class="first"><strong>type</strong> : int</p>
+<blockquote>
+<div><p>type of the new Entry, from <a class="reference internal" href="../pycdf_const.html#module-spacepy.pycdf.const" title="spacepy.pycdf.const"><tt class="xref py py-mod docutils literal"><span class="pre">const</span></tt></a>
+(otherwise guessed from <tt class="docutils literal"><span class="pre">data</span></tt>)</p>
+</div></blockquote>
+<p><strong>number</strong> : int</p>
+<blockquote class="last">
+<div><p>Entry number to write, default is lowest available number.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="spacepy.pycdf.Attr.number">
+<tt class="descname">number</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/spacepy/pycdf.html#Attr.number"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spacepy.pycdf.Attr.number" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the attribute number for this attribute</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>out</strong> : int</p>
+<blockquote class="last">
+<div><p>attribute number</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="spacepy.pycdf.Attr.rename">
+<tt class="descname">rename</tt><big>(</big><em>new_name</em><big>)</big><a class="reference internal" href="../_modules/spacepy/pycdf.html#Attr.rename"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spacepy.pycdf.Attr.rename" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rename this attribute</p>
+<p>Renaming a zAttribute renames it for <em>all</em> zVariables in this CDF!</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>new_name</strong> : str</p>
+<blockquote class="last">
+<div><p>the new name of the attribute</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="spacepy.pycdf.Attr.type">
+<tt class="descname">type</tt><big>(</big><em>number</em>, <em>new_type=None</em><big>)</big><a class="reference internal" href="../_modules/spacepy/pycdf.html#Attr.type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spacepy.pycdf.Attr.type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find or change the CDF type of a particular Entry number</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>number</strong> : int</p>
+<blockquote>
+<div><p>number of Entry to check or change</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>out</strong> : int</p>
+<blockquote>
+<div><p>CDF variable type, see <a class="reference internal" href="../pycdf_const.html#module-spacepy.pycdf.const" title="spacepy.pycdf.const"><tt class="xref py py-mod docutils literal"><span class="pre">const</span></tt></a></p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">Other Parameters:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body"><p class="first"><strong>new_type</strong> :</p>
+<blockquote class="last">
+<div><p>type to change this Entry to, from <a class="reference internal" href="../pycdf_const.html#module-spacepy.pycdf.const" title="spacepy.pycdf.const"><tt class="xref py py-mod docutils literal"><span class="pre">const</span></tt></a>.
+Omit to only check type.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>If changing types, old and new must be equivalent, see CDF
+User&#8217;s Guide section 2.5.5 pg. 57</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="spacepy.pycdf.Library.html" title="spacepy.pycdf.Library"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="spacepy.pycdf.AttrList.html" title="spacepy.pycdf.AttrList"
+             >previous</a> |</li>
+        <li><a href="http://spacepy.lanl.gov/index.shtml">homepage</a>|&nbsp;</li>
+        <li><a href="../search.html">search</a>|&nbsp;</li>
+       <li><a href="../index.html">documentation </a> &raquo;</li>
+
+          <li><a href="../pycdf.html" >pycdf - Python interface to CDF files</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011-2012, The SpacePy Team.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,1181 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>spacepy.seapy &mdash; SpacePy v0.1.4 Manual (DRAFT)</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1.4',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/copybutton.js"></script>
+    <link rel="shortcut icon" href="../../_static/lanl_favicon.ico"/>
+    <link rel="top" title="SpacePy v0.1.4 Manual (DRAFT)" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+
+<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../../index.html"><img src="../../_static/spacepy_logo.jpg" border="0" alt="spacepy_logo"/></a>
+</div>
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="http://spacepy.lanl.gov/index.shtml">homepage</a>|&nbsp;</li>
+        <li><a href="../../search.html">search</a>|&nbsp;</li>
+       <li><a href="../../index.html">documentation </a> &raquo;</li>
+
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for spacepy.seapy</h1><div class="highlight"><pre>
+<span class="c">#!/usr/bin/python</span>
+<span class="c"># -*- coding: utf-8 -*-</span>
+
+<span class="sd">&quot;&quot;&quot;SeaPy -- Superposed Epoch in Python.</span>
+
+<span class="sd">This module contains superposed epoch class types and a variety of functions</span>
+<span class="sd">for using on superposed epoch objects.</span>
+<span class="sd">Each instance must be initialized with (assuming import seapy as se):</span>
+
+<span class="sd">&gt;&gt;&gt; obj = se.Sea(data, times, epochs)</span>
+
+<span class="sd">To perform a superposed epoch analysis</span>
+
+<span class="sd">&gt;&gt;&gt; obj.sea()</span>
+
+<span class="sd">To plot</span>
+
+<span class="sd">&gt;&gt;&gt; obj.plot()</span>
+
+<span class="sd">If multiple SeaPy objects exist, these can be combined into a single object</span>
+
+<span class="sd">&gt;&gt;&gt; objdict = seadict([obj1, obj2],[&#39;obj1name&#39;,&#39;obj2name&#39;])</span>
+
+<span class="sd">and then used to create a multipanel plot</span>
+
+<span class="sd">&gt;&gt;&gt; multisea(objdict)</span>
+
+
+<span class="sd">For two-dimensional superposed epoch analyses, initialize an Sea2d() instance</span>
+
+<span class="sd">&gt;&gt;&gt; obj = se.Sea2d(data, times, epochs, y=[4., 12.])</span>
+
+<span class="sd">All object methods are the same as for the 1D object. Also, the multisea()</span>
+<span class="sd">function should accept both 1D and 2D objects, even mixed together. Currently,</span>
+<span class="sd">the plot() method is recommended for 2D SEA.</span>
+
+
+<span class="sd">--++-- By Steve Morley --++--</span>
+
+<span class="sd">smorley@lanl.gov</span>
+<span class="sd">Los Alamos National Laboratory</span>
+
+<span class="sd">Copyright 2010 Los Alamos National Security, LLC.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">division</span>
+
+<span class="kn">import</span> <span class="nn">warnings</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">numpy.ma</span> <span class="kn">as</span> <span class="nn">ma</span>
+<span class="kn">import</span> <span class="nn">numbers</span>
+<span class="kn">import</span> <span class="nn">datetime</span> <span class="kn">as</span> <span class="nn">dt</span>
+<span class="kn">import</span> <span class="nn">spacepy.toolbox</span> <span class="kn">as</span> <span class="nn">tb</span>
+<span class="kn">from</span> <span class="nn">spacepy</span> <span class="kn">import</span> <span class="n">help</span>
+<span class="kn">import</span> <span class="nn">spacepy.time</span> <span class="kn">as</span> <span class="nn">spt</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">matplotlib.dates</span> <span class="kn">import</span> <span class="n">date2num</span><span class="p">,</span> <span class="n">num2date</span>
+
+<span class="n">__contact__</span> <span class="o">=</span> <span class="s">&#39;Steve Morley, smorley@lanl.gov&#39;</span>
+
+<span class="k">class</span> <span class="nc">SeaBase</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;SeaPy Superposed epoch analysis base class</span>
+
+<span class="sd">    Do not use directly -- subclass it!</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="n">epochs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="n">spt</span><span class="o">.</span><span class="n">Ticktock</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">times</span><span class="o">=</span><span class="n">times</span><span class="o">.</span><span class="n">UTC</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">times</span> <span class="o">=</span> <span class="n">times</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">epochs</span><span class="p">,</span> <span class="n">spt</span><span class="o">.</span><span class="n">Ticktock</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">epochs</span> <span class="o">=</span> <span class="n">epochs</span><span class="o">.</span><span class="n">UTC</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">epochs</span> <span class="o">=</span> <span class="n">epochs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;verbose&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;delta&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="n">dt</span><span class="o">.</span><span class="n">timedelta</span><span class="p">:</span>
+            <span class="n">t_delt</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;delta&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">days</span> <span class="o">+</span> <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;delta&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">seconds</span><span class="o">/</span><span class="mi">86400</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">delta</span> <span class="o">=</span> <span class="n">t_delt</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">delta</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;delta&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;window&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="n">dt</span><span class="o">.</span><span class="n">timedelta</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">window</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;window&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">days</span> <span class="o">+</span> <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;window&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">seconds</span><span class="o">/</span><span class="mi">86400</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">window</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;window&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">window</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">window</span><span class="p">)</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">delta</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;window&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">window</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="s">&#39;Window size changed to {0} (points) to fit resolution ({1})&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">window</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">delta</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bound_type</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Define String Representation of Sea object&quot;&quot;&quot;</span>
+
+        <span class="n">strhead</span> <span class="o">=</span> <span class="s">&#39;Superposed Epoch Object:&#39;</span>
+        <span class="n">strtail</span> <span class="o">=</span> <span class="s">&#39;Data array - {0}; #Epochs - {1}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">epochs</span><span class="p">))</span>
+        <span class="k">return</span> <span class="s">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">((</span><span class="n">strhead</span><span class="p">,</span> <span class="n">strtail</span><span class="p">))</span>
+
+    <span class="n">__repr__</span> <span class="o">=</span> <span class="n">__str__</span>
+
+    <span class="k">def</span> <span class="nf">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calling len(obj) will return the number of epochs.&quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">epochs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">restoreepochs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Replaces epoch times stored in obj.badepochs in the epochs attribute</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">dum</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">badepochs</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s">&#39;No bad epochs to restore&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">epochs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">union1d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">badepochs</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">epochs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span> <span class="k">print</span><span class="p">(</span><span class="s">&#39;Bad epochs restored to epochs attribute&#39;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">None</span>
+
+    <span class="k">def</span> <span class="nf">_timeepoch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">delt</span><span class="p">):</span>
+        <span class="c">#check type of time input and throw error message</span>
+        <span class="n">el1</span><span class="p">,</span><span class="n">ep1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">times</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">epochs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">el1num</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">el1</span><span class="p">,</span> <span class="n">numbers</span><span class="o">.</span><span class="n">Number</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">el1</span><span class="p">)</span><span class="o">==</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="n">ep1num</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ep1</span><span class="p">,</span> <span class="n">numbers</span><span class="o">.</span><span class="n">Number</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">ep1</span><span class="p">)</span><span class="o">==</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">el1</span><span class="p">,</span> <span class="n">dt</span><span class="o">.</span><span class="n">datetime</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">el1</span><span class="p">)</span> <span class="o">==</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">epochs</span><span class="p">[</span><span class="mi">0</span><span class="p">])):</span>
+            <span class="c">#both time and epochs are datetime objects</span>
+            <span class="c">#convert to serial time</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+                <span class="k">print</span><span class="p">(</span><span class="s">&#39;converting to serial time&#39;</span><span class="p">)</span>
+            <span class="n">dum</span> <span class="o">=</span> <span class="n">date2num</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">epochs</span><span class="p">)</span>
+            <span class="n">t_epoch</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">dum</span><span class="p">)</span>
+            <span class="n">dum</span> <span class="o">=</span> <span class="n">date2num</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">times</span><span class="p">)</span>
+            <span class="n">time</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">dum</span><span class="p">)</span>
+            <span class="n">ser_flag</span><span class="o">=</span><span class="bp">False</span>
+        <span class="k">elif</span> <span class="n">el1num</span> <span class="ow">and</span> <span class="n">ep1num</span><span class="p">:</span>
+            <span class="c">#time is serial, do nothing</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+                <span class="k">print</span><span class="p">(</span><span class="s">&#39;time is serial&#39;</span><span class="p">)</span>
+            <span class="n">t_epoch</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">epochs</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+            <span class="n">time</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">times</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+            <span class="n">ser_flag</span><span class="o">=</span><span class="bp">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;Time and Epochs must be consistently typed (numeric/datetime)&#39;</span><span class="p">)</span>
+
+        <span class="n">lose0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">t_epoch</span> <span class="o">&gt;</span> <span class="n">time</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">window</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">delta</span><span class="p">))</span>
+        <span class="n">lose1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">t_epoch</span> <span class="o">&lt;</span> <span class="n">time</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">window</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">delta</span><span class="p">))</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">lose0</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">0</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">lose1</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
+            <span class="n">linds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">union1d</span><span class="p">(</span><span class="n">lose0</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">lose1</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">linds</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span> <span class="k">print</span><span class="p">(</span><span class="s">&#39;sea(): </span><span class="si">%s</span><span class="s"> out-of-range epochs moved to badepochs attribute&#39;</span>\
+                <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">linds</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">ser_flag</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">badepochs</span> <span class="o">=</span> <span class="n">t_epoch</span><span class="p">[</span><span class="n">linds</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">badepochs</span> <span class="o">=</span> <span class="n">num2date</span><span class="p">(</span><span class="n">t_epoch</span><span class="p">[</span><span class="n">linds</span><span class="p">])</span>
+            <span class="c">##TODO: replace following two lines with calls to tOverlapHalf</span>
+            <span class="n">keep0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">t_epoch</span> <span class="o">&lt;=</span> <span class="n">time</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">window</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">delta</span><span class="p">))</span>
+            <span class="n">keep1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">t_epoch</span> <span class="o">&gt;=</span> <span class="n">time</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">window</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">delta</span><span class="p">))</span>
+            <span class="n">kinds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">intersect1d</span><span class="p">(</span><span class="n">keep0</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">keep1</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">epochs</span> <span class="o">=</span> <span class="n">t_epoch</span><span class="p">[</span><span class="n">kinds</span><span class="p">]</span>
+            <span class="n">t_epoch</span> <span class="o">=</span> <span class="n">t_epoch</span><span class="p">[</span><span class="n">kinds</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">epochs</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&#39;No valid epochs for data supplied&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">time</span><span class="p">,</span> <span class="n">t_epoch</span>
+
+
+
+<div class="viewcode-block" id="Sea"><a class="viewcode-back" href="../../autosummary/spacepy.seapy.Sea.html#spacepy.seapy.Sea">[docs]</a><span class="k">class</span> <span class="nc">Sea</span><span class="p">(</span><span class="n">SeaBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;SeaPy Superposed epoch analysis object</span>
+
+<span class="sd">    Initialize object with data, times, epochs, window (half-width) and delta (optional).</span>
+<span class="sd">    &#39;times&#39; and epochs should be in some useful format</span>
+<span class="sd">    Includes method to perform superposed epoch analysis of input data series</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ==========</span>
+<span class="sd">    data : array_like</span>
+<span class="sd">        list or array of data</span>
+<span class="sd">    times : array_like</span>
+<span class="sd">        list of datetime objects (or list of serial times)</span>
+<span class="sd">    epochs : array_like</span>
+<span class="sd">        list of datetime objects (or serial times) for zero epochs in SEA</span>
+<span class="sd">    window : datetime.timedelta</span>
+<span class="sd">        size of the half-window for the SEA (can also be given as serial time)</span>
+<span class="sd">    delta : datetime.timedelta</span>
+<span class="sd">        resolution of the input data series, which must be uniform (can also be</span>
+<span class="sd">        given as serial time)</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    =====</span>
+<span class="sd">    Output can be nicely plotted with :py:meth:`plot`, or for multiple objects</span>
+<span class="sd">    use the :py:func:`multisea` function</span>
+
+<span class="sd">    .. currentmodule:: spacepy.seapy</span>
+<span class="sd">    .. autosummary::</span>
+<span class="sd">        ~Sea.sea</span>
+<span class="sd">        ~Sea.plot</span>
+<span class="sd">    .. automethod:: sea</span>
+<span class="sd">    .. automethod:: plot</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="n">epochs</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="mf">3.</span><span class="p">,</span> <span class="n">delta</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Sea</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="n">epochs</span><span class="p">,</span> \
+              <span class="n">window</span><span class="o">=</span><span class="n">window</span><span class="p">,</span> <span class="n">delta</span><span class="o">=</span><span class="n">delta</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Sea.sea"><a class="viewcode-back" href="../../autosummary/spacepy.seapy.Sea.html#spacepy.seapy.Sea.sea">[docs]</a>    <span class="k">def</span> <span class="nf">sea</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Method called to perform superposed epoch analysis on data in object.</span>
+
+<span class="sd">        Uses object attributes obj.data, obj.times, obj.epochs, obj.delta,</span>
+<span class="sd">        obj.window, all of which must be available on instantiation.</span>
+
+<span class="sd">	Other Parameters</span>
+<span class="sd">        ================</span>
+<span class="sd">        storedata : boolean</span>
+<span class="sd">	    saves matrix of epoch windows as obj.datacube (default = False)</span>
+<span class="sd">	quartiles : list</span>
+<span class="sd">	    calculates the quartiles as the upper and lower bounds (and is default);</span>
+<span class="sd">        ci : float</span>
+<span class="sd">	    will find the bootstrapped confidence intervals (and requires ci_quan to be set);</span>
+<span class="sd">        mad : float</span>
+<span class="sd">	    will use +/- the median absolute deviation for the bounds;</span>
+<span class="sd">        ci_quan : string</span>
+<span class="sd">	    can be set to &#39;median&#39; or &#39;mean&#39;</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        =====</span>
+<span class="sd">        A basic plot can be raised with :meth:`plot`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c">#check this hasn&#39;t already been done</span>
+        <span class="c">#TODO: find out why doing two .sea() calls back-to-back fails 2nd time</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s">&#39;semedian&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s">&#39;semean&#39;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">None</span>
+
+        <span class="c">#check defaults</span>
+        <span class="n">defaults</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;storedata&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">,</span> <span class="s">&#39;quartiles&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">,</span> <span class="s">&#39;ci&#39;</span><span class="p">:</span> <span class="bp">False</span><span class="p">,</span>
+                    <span class="s">&#39;mad&#39;</span><span class="p">:</span> <span class="bp">False</span><span class="p">,</span> <span class="s">&#39;ci_quan&#39;</span><span class="p">:</span> <span class="s">&#39;median&#39;</span><span class="p">}</span>
+        <span class="k">for</span> <span class="n">default</span> <span class="ow">in</span> <span class="n">defaults</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">default</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="n">default</span><span class="p">]</span> <span class="o">=</span> <span class="n">defaults</span><span class="p">[</span><span class="n">default</span><span class="p">]</span>
+
+        <span class="c">#ensure all input is np array</span>
+        <span class="n">delt</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">delta</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;ci&#39;</span><span class="p">]:</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;quartiles&#39;</span><span class="p">],</span> <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;mad&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span> <span class="bp">False</span>
+        <span class="k">if</span> <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;mad&#39;</span><span class="p">]:</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;quartiles&#39;</span><span class="p">],</span> <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;ci&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span> <span class="bp">False</span>
+
+        <span class="n">time</span><span class="p">,</span> <span class="n">t_epoch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_timeepoch</span><span class="p">(</span><span class="n">delt</span><span class="p">)</span>
+
+        <span class="c">#build SEA matrix and perform analysis</span>
+        <span class="n">wind</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">window</span><span class="p">)</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">wind</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">t_epoch</span><span class="p">)</span>
+        <span class="n">y_sea</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n</span><span class="p">,</span><span class="n">m</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="n">blankslice</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">m</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+            <span class="n">dif</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">time</span><span class="o">-</span><span class="n">t_epoch</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">j</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">dif</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">dif</span><span class="p">))</span>
+            <span class="n">stpt</span> <span class="o">=</span> <span class="n">j</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">wind</span>
+            <span class="n">enpt</span> <span class="o">=</span> <span class="n">j</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="n">wind</span><span class="o">+</span><span class="mi">1</span>
+            <span class="n">sea_slice</span> <span class="o">=</span> <span class="n">blankslice</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">stpt</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span> <span class="c">#fix for bad epochs not correctly moved to badepochs attr #TODO: make badepochs robust or do all checking here</span>
+                <span class="n">sea_slice</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="nb">abs</span><span class="p">(</span><span class="n">stpt</span><span class="p">)]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">NaN</span>
+                <span class="n">sea_slice</span><span class="p">[</span><span class="nb">abs</span><span class="p">(</span><span class="n">stpt</span><span class="p">):]</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">enpt</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="n">enpt</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">):</span>
+                <span class="n">tmpslice</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="n">stpt</span><span class="p">:]</span>
+                <span class="n">sea_slice</span><span class="p">[:</span><span class="nb">len</span><span class="p">(</span><span class="n">tmpslice</span><span class="p">)]</span> <span class="o">=</span> <span class="n">tmpslice</span>
+                <span class="n">sea_slice</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">tmpslice</span><span class="p">):]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">NaN</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">sea_slice</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="n">stpt</span><span class="p">:</span><span class="n">enpt</span><span class="p">]</span>
+
+            <span class="n">y_sea</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">0</span><span class="p">:]</span> <span class="o">=</span> <span class="n">sea_slice</span>
+
+        <span class="c">#find SEA mean, median and percentiles - exclude NaNs (or badval)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">badval</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;badval&#39;</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">badval</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+            <span class="n">y_sea_m</span> <span class="o">=</span> <span class="n">ma</span><span class="o">.</span><span class="n">masked_where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">y_sea</span><span class="p">),</span> <span class="n">y_sea</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">y_sea_m</span> <span class="o">=</span> <span class="n">ma</span><span class="o">.</span><span class="n">masked_values</span><span class="p">(</span><span class="n">y_sea</span><span class="p">,</span> <span class="n">badval</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">semean</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">y_sea_m</span><span class="p">[:,</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">compressed</span><span class="p">())</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m</span><span class="p">)]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">semedian</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">y_sea_m</span><span class="p">[:,</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">compressed</span><span class="p">())</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m</span><span class="p">)]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">semean</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">semedian</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">semean</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">semedian</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bound_low</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">m</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bound_high</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">m</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;quartiles&#39;</span><span class="p">]:</span>
+            <span class="kn">from</span> <span class="nn">matplotlib.mlab</span> <span class="kn">import</span> <span class="n">prctile</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m</span><span class="p">):</span>
+                <span class="n">dum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">y_sea_m</span><span class="p">[:,</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">compressed</span><span class="p">())</span>
+                <span class="n">qul</span> <span class="o">=</span> <span class="n">prctile</span><span class="p">(</span><span class="n">dum</span><span class="p">,</span><span class="n">p</span><span class="o">=</span><span class="p">(</span><span class="mi">25</span><span class="p">,</span><span class="mi">75</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">bound_low</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">bound_high</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">qul</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">qul</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;ci&#39;</span><span class="p">]:</span> <span class="c">#bootstrapped confidence intervals (95%)</span>
+            <span class="kn">from</span> <span class="nn">spacepy.poppy</span> <span class="kn">import</span> <span class="n">boots_ci</span>
+            <span class="k">if</span> <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;ci_quan&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;mean&#39;</span><span class="p">:</span>
+                <span class="n">ci_func</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">ci_func</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m</span><span class="p">):</span>
+                <span class="n">dum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">y_sea_m</span><span class="p">[:,</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">compressed</span><span class="p">())</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">bound_low</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">bound_high</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> \
+                     <span class="n">boots_ci</span><span class="p">(</span><span class="n">dum</span><span class="p">,</span> <span class="mi">800</span><span class="p">,</span> <span class="mi">95</span><span class="p">,</span> <span class="n">ci_func</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;mad&#39;</span><span class="p">]:</span> <span class="c">#median absolute deviation</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m</span><span class="p">):</span>
+                <span class="n">dum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">y_sea_m</span><span class="p">[:,</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">compressed</span><span class="p">())</span>
+                <span class="n">spread_mad</span> <span class="o">=</span> <span class="n">tb</span><span class="o">.</span><span class="n">medAbsDev</span><span class="p">(</span><span class="n">dum</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">bound_low</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">semedian</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">-</span><span class="n">spread_mad</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">bound_high</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">semedian</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">+</span><span class="n">spread_mad</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mf">1.</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">window</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">delta</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">window</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">delta</span><span class="p">,</span> \
+         <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">semedian</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;storedata&#39;</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">datacube</span> <span class="o">=</span> <span class="n">y_sea_m</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+                <span class="k">print</span><span class="p">(</span><span class="s">&#39;sea(): datacube added as new attribute&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">(</span><span class="s">&#39;Superposed epoch analysis complete&#39;</span><span class="p">)</span>
+
+
+    <span class="c">#def sea_norm(self, epoch2, nbins=100, storedata=False, quartiles=True, ci=False, mad=False,</span>
+    <span class="c">#ci_quan=&#39;median&#39;):</span>
+        <span class="c">#&quot;&quot;&quot;Method for normalized superposed epoch analysis (creates new object)</span>
+
+        <span class="c">#Examples</span>
+        <span class="c">#Assuming an already instantiated Sea object, xampl</span>
+
+        <span class="c">#&gt;&gt;&gt; xampl_norm = xampl.sea_norm(epoch2)</span>
+
+        <span class="c">#Note that epoch2 must be a paired set with xampl.epochs</span>
+
+        <span class="c">#Inputs:</span>
+        <span class="c">#Uses object attributes obj.data, obj.times, obj.epochs, obj.delta.</span>
+        <span class="c">#all of which must be available on instantiation.</span>
+        <span class="c">#Also requires second set of epochs.</span>
+
+        <span class="c">#Other Parameters</span>
+        <span class="c">#nbins (default = 100) - number of bins for normalized SEA</span>
+        <span class="c">#storedata (default = False) - saves matrix of epoch windows as obj.datacube</span>
+        <span class="c">#quartiles calculates the quartiles as the upper and lower bounds (and is default);</span>
+        <span class="c">#ci will find the bootstrapped confidence intervals (and requires ci_quan to be set);</span>
+        <span class="c">#mad will use +/- the median absolute deviation for the bounds;</span>
+        <span class="c">#ci_quan can be set to &#39;median&#39; or &#39;mean&#39;</span>
+
+        <span class="c">#Output is a new SeaPy object with all Sea methods.</span>
+        <span class="c">#&quot;&quot;&quot;</span>
+        <span class="c">#import numpy as np</span>
+        <span class="c">#import numpy.ma as ma</span>
+
+        <span class="c">##ensure all input is np array</span>
+        <span class="c">#delt = float(self.delta)</span>
+        <span class="c">#y = np.array(self.data, dtype=float)</span>
+
+        <span class="c">#if ci:</span>
+            <span class="c">#quartiles, mad = False, False</span>
+        <span class="c">#if mad:</span>
+            <span class="c">#quartiles, ci = False, False</span>
+
+        <span class="c">#time,t_epoch = self._timeepoch(delt)</span>
+
+        <span class="c">##build SEA matrix and perform analysis</span>
+        <span class="c">#wind = self.window</span>
+        <span class="c">#m = int(2*wind + 1)</span>
+        <span class="c">#n = len(t_epoch)</span>
+        <span class="c">#y_sea = np.zeros((n,m), dtype=float)</span>
+
+        <span class="c">#for i in range(n):</span>
+            <span class="c">#t_a, t_b = abs(time-t_epoch1[i]), abs(time-t_epoch2[i])</span>
+            <span class="c">#j = np.where(t_a == np.min(t_a))</span>
+            <span class="c">#k = np.where(t_b == np.min(t_b))</span>
+            <span class="c">#norm_ax = np.linspace(t_epoch1[i], t_epoch2[i], nbins+1)</span>
+            <span class="c">#norm_event = np.interp(norm_ax, time[j[1]:k[1]], y[j[1]:k[1]]) #piecewise linear</span>
+            <span class="c">#norm_event[0], norm_event[-1] = y[j[0]], y[k[0]] #Fix endpoints</span>
+            <span class="c">#y_sea[i,0:] = norm_event</span>
+
+        <span class="c">##for i in range(n):</span>
+            <span class="c">##dif = np.abs(time-t_epoch[i])</span>
+            <span class="c">##j = np.where(dif == np.min(dif))</span>
+            <span class="c">##sea_slice = y[j[0][0]-wind:j[0][0]+wind+1]</span>
+            <span class="c">##y_sea[i,0:] = sea_slice</span>
+
+        <span class="c">##Instantiate new SeaPy object</span>
+        <span class="c">#outobj = Sea(self.data, self.times, self.epochs, self.window, self.delta)</span>
+        <span class="c">#print &#39;New Sea object created&#39;</span>
+
+        <span class="c">##find SEA mean, median and percentiles - exclude NaNs</span>
+        <span class="c">#y_sea_m = ma.masked_where(np.isnan(y_sea), y_sea)</span>
+        <span class="c">#outobj.semean = [np.mean(dum.compressed()) for dum in y_sea_m]</span>
+        <span class="c">#outobj.semedian = [np.median(dum.compressed()) for dum in y_sea_m]</span>
+        <span class="c">#outobj.bound_low = np.zeros((m,1))</span>
+        <span class="c">#outobj.bound_high = np.zeros((m,1))</span>
+
+        <span class="c">#if quartiles:</span>
+            <span class="c">#from matplotlib.mlab import prctile</span>
+            <span class="c">#for i in range(m):</span>
+                <span class="c">#dum = np.sort(y_sea_m[:,i].compressed())</span>
+                <span class="c">#qul = prctile(dum,p=(25,75))</span>
+                <span class="c">#outobj.bound_low[i], outobj.bound_high[i] = qul[0], qul[1]</span>
+        <span class="c">#elif ci: #bootstrapped confidence intervals (95%)</span>
+            <span class="c">#from spacepy.poppy import boots_ci</span>
+            <span class="c">#if ci_quan == &#39;mean&#39;:</span>
+                <span class="c">#ci_func = lambda x: np.mean(x)</span>
+            <span class="c">#else:</span>
+                <span class="c">#ci_func = lambda x: np.median(x)</span>
+            <span class="c">#for i in range(m):</span>
+                <span class="c">#dum = np.sort(y_sea_m[:,i].compressed())</span>
+                <span class="c">#outobj.bound_low[i], outobj.bound_high[i] = \</span>
+                    <span class="c">#boots_ci(dum, 800, 95, ci_func)</span>
+        <span class="c">#elif mad: #median absolute deviation</span>
+            <span class="c">#from spacepy.toolbox import medabsdev</span>
+            <span class="c">#for i in range(m):</span>
+                <span class="c">#dum = np.sort(y_sea_m[:,i].compressed())</span>
+                <span class="c">#spread_mad = medabsdev(data)</span>
+                <span class="c">#outobj.bound_low[i] = outobj.semedian[i]-spread_mad</span>
+                <span class="c">#outobj.bound_high[i] = outobj.semedian[i]+spread_mad</span>
+
+        <span class="c">#outobj.x = np.linspace(0, nbins, len(outobj.semedian))</span>
+        <span class="c">#if storedata:</span>
+            <span class="c">#outobj.datacube = y_sea_m</span>
+            <span class="c">#print &#39;sea_norm(): datacube added to new object as attribute&#39;</span>
+
+        <span class="c">#return &#39;Superposed epoch analysis complete&#39;</span>
+</div>
+<div class="viewcode-block" id="Sea.plot"><a class="viewcode-back" href="../../autosummary/spacepy.seapy.Sea.html#spacepy.seapy.Sea.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xquan</span> <span class="o">=</span> <span class="s">&#39;Time Since Epoch&#39;</span><span class="p">,</span> <span class="n">yquan</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="n">xunits</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">,</span>
+                <span class="n">yunits</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="n">epochline</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">usrlimy</span><span class="o">=</span><span class="p">[],</span> <span class="n">show</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+                <span class="n">figsize</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">transparent</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s">&#39;#7F7FFF&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Method called to create basic plot of superposed epoch analysis.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">	==========</span>
+<span class="sd">        Uses object attributes created by the obj.sea() method.</span>
+
+<span class="sd">        Other Parameters</span>
+<span class="sd">        ================</span>
+<span class="sd">        xquan : str</span>
+<span class="sd">	    (default = &#39;Time since epoch&#39; ) - x-axis label.</span>
+<span class="sd">	yquan : str</span>
+<span class="sd">	    default None - yaxus label</span>
+<span class="sd">	xunits : str</span>
+<span class="sd">	    (default = None) - x-axis units.</span>
+<span class="sd">        yunits : str</span>
+<span class="sd">	    (default = None) - y-axis units.</span>
+<span class="sd">        epochline : boolean</span>
+<span class="sd">	    (default = False) - put vertical line at zero epoch.</span>
+<span class="sd">        usrlimy : list</span>
+<span class="sd">	    (default = []) - override automatic y-limits on plot.</span>
+<span class="sd">        transparent : boolean</span>
+<span class="sd">	    (default True): make patch for low/high bounds transparent</span>
+<span class="sd">        color : str</span>
+<span class="sd">            Color to use for the patch if not transparent.</span>
+<span class="sd">            (default #7F7FFF, a medium blue)</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        =====</span>
+<span class="sd">        If both quan and units are supplied, axis label will read</span>
+<span class="sd">        &#39;Quantity Entered By User [Units]&#39;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s">&#39;semedian&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s">&#39;semean&#39;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">AssertionError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;No superposed epoch results to plot&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">xunits</span><span class="p">)</span><span class="o">&lt;</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">xlstr</span> <span class="o">=</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">xquan</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">xlstr</span> <span class="o">=</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s"> [</span><span class="si">%s</span><span class="s">]&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">xquan</span><span class="p">,</span> <span class="n">xunits</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">yquan</span><span class="p">)</span><span class="o">&gt;=</span><span class="mi">1</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">yunits</span><span class="p">)</span><span class="o">&gt;=</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">ylstr</span> <span class="o">=</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s"> [</span><span class="si">%s</span><span class="s">]&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">yquan</span><span class="p">,</span> <span class="n">yunits</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">yquan</span><span class="p">)</span><span class="o">&gt;=</span><span class="mi">1</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">yunits</span><span class="p">)</span><span class="o">&lt;</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">ylstr</span> <span class="o">=</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">yquan</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ylstr</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+
+        <span class="k">if</span> <span class="n">show</span><span class="o">==</span><span class="bp">True</span> <span class="ow">and</span> <span class="n">dpi</span><span class="o">==</span><span class="bp">None</span><span class="p">:</span>
+            <span class="n">dpi</span><span class="o">=</span><span class="mi">80</span>
+        <span class="k">elif</span> <span class="n">show</span><span class="o">==</span><span class="bp">False</span> <span class="ow">and</span> <span class="n">dpi</span><span class="o">==</span><span class="bp">None</span><span class="p">:</span>
+            <span class="n">dpi</span><span class="o">=</span><span class="mi">300</span>
+
+        <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="n">figsize</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="n">dpi</span><span class="p">)</span>
+        <span class="n">ax0</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">)</span>
+
+        <span class="c">#ax0.plot(self.x, self.semean, &#39;b-&#39;, lw=1.5)</span>
+        <span class="c">#plt.hold(True)</span>
+        <span class="c">#ax0.plot(self.x, self.semedian, &#39;k-&#39;, lw=2.5)</span>
+        <span class="c">#ax0.plot(self.x, self.bound_low, &#39;k-.&#39;, lw=2)</span>
+        <span class="c">#ax0.plot(self.x, self.bound_high, &#39;k-.&#39;, lw=2)</span>
+
+        <span class="k">if</span> <span class="n">transparent</span><span class="p">:</span>
+            <span class="n">ax0</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">bound_low</span><span class="o">.</span><span class="n">ravel</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">bound_high</span><span class="o">.</span><span class="n">ravel</span><span class="p">(),</span>
+                             <span class="n">edgecolor</span><span class="o">=</span><span class="s">&#39;none&#39;</span><span class="p">,</span> <span class="n">facecolor</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">interpolate</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ax0</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">bound_low</span><span class="o">.</span><span class="n">ravel</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">bound_high</span><span class="o">.</span><span class="n">ravel</span><span class="p">(),</span>
+                             <span class="n">edgecolor</span><span class="o">=</span><span class="s">&#39;none&#39;</span><span class="p">,</span> <span class="n">facecolor</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">interpolate</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">hold</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+        <span class="n">ax0</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">semedian</span><span class="p">,</span> <span class="s">&#39;k-&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
+        <span class="n">ax0</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">semean</span><span class="p">,</span> <span class="s">&#39;r--&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.25</span><span class="p">)</span>
+
+        <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="n">xlstr</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="n">ylstr</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">usrlimy</span><span class="p">:</span>
+            <span class="n">ax0</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">usrlimy</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">epochline</span><span class="p">:</span>
+            <span class="n">yr</span> <span class="o">=</span> <span class="n">ax0</span><span class="o">.</span><span class="n">get_ylim</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">yr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">yrlo</span> <span class="o">=</span> <span class="n">yr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="n">yr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">yrlo</span> <span class="o">=</span> <span class="n">yr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">yr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">yr</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">yrhi</span> <span class="o">=</span> <span class="n">yr</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">yr</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">yrhi</span> <span class="o">=</span> <span class="n">yr</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="n">yr</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">ax0</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="n">yrlo</span><span class="p">,</span><span class="n">yrhi</span><span class="p">],</span> <span class="s">&#39;k:&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="n">yr</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">show</span><span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+            <span class="k">return</span> <span class="bp">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">fig</span>
+
+</div></div>
+<div class="viewcode-block" id="Sea2d"><a class="viewcode-back" href="../../autosummary/spacepy.seapy.Sea2d.html#spacepy.seapy.Sea2d">[docs]</a><span class="k">class</span> <span class="nc">Sea2d</span><span class="p">(</span><span class="n">SeaBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;SeaPy 2D Superposed epoch analysis object</span>
+
+<span class="sd">    Initialize object with data (n element vector), times(y*n array), </span>
+<span class="sd">    epochs, window (half-width), delta (optional), and </span>
+<span class="sd">    y (two-element vector with max and min of y;optional)</span>
+<span class="sd">    &#39;times&#39; and epochs should be in some useful format</span>
+<span class="sd">    Includes method to perform superposed epoch analysis of input data series</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ==========</span>
+<span class="sd">    data : array_like</span>
+<span class="sd">        2-D array of data (0th dimension is quantity y, 1st dimension is time)</span>
+<span class="sd">    times : array_like</span>
+<span class="sd">        list of datetime objects (or list of serial times)</span>
+<span class="sd">    epochs : array_like</span>
+<span class="sd">        list of datetime objects (or serial times) for zero epochs in SEA</span>
+<span class="sd">    window : datetime.timedelta</span>
+<span class="sd">        size of the half-window for the SEA (can also be given as serial time)</span>
+<span class="sd">    delta : datetime.timedelta</span>
+<span class="sd">        resolution of the input data series, which must be uniform (can also be</span>
+<span class="sd">        given as serial time)</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    =====</span>
+<span class="sd">    Output can be nicely plotted with :meth:`plot`, or for multiple</span>
+<span class="sd">    objects use the :func:`multisea` function</span>
+
+
+<span class="sd">    .. currentmodule:: spacepy.seapy</span>
+<span class="sd">    .. autosummary::</span>
+<span class="sd">        ~Sea2d.sea</span>
+<span class="sd">        ~Sea2d.plot</span>
+<span class="sd">    .. automethod:: sea</span>
+<span class="sd">    .. automethod:: plot</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="n">epochs</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="mf">3.</span><span class="p">,</span> <span class="n">delta</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="p">[]):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Sea2d</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="n">epochs</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="n">window</span><span class="p">,</span> \
+              <span class="n">delta</span><span class="o">=</span><span class="n">delta</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="p">[])</span>
+
+        <span class="k">if</span> <span class="n">y</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">y</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Sea2d.sea"><a class="viewcode-back" href="../../autosummary/spacepy.seapy.Sea2d.html#spacepy.seapy.Sea2d.sea">[docs]</a>    <span class="k">def</span> <span class="nf">sea</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">storedata</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">quartiles</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">ci</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">mad</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+        <span class="n">ci_quan</span><span class="o">=</span><span class="s">&#39;median&#39;</span><span class="p">,</span> <span class="n">nmask</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Perform 2D superposed epoch analysis on data in object</span>
+
+<span class="sd">        Uses object attributes obj.data, obj.times, obj.epochs, obj.delta,</span>
+<span class="sd">        obj.window, all of which must be available on instantiation.</span>
+
+<span class="sd">        Other Parameters</span>
+<span class="sd">        ================</span>
+<span class="sd">        storedata : boolean</span>
+<span class="sd">            saves matrix of epoch windows as obj.datacube (default = False)</span>
+<span class="sd">        quartiles : list</span>
+<span class="sd">            calculates the inter-quartile range to show the spread</span>
+<span class="sd">            (and is default);</span>
+<span class="sd">        ci : float</span>
+<span class="sd">            will find the bootstrapped confidence interval</span>
+<span class="sd">            (and requires ci_quan to be set)</span>
+<span class="sd">        mad : float</span>
+<span class="sd">            will use the median absolute deviation for the spread;</span>
+<span class="sd">        ci_quan : string</span>
+<span class="sd">            can be set to &#39;median&#39; or &#39;mean&#39;</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        =====</span>
+<span class="sd">        A basic plot can be raised with :meth:`plot`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c">#ensure all input is np array or correct form</span>
+        <span class="n">delt</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">delta</span><span class="p">)</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="n">time</span><span class="p">,</span><span class="n">t_epoch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_timeepoch</span><span class="p">(</span><span class="n">delt</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">nmask</span><span class="p">:</span>
+            <span class="n">nmask</span> <span class="o">=</span> <span class="mi">0</span> <span class="c">#set mask to exclude none</span>
+
+        <span class="c">#build SEA matrix and perform analysis</span>
+        <span class="n">wind</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">window</span>
+        <span class="n">l</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="nb">int</span><span class="p">(</span><span class="n">wind</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">t_epoch</span><span class="p">)</span>
+        <span class="n">y_sea</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">l</span><span class="p">,</span><span class="n">m</span><span class="p">,</span><span class="n">n</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+            <span class="n">dif</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">time</span><span class="o">-</span><span class="n">t_epoch</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">j</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">dif</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">dif</span><span class="p">))</span>
+            <span class="n">sea_slice</span> <span class="o">=</span> <span class="n">y</span><span class="p">[:,</span><span class="n">j</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">wind</span><span class="p">:</span><span class="n">j</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="n">wind</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">y_sea</span><span class="p">[:,:,</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">sea_slice</span>
+
+        <span class="c">#find SEA mean, median and percentiles - exclude NaNs</span>
+        <span class="c">#y_sea_m = ma.masked_where(y_sea &lt; 0., y_sea)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">badval</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;badval&#39;</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">badval</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+            <span class="n">y_sea_m</span> <span class="o">=</span> <span class="n">ma</span><span class="o">.</span><span class="n">masked_where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">y_sea</span><span class="p">),</span> <span class="n">y_sea</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">y_sea_m</span> <span class="o">=</span> <span class="n">ma</span><span class="o">.</span><span class="n">masked_values</span><span class="p">(</span><span class="n">y_sea</span><span class="p">,</span> <span class="n">badval</span><span class="p">)</span>
+        <span class="c">#now get SEA quantities</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">semean</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">semedian</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">countmask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">l</span><span class="p">,</span><span class="n">m</span><span class="p">)),</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">l</span><span class="p">,</span><span class="n">m</span><span class="p">)),</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">l</span><span class="p">,</span><span class="n">m</span><span class="p">))</span>
+        <span class="n">yj</span><span class="o">=</span><span class="mi">0</span>
+        <span class="k">for</span> <span class="n">ti</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">m</span><span class="p">)):</span>
+            <span class="k">for</span> <span class="n">yj</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">l</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">semean</span><span class="p">[</span><span class="n">yj</span><span class="p">,</span><span class="n">ti</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">y_sea_m</span><span class="p">[</span><span class="n">yj</span><span class="p">,</span><span class="n">ti</span><span class="p">,:]</span><span class="o">.</span><span class="n">compressed</span><span class="p">())</span> <span class="c">#np.mean(y_sea_m, axis=2)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">semedian</span><span class="p">[</span><span class="n">yj</span><span class="p">,</span><span class="n">ti</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">y_sea_m</span><span class="p">[</span><span class="n">yj</span><span class="p">,</span><span class="n">ti</span><span class="p">,:]</span><span class="o">.</span><span class="n">compressed</span><span class="p">())</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">countmask</span><span class="p">[</span><span class="n">yj</span><span class="p">,</span><span class="n">ti</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">y_sea_m</span><span class="p">[</span><span class="n">yj</span><span class="p">,</span><span class="n">ti</span><span class="p">,:]</span><span class="o">.</span><span class="n">compressed</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">semean</span> <span class="o">=</span> <span class="n">ma</span><span class="o">.</span><span class="n">masked_where</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">countmask</span><span class="o">&lt;</span><span class="n">nmask</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">semean</span><span class="p">)</span><span class="c">#(np.isnan(self.semean), self.semean)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">semedian</span> <span class="o">=</span> <span class="n">ma</span><span class="o">.</span><span class="n">masked_where</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">countmask</span><span class="o">&lt;</span><span class="n">nmask</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">semedian</span><span class="p">)</span><span class="c">#(np.isnan(self.semedian), self.semedian)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">perc25</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">l</span><span class="p">,</span><span class="n">m</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">perc50</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">l</span><span class="p">,</span><span class="n">m</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">perc75</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">l</span><span class="p">,</span><span class="n">m</span><span class="p">))</span>
+
+        <span class="c">#maybe use median absolute deviation?</span>
+        <span class="c">#p75 = np.around(75*n/100)</span>
+        <span class="c">#p25 = np.around(25*n/100)</span>
+        <span class="c">#sea_sort = y_sea_m.copy()</span>
+        <span class="c">#sea_sort.sort(axis=0)</span>
+        <span class="c">##self.perc25 = sea_sort[p25,0:]</span>
+        <span class="c">##self.perc75 = sea_sort[p75,0:]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mf">1.</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">window</span><span class="o">*</span><span class="n">delt</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">window</span><span class="o">*</span><span class="n">delt</span><span class="p">,</span> \
+        <span class="bp">self</span><span class="o">.</span><span class="n">semedian</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">storedata</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">datacube</span> <span class="o">=</span> <span class="n">y_sea_m</span>
+            <span class="k">print</span><span class="p">(</span><span class="s">&#39;sea(): datacube added as new attribute&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">(</span><span class="s">&#39;Superposed epoch analysis complete&#39;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Sea2d.plot"><a class="viewcode-back" href="../../autosummary/spacepy.seapy.Sea2d.html#spacepy.seapy.Sea2d.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xquan</span> <span class="o">=</span> <span class="s">&#39;Time Since Epoch&#39;</span><span class="p">,</span> <span class="n">yquan</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="n">xunits</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">,</span>
+                <span class="n">yunits</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="n">zunits</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="n">epochline</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">usrlimy</span><span class="o">=</span><span class="p">[],</span>
+                <span class="n">show</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">zlog</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Method called to create basic plot of 2D superposed epoch analysis.</span>
+
+<span class="sd">        Uses object attributes created by :meth:`sea`.</span>
+
+<span class="sd">        Other Parameters</span>
+<span class="sd">        ================</span>
+<span class="sd">        x(y)quan : str</span>
+<span class="sd">            x(y)-axis label.  (default = &#39;Time since epoch&#39; (None))</span>
+<span class="sd">        x(y/z)units : str</span>
+<span class="sd">            x(y/z)-axis units. (default = None (None))</span>
+<span class="sd">        epochline : boolean</span>
+<span class="sd">            put vertical line at zero epoch. (default = False)</span>
+<span class="sd">        usrlimy : list</span>
+<span class="sd">            override automatic y-limits on plot. (default = [])</span>
+<span class="sd">        show : boolean</span>
+<span class="sd">            shows plot; set to false to output plot object to variable</span>
+<span class="sd">            (default = True)</span>
+<span class="sd">        figsize : tuple</span>
+<span class="sd">            (width, height) in inches</span>
+<span class="sd">        dpi : int</span>
+<span class="sd">            figure resolution in dots per inch (default=300)</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        =====</span>
+<span class="sd">        If both quan and units are supplied, axis label will read</span>
+<span class="sd">        &#39;Quantity Entered By User [Units]&#39;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">dum</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">semedian</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s">&#39;Error: No superposed epoch results to plot&#39;</span>
+
+        <span class="kn">from</span> <span class="nn">matplotlib.colors</span> <span class="kn">import</span> <span class="n">LogNorm</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">xunits</span><span class="p">)</span><span class="o">&lt;</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">xlstr</span> <span class="o">=</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">xquan</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">xlstr</span> <span class="o">=</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s"> [</span><span class="si">%s</span><span class="s">]&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">xquan</span><span class="p">,</span> <span class="n">xunits</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">yquan</span><span class="p">)</span><span class="o">&gt;=</span><span class="mi">1</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">yunits</span><span class="p">)</span><span class="o">&gt;=</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">ylstr</span> <span class="o">=</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s"> [</span><span class="si">%s</span><span class="s">]&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">yquan</span><span class="p">,</span> <span class="n">yunits</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">yquan</span><span class="p">)</span><span class="o">&gt;=</span><span class="mi">1</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">yunits</span><span class="p">)</span><span class="o">&lt;</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">ylstr</span> <span class="o">=</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">yquan</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ylstr</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+
+        <span class="n">usry</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span>
+        <span class="k">if</span> <span class="n">usrlimy</span><span class="p">:</span>
+            <span class="n">st</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="o">&gt;=</span><span class="n">usrlimy</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">nonzero</span><span class="p">()</span>
+            <span class="n">st</span> <span class="o">=</span> <span class="n">st</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">en</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="o">&lt;=</span><span class="n">usrlimy</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">nonzero</span><span class="p">()</span>
+            <span class="n">en</span> <span class="o">=</span> <span class="n">en</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">pld</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">semedian</span><span class="p">[</span><span class="n">st</span><span class="p">:</span><span class="n">en</span><span class="o">+</span><span class="mi">1</span><span class="p">,:]</span>
+            <span class="n">usry</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="n">st</span><span class="p">:</span><span class="n">en</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+            <span class="c">#ax0.set_ylim(usrlimy)</span>
+
+        <span class="k">if</span> <span class="n">show</span><span class="o">==</span><span class="bp">True</span> <span class="ow">and</span> <span class="n">dpi</span><span class="o">==</span><span class="bp">None</span><span class="p">:</span>
+            <span class="n">dpi</span><span class="o">=</span><span class="mi">80</span>
+        <span class="k">elif</span> <span class="n">show</span><span class="o">==</span><span class="bp">False</span> <span class="ow">and</span> <span class="n">dpi</span><span class="o">==</span><span class="bp">None</span><span class="p">:</span>
+            <span class="n">dpi</span><span class="o">=</span><span class="mi">300</span>
+
+        <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="n">figsize</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="n">dpi</span><span class="p">)</span>
+        <span class="n">ax0</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">zlog</span><span class="p">:</span>
+            <span class="n">cax</span> <span class="o">=</span> <span class="n">ax0</span><span class="o">.</span><span class="n">pcolor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">usry</span><span class="p">,</span> <span class="n">pld</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">LogNorm</span><span class="p">(</span><span class="n">vmin</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nanmin</span><span class="p">(</span><span class="n">pld</span><span class="p">),</span> <span class="n">vmax</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nanmax</span><span class="p">(</span><span class="n">pld</span><span class="p">)))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">cax</span> <span class="o">=</span> <span class="n">ax0</span><span class="o">.</span><span class="n">pcolor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">usry</span><span class="p">,</span> <span class="n">pld</span><span class="p">)</span>
+
+        <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="n">xlstr</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="n">ylstr</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">usrlimy</span><span class="p">:</span>
+            <span class="n">ax0</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">usrlimy</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">epochline</span><span class="p">:</span>
+            <span class="n">yr</span> <span class="o">=</span> <span class="n">ax0</span><span class="o">.</span><span class="n">get_ylim</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">yr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">yrlo</span> <span class="o">=</span> <span class="n">yr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="n">yr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">yrlo</span> <span class="o">=</span> <span class="n">yr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">yr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">yr</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">yrhi</span> <span class="o">=</span> <span class="n">yr</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">yr</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">yrhi</span> <span class="o">=</span> <span class="n">yr</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="n">yr</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">ax0</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="n">yrlo</span><span class="p">,</span><span class="n">yrhi</span><span class="p">],</span> <span class="s">&#39;k:&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="n">yr</span><span class="p">)</span>
+
+        <span class="n">ax0</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]])</span>
+        <span class="n">hc1</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">cax</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">zunits</span><span class="p">)</span><span class="o">&gt;=</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">hc1</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="n">zunits</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">show</span><span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+            <span class="k">return</span> <span class="bp">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">fig</span>
+
+</div></div>
+<div class="viewcode-block" id="seadict"><a class="viewcode-back" href="../../autosummary/spacepy.seapy.seadict.html#spacepy.seapy.seadict">[docs]</a><span class="k">def</span> <span class="nf">seadict</span><span class="p">(</span><span class="n">objlist</span><span class="p">,</span> <span class="n">namelist</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Function to create dictionary of SeaPy.Sea objects.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ==========</span>
+<span class="sd">        - objlist: List of Sea objects.</span>
+<span class="sd">        - namelist: List of variable labels for input objects.</span>
+
+<span class="sd">    Other Parameters</span>
+<span class="sd">    ================</span>
+<span class="sd">    namelist = List containing names for y-axes.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">objlist</span><span class="p">)</span> <span class="o">==</span> \
+        <span class="nb">list</span><span class="p">,</span> <span class="s">&#39;seadict(): Inputs must be in lists&#39;</span>
+    <span class="k">except</span> <span class="ne">AssertionError</span> <span class="k">as</span> <span class="n">args</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;</span><span class="si">%s</span><span class="s"> -- </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span> <span class="n">args</span><span class="p">))</span>
+
+    <span class="n">nobj</span><span class="p">,</span> <span class="n">nname</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">objlist</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">namelist</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">nobj</span><span class="o">!=</span><span class="n">nname</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;seadict(): Lengths of object list and names list must be equal&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">pass</span>
+
+    <span class="n">outdict</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">i</span>  <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nobj</span><span class="p">):</span>
+        <span class="n">outdict</span><span class="p">[</span><span class="n">namelist</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span> <span class="o">=</span> <span class="n">objlist</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">outdict</span>
+
+</div>
+<div class="viewcode-block" id="multisea"><a class="viewcode-back" href="../../autosummary/spacepy.seapy.multisea.html#spacepy.seapy.multisea">[docs]</a><span class="k">def</span> <span class="nf">multisea</span><span class="p">(</span><span class="n">dictobj</span><span class="p">,</span> <span class="n">n_cols</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">epochline</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">usrlimx</span><span class="o">=</span><span class="p">[],</span> <span class="n">usrlimy</span><span class="o">=</span><span class="p">[],</span>
+    <span class="n">xunits</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">zunits</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="n">zlog</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Function to create multipanel plot of superposed epoch analyses.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ==========</span>
+<span class="sd">    Dictionary of Sea objects (from superposedepoch.seadict()).</span>
+
+<span class="sd">    Other Parameters</span>
+<span class="sd">    ================</span>
+<span class="sd">        - epochline (default = False) - put vertical line at zero epoch.</span>
+<span class="sd">        - usrlimy (default = []) - override automatic y-limits on plot (same for all plots).</span>
+<span class="sd">        - show (default = True) - shows plot; set to false to output plot object to variable</span>
+<span class="sd">        - x/zunits - Units for labeling x and z axes, if required</span>
+<span class="sd">        - figsize - tuple of (width, height) in inches</span>
+<span class="sd">        - dpi (default=300) - figure resolution in dots per inch</span>
+<span class="sd">        - n_cols - Number of columns: not yet implemented.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    =======</span>
+<span class="sd">    Plot of input object median and bounds (ci, mad, quartiles - see sea()).</span>
+<span class="sd">    If keyword &#39;show&#39; is False, output is a plot object.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">matplotlib.ticker</span> <span class="kn">as</span> <span class="nn">tik</span>
+
+    <span class="n">keys</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">dictobj</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+    <span class="n">pld</span><span class="p">,</span> <span class="n">ply</span><span class="p">,</span> <span class="n">plx</span><span class="p">,</span> <span class="n">ylab</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[]</span>
+    <span class="n">qup</span><span class="p">,</span> <span class="n">qlo</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+    <span class="n">keylist</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">keys</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keylist</span><span class="p">:</span>
+        <span class="n">tmp</span> <span class="o">=</span> <span class="n">dictobj</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">semedian</span>
+        <span class="n">pld</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tmp</span><span class="p">)</span> <span class="c">#pld (PLot Data)</span>
+        <span class="n">plx</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dictobj</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">x</span><span class="p">)</span> <span class="c">#plx (PLot X)</span>
+        <span class="n">qup</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dictobj</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">bound_high</span><span class="p">)</span>
+        <span class="n">qlo</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dictobj</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">bound_low</span><span class="p">)</span>
+        <span class="n">ylab</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="c">#ylab (Y-axis LABel)</span>
+        <span class="k">if</span> <span class="n">tmp</span><span class="o">.</span><span class="n">ndim</span><span class="o">==</span><span class="mi">2</span><span class="p">:</span>
+            <span class="n">ply</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dictobj</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">y</span><span class="p">)</span> <span class="c">#ply (Plot Y)</span>
+
+    <span class="k">if</span> <span class="n">show</span><span class="o">==</span><span class="bp">True</span> <span class="ow">and</span> <span class="n">dpi</span><span class="o">==</span><span class="bp">None</span><span class="p">:</span>
+        <span class="n">dpi</span><span class="o">=</span><span class="mi">80</span>
+    <span class="k">elif</span> <span class="n">show</span><span class="o">==</span><span class="bp">False</span> <span class="ow">and</span> <span class="n">dpi</span><span class="o">==</span><span class="bp">None</span><span class="p">:</span>
+        <span class="n">dpi</span><span class="o">=</span><span class="mi">300</span>
+
+    <span class="k">if</span> <span class="n">n_cols</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&#39;multisea(): Multiple column output not yet implemented&#39;</span><span class="p">)</span>
+        <span class="n">n_fig</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">dictobj</span><span class="p">)</span> <span class="c">#force single column output for now</span>
+        <span class="n">fignum</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">n_fig</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">n_fig</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">dictobj</span><span class="p">)</span>
+        <span class="n">fignum</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">n_fig</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="n">figsize</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="n">dpi</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_fig</span><span class="p">):</span>
+        <span class="c">#loop over each subplot</span>
+        <span class="c">#create subplot panel number</span>
+        <span class="n">dum</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">n_fig</span><span class="p">)</span><span class="o">+</span><span class="s">&#39;1&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">fignum</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">dum</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">pld</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">ndim</span><span class="o">==</span><span class="mi">2</span><span class="p">:</span> <span class="c">#if semean/median 2D, do colour-plot</span>
+            <span class="k">if</span> <span class="n">zlog</span><span class="p">:</span>
+                <span class="n">cax</span> <span class="o">=</span> <span class="n">ax0</span><span class="o">.</span><span class="n">pcolor</span><span class="p">(</span><span class="n">plx</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">ply</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">pld</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">norm</span><span class="o">=</span><span class="n">LogNorm</span><span class="p">(</span><span class="n">vmin</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nanmin</span><span class="p">(</span><span class="n">pld</span><span class="p">),</span> <span class="n">vmax</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nanmax</span><span class="p">(</span><span class="n">pld</span><span class="p">)))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">cax</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">pcolor</span><span class="p">(</span><span class="n">plx</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">ply</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">pld</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="n">ylab</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">hc1</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">cax</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">zunits</span><span class="p">)</span><span class="o">&gt;=</span><span class="mi">1</span><span class="p">:</span>
+                <span class="n">hc1</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="n">zunits</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span> <span class="c">#else do line plot</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">plx</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">pld</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="s">&#39;k-&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">hold</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">plx</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">qup</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="s">&#39;k-&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.5</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">plx</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">qlo</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="s">&#39;k-&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.5</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="n">ylab</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="n">i</span><span class="o">==</span><span class="n">n_fig</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="c">#Add x-label to bottom panel</span>
+            <span class="k">if</span> <span class="n">xunits</span><span class="p">:</span>
+                <span class="n">xlab</span> <span class="o">=</span> <span class="s">&#39;Time since epoch [&#39;</span> <span class="o">+</span> <span class="n">xunits</span> <span class="o">+</span> <span class="s">&#39;]&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">xlab</span> <span class="o">=</span> <span class="s">&#39;Time since epoch&#39;</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="n">xlab</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">epochline</span><span class="p">:</span>
+            <span class="n">yr</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">yr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">yrlo</span> <span class="o">=</span> <span class="n">yr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="n">yr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">yrlo</span> <span class="o">=</span> <span class="n">yr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">yr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">yr</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">yrhi</span> <span class="o">=</span> <span class="n">yr</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">yr</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">yrhi</span> <span class="o">=</span> <span class="n">yr</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="n">yr</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="n">yrlo</span><span class="p">,</span><span class="n">yrhi</span><span class="p">],</span> <span class="s">&#39;k:&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="n">yr</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">usrlimx</span><span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="n">usrlimx</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">usrlimy</span><span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="n">usrlimy</span><span class="p">)</span>
+
+        <span class="n">majorticky</span><span class="o">=</span><span class="n">tik</span><span class="o">.</span><span class="n">MaxNLocator</span><span class="p">(</span><span class="mi">7</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span><span class="n">majorticky</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">show</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">None</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">fig</span>
+
+</div>
+<div class="viewcode-block" id="readepochs"><a class="viewcode-back" href="../../autosummary/spacepy.seapy.readepochs.html#spacepy.seapy.readepochs">[docs]</a><span class="k">def</span> <span class="nf">readepochs</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">iso</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">isofmt</span><span class="o">=</span><span class="s">&quot;%Y-%m-</span><span class="si">%d</span><span class="s">T%H:%M:%S&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Read epochs from text file assuming YYYY MM DD hh mm ss format</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ==========</span>
+<span class="sd">    Filename (include path)</span>
+
+<span class="sd">    Other Parameters</span>
+<span class="sd">    ================</span>
+<span class="sd">    iso (default = False), read in ISO date format</span>
+<span class="sd">    isofmt (default is YYYY-mm-ddTHH:MM:SS, code is %Y-%m-%dT%H:%M:%S)</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    =======</span>
+<span class="sd">    epochs (type=list)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">iso</span><span class="o">==</span><span class="bp">False</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">loadtxt</span><span class="p">,</span> <span class="n">zeros</span>
+
+        <span class="n">intime</span> <span class="o">=</span> <span class="n">loadtxt</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+        <span class="n">dum</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">([</span><span class="n">intime</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="mi">6</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">intime</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+            <span class="n">dum</span><span class="p">[:,</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">intime</span><span class="p">[:,</span><span class="n">i</span><span class="p">]</span>
+
+        <span class="n">epochs</span><span class="o">=</span><span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">dum</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="n">dtobj</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">dum</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">int</span><span class="p">(</span><span class="n">dum</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">1</span><span class="p">]),</span> \
+            <span class="nb">int</span><span class="p">(</span><span class="n">dum</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">2</span><span class="p">]),</span> <span class="nb">int</span><span class="p">(</span><span class="n">dum</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">3</span><span class="p">]),</span> <span class="nb">int</span><span class="p">(</span><span class="n">dum</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">4</span><span class="p">]),</span> <span class="nb">int</span><span class="p">(</span><span class="n">dum</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">5</span><span class="p">]))</span>
+            <span class="n">epochs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dtobj</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">fh</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span><span class="s">&#39;r&#39;</span><span class="p">)</span>
+        <span class="n">intime</span> <span class="o">=</span> <span class="n">fh</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+        <span class="n">epochs</span><span class="o">=</span><span class="p">[]</span>
+        <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">intime</span><span class="p">:</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="n">dtobj</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">isofmt</span><span class="p">)</span>
+            <span class="n">epochs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dtobj</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">epochs</span>
+
+</div>
+<div class="viewcode-block" id="sea_signif"><a class="viewcode-back" href="../../autosummary/spacepy.seapy.sea_signif.html#spacepy.seapy.sea_signif">[docs]</a><span class="k">def</span> <span class="nf">sea_signif</span><span class="p">(</span><span class="n">obj1</span><span class="p">,</span> <span class="n">obj2</span><span class="p">,</span> <span class="n">test</span><span class="o">=</span><span class="s">&#39;KS&#39;</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">xquan</span> <span class="o">=</span> <span class="s">&#39;Time Since Epoch&#39;</span><span class="p">,</span>
+        <span class="n">yquan</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="n">xunits</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="n">yunits</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="n">epochline</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">usrlimy</span><span class="o">=</span><span class="p">[]):</span>
+    <span class="sd">&quot;&quot;&quot;Test for similarity between distributions at each lag in two 1-D SEAs</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ==========</span>
+<span class="sd">    Two seapy.Sea() instances for comparison</span>
+
+<span class="sd">    Other Parameters</span>
+<span class="sd">    ================</span>
+<span class="sd">        - show (default = True)</span>
+<span class="sd">        - x(y)quan (default = &#39;Time since epoch&#39; (None)) - x(y)-axis label.</span>
+<span class="sd">        - x(y)units (default = None (None)) - x(y)-axis units.</span>
+<span class="sd">        - epochline (default = True) - put vertical line at zero epoch.</span>
+<span class="sd">        - usrlimy (default = []) - override automatic y-limits on plot.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    ========</span>
+<span class="sd">    &gt;&gt;&gt; obj1 = seapy.Sea(data1, times1, epochs1)</span>
+<span class="sd">    &gt;&gt;&gt; obj2 = seapy.Sea(data2, times2, epochs2)</span>
+<span class="sd">    &gt;&gt;&gt; obj1.sea(storedata=True)</span>
+<span class="sd">    &gt;&gt;&gt; obj2.sea(storedata=True)</span>
+<span class="sd">    &gt;&gt;&gt; seapy.sea_signif(obj1, obj2)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj1</span><span class="p">,</span> <span class="n">Sea</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj2</span><span class="p">,</span> <span class="n">Sea</span><span class="p">)</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s">&quot;Inputs must both be seapy.Sea() instances of same length&quot;</span><span class="p">)</span>
+
+    <span class="n">keylist</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">prob</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;KS&#39;</span><span class="p">,</span><span class="s">&#39;U&#39;</span><span class="p">],</span> <span class="p">[],</span> <span class="p">[]</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="n">test</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="ow">in</span> <span class="n">keylist</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s">&quot;Test &quot;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="o">+</span><span class="s">&quot; not implemented, only &quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">keylist</span><span class="p">))</span>
+
+    <span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">ks_2samp</span><span class="p">,</span> <span class="n">mannwhitneyu</span>
+
+    <span class="k">if</span> <span class="n">test</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s">&#39;KS&#39;</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">obj1</span><span class="o">.</span><span class="n">datacube</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+                <span class="n">tD</span><span class="p">,</span> <span class="n">tprobKS2</span> <span class="o">=</span> <span class="n">ks_2samp</span><span class="p">(</span><span class="n">obj1</span><span class="o">.</span><span class="n">datacube</span><span class="p">[:,</span><span class="n">x</span><span class="p">]</span><span class="o">.</span><span class="n">compressed</span><span class="p">(),</span>
+                    <span class="n">obj2</span><span class="o">.</span><span class="n">datacube</span><span class="p">[:,</span><span class="n">x</span><span class="p">]</span><span class="o">.</span><span class="n">compressed</span><span class="p">())</span>
+                <span class="n">S</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tD</span><span class="p">)</span>
+                <span class="n">prob</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tprobKS2</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s">&#39;&#39;&#39;KS significance testing requires datacube attribute</span><span class="se">\n</span><span class="s"></span>
+<span class="s">                Run sea() with kwarg storedata&#39;&#39;&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">test</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s">&#39;U&#39;</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">x</span><span class="p">,</span><span class="n">y</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">obj1</span><span class="o">.</span><span class="n">datacube</span><span class="o">.</span><span class="n">transpose</span><span class="p">(),</span> <span class="n">obj2</span><span class="o">.</span><span class="n">datacube</span><span class="o">.</span><span class="n">transpose</span><span class="p">()):</span>
+            <span class="n">tU</span><span class="p">,</span> <span class="n">tprobU</span> <span class="o">=</span> <span class="n">mannwhitneyu</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+            <span class="n">S</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tU</span><span class="p">)</span>
+            <span class="n">prob</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tprobU</span><span class="o">*</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">add_epochline</span><span class="p">(</span><span class="n">ax</span><span class="p">):</span>
+        <span class="n">yr</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_ylim</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">yr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">yrlo</span> <span class="o">=</span> <span class="n">yr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="n">yr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">yrlo</span> <span class="o">=</span> <span class="n">yr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">yr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">yr</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">yrhi</span> <span class="o">=</span> <span class="n">yr</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">yr</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">yrhi</span> <span class="o">=</span> <span class="n">yr</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="n">yr</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="p">(</span><span class="n">yr</span><span class="p">,</span> <span class="n">yrlo</span><span class="p">,</span> <span class="n">yrhi</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">xunits</span><span class="p">)</span><span class="o">&lt;</span><span class="mi">1</span><span class="p">:</span>
+        <span class="n">xlstr</span> <span class="o">=</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">xquan</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">xlstr</span> <span class="o">=</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s"> [</span><span class="si">%s</span><span class="s">]&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">xquan</span><span class="p">,</span> <span class="n">xunits</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">yquan</span><span class="p">)</span><span class="o">&gt;=</span><span class="mi">1</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">yunits</span><span class="p">)</span><span class="o">&gt;=</span><span class="mi">1</span><span class="p">:</span>
+        <span class="n">ylstr</span> <span class="o">=</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s"> [</span><span class="si">%s</span><span class="s">]&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">yquan</span><span class="p">,</span> <span class="n">yunits</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">yquan</span><span class="p">)</span><span class="o">&gt;=</span><span class="mi">1</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">yunits</span><span class="p">)</span><span class="o">&lt;</span><span class="mi">1</span><span class="p">:</span>
+        <span class="n">ylstr</span> <span class="o">=</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">yquan</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">ylstr</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+
+    <span class="c">#set up plot panels</span>
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+    <span class="n">ax0</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">211</span><span class="p">)</span>
+    <span class="n">pos</span> <span class="o">=</span> <span class="n">ax0</span><span class="o">.</span><span class="n">get_position</span><span class="p">()</span>
+    <span class="n">ax0</span><span class="o">.</span><span class="n">set_position</span><span class="p">([</span><span class="n">pos</span><span class="o">.</span><span class="n">bounds</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mf">0.4</span><span class="p">,</span> <span class="n">pos</span><span class="o">.</span><span class="n">bounds</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="mf">0.55</span><span class="p">])</span>
+    <span class="n">ax1</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">212</span><span class="p">,</span> <span class="n">position</span><span class="o">=</span><span class="p">[</span><span class="n">pos</span><span class="o">.</span><span class="n">bounds</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mf">0.1</span><span class="p">,</span> <span class="n">pos</span><span class="o">.</span><span class="n">bounds</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="mf">0.25</span><span class="p">])</span>
+    <span class="c">#overlay superposed epochs</span>
+    <span class="n">ax0</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">obj1</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">obj1</span><span class="o">.</span><span class="n">semedian</span><span class="p">,</span> <span class="s">&#39;b-&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.5</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">hold</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">ax0</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">obj1</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">obj1</span><span class="o">.</span><span class="n">bound_high</span><span class="p">,</span> <span class="s">&#39;b--&#39;</span><span class="p">)</span>
+    <span class="n">ax0</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">obj1</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">obj1</span><span class="o">.</span><span class="n">bound_low</span><span class="p">,</span> <span class="s">&#39;b--&#39;</span><span class="p">)</span>
+    <span class="n">ax0</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">obj2</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">obj2</span><span class="o">.</span><span class="n">semedian</span><span class="p">,</span> <span class="s">&#39;r-&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.5</span><span class="p">)</span>
+    <span class="n">ax0</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">obj2</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">obj2</span><span class="o">.</span><span class="n">bound_high</span><span class="p">,</span> <span class="s">&#39;r--&#39;</span><span class="p">)</span>
+    <span class="n">ax0</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">obj2</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">obj2</span><span class="o">.</span><span class="n">bound_low</span><span class="p">,</span> <span class="s">&#39;r--&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">epochline</span><span class="p">:</span>
+        <span class="n">yr</span><span class="p">,</span> <span class="n">yrlo</span><span class="p">,</span> <span class="n">yrhi</span> <span class="o">=</span> <span class="n">add_epochline</span><span class="p">(</span><span class="n">ax0</span><span class="p">)</span>
+        <span class="n">ax0</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="n">yrlo</span><span class="p">,</span><span class="n">yrhi</span><span class="p">],</span> <span class="s">&#39;k:&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">ax0</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">yr</span><span class="p">)</span>
+    <span class="n">ax0</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">ylstr</span><span class="p">)</span>
+    <span class="c">#plot prob in lower panel</span>
+    <span class="n">ax1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">obj1</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">prob</span><span class="p">,</span> <span class="s">&#39;r-&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">drawstyle</span><span class="o">=</span><span class="s">&#39;steps-mid&#39;</span><span class="p">)</span>
+    <span class="n">ax1</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="n">obj1</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">obj1</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]],</span> <span class="p">[</span><span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">],</span> <span class="s">&#39;b-&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">epochline</span><span class="p">:</span>
+        <span class="n">yr</span><span class="p">,</span> <span class="n">yrlo</span><span class="p">,</span> <span class="n">yrhi</span> <span class="o">=</span> <span class="n">add_epochline</span><span class="p">(</span><span class="n">ax1</span><span class="p">)</span>
+        <span class="n">ax1</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="n">yrlo</span><span class="p">,</span><span class="n">yrhi</span><span class="p">],</span> <span class="s">&#39;k:&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">ax1</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">yr</span><span class="p">)</span>
+    <span class="n">ax1</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="n">xlstr</span><span class="p">)</span>
+    <span class="n">ax1</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s">&#39;Prob. of H0&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">show</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">None</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">fig</span>
+
+        <span class="c">#now make an output object to store the test stats and prob.</span>
+    <span class="c">#return None</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="http://spacepy.lanl.gov/index.shtml">homepage</a>|&nbsp;</li>
+        <li><a href="../../search.html">search</a>|&nbsp;</li>
+       <li><a href="../../index.html">documentation </a> &raquo;</li>
+
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011-2012, The SpacePy Team.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

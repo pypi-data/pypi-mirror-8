@@ -1,0 +1,366 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>spacepy.data_assimilation.ensemble &mdash; SpacePy v0.1.4 Manual (DRAFT)</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1.4',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/copybutton.js"></script>
+    <link rel="shortcut icon" href="../_static/lanl_favicon.ico"/>
+    <link rel="top" title="SpacePy v0.1.4 Manual (DRAFT)" href="../index.html" />
+    <link rel="up" title="data assimilation - data assimilation module" href="../data_assimilation.html" />
+    <link rel="next" title="spacepy.data_assimilation.average_window" href="spacepy.data_assimilation.average_window.html" />
+    <link rel="prev" title="spacepy.data_assimilation.addmodelerror_old" href="spacepy.data_assimilation.addmodelerror_old.html" /> 
+  </head>
+  <body>
+
+<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../index.html"><img src="../_static/spacepy_logo.jpg" border="0" alt="spacepy_logo"/></a>
+</div>
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="spacepy.data_assimilation.average_window.html" title="spacepy.data_assimilation.average_window"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="spacepy.data_assimilation.addmodelerror_old.html" title="spacepy.data_assimilation.addmodelerror_old"
+             accesskey="P">previous</a> |</li>
+        <li><a href="http://spacepy.lanl.gov/index.shtml">homepage</a>|&nbsp;</li>
+        <li><a href="../search.html">search</a>|&nbsp;</li>
+       <li><a href="../index.html">documentation </a> &raquo;</li>
+
+          <li><a href="../data_assimilation.html" accesskey="U">data assimilation - data assimilation module</a> &raquo;</li> 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo.png" alt="Logo"/>
+            </a></p>
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="spacepy.data_assimilation.addmodelerror_old.html"
+                        title="previous chapter">spacepy.data_assimilation.addmodelerror_old</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="spacepy.data_assimilation.average_window.html"
+                        title="next chapter">spacepy.data_assimilation.average_window</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/autosummary/spacepy.data_assimilation.ensemble.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="spacepy-data-assimilation-ensemble">
+<h1>spacepy.data_assimilation.ensemble<a class="headerlink" href="#spacepy-data-assimilation-ensemble" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="spacepy.data_assimilation.ensemble">
+<em class="property">class </em><tt class="descclassname">spacepy.data_assimilation.</tt><tt class="descname">ensemble</tt><big>(</big><em>ensembles=50</em><big>)</big><a class="reference internal" href="../_modules/spacepy/data_assimilation.html#ensemble"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spacepy.data_assimilation.ensemble" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ensemble-based data assimilation subroutines for the Radiation Belt Model</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#spacepy.data_assimilation.ensemble.EnKF" title="spacepy.data_assimilation.ensemble.EnKF"><tt class="xref py py-obj docutils literal"><span class="pre">EnKF</span></tt></a>(A,&nbsp;Psi,&nbsp;Inn,&nbsp;HAp)</td>
+<td>analysis subroutine after code example in</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#spacepy.data_assimilation.ensemble.EnKF_oneobs" title="spacepy.data_assimilation.ensemble.EnKF_oneobs"><tt class="xref py py-obj docutils literal"><span class="pre">EnKF_oneobs</span></tt></a>(A,&nbsp;Psi,&nbsp;Inn,&nbsp;HAp)</td>
+<td>analysis subroutine for a single observations</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#spacepy.data_assimilation.ensemble.add_model_error" title="spacepy.data_assimilation.ensemble.add_model_error"><tt class="xref py py-obj docutils literal"><span class="pre">add_model_error</span></tt></a>(model,&nbsp;A,&nbsp;PSDdata)</td>
+<td>this routine will add a standard error to the ensemble states</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#spacepy.data_assimilation.ensemble.add_model_error_obs" title="spacepy.data_assimilation.ensemble.add_model_error_obs"><tt class="xref py py-obj docutils literal"><span class="pre">add_model_error_obs</span></tt></a>(model,&nbsp;A,&nbsp;Lobs,&nbsp;y)</td>
+<td>this routine will add a standard error to the ensemble states</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#spacepy.data_assimilation.ensemble.getHA" title="spacepy.data_assimilation.ensemble.getHA"><tt class="xref py py-obj docutils literal"><span class="pre">getHA</span></tt></a>(model,&nbsp;Lobs,&nbsp;A)</td>
+<td>compute HA provided L vector of observations</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#spacepy.data_assimilation.ensemble.getHAprime" title="spacepy.data_assimilation.ensemble.getHAprime"><tt class="xref py py-obj docutils literal"><span class="pre">getHAprime</span></tt></a>(HA)</td>
+<td>calculate ensemble perturbation of HA</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#spacepy.data_assimilation.ensemble.getHPH" title="spacepy.data_assimilation.ensemble.getHPH"><tt class="xref py py-obj docutils literal"><span class="pre">getHPH</span></tt></a>(Lobs,&nbsp;Pfxx)</td>
+<td>compute HPH</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#spacepy.data_assimilation.ensemble.getInnovation" title="spacepy.data_assimilation.ensemble.getInnovation"><tt class="xref py py-obj docutils literal"><span class="pre">getInnovation</span></tt></a>(y,&nbsp;Psi,&nbsp;HA)</td>
+<td>compute innovation ensemble D&#8217;</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#spacepy.data_assimilation.ensemble.getperturb" title="spacepy.data_assimilation.ensemble.getperturb"><tt class="xref py py-obj docutils literal"><span class="pre">getperturb</span></tt></a>(model,&nbsp;y)</td>
+<td>compute perturbations of observational vector</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="spacepy.data_assimilation.ensemble.EnKF">
+<tt class="descname">EnKF</tt><big>(</big><em>A</em>, <em>Psi</em>, <em>Inn</em>, <em>HAp</em><big>)</big><a class="reference internal" href="../_modules/spacepy/data_assimilation.html#ensemble.EnKF"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spacepy.data_assimilation.ensemble.EnKF" title="Permalink to this definition">¶</a></dt>
+<dd><p>analysis subroutine after code example in
+Evensen 2003 this will take the prepared
+matrices and calculate the analysis most
+efficiently, A will be returned</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>A :</strong> :</p>
+<p><strong>Psi :</strong> :</p>
+<p><strong>Inn :</strong> :</p>
+<p><strong>HAp :</strong> :</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><strong>out :</strong> :</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="spacepy.data_assimilation.ensemble.EnKF_oneobs">
+<tt class="descname">EnKF_oneobs</tt><big>(</big><em>A</em>, <em>Psi</em>, <em>Inn</em>, <em>HAp</em><big>)</big><a class="reference internal" href="../_modules/spacepy/data_assimilation.html#ensemble.EnKF_oneobs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spacepy.data_assimilation.ensemble.EnKF_oneobs" title="Permalink to this definition">¶</a></dt>
+<dd><p>analysis subroutine for a single observations
+with the EnKF. This is a special case.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>A :</strong> :</p>
+<p><strong>Psi :</strong> :</p>
+<p><strong>Inn :</strong> :</p>
+<p><strong>HAp :</strong> :</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><strong>out :</strong> :</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="spacepy.data_assimilation.ensemble.add_model_error">
+<tt class="descname">add_model_error</tt><big>(</big><em>model</em>, <em>A</em>, <em>PSDdata</em><big>)</big><a class="reference internal" href="../_modules/spacepy/data_assimilation.html#ensemble.add_model_error"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spacepy.data_assimilation.ensemble.add_model_error" title="Permalink to this definition">¶</a></dt>
+<dd><p>this routine will add a standard error to the ensemble states</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>model :</strong> :</p>
+<p><strong>A :</strong> :</p>
+<p><strong>PSDdata :</strong> :</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><strong>out :</strong> :</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="spacepy.data_assimilation.ensemble.add_model_error_obs">
+<tt class="descname">add_model_error_obs</tt><big>(</big><em>model</em>, <em>A</em>, <em>Lobs</em>, <em>y</em><big>)</big><a class="reference internal" href="../_modules/spacepy/data_assimilation.html#ensemble.add_model_error_obs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spacepy.data_assimilation.ensemble.add_model_error_obs" title="Permalink to this definition">¶</a></dt>
+<dd><p>this routine will add a standard error to the ensemble states</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>model :</strong> :</p>
+<p><strong>A :</strong> :</p>
+<p><strong>Lobs :</strong> :</p>
+<p><strong>y :</strong> :</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><strong>out :</strong> :</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="spacepy.data_assimilation.ensemble.getHA">
+<tt class="descname">getHA</tt><big>(</big><em>model</em>, <em>Lobs</em>, <em>A</em><big>)</big><a class="reference internal" href="../_modules/spacepy/data_assimilation.html#ensemble.getHA"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spacepy.data_assimilation.ensemble.getHA" title="Permalink to this definition">¶</a></dt>
+<dd><p>compute HA provided L vector of observations
+and ensemble matrix A</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>model :</strong> :</p>
+<p><strong>Lobs :</strong> :</p>
+<p><strong>A :</strong> :</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><strong>out :</strong> :</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="spacepy.data_assimilation.ensemble.getHAprime">
+<tt class="descname">getHAprime</tt><big>(</big><em>HA</em><big>)</big><a class="reference internal" href="../_modules/spacepy/data_assimilation.html#ensemble.getHAprime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spacepy.data_assimilation.ensemble.getHAprime" title="Permalink to this definition">¶</a></dt>
+<dd><p>calculate ensemble perturbation of HA
+HA&#8217; = HA-HA_mean</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>HA :</strong> :</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>out :</strong> :</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="spacepy.data_assimilation.ensemble.getHPH">
+<tt class="descname">getHPH</tt><big>(</big><em>Lobs</em>, <em>Pfxx</em><big>)</big><a class="reference internal" href="../_modules/spacepy/data_assimilation.html#ensemble.getHPH"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spacepy.data_assimilation.ensemble.getHPH" title="Permalink to this definition">¶</a></dt>
+<dd><p>compute HPH</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>Lobs</strong> :</p>
+<p><strong>Pfxx</strong> :</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><strong>out</strong> :</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="spacepy.data_assimilation.ensemble.getInnovation">
+<tt class="descname">getInnovation</tt><big>(</big><em>y</em>, <em>Psi</em>, <em>HA</em><big>)</big><a class="reference internal" href="../_modules/spacepy/data_assimilation.html#ensemble.getInnovation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spacepy.data_assimilation.ensemble.getInnovation" title="Permalink to this definition">¶</a></dt>
+<dd><p>compute innovation ensemble D&#8217;</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>y :</strong> :</p>
+<p><strong>Psi :</strong> :</p>
+<p><strong>HA :</strong> :</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><strong>out :</strong> :</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="spacepy.data_assimilation.ensemble.getperturb">
+<tt class="descname">getperturb</tt><big>(</big><em>model</em>, <em>y</em><big>)</big><a class="reference internal" href="../_modules/spacepy/data_assimilation.html#ensemble.getperturb"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spacepy.data_assimilation.ensemble.getperturb" title="Permalink to this definition">¶</a></dt>
+<dd><p>compute perturbations of observational vector</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>model :</strong> :</p>
+<p><strong>y :</strong> :</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><strong>out :</strong> :</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="spacepy.data_assimilation.average_window.html" title="spacepy.data_assimilation.average_window"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="spacepy.data_assimilation.addmodelerror_old.html" title="spacepy.data_assimilation.addmodelerror_old"
+             >previous</a> |</li>
+        <li><a href="http://spacepy.lanl.gov/index.shtml">homepage</a>|&nbsp;</li>
+        <li><a href="../search.html">search</a>|&nbsp;</li>
+       <li><a href="../index.html">documentation </a> &raquo;</li>
+
+          <li><a href="../data_assimilation.html" >data assimilation - data assimilation module</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011-2012, The SpacePy Team.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>
