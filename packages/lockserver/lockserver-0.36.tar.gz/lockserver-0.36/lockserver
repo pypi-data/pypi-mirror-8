@@ -1,0 +1,301 @@
+#!/usr/bin/python
+
+# The MIT License (MIT)
+#
+# Copyright (c) 2014 Carlos de Alfonso (caralla@upv.es)
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
+
+import xmlrpclib
+from SimpleXMLRPCServer import SimpleXMLRPCServer
+import time
+import uuid
+import logging
+import threading
+import config
+
+try:
+    import rpcweb
+    
+    class lock_web_server(rpcweb.web_server):
+        def GET(self, url):
+            retval = "<html><head><meta http-equiv=\"refresh\" content=\"10\"><body><pre>\n"
+            global _locks
+            for l_id, l in _locks.items():
+                retval = "%sLock \"%s\"\n%s\n" % (retval, l_id, str(l))
+            retval +="<pre></body></html>"
+            return retval
+
+    rpcweb_available = True
+except:
+    rpcweb_available = False
+
+# TODO:
+# - authentication of clients
+
+_locks = {}
+
+class LockQuery:
+    def __init__(self, timeout = -1, _id = None, info = ""):
+        if _id is None:
+            _id = str(uuid.uuid4())
+        self.id = _id
+        self.created = time.time()
+        self.acquired = 0
+        self.used = False
+        self.timeout = timeout
+        self.used_timestamp = 0
+        self.info = info
+        
+    def use(self):
+        self.used_timestamp = time.time()
+        self.used = True
+        
+    def acquire(self):
+        self.acquired = time.time()
+
+    def __str__(self):
+        return "[Lock %s] (%s)" % (self.id, self.info)
+
+class Lock:
+    def __init__(self, name, count, _expiration_time = 10, _max_time_grant = 10, _max_lock = 10):
+        self._fnc_lock = threading.Lock()
+        self._name = name
+        self._count = count
+        self._queue = []
+        self._lock = {}
+        self._max_time_granted = _max_time_grant
+        self._max_lock = _max_lock
+        self._expiration_time = _expiration_time
+        logging.info("lock created with name %s" % name)
+        self._query_count = 0
+        self._released_count = 0
+        self._forgot_count = 0
+        self._lock_count = 0
+        self._expired_count = 0
+
+    def __str__(self):
+        retval = "-"*25 + "\n"
+        retval += "LOCKS\n"
+        retval += "-"*25 + "\n"
+        for l_id, l in self._lock.items():
+            retval = "%s\t%s\n" % (retval, str(l))
+        retval += "-"*25 + "\n"
+        retval += "QUEUE\n"
+        retval += "-"*25 + "\n"
+        for l in self._queue:
+            retval = "%s\t%s\n" % (retval, str(l))
+        retval += "-"*25 + "\n"
+        retval += "STATS\n"
+        retval += "-"*25 + "\n"
+        retval += "Query locks: %d\n" % self._query_count
+        retval += "Locks got: %d\n" % self._lock_count
+        retval += "Locks released: %d\n" % self._released_count
+        retval += "Locks expired: %d\n" % self._expired_count
+        retval += "Locks forgotten: %d\n" % self._forgot_count
+        
+        return retval
+
+    def lock_count(self):
+        return len(self._lock)
+    
+    def query_count(self):
+        return len(self._queue)
+        
+    def query_lock(self, info):
+        query = LockQuery(info = info)
+        self._fnc_lock.acquire()
+        self._queue.append(query)
+        self._fnc_lock.release()
+        logging.debug("lock %s queried" % query)
+        self._query_count += 1
+        return query.id
+        
+    def get_lock(self, _id):
+        self._fnc_lock.acquire()
+        retval = False
+        if _id in self._lock:
+            self._lock[_id].use()
+            logging.debug("lock %s got its lock" % self._lock[_id])
+            self._lock_count += 1
+            retval = True
+        self._fnc_lock.release()
+        return retval
+
+    def release_lock(self, _id):
+        retval = False
+        self._fnc_lock.acquire()
+        if _id in self._lock:
+            logging.debug("lock %s released" % self._lock[_id])
+            del self._lock[_id]
+            self._released_count += 1
+            retval = True
+        self._fnc_lock.release()
+        return retval
+    
+    def lifecycle(self):
+        # First we have to purge the queue
+        self._fnc_lock.acquire()
+        global _verbose
+        now = time.time()
+        max_time = now - self._max_time_granted
+        locks_to_remove = []
+        for _id, le in self._lock.items():
+            if le.used:
+                if (now - le.used_timestamp > self._max_lock):
+                    logging.warning("forgetting lock %s because it has not been released for a long time" % le)
+                    self._forgot_count += 1
+                    locks_to_remove.append(_id)
+            else:
+                if (le.acquired < max_time):
+                    logging.debug("lock %s lost its acquisition" % le)
+                    self._queue.append(le)
+                    locks_to_remove.append(_id)
+
+        for _id in locks_to_remove:
+            del self._lock[_id]
+
+        for le in self._queue:
+            if (now - le.created > self._expiration_time):
+                logging.warning("lock %s has expired without being used" % le)
+                self._expired_count += 1
+                self._queue.remove(le)
+
+        count = len(self._lock)
+        while (len(self._queue) > 0) and (count < self._count):
+            if len(self._queue) > 0:
+                c_l = self._queue.pop(0)
+                self._lock[c_l.id]=c_l
+                count += 1
+               
+        if _verbose: 
+            logging.debug("%d acquired locks, %d pending queries" % (len(self._lock), len(self._queue)))
+
+        self._fnc_lock.release()
+    
+def create_lock(name, max_count, expiration_time, grant_time, max_lock_time):
+    if name in _locks:
+        return False, "lock already exists"
+    _locks[name] = Lock(name, max_count, expiration_time, grant_time, max_lock_time)
+    return True, "lock created"
+
+def query_lock(name, info = ""):
+    if name not in _locks:
+        return False, "lock does not exist"
+    return True, _locks[name].query_lock(info)
+
+def get_lock(name, _id):
+    if name not in _locks:
+        return False, "lock does not exist"
+    return True, _locks[name].get_lock(_id)
+
+def release_lock(name, _id):
+    if name not in _locks:
+        return False, "lock does not exist"
+    return True, _locks[name].release_lock(_id)
+
+def delete_lock(name, confirm):
+    if name not in _locks:
+        return False, "lock does not exist"
+    if not confirm:
+        return True, False
+    del _locks[name]
+    return True, True
+
+def lock_count(name):
+    if name not in _locks:
+        return False, "lock does not exist"
+    return True, _locks[name].lock_count()
+
+def serve_forever(server, port = 9090):
+    if rpcweb_available:
+        server = rpcweb.get_dispatcher()
+    else:
+        server = SimpleXMLRPCServer((server, port), logRequests=False)
+
+    server.register_function(query_lock)
+    server.register_function(get_lock)
+    server.register_function(release_lock)
+
+    if rpcweb_available:
+        th_server = rpcweb.start_server_in_thread(lock_web_server, port = c_main.PORT)
+    else:
+        th_server = threading.Thread(target=server.serve_forever)
+        th_server.setDaemon(True)
+        th_server.start()        
+
+    return th_server
+    
+if __name__ == '__main__':
+    config.set_paths([ "/etc/lockserver/", "/etc/"])
+    config.set_main_config_file("lockserver.conf")
+    
+    c_main = config.Configuration("general",
+                                  {
+                                    'SERVER':'localhost',
+                                    'PORT':9090,
+                                    'LOG_FILE':None,
+                                    'DEFAULT_LOCK':'DefaultLock',
+                                    'DEFAULT_LOCK_SIZE':1,
+                                    'DEFAULT_LOCK_GRACE_TIME':10,
+                                    'DEFAULT_LOCK_EXPIRATION_TIME': 300,
+                                    'DEFAULT_LOCK_MAX_LOCK_TIME':300,
+                                    'LIFECYCLE_PERIOD':1,
+                                    'LOGLEVEL':'info'
+                                  },
+    )
+
+    global _verbose
+    _verbose = False
+
+    llevel = c_main.LOGLEVEL.lower()
+    if llevel == 'info':
+        working_llevel = logging.INFO
+    elif llevel == 'debug':
+        working_llevel = logging.DEBUG
+    elif llevel == 'superdebug':
+        working_llevel = logging.DEBUG
+        _verbose = True
+    elif llevel == 'error':
+        working_llevel = logging.ERROR
+    elif llevel == 'warning':
+        working_llevel = logging.WARNING
+    else:
+        working_llevel = logging.DEBUG
+
+    try:    
+        logging.basicConfig(filename=c_main.LOG_FILE,level=working_llevel,format="[%(levelname)s] %(asctime)-15s %(message)s")
+    except:
+        pass
+    
+    if c_main.DEFAULT_LOCK != "":
+        logging.info("creating default lock %s" % c_main.DEFAULT_LOCK)
+        create_lock(c_main.DEFAULT_LOCK, c_main.DEFAULT_LOCK_SIZE, c_main.DEFAULT_LOCK_EXPIRATION_TIME, c_main.DEFAULT_LOCK_GRACE_TIME, c_main.DEFAULT_LOCK_MAX_LOCK_TIME)
+
+    th_server = serve_forever(c_main.SERVER, c_main.PORT)
+    time.sleep(2)
+    if not th_server.isAlive():
+        logging.error("could not start the server")
+        print "Could not start the server. Check logs"
+        exit(-1)
+    
+    while True:
+        for _id, l in _locks.items():
+            l.lifecycle()
+        time.sleep(c_main.LIFECYCLE_PERIOD)
