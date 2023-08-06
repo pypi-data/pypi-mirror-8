@@ -1,0 +1,25 @@
+#!/usr/bin/env python2
+import sys
+
+from prorab import push
+
+
+try:
+    type = sys.argv[1]
+
+    if type == 'general':
+        message = sys.argv[2]
+    elif type == 'personal':
+        queue, message = sys.argv[2:]
+    else:
+        print('Wrong type argument! [general/personal]')
+        sys.exit(1)
+except IndexError:
+    print('Wrong number of arguments!')
+    sys.exit(1)
+
+
+if type == 'general':
+    push.general(message)
+elif type == 'personal':
+    push.personal(queue, message)
