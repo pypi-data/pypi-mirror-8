@@ -1,0 +1,38 @@
+{% extends 'main_header.html' %}
+{% block body %}
+
+{% for tree_row in details.entries %}
+
+    Details for <b>{{ tree_row[0] }}</b> (available at <a href="/{{ tree_row[1] }}">{{ tree_row[1] }}</a> tab as <b>{{ tree_row[2] }}</b>):
+
+    <table style="width: 90%" class="one-column-emphasis">
+    <thead>
+    <tr class="oce-first">
+        <th scope="col">Process Name</th>
+        <th scope="col">Time Qualifier</th>
+        <th scope="col">State Machine</th>
+        <th scope="col">Process Type</th>
+        <th scope="col">Run On Active Timeperiod</th>
+        <th scope="col">Dependent On</th>
+        <th scope="col">Dependant Trees</th>
+    </tr>
+    </thead>
+    <tbody>
+
+    {% for process_name, process_details in tree_row[3].iteritems() %}
+    <tr>
+        <td>{{ process_details[0] }}</td>
+        <td>{{ process_details[1] }}</td>
+        <td>{{ process_details[2] }}</td>
+        <td>{{ process_details[3] }}</td>
+        <td>{{ process_details[4] }}</td>
+        <td>{{ process_details[5] }}</td>
+        <td>{{ process_details[6] }}</td>
+    </tr>
+    {% endfor %}
+
+    </tbody>
+    </table>
+{% endfor %}
+
+{% endblock %}
