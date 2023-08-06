@@ -1,0 +1,139 @@
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification,
+are permitted provided that the following conditions are met:
+
+ * Redistributions of source code must retain the above copyright notice, this
+   list of conditions and the following disclaimer.
+ * Redistributions in binary form must reproduce the above copyright notice,
+   this list of conditions and the following disclaimer in the documentation
+   and/or other materials provided with the distribution.
+ * Neither the name of the Flatdict nor the names of its
+   contributors may be used to endorse or promote products derived from this
+   software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+Description: ==========
+         FlatDict
+        ==========
+        
+        |Version| |Downloads| |Status| |Coverage| |License|
+        
+        ``FlatDict`` is a dict object that allows for single level, delimited key/value pair
+        mapping of nested dictionaries. You can interact with FlatDict like a normal
+        dictionary and access child dicts as you normally would or with the composited
+        key.
+        
+        *For example:*
+        
+        .. code-block:: python
+        
+            foo = {'foo': {'bar': 'baz', 'qux': 'corge'}}
+        
+        *is represented as:*
+        
+        .. code-block:: python
+        
+            {'foo:bar': 'baz',
+             'foo:qux': 'corge'}
+        
+        *And can still be accessed as:*
+        
+        .. code-block:: python
+        
+            foo['foo']['bar']
+        
+        *and*
+        
+        .. code-block:: python
+        
+            foo['foo:bar']
+        
+        API
+        ---
+        
+        ``FlatDict`` has the same methods as dict in Python 2.6. In addition, it has a
+        ``FlatDict.as_dict`` method which will return a pure nested dictionary from a
+        ``FlatDict`` value.
+        
+        Documentation is available at http://flatdict.readthedocs.org
+        
+        Installation
+        ------------
+        
+        .. code-block:: bash
+        
+            $ pip install flatdict
+        
+        Example Use
+        -----------
+        
+        .. code-block:: python
+        
+            import flatdict
+        
+            values = {'foo': {'bar': {'baz': 0,
+                                      'qux': 1,
+                                      'corge': 2},
+                              'grault': {'baz': 3,
+                                         'qux': 4,
+                                         'corge': 5}},
+                      'garply': {'foo': 0, 'bar': 1, 'baz': 2, 'qux': {'corge': 3}}}
+        
+            flat = flatdict.FlatDict(values)
+        
+            print flat['foo:bar:baz']
+        
+            flat['test:value:key'] = 10
+        
+            del flat['test']
+        
+            for key in flat:
+                print key
+        
+            for values in flat.itervalues():
+                print key
+        
+            print repr(flat.as_dict())
+        
+        .. |Version| image:: https://badge.fury.io/py/flatdict.svg?
+           :target: http://badge.fury.io/py/flatdict
+        
+        .. |Status| image:: https://travis-ci.org/gmr/flatdict.svg?branch=master
+           :target: https://travis-ci.org/gmr/flatdict
+        
+        .. |Coverage| image:: https://codecov.io/github/gmr/flatdict/coverage.svg?branch=master
+           :target: https://codecov.io/github/gmr/flatdict?branch=master
+        
+        .. |Downloads| image:: https://pypip.in/d/flatdict/badge.svg?
+           :target: https://pypi.python.org/pypi/flatdict
+        
+        .. |License| image:: https://pypip.in/license/flatdict/badge.svg?
+           :target: https://flatdict.readthedocs.org
+        
+Platform: UNKNOWN
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Operating System :: POSIX
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 2
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 2.6
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Programming Language :: Python :: 3.2
+Classifier: Programming Language :: Python :: 3.3
+Classifier: Programming Language :: Python :: 3.4
+Classifier: Programming Language :: Python :: Implementation :: CPython
+Classifier: Programming Language :: Python :: Implementation :: PyPy
+Classifier: Topic :: Software Development :: Libraries
