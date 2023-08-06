@@ -1,0 +1,34 @@
+{% if show %}
+
+	{% block js %}
+	<script type="text/javascript">
+		/** On close make notification disappear and save user's decision **/
+		function uecookie_close()
+		{
+			var d = new Date();
+			d.setFullYear(d.getFullYear() + 1);
+			
+			document.cookie = "uecookie_closed=1; path=/; expires=" + d.toGMTString() + ";";
+			
+			if (typeof jQuery == 'undefined')
+			{  
+			    var e = document.getElementById('uecookie9_message');
+				e.style.display = 'none';
+			}
+			else
+			{
+				$('#uecookie9_message').fadeOut();
+			}
+		}
+	</script>
+	{% endblock %}
+	
+	{% block message %}
+		<div id="uecookie9_message" style="position:fixed;width:100%;bottom:0;background-color:#fff8aa;padding:5px 0;left:0;text-align:center;font-size:15px;border-top:1px solid silver">
+			This site uses cookies.
+			<a href="{% url 'django.contrib.flatpages.views.flatpage' url='/cookies/' %}">Learn more</a> if you need to.
+			<a href="" onclick="javascript:uecookie_close();return false;" style="font-weight:bold">I agree, close this box.</a>
+		</div>
+	{% endblock %}
+	
+{% endif %}
