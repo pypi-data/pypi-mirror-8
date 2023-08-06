@@ -1,0 +1,54 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+import sys
+import time
+
+from crunner.config import ConfigLoader
+from crunner.runner import Runner
+from crunner.event import FileEvent
+from crunner.watcher import FileWatcher
+from crunner.notifier import Notifier
+
+
+def dispatch_notifier_args(args):
+    return args.get('cmd'), args.get('msg_arg'), args.get('img_arg', ''), args.get('add_args', '')
+
+
+def dispatch_tester_args(args):
+    return args.get('cmd'), args.get('args')
+
+
+def start_watcher(project_path, test_path, delay, watching_types, run_on_start=False):
+    event = FileEvent([name, runner, project_path, test_path], delay, regexes=watching_types)
+    watcher = FileWatcher(project_path, event)
+    watcher.start()
+    if run_on_start:
+        event.run_tests()
+    return watcher
+
+
+requested = sys.argv[1] if len(sys.argv) > 1 else None
+main_args, notifier_args, tester_args, projects = ConfigLoader().load()
+notifier = Notifier(*dispatch_notifier_args(notifier_args))
+runner = Runner(notifier, *dispatch_tester_args(tester_args))
+watchers = []
+
+
+if requested:
+    name = requested
+    settings = projects[name]
+    watcher = start_watcher(settings['project_path'], settings['test_path'], main_args["delay"], settings['watching_types'], main_args["run_on_start"])
+    watchers.append(watcher)
+else:
+    for name, settings in projects.items():
+        if settings['active']:
+            watcher = start_watcher(settings['project_path'], settings['test_path'], main_args["delay"], settings['watching_types'], main_args["run_on_start"])
+            watchers.append(watcher)
+
+
+try:
+    while True:
+        time.sleep(1)
+except KeyboardInterrupt:
+    for each in watchers:
+        each.stop()
