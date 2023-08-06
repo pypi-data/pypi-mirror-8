@@ -1,0 +1,96 @@
+{% extends 'reportapi/base.html' %}
+{% load i18n l10n reportapi_base %}{% load url from future %}
+
+{% block content %}
+
+{% block breadcrumbs %}
+{% if report %}
+    <ol class="breadcrumb">
+        <li><a href="{% url 'reportapi:index' %}">{% trans 'Reporting' %}</a></li>
+        <li><a href="{% url 'reportapi:report_list' section.name %}">{{ section.label|capfirst }}</a></li>
+        <li class="active">{{ report.label|capfirst }}</li>
+        <li><a href="{% url 'reportapi:report' report.section report.name %}">{% trans 'Create New' %}</a></li>
+    </ol>
+{% endif %}
+{% endblock %}
+
+{% block report_list %}{% endblock %}
+
+{% if docs %}
+
+<h3>{% block page_legend %}{% trans 'Last formed documents' %}{% endblock %}</h3>
+
+<div class="row">
+    {% for doc in docs %}
+    <div id="div-document-{{ doc.pk }}" class="col-xs-12">
+        <div class="panel {% if doc.error %}panel-danger{% elif not doc.end %}panel-warning{% else %}panel-success{% endif %}">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    {{ doc }}
+                <span class="pull-right">
+                    <span class="label
+                    {% if not doc.end %}
+                         label-warning">{% trans 'in the making' %}
+                    {% elif doc.error %}
+                         label-danger">{{ doc.end }}
+                    {% else %}
+                         label-success">{{ doc.end }}
+                    {% endif %}
+                    </span>&nbsp;
+                    <span class="badge" title="ID">{{ doc.pk }}</span>
+                </span>
+                </h4>
+            </div>
+
+            <div class="panel-body">
+
+                <dl class="dl-horizontal">
+                    <dt>{% trans 'Author' %}</dt>
+                    <dd>{{ doc.user.get_full_name|default:doc.user }}</dd>
+                    <dt>{% trans 'Filters' %}</dt>
+                    <dd>{{ doc.description|linebreaks }}</dd>
+                    <dt>{% trans 'Links' %}</dt>
+                    <dd>
+                    {% if doc.end %} 
+                        {% if doc.has_view_in_browser or doc.error %}
+                        <a href="#view-document-{{ doc.pk }}" onClick="handlerShowDocument('{% url 'reportapi:get_document' doc.pk %}', 'document-{{ doc.pk }}')" 
+                            class="btn btn-link btn-xs" role="button"
+                            title="{% trans 'View' %}">
+                            <i class="fa {% if doc.error %}fa-bug{% else %}fa-search{% endif %}"></i> {% trans 'View' %}
+                        </a>
+                        {% endif %}
+                        {% if not doc.error %}
+                        <a href="{% url 'reportapi:get_document' doc.pk %}" target="_blank"
+                            class="btn btn-link btn-xs" role="button"
+                            title="{% trans 'Download' %}">
+                            <i class="fa fa-download"></i> {% trans 'Download' %}
+                        </a>
+                        {% endif %}
+                    {% endif %}
+                        <a href="{{ doc.register.get_absolute_url }}" class="btn btn-link btn-xs"
+                            role="button" title="{% trans 'Create New' %}">
+                            <i class="fa fa-gears"></i> {% trans 'Create New' %}
+                        </a>
+                    {% if user.is_superuser or user == doc.user %}
+                        <a href="#" onClick="handlerRemoveDocument({{ doc.pk }}, true)" 
+                            class="btn btn-link btn-xs" role="button"
+                            title="{% trans 'Remove' %}">
+                            <i class="fa fa-times"></i> {% trans 'Remove' %}
+                        </a>
+                    {% endif %}
+                    </dd>
+                </dl>
+                <div id="view-document-{{ doc.pk }}" class="row-" style="display:none; padding-top: 60px;">
+                    <div class="embed-responsive embed-responsive-16by9"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% else %}
+    <h1 class="text-center">{% trans 'Choose report and create document' %}</h1>
+{% endif %}
+
+{% endblock %}
