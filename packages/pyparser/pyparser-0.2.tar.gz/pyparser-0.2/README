@@ -1,0 +1,15 @@
+PyParser is a simple library that makes it easier to parse files.  I wrote it
+when I needed to parse a ton of string output and files, and got very tired of
+writing stuff like the following
+
+    data = {}
+
+    for line in output:
+        line = line.strip()
+
+        if not ':' in line:
+            continue
+
+        key, value = line.split(':', 1)
+        data[key] = value
+
