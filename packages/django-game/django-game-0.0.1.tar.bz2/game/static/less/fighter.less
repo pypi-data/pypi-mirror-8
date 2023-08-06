@@ -1,0 +1,60 @@
+@import "./bootstrap/bootstrap.less";
+
+@yellow: #fff49a;
+@blue: #049cdb;
+@white: #fff;
+
+body {
+    margin: 0;
+}
+.border-radius(@radius) {
+   .border-top-radius(@radius) !important;
+   .border-bottom-radius(@radius)  !important;
+}
+.fighter-wrap {
+    padding-left: 0;
+}
+#fighter {
+    height: 600px;
+    width: 600px;
+    border: 1px solid black;
+    background: lighten(@blue, 80%) url(/static/img/clouds.png) no-repeat center center;
+    background-size: cover;
+}
+.mirage, .enemy {
+    position: absolute;
+    opacity: 0;
+}
+.bullet {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background-color: @gray;
+    .box-shadow(0 10px 10px darken(@yellow, 30%));
+}
+.bullet-enemy {
+    .box-shadow(0 -10px 10px darken(@yellow, 30%));
+}
+.bubble {
+    position: absolute;
+    color: @white;
+    font-weight: bold;
+    font-size: 25px;
+    .border-radius(25px);
+}
+.bullet-bubble {
+    border: 3px solid @blue;
+    background-color: lighten(@blue, 30%);
+}
+.plane-bubble {
+    border: 3px solid darken(@yellow, 30%);
+    background-color: @yellow;
+}
+.explosion {
+    background-color: #f6d9b3;
+    width: 200px;
+    height: 200px;
+    position: relative;
+    #gradient > .radial(@inner-color: @yellow, @outer-color: darken(#f6d9b3, 30%));
+    .border-radius(200px);
+}
