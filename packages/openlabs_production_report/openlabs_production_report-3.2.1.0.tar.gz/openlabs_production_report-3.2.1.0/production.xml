@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<tryton>
+  <data>
+    <record model="ir.action.report" id="report_production">
+        <field name="name">Production Report</field>
+        <field name="model">production</field>
+        <field name="report_name">production.report</field>
+        <field name="report">production_report/production.html</field>
+        <field name="extension">pdf</field>
+    </record>
+    <record model="ir.action.keyword" id="print_keyword">
+        <field name="keyword">form_print</field>
+        <field name="model">production,-1</field>
+        <field name="action" ref="report_production"/>
+    </record>
+  </data>
+</tryton>
