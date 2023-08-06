@@ -1,0 +1,19 @@
+#!/usr/bin/python
+
+import os,sys
+
+if __name__=='__main__':
+	os.system('rm docs/source/api -Rf')
+	os.system('mkdir docs/source/api')
+	os.system('sphinx-apidoc -o docs/source/api src/pysite -e')
+	f = open('docs/source/api.rst.in')
+	index_rst_in = f.read()
+	f.close()
+
+	api_rst_in = index_rst_in.replace('<api-rst>','api/' + ('\n   api/'.join(os.listdir('docs/source/api'))))
+	
+	f = open('docs/source/api.rst','w')
+	f.write(api_rst_in)
+	f.close()
+
+	os.system('%s setup.py build_sphinx' % sys.executable)
