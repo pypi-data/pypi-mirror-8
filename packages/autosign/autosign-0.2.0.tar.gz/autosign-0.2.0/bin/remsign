@@ -1,0 +1,25 @@
+#!/usr/bin/env python2
+
+##
+# autosign
+# https://github.com/leosartaj/autosign.git
+# 
+# copyright (c) 2014 sartaj singh
+# licensed under the mit license.
+##
+
+"""
+Main script that powers autosign
+"""
+
+import os
+from autosign import main
+from autosign.parse import remsign_options as options
+
+if __name__ == '__main__':
+    args = options.parse_args()
+
+    target= args.target
+    if not os.path.exists(target):
+        raise IOError('file/dir \'%s\' does not exist.' %(target))
+    main.removeSignFiles(target, args.recursive)
