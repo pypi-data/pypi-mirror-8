@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/style.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/gh-buttons.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/font-awesome.css" type="text/css" media="screen" />
+    {% block js %}
+    {% endblock %}
+  </head>
+  <body>
+    <div id="wrapper">
+      <div id="header">
+        <div class="actions button-container">
+          <a href="{% url 'rss' %}" class="button pill big" title="Subscribe to the RSS feed">
+            <i class="icon-rss"></i> Feeds
+          </a>
+          {% if user.is_staff %}
+          <a class="button pill big" href="{% url 'admin:index' %}">Admin</a>
+          {% endif %}
+          <a href="{{ report_url }}" class="button pill big">
+            <i class="icon-exclamation-sign"></i> Report an Issue</a>
+        </div>
+        <img id="logo" src="{{ STATIC_URL }}images/logo.png" alt="Logo"/>
+        <a href="{% url 'index' %}"><h1 id="title">{% block title %}{{ title|default:"Stashboard" }}{% endblock %}</h1></a>
+      </div>
+      <div id="content">
+        {% block content %}
+        {% endblock %}
+      </div>
+      <div id="push"></div>
+    </div>
+    <div id="footer">
+      <ul class="left">
+        <li>
+          {% if user.is_authenticated %}
+          <a href="{% url 'logout' %}">Logout</a>
+          {% else %}
+          <a href="{% url 'admin:index' %}">Admin</a>
+        </li>
+        {% endif %}
+        <li>
+          <a href="{% url 'api-root' %}">API</a>
+        </li>
+        <li>&copy; 2010-{% now "Y" %} <a href="http://www.twilio.com">Twilio Inc.</a></li>
+      </ul>
+      <ul class="right">
+        <li id="powered"><a href="http://www.stashboard.org">POWERED BY <img src="{{ STATIC_URL }}images/poweredbystash.png" alt="stash!" /> STASHBOARD</a></li>
+      </ul>
+    </div>
+    {% block js_end %}
+    {% endblock %}
+  </body>
+</html>
