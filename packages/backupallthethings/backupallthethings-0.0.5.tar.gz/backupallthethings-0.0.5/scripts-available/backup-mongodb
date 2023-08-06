@@ -1,0 +1,82 @@
+#!/bin/bash
+##################
+# backupallthethings collection
+##################
+# Description:
+#  Mongodb backup uses mongodump and backup either all databases, or individually
+##################
+
+SELF=$(basename -s .sh $0)
+SERVICE=${SELF#backup-}
+
+# Data available from ENV
+DEST=$BATT_DEST
+
+# 
+CONF_FOLDER=/opt/batt/conf
+CONF_FILE=$CONF_FOLDER/$SELF.conf
+
+# Load main backup config file
+if [ ! -e "$CONF_FOLDER/backup.conf" ]; then
+    echo "Missing main backup config file" >&2
+    exit 1
+else
+    . "$CONF_FOLDER/backup.conf"
+fi
+
+# Load script specific config file
+if [ ! -e "$CONF_FILE" ]; then
+    echo "Missing $SELF backup config file" >&2
+    exit 1
+else
+    . "$CONF_FILE"
+fi
+
+# Prepare destination folder
+DEST_FOLDER=$DEST/$SERVICE
+mkdir -p $DEST_FOLDER
+
+# MongoDB backups either everything at once or individual databases
+echo "Start $SERVICE data backup"
+args="${@:1}"
+
+if [ ${#args} -eq 0 ]; then
+    # No arguments provided - backup all the databases
+    echo -n "Backup all databases at once."
+
+    # Mongodump dumps the databases in a folder
+    TMP_FOLDER=$(mktemp -d)
+    
+    # TODO add auth support depending on the config file
+    mongodump --out $TMP_FOLDER
+    cd $TMP_FOLDER
+    tar czf $DEST_FOLDER/all_db.tar.gz .
+
+    # Cleanup
+    cd 
+    rm -rf $TMP_FOLDER
+
+    echo "Completed."
+else
+    # Got arguments - backup databases individually
+    for db in $args
+    do
+        echo -n "Backup database: $db"
+
+        # Mongodump dumps the databases in a folder
+        TMP_FOLDER=$(mktemp -d)
+    
+        # TODO add auth support depending on the config file
+        mongodump --out $TMP_FOLDER --db $db
+        cd $TMP_FOLDER
+        tar czf $DEST_FOLDER/$db.tar.gz .
+
+        # Cleanup
+        cd 
+        rm -rf $TMP_FOLDER
+        echo "Completed."
+    done
+fi
+
+echo "Completed $SERVICE data backup"
+exit 0

@@ -1,0 +1,69 @@
+#!/bin/bash
+##################
+# backupallthethings collection
+##################
+# Description:
+#  MySQL backup approach is to use `mysqldump`
+##################
+
+SELF=$(basename -s .sh $0)
+SERVICE=${SELF#backup-}
+
+# Data available from ENV
+DEST=$BATT_DEST
+
+# 
+CONF_FOLDER=/opt/batt/conf
+CONF_FILE=$CONF_FOLDER/$SELF.conf
+
+# Load main backup config file
+if [ ! -e "$CONF_FOLDER/backup.conf" ]; then
+    echo "Missing main backup config file" >&2
+    exit 1
+else
+    . "$CONF_FOLDER/backup.conf"
+fi
+
+# Load script specific config file
+if [ ! -e "$CONF_FILE" ]; then
+    echo "Missing $SELF backup config file" >&2
+    exit 1
+else
+    . "$CONF_FILE"
+fi
+
+# Prepare destination folder
+DEST_FOLDER=$DEST/$SERVICE
+mkdir -p $DEST_FOLDER
+
+# Credential file
+if [ ! -z "$MYSQL_CREDS" ]; then
+    CREDS=" --defaults-extra-file=$MYSQL_CREDS "
+fi
+
+# MySQL backup either everything at once, or individual databases
+echo "Start $SERVICE data backup"
+args="${@:1}"
+
+if [ ${#args} -eq 0 ]; then
+    # No arguments provided - backup all the databases
+    echo -n "Backup all databases at once."
+    mysqldump $CREDS --opt --routines --triggers --events --flush-privileges \
+              --skip-add-drop-table --master-data=2 --dump-date --all-databases \
+              | gzip > $DEST_FOLDER/all_db.sql.gz
+    echo "Completed."
+else
+    # Got arguments - backup databases individually
+    for db in $args
+    do
+        echo -n "Backup database: $db"
+        mysqldump $CREDS --opt --routines --triggers --events --flush-privileges \
+              --skip-add-drop-table --master-data=2 --dump-date --databases $db \
+              | gzip > $DEST_FOLDER/$db.sql.gz
+        echo "Completed."
+    done
+fi
+
+echo "Completed $SERVICE data backup"
+exit 0
+
