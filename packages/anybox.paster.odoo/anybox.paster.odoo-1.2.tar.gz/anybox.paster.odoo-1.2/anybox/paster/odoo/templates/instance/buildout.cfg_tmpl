@@ -1,0 +1,14 @@
+[buildout]
+parts = odoo
+versions = versions
+find-links = http://download.gna.org/pychart/
+
+[odoo]
+recipe = anybox.recipe.openerp:server
+version = ${version_origin}
+addons = local addons
+eggs =
+    soappy
+    PyPDF
+
+[versions]
