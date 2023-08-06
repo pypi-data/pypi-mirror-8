@@ -1,0 +1,119 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Grouped environments &mdash; supernova trunk documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     'trunk',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="supernova trunk documentation" href="index.html" />
+    <link rel="prev" title="Listing available supernova environments" href="listingenvs.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="listingenvs.html" title="Listing available supernova environments"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">supernova trunk documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="grouped-environments">
+<h1>Grouped environments<a class="headerlink" href="#grouped-environments" title="Permalink to this headline">¶</a></h1>
+<p>Starting in supernova 0.9.6, you can &#8220;group&#8221; environments and run commands across all of the environments in a group.  Using the <a class="reference external" href="http://bit.ly/raxsupernova">Rackspace example configuration</a>, we can group the DFW, IAD and ORD environments into a group called &#8220;raxusa&#8221;::</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">[</span><span class="n">dfw</span><span class="p">]</span>
+<span class="n">SUPERNOVA_GROUP</span><span class="o">=</span><span class="n">raxusa</span>
+<span class="o">...</span><span class="n">snip</span><span class="o">...</span>
+
+<span class="p">[</span><span class="nb">ord</span><span class="p">]</span>
+<span class="n">SUPERNOVA_GROUP</span><span class="o">=</span><span class="n">raxusa</span>
+<span class="o">...</span><span class="n">snip</span><span class="o">...</span>
+
+<span class="p">[</span><span class="n">iad</span><span class="p">]</span>
+<span class="n">SUPERNOVA_GROUP</span><span class="o">=</span><span class="n">raxusa</span>
+<span class="o">...</span><span class="n">snip</span><span class="o">...</span>
+</pre></div>
+</div>
+<p>Instead of referring to these environments one by one, you can now run commands across them as a group::</p>
+<div class="highlight-python"><div class="highlight"><pre>supernova raxusa list
+</pre></div>
+</div>
+<p>This can be quite useful if you need to search multiple environments for an instance, or if you need to boot test instances in multiple datacenters.  Just be careful with any actions that manipulate data, like rebuilds or instance deletions.</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="listingenvs.html"
+                        title="previous chapter">Listing available supernova environments</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/groupedenvs.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="listingenvs.html" title="Listing available supernova environments"
+             >previous</a> |</li>
+        <li><a href="index.html">supernova trunk documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Major Hayden.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

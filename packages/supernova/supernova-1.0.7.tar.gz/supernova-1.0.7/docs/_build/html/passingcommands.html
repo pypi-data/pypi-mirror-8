@@ -1,0 +1,133 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Passing commands to nova &mdash; supernova trunk documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     'trunk',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="supernova trunk documentation" href="index.html" />
+    <link rel="prev" title="Working with keyring storage" href="keyring.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="keyring.html" title="Working with keyring storage"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">supernova trunk documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="passing-commands-to-nova">
+<h1>Passing commands to nova<a class="headerlink" href="#passing-commands-to-nova" title="Permalink to this headline">¶</a></h1>
+<p>The structure of a supernova command is relatively simple::</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">supernova</span> <span class="p">[</span><span class="n">enviromment_name</span><span class="p">]</span> <span class="p">[</span><span class="n">commands</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Here are some examples:</p>
+<ul>
+<li><p class="first">Listing instances in the <em>iad</em> environment::</p>
+<div class="highlight-python"><div class="highlight"><pre>supernova iad list
+</pre></div>
+</div>
+</li>
+<li><p class="first">Listing available images::</p>
+<div class="highlight-python"><div class="highlight"><pre>supernova iad image-list
+</pre></div>
+</div>
+</li>
+<li><p class="first">Listing available flavors::</p>
+<div class="highlight-python"><div class="highlight"><pre>supernova iad flavor-list
+</pre></div>
+</div>
+</li>
+<li><p class="first">Booting an instance::</p>
+<div class="highlight-python"><div class="highlight"><pre>supernova iad boot --image image_uuid --flavor flavor_id myserver.example.com
+</pre></div>
+</div>
+</li>
+</ul>
+<p>You can use supernova with long-running options and the output will be piped live to your terminal.  For example, you can use <tt class="docutils literal"><span class="pre">--poll</span></tt> when you boot an instance and you&#8217;ll see the novaclient output update as your instance is being built.</p>
+<p>For debug output, supernova accepts <tt class="docutils literal"><span class="pre">--debug</span></tt> as a supernova option or as a novaclient option.  Both of these are okay::</p>
+<div class="highlight-python"><div class="highlight"><pre>supernova --debug iad list
+supernova iad list --debug
+</pre></div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="keyring.html"
+                        title="previous chapter">Working with keyring storage</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/passingcommands.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="keyring.html" title="Working with keyring storage"
+             >previous</a> |</li>
+        <li><a href="index.html">supernova trunk documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Major Hayden.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

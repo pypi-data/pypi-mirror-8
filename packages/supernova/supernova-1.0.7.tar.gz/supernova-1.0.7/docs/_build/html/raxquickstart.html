@@ -1,0 +1,149 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Rackspace Quick Start &mdash; supernova trunk documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     'trunk',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="supernova trunk documentation" href="index.html" />
+    <link rel="next" title="Installing supernova" href="installation.html" />
+    <link rel="prev" title="supernova" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="installation.html" title="Installing supernova"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="supernova"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">supernova trunk documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="rackspace-quick-start">
+<h1>Rackspace Quick Start<a class="headerlink" href="#rackspace-quick-start" title="Permalink to this headline">¶</a></h1>
+<p>If you&#8217;re already a Rackspace customer, you can get started quickly with supernova by following these steps:</p>
+<div class="highlight-python"><div class="highlight"><pre>pip install supernova rackspace-novaclient
+wget -O ~/.supernova http://bit.ly/raxsupernova
+supernova-keyring -s global RackspaceAccountUser
+supernova-keyring -s global RackspaceAccountAPIKey
+supernova-keyring -s global RackspaceAccountDDI
+supernova dfw list
+</pre></div>
+</div>
+<p>Let&#8217;s break down these steps one by one.</p>
+<p>We start by installing supernova as well as rackspace-novaclient (which is required for novaclient to talk to Rackspace&#8217;s identity API):</p>
+<div class="highlight-python"><div class="highlight"><pre>pip install supernova rackspace-novaclient
+</pre></div>
+</div>
+<p>There&#8217;s a <a class="reference external" href="http://bit.ly/raxsupernova">Rackspace example configuration</a> file in the main repository and we can store that in our home directory as <cite>.supernova</cite>:</p>
+<div class="highlight-python"><div class="highlight"><pre>wget -O ~/.supernova http://bit.ly/raxsupernova
+</pre></div>
+</div>
+<p>One of supernova&#8217;s features is the ability to store sensitive data in your operating system&#8217;s keyring.  This also makes it handy when you want to re-use usernames, account numbers and passwords across multiple environments.  We add that data to the keyring with these commands:</p>
+<div class="highlight-python"><div class="highlight"><pre>supernova-keyring -s global RackspaceAccountUser
+supernova-keyring -s global RackspaceAccountAPIKey
+supernova-keyring -s global RackspaceAccountDDI
+</pre></div>
+</div>
+<p>Finally, we can test our configuration by listing our current instances in the DFW region:</p>
+<div class="highlight-python"><div class="highlight"><pre>supernova dfw list
+</pre></div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">supernova</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="installation.html"
+                        title="next chapter">Installing supernova</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/raxquickstart.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="installation.html" title="Installing supernova"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="supernova"
+             >previous</a> |</li>
+        <li><a href="index.html">supernova trunk documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+
+    <div class="footer">
+        &copy; Copyright 2014, Major Hayden.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-1115744-15");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+
+  </body>
+</html>

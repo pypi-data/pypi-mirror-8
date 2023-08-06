@@ -1,0 +1,203 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Using supernova &mdash; supernova trunk documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     'trunk',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="supernova trunk documentation" href="index.html" />
+    <link rel="prev" title="Configuring supernova" href="configuring.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="configuring.html" title="Configuring supernova"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">supernova trunk documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="using-supernova">
+<h1>Using supernova<a class="headerlink" href="#using-supernova" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="passing-commands-to-nova">
+<h2>Passing commands to nova<a class="headerlink" href="#passing-commands-to-nova" title="Permalink to this headline">¶</a></h2>
+<p>The structure of a supernova command is relatively simple:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">supernova</span> <span class="p">[</span><span class="n">enviromment_name</span><span class="p">]</span> <span class="p">[</span><span class="n">commands</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Here are some examples:</p>
+<ul>
+<li><p class="first">Listing instances in the <em>iad</em> environment:</p>
+<div class="highlight-python"><div class="highlight"><pre>supernova iad list
+</pre></div>
+</div>
+</li>
+<li><p class="first">Listing available images:</p>
+<div class="highlight-python"><div class="highlight"><pre>supernova iad image-list
+</pre></div>
+</div>
+</li>
+<li><p class="first">Listing available flavors:</p>
+<div class="highlight-python"><div class="highlight"><pre>supernova iad flavor-list
+</pre></div>
+</div>
+</li>
+<li><p class="first">Booting an instance:</p>
+<div class="highlight-python"><div class="highlight"><pre>supernova iad boot --image image_uuid --flavor flavor_id myserver.example.com
+</pre></div>
+</div>
+</li>
+</ul>
+<p>You can use supernova with long-running options and the output will be piped live to your terminal.  For example, you can use <tt class="docutils literal"><span class="pre">--poll</span></tt> when you boot an instance and you&#8217;ll see the novaclient output update as your instance is being built.</p>
+<p>For debug output, supernova accepts <tt class="docutils literal"><span class="pre">--debug</span></tt> as a supernova option or as a novaclient option.  Both of these are okay:</p>
+<div class="highlight-python"><div class="highlight"><pre>supernova --debug iad list
+supernova iad list --debug
+</pre></div>
+</div>
+</div>
+<div class="section" id="listing-available-supernova-environments">
+<h2>Listing available supernova environments<a class="headerlink" href="#listing-available-supernova-environments" title="Permalink to this headline">¶</a></h2>
+<p>There&#8217;s a convenience function provided that will dump out your parsed supernova configuration file to the screen:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">supernova</span> <span class="o">-</span><span class="n">l</span>
+</pre></div>
+</div>
+<p>This is a good way to test your configuration file syntax and diagnose problems.  Keep in mind that any plain text credentials will be displayed on screen when you list environments (see <a class="reference internal" href="configuring.html#keyring"><em>Working with keyring storage</em></a> for more details).</p>
+<p>If you&#8217;re still using plain text credentials, now is a good time to stop using them. :)</p>
+</div>
+<div class="section" id="grouped-environments">
+<h2>Grouped environments<a class="headerlink" href="#grouped-environments" title="Permalink to this headline">¶</a></h2>
+<p>Starting in supernova 0.9.6, you can &#8220;group&#8221; environments and run commands across all of the environments in a group.  Using the <a class="reference external" href="http://bit.ly/raxsupernova">Rackspace example configuration</a>, we can group the DFW, IAD and ORD environments into a group called &#8220;raxusa&#8221;:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">[</span><span class="n">dfw</span><span class="p">]</span>
+<span class="n">SUPERNOVA_GROUP</span><span class="o">=</span><span class="n">raxusa</span>
+<span class="o">...</span><span class="n">snip</span><span class="o">...</span>
+
+<span class="p">[</span><span class="nb">ord</span><span class="p">]</span>
+<span class="n">SUPERNOVA_GROUP</span><span class="o">=</span><span class="n">raxusa</span>
+<span class="o">...</span><span class="n">snip</span><span class="o">...</span>
+
+<span class="p">[</span><span class="n">iad</span><span class="p">]</span>
+<span class="n">SUPERNOVA_GROUP</span><span class="o">=</span><span class="n">raxusa</span>
+<span class="o">...</span><span class="n">snip</span><span class="o">...</span>
+</pre></div>
+</div>
+<p>Instead of referring to these environments one by one, you can now run commands across them as a group:</p>
+<div class="highlight-python"><div class="highlight"><pre>supernova raxusa list
+</pre></div>
+</div>
+<p>This can be quite useful if you need to search multiple environments for an instance, or if you need to boot test instances in multiple datacenters.  Just be careful with any actions that manipulate data, like rebuilds or instance deletions.</p>
+</div>
+<div class="section" id="using-supernova-with-different-executables">
+<h2>Using supernova with different executables<a class="headerlink" href="#using-supernova-with-different-executables" title="Permalink to this headline">¶</a></h2>
+<p>While supernova uses the nova executable by default, you can configure it to use any other executable when it runs.  For example, you could use it to run glance, neutron, or keystone.</p>
+<p>You can use the same executable for certain environments every time by adding <em>OS_EXECUTABLE</em> to your supernova configuration file:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">[</span><span class="n">iadglance</span><span class="p">]</span>
+<span class="n">OS_EXECUTABLE</span><span class="o">=</span><span class="n">glance</span>
+<span class="o">...</span><span class="n">snip</span><span class="o">...</span>
+</pre></div>
+</div>
+<p>If you&#8217;d rather make a quick change at runtime, just use <tt class="docutils literal"><span class="pre">-x</span></tt> or <tt class="docutils literal"><span class="pre">--executable</span></tt>:</p>
+<div class="highlight-python"><div class="highlight"><pre>supernova -x glance iadglance image-list
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Using supernova</a><ul>
+<li><a class="reference internal" href="#passing-commands-to-nova">Passing commands to nova</a></li>
+<li><a class="reference internal" href="#listing-available-supernova-environments">Listing available supernova environments</a></li>
+<li><a class="reference internal" href="#grouped-environments">Grouped environments</a></li>
+<li><a class="reference internal" href="#using-supernova-with-different-executables">Using supernova with different executables</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="configuring.html"
+                        title="previous chapter">Configuring supernova</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/usingsupernova.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="configuring.html" title="Configuring supernova"
+             >previous</a> |</li>
+        <li><a href="index.html">supernova trunk documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+
+    <div class="footer">
+        &copy; Copyright 2014, Major Hayden.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-1115744-15");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+
+  </body>
+</html>
