@@ -1,0 +1,77 @@
+{% extends "layout.html" %}
+
+{% block body %}
+    <div class="container-absolute">
+        <div class="row-fluid spanv10">
+
+            {% block sidebar %}
+                <div id="sidebar" class="span2 spanv10">
+                    {% block sidebar_inner %}
+                        <div id="sidebar_navbar" class="{{ navbar_class }}">
+                            <div class="navbar-inner">
+                            {% block sidebar_navbar %}
+                                <div class="btn-group">
+                                    <button class="{{ btn_class }}" type="button">Button 1</button>
+                                    <button class="{{ btn_class }}" type="button">Button 2</button>
+                                </div>
+                            {% endblock %}
+                            </div>
+                        </div>
+
+                        <div id="sidebar_content" class="span12 spanv10">
+                            {% block sidebar_content %}
+                                Here's some sidebar content.
+                            {% endblock %}
+                        </div>
+                    {% endblock %}
+                </div>
+            {% endblock %}
+
+            {% block main %}
+                <div id="main" class="span7 spanv10">
+                    {% block main_inner %}
+                        <div id="main_navbar" class="{{ navbar_class }}">
+                            <div class="navbar-inner">
+                            {% block main_navbar %}
+                                <div class="btn-group">
+                                    <button class="{{ btn_class }}" type="button">Button 1</button>
+                                    <button class="{{ btn_class }}" type="button">Button 2</button>
+                                </div>
+                            {% endblock %}
+                            </div>
+                        </div>
+                        {% block main_post_navbar %}{% endblock %}
+                        <div id="main_content" class="span12 spanv10 {{ main_content_class }}">
+                            {% block main_content %}
+                                Main Content Example
+                            {% endblock %}
+                        </div>
+                    {% endblock %}
+                </div>
+            {% endblock %}
+
+            {% block right_sidebar %}
+                <div id="right_sidebar" class="span3 spanv10">
+                    {% block right_sidebar_inner %}
+                        <div id="right_sidebar_navbar" class="{{ navbar_class }}">
+                            <div class="navbar-inner">
+                            {% block right_sidebar_navbar %}
+                                <div class="btn-group">
+                                    <button class="{{ btn_class }}" type="button">Button 1</button>
+                                    <button class="{{ btn_class }}" type="button">Button 2</button>
+                                </div>
+                            {% endblock %}
+                            </div>
+                        </div>
+                        <div id="right_sidebar_content" class="span12 spanv10">
+                            {% block right_sidebar_content %}
+                                Here's some right sidebar content.
+                            {% endblock %}
+                        </div>
+                    {% endblock %}
+                </div>
+            {% endblock %}
+
+        </div>
+    </div>
+{% endblock %}

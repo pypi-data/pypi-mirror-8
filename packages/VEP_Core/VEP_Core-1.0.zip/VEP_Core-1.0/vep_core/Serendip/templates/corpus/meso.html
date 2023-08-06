@@ -1,0 +1,99 @@
+{% extends "2-columns.html" %}
+
+{% if corpus_name %}
+    {% block nav %}
+        <a href="{{ url_for("corpus_view_by_name", corpus_name=corpus_name) }}" class="btn btn-primary" type="button">{{ corpus_name }}</a>
+        <span class="text">/</span>
+    {% endblock %}
+{% endif %}
+
+{# Begin shameless copypasta from text/index.html #}
+{% block sidebar_navbar %}
+    <span class="brand">Tags</span>
+    {{ text_names_array }}
+    <button class="clear_all_tags {{ btn_class }} pull-right" type="button">Clear All</button>
+{% endblock %}
+
+{# Give this template a tags value in render_template, i.e. tags = tagger.tag(tokens) #}
+{# We'll figure out how to hook this up for real in a while. #}
+{# Only show this if we actually have tags. #}
+{% block sidebar_content %}
+    <div id="topic_model_tag_buttons" class="btn-group-tag btn-group btn-group-vertical span12">
+        {% for tag_data in tags[0].values() %}
+            <button id="btn-{{ tag_data["key"] }}" data-key="{{ tag_data["key"] }}" class="{{ btn_size_class }} btn-tag span12 {{ tag_data["key"] }}" type="button">
+                <span class="btn-label">{{ tag_data["key"] }}</span>
+                {% if "tag_maps_prop" in tag_data %}
+                    <span class="fill_bar" style="width: {{ tag_data["tag_maps_prop"] * 100 }}%; height: 25%; top: 15%; bottom: auto;"></span>
+                {% endif %}
+                {% if "topic_model_prop" in tag_data %}
+                    <span class="fill_bar" style="width: {{ tag_data["topic_model_prop"] * 100 }}%; height: 25%; top: auto; bottom: 15%;"></span>
+                {% endif %}
+            </button>
+        {% endfor %}
+    </div>
+{% endblock %}
+{# End shameless copypasta #}
+
+{% block main_navbar %}
+    <span class="brand">Texts</span>
+{% endblock %}
+
+{% block main_content %}
+    <div id="topicDistModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="topicDistModalLabel" aria-hidden="true">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h3 id="topicDistModalLabel">Topic distribution</h3>
+        </div>
+        <div class="modal-body">
+            <div id="topicDist">
+
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn {{ btn_size_class }}" data-dismiss="modal" aria-hidden="true">OK</button>
+        </div>
+    </div>
+    <div class="meso_container row-fluid span12 spanv10">
+    {% for text_name in included_text_names %}
+        <div class="meso_view span" data-text-name="{{ text_name }}">
+            <div class="navbar {{ navbar_class }}">
+                <div class="navbar-inner">
+                    <span class="brand">{{ text_name }}</span>
+                    <div class="btn-group pull-right">
+{#                        <a href="{{ url_for("text_view_by_name", corpus_name=corpus_name, text_name=text_name, included_tag_keys=included_tag_keys|join(",")) }}" class="{{ btn_class }} btn-view-line-graph" title="View topic model line graph for '{{ text_name }}'."><i class="icon-picture"></i></a>#}
+                        <a target="_blank" href="{{ url_for("text_view_by_name", corpus_name=corpus_name, text_name=text_name, included_tag_keys=included_tag_keys|join(",")) }}" class="{{ btn_class }} btn-view-text" title="View '{{ text_name }}' in TextViewer."><i class="icon-file-alt"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="content span12 spanv10 withLoadingIndicator">
+                {# Contents are probably getting replaced by a JavaScript app #}
+            </div>
+        </div>
+    {% endfor %}
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    {# Ick, take Python lists and write out a string representing a JavaScript array. #}
+    {# TODO: Figure out how to make this a Jinja2 filter. #}
+    {% set quoted_included_tag_keys = [] %}
+    {% for tag_key in included_tag_keys %}
+        {% do quoted_included_tag_keys.append('"' + tag_key + '"') %}
+    {% endfor %}
+
+    {% set quoted_included_text_names = [] %}
+    {% for text_name in included_text_names %}
+        {% do quoted_included_text_names.append('"' + text_name + '"') %}
+    {% endfor %}
+
+    <script type="text/javascript">
+        var corpus_name = "{{ corpus_name }}";
+        var included_text_names = [{{ quoted_included_text_names|join(", ")|safe }}];
+        var included_tag_keys = [{{ quoted_included_tag_keys|join(", ")|safe }}];
+        var colors = {{ colors|safe }};
+        $GET_TOPIC_NAMES_URL = "{{ url_for('corpus_get_topic_names', corpus_name=corpus_name) }}";
+    </script>
+    <script type="text/javascript" src="{{ url_for("static", filename="js/Utils.js") }}"></script>
+    <script type="text/javascript" src="{{ url_for("static", filename="js/TextViewer.js") }}"></script>
+    <script type="text/javascript" src="{{ url_for("static", filename="js/MesoViewer.js") }}"></script>
+{% endblock %}
