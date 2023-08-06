@@ -1,0 +1,52 @@
+#!/usr/bin/env python
+# Copyright (C) 2014 Jurriaan Bremer.
+# This file is part of Konfikjure.
+# See the file 'docs/LICENSE.txt' for copying permission.
+
+import argparse
+import logging
+import pkg_resources
+
+from konfikjure.config import CONFIGFILES, VARIABLES
+
+
+logging.basicConfig(level=logging.INFO)
+log = logging.getLogger('konfikjure')
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('configuration', nargs='?', help='Configuration file.')
+    parser.add_argument('-v', '--verbose', action='store_true', help='Enter verbose mode.')
+    parser.add_argument('--version', action='store_true', help='Display the version of Konfikjure.')
+    args = parser.parse_args()
+
+    if args.version:
+        version = pkg_resources.require('Konfikjure')[0].version
+        print 'Konfikjure version', version
+        exit(0)
+
+    if args.verbose:
+        log.setLevel(logging.DEBUG)
+
+    if not args.configuration:
+        log.critical('Please specify a configuration file!')
+        exit(1)
+
+    execfile(args.configuration)
+
+    kw = {}
+    for var in VARIABLES:
+        kw[var.key] = var.prompt()
+
+    log.debug('Variables have been initialized:')
+    for key, value in kw.items():
+        log.debug('    %s => %r', key, value)
+
+    for cfg in CONFIGFILES:
+        log.debug('Processing file %r.', cfg.filepath)
+        cfg.write(**kw)
+
+
+if __name__ == '__main__':
+    main()
