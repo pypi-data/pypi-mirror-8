@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content-header-block %}
+	<div class="content-header-block"><h1>Calendar of Events</h1></div>
+{% endblock content-header-block %}
+
+{% block inner-content-block %}
+{% for event in sitecalendarevents %}
+	<div class="row sitenews-article">
+        <h2 class="sitenews-article-title">{{ event.title }} </h2>
+        <h3 class="sitenews-article-title">{{ event.start_date|date }}</h3>
+		<div>{{ event.summary|safe }}</div>
+        {% if event.content %}
+		<a href="{{ event.get_absolute_url }}" class="read-more-link">Read more</a>
+        {% endif %}
+	</div>
+{% endfor %}
+{% endblock inner-content-block %}
+
