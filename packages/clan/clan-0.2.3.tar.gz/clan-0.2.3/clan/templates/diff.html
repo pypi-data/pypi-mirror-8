@@ -1,0 +1,101 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <style>
+            {% include 'bootstrap.min.css' %}
+            {% include 'styles.css' %}
+        </style>
+    </head>
+    <body class="diff">
+        <div class="container-fluid">
+            <h1>clan diff</h1>
+
+            <table class="table table-condensed">
+                <thead>
+                    <tr>
+                        <th>Configuration</th>
+                        {% for report in ['a', 'b'] %}
+                        <th>{{ diff[report].title or 'Untitled Report' }}</th>
+                        {% endfor %}
+                <tbody>
+                    {% for arg in GLOBAL_ARGUMENTS %}
+                    {% if diff['a'][arg] != None or diff['b'][arg] != None %}
+                    <tr>
+                        <td>{{ arg }}</td>
+                        <td>{{ diff['a'][arg] }}</td>
+                        <td>{{ diff['b'][arg] }}</td>
+                    </tr>
+                    {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+            
+            {% for query in diff.queries %}
+            <div class="query">
+                <h3>{{ query.config.name }}</h3>
+
+                {% for metric, data in query.data.items() %}
+                <div class="metric">
+                    {% if metric in field_definitions %}
+                    <h4>
+                        {{ field_definitions[metric]['uiName'] }}
+                        <span class="ga-name">{{ metric }}</span>
+                    </h4>
+                    {% else %}
+                    <h4>{{ metric }}</h4>
+                    {% endif %}
+
+                    {% set data_type = query.data_types[metric] %}
+
+                    <table class="table table-bordered table-condensed table-striped">
+                        <thead>
+                            <tr>
+                                <th>Dimension</th>
+                                <th class="value">Value change</th>
+                                <th class="percent">Percent change</th>
+                                <th class="points">Percentage point change</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for label, values in data.items() %}
+                        <tr class="{% if loop.index % 2 == 0 %}even{% else %}odd{% endif %} {% if label == 'total' %}total{% endif %}">
+                            <td>{{ label }}</td>
+
+                            {% set nc = number_class(values.change) %}
+
+                            {% if data_type == 'INTEGER' %}
+                                <td class="value {{ nc }}"> {{ format_comma(values.change) }}</td>
+                            {% elif data_type == 'TIME' %}
+                                <td class="value {{ nc }}"> {{ format_duration(values.change) }}</td>
+                            {% else %}
+                                <td class="value {{ nc }}"> {{ '{:.1f}'.format(values.change) }}</td>
+                            {% endif %}
+                            <td class="percent {{ number_class(values.percent_change) }}">
+                                {% if values.percent_change == None %}
+                                -
+                                {% else %}
+                                {{ '{:.1%}'.format(values.percent_change) }}
+                                {% endif %}
+                            </td>
+                            <td class="points {{ number_class(values.point_change) }}">
+                                {% if values.point_change == None %}
+                                -
+                                {% else %}
+                                {{ '{:.1f}'.format(values.point_change * 100) }}
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% endfor %}
+            </div>
+
+            {% endfor %}
+            <footer>
+                <p>Report generated with <a href="http://github.com/onyxfish/clan">clan v. 0.2.3</a></p>
+            </footer>
+        </div>
+    </body>
+</html>
