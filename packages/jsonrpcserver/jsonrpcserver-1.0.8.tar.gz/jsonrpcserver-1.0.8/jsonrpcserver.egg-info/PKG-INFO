@@ -1,0 +1,95 @@
+Metadata-Version: 1.1
+Name: jsonrpcserver
+Version: 1.0.8
+Summary: JSON-RPC 2.0 server library for Python 3.
+Home-page: https://jsonrpcserver.readthedocs.org/
+Author: Beau Barker
+Author-email: beauinmelbourne@gmail.com
+License: UNKNOWN
+Description: jsonrpcserver
+        =============
+        
+        .. image:: https://pypip.in/v/jsonrpcserver/badge.png
+        .. image:: https://pypip.in/d/jsonrpcserver/badge.png
+        
+        Receive `JSON-RPC <http://www.jsonrpc.org/>`_ requests in a `Flask
+        <http://flask.pocoo.org/>`_ app.
+        
+        Simply register the `blueprint
+        <http://flask.pocoo.org/docs/0.10/blueprints/>`_, then dispatch the
+        requests to your own code.
+        
+        .. sourcecode:: python
+        
+            app = Flask(__name__)
+            app.register_blueprint(bp)
+        
+            # Add a route to take requests.
+            @app.route('/', methods=['POST'])
+            def index():
+                return dispatch(HandleRequests)
+        
+            class HandleRequests:
+                def add(x, y):
+                    return x + y
+        
+        Installation
+        ------------
+        
+        .. sourcecode:: sh
+        
+            $ pip install jsonrpcserver
+        
+        Documentation
+        -------------
+        
+        Documentation is available at https://jsonrpcserver.readthedocs.org/.
+        
+        If you need a client, try my `jsonrpcclient
+        <https://jsonrpcclient.readthedocs.org/>`_ library.
+        
+        
+        Release History
+        ---------------
+        
+        1.0.7 (2014-12-30)
+        ^^^^^^^^^^^^^^^^^^
+        
+        - The dispatch module renamed to *dispatcher*, to avoid conflicting with the
+          dispatch method.
+        
+        1.0.6 (2014-12-11)
+        ^^^^^^^^^^^^^^^^^^
+        
+        - Improved blueprint, with correct http status code responses.
+        - Gives more information when rejecting a request.
+        - Major rebuild of the exceptions.
+        - More stability with 100% code coverage in tests.
+        
+        1.0.5 (2014-12-02)
+        ^^^^^^^^^^^^^^^^^^
+        
+        - Messages are now output on the INFO log level.
+        - Show the status code in response log entries.
+        
+        1.0.4 (2014-11-22)
+        ^^^^^^^^^^^^^^^^^^
+        
+        - Fixed readme.
+        
+        1.0.3 (2014-11-21)
+        ^^^^^^^^^^^^^^^^^^
+        
+        - The underlying JSON messages are now hidden by default. To see them you
+          should increase the logging level (see above).
+        - Tests moved into separate "tests" dir.
+        
+Platform: UNKNOWN
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
+Classifier: Development Status :: 4 - Beta
+Classifier: Environment :: Other Environment
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: GNU Library or Lesser General Public License (LGPL)
+Classifier: Operating System :: OS Independent
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
