@@ -1,0 +1,67 @@
+Metadata-Version: 1.1
+Name: rmoq
+Version: 0.1.0
+Summary: A simple request-mocker that will download
+Home-page: http://github.com/relekang/rmoq
+Author: Rolf Erik Lekang
+Author-email: me@rolflekang.com
+License: MIT
+Description: rmoq
+        ====
+        
+        |frigg|
+        
+        A simple request mocker that caches requests responses to files.
+        
+        Installation
+        ------------
+        
+        Install it from pip with: ::
+        
+            pip install rmoq
+        
+        Usage
+        -----
+        
+        The example below will put the content of fixtures/example.com.txt
+        into the body of the request and if it does not exist the content
+        will be downloaded and stored in fixtures/example.com.txt. ::
+        
+            @rmoq.activate()
+            def test_remote_call():
+                response = requests.get('http://example.com')
+                assert response.body == 'Example'
+        
+        
+        The example below works as the one above it just uses the given path
+        (test_fixtures) instead of the default path. ::
+        
+            @rmoq.activate('test_fixtures')
+            def test_remote_call():
+                response = requests.get('http://example.com')
+                assert response.body == 'Example'
+        
+        
+        It can also be used in a with statement ::
+        
+            def test_remote_call():
+                with rmoq.Mock():
+                    response = requests.get('http://example.com')
+                    assert response.body == 'Example'
+        
+        The mock object can also take a path as an argument.
+        
+        
+        ----------------------
+        
+        MIT © Rolf Erik Lekang
+        
+        
+        .. |frigg| image:: https://ci.frigg.io/badges/relekang/rmoq/
+            :target: https://ci.frigg.io/relekang/rmoq/last/
+        
+        
+Platform: UNKNOWN
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Programming Language :: Python :: 3.4
