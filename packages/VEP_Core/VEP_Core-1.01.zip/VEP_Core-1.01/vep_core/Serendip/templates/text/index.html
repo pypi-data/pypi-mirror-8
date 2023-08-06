@@ -1,0 +1,219 @@
+{% if not main_content_class %}
+    {% set main_content_class = "withLoadingIndicator" %}
+{% endif %}
+
+{#{% if not ui_color %}#}
+{#    {% set ui_color="inverse" %}#}
+{#{% endif %}#}
+
+{# TODO: Figure out best practice for changing a Jinja2 value (as above) and then extending a template. #}
+{% extends "3-columns.html" %}
+
+{% if corpus_name %}
+    {% block nav %}
+        <div class="btn-group">
+            <a href="{{ url_for("corpus_view_by_name", corpus_name=corpus_name) }}" class="btn">
+                {{ corpus_name }}
+            </a>
+            <button class="btn dropdown-toggle" data-toggle="dropdown">
+                <span class="caret" style="border-top-color: #000; border-bottom-color: #000;"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu">
+                {% for corpus in corpora.keys()|sort %}
+                    {% if "corpora" in corpora[corpus] and corpora[corpus]["corpora"]|length > 0 %}
+                        <li class="dropdown-submenu">
+                            <a tabindex="-1" href="#">{{ corpus }}</a>
+                            <ul class="dropdown-menu">
+                                {% for subcorpus_name in corpora[corpus]["corpora"].keys()|sort %}
+                                    {% set subcorpus_relative_path = corpus + "/" + subcorpus_name %}
+                                    <li{% if corpus == subcorpus_relative_path %} class="disabled"{% endif %}>
+                                        <a tabindex="-1" href="{{ url_for("corpus_view_by_name", corpus_name=subcorpus_relative_path) }}">{{ subcorpus_name }}</a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                            {% else %}
+                        <li{% if corpus == corpus_name %} class="disabled"{% endif %}>
+                            <a tabindex="-1" href="{{ url_for("corpus_view_by_name", corpus_name=corpus) }}">{{ corpus }}</a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </div>
+        <span class="text">/</span>
+        <div class="btn-group">
+            <a href="{{ url_for("text_view_by_name", corpus_name=corpus_name, text_name=text_name) }}" class="btn btn-primary">
+                {{ text_name }}
+            </a>
+            <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                <span class="caret" style="border-top-color: #fff; border-bottom-color: #fff;"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu">
+                {% for text in corpora[corpus_name]["texts"] %}
+                    <li{% if text == text_name %} class="disabled"{% endif %}><a tabindex="-1" href="{{ url_for("text_view_by_name", corpus_name=corpus_name, text_name=text) }}">{{ text }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endblock %}
+{% endif %}
+
+{#{% block head %}#}
+{#    {% include "_tags_styles.html" %}#}
+{#{% endblock %}#}
+
+{% block sidebar_navbar %}
+    <span class="brand">Tags</span>
+    <button class="clear_all_tags {{ btn_class }} pull-right" type="button">Clear All</button>
+{% endblock %}
+
+{% block sidebar_content %}
+    <div id="topic_model_tag_buttons" class="btn-group-tag btn-group btn-group-vertical span12">
+    {% for tag_data in tags[0].values()|sort(reverse=True, attribute="tag_maps_prop") %}
+        {% if tag_data["tag_maps_prop"] > 0 %}
+        <button id="btn-{{ tag_data["key"] }}" data-key="{{ tag_data["key"] }}" class="{{ btn_size_class }} btn-tag span12 {{ tag_data["key"] }}" type="button">
+            <span class="btn-label">{{ tag_data["key"] }}</span>
+        {% if "tag_maps_prop" in tag_data %}
+            <span class="fill_bar" style="width: {{ tag_data["tag_maps_prop"] * 100 }}%; height: 25%; top: 15%; bottom: auto;"></span>
+        {% endif %}
+{#        {% if "topic_model_prop" in tag_data %}#}
+{#            <span class="fill_bar" style="width: {{ tag_data["topic_model_prop"] * 100 }}%; height: 25%; top: auto; bottom: 15%;"></span>#}
+{#        {% endif %}#}
+        </button>
+        {% endif %}
+    {% endfor %}
+    </div>
+{% endblock %}
+
+{% block main_navbar %}
+    <span class="brand">Text: {{ text_name }}</span>
+    <div class="pull-right">
+        <div class="btn-group">
+            <a href="#textViewOptions" id="text_view_options" class="{{ btn_class }}" data-toggle="modal"><i class="icon-wrench"></i></a>
+        </div>
+
+        <div class="btn-group">
+            <a class="{{ btn_size_class }} btn-info dropdown-toggle" data-toggle="dropdown" href="#">
+                Export…
+                <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu">
+                <li><a tabindex="-1" href="{{ url_for("text_get_html", corpus_name=corpus_name, text_name=text_name) }}">Tagged Text (HTML)</a></li>
+                <li class="divider"></li>
+                <li class="divider"></li>
+                <li><a tabindex="-1" href="{{ url_for("text_get_topic_model_tags", corpus_name=corpus_name, text_name=text_name) }}">Tag Data (JSON)</a></li>
+                <li><a tabindex="-1" href="{{ url_for("text_get_topic_model_tag_maps", corpus_name=corpus_name, text_name=text_name) }}">Tag Maps (JSON)</a>
+            </ul>
+        </div>
+    </div>
+{% endblock %}
+
+{% block main_post_navbar %}
+    <div id="#main_pagination" class="custom-pager-wrapper">
+        <div class="custom-pager">
+            <div class="page-buttons btn-group btn-group-vertical">
+                <a class="btn prev disabled" href="#" title="Previous Page"><i class="icon-arrow-up"></i></a>
+                <a class="btn next disabled" href="#" title="Next Page"><i class="icon-arrow-down"></i></a>
+            </div>
+            <ul class="custom-pager-pages">
+                <li class="current"><a href="#">1</a></li>
+            </ul>
+        </div>
+    </div>
+{% endblock %}
+
+{% block main_content %}
+    <div id="wordDistModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="wordDistModalLabel" aria-hidden="true">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h3 id="wordDistModalLabel">Word Distribution</h3>
+        </div>
+        <div class="modal-body">
+            <div id="wordDist">
+
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn {{ btn_size_class }}" data-dismiss="modal" aria-hidden="true">OK</button>
+        </div>
+    </div>
+    <div id="topicDistModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="topicDistModalLabel" aria-hidden="true">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h3 id="topicDistModalLabel">Topic Distribution</h3>
+        </div>
+        <div class="modal-body">
+            <div id="topicDist">
+
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn {{ btn_size_class }}" data-dismiss="modal" aria-hidden="true">OK</button>
+        </div>
+    </div>
+    <div id="textViewOptions" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="textViewOptions" aria-hidden="true">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h3>Text View Options</h3>
+        </div>
+        <div class="modal-body" style="padding-top: 0; max-height: 480px;">
+            <h4>Words with Multiple Active Topics</h4>
+            <div class="btn-group tags_top_only">
+                <button class="btn btn-tags_top_only_on color_ramps_on" title="Display Colored Backgrounds for Top Active Topics Only (i.e. those with the highest proportion)"></button>
+                <button class="btn btn-primary btn-tags_top_only_off color_ramps_on" title="Display Gray Backgrounds for Words with Multiple Active Topics"></button>
+            </div>
+            <div class="btn-group-labels" style="text-align: center; width: 100%; float: left; margin-bottom: 15px;">
+                <div style="width: 50%; float: left">
+                    Display Colored Backgrounds for Top* Active Topic Only
+                </div>
+                <div style="width: 50%; float: right">
+                    Display Gray Backgrounds to Indicate Multiple Active Topics
+                </div>
+                <div style="clear: both">
+                    <small><em>*The 'top' topic is the topic with the highest proportion for the corresponding word.</em></small>
+                </div>
+            </div>
+            <h4 style="clear: both;">Topic Proportions</h4>
+            <div class="btn-group color_ramps">
+                <button class="btn color_ramps_off" title="Color Ramps Off"></button>
+                <button class="btn color_ramps_on btn-primary" title="Color Ramps On"></button>
+            </div>
+            <div class="btn-group-labels" style="text-align: center; width: 100%; float: left">
+                <div style="width: 50%; float: left">
+                    Uniform Color Tints
+                </div>
+                <div style="width: 50%; float: right">
+                    Color-Ramped* Tints
+                </div>
+                <div style="clear: both">
+                    <small><em>*Ramped from light tint to heavy tint by increasing topic proportion value.</em></small>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn" data-dismiss="modal" aria-hidden="true">OK</button>
+        </div>
+    </div>
+    {# text_html is already HTML, so it doesn't need to be escaped. #}
+    <a class="prev" href="#"><i class="icon-arrow-up"></i> Previous Page</a>
+    <div class="html_formatter"></div>
+    <a class="next disabled" href="#"><i class="icon-arrow-down"></i> Next Page</a>
+{% endblock %}
+
+{% block right_sidebar_navbar %}
+    <span class="brand">Topic Overview</span>
+    <button class="clear_all_tags {{ btn_class }} pull-right" type="button">Clear All</button>
+{% endblock %}
+
+{% block right_sidebar_content %}
+    <div class="topic_model_line_graph withLoadingIndicator span12 spanv10"></div>
+{% endblock %}
+
+{% block scripts %}
+    <script type="text/javascript">
+        var corpus_name = "{{ corpus_name|safe }}";
+        var text_name = "{{ text_name|safe }}";
+        var colors = {{ colors|safe }};
+        $GET_TOPIC_NAMES_URL = "{{ url_for('corpus_get_topic_names', corpus_name=corpus_name) }}";
+    </script>
+    <script type="text/javascript" src="{{ url_for("static", filename="js/Utils.js") }}"></script>
+    <script type="text/javascript" src="{{ url_for("static", filename="js/TextViewer.js") }}"></script>
+{% endblock %}
