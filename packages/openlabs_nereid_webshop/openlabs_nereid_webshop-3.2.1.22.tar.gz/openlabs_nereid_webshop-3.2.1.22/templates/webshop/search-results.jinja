@@ -1,0 +1,69 @@
+{% extends 'base.jinja' %}
+
+{% from 'webshop/_helpers.jinja' import render_pagination, render_product_list with context %}
+
+{% block breadcrumb %}
+{{ super() }}
+{{ render_breadcrumb_item(_('Search Results'), url_for('product.product.quick_search', q=request.args.get('q', ''))) }}
+{% endblock breadcrumb %}
+
+{% block main %}
+<section>
+  <div class="container">
+    <!-- category page -->
+    <div class="row">
+      <!-- Content bar -->
+      <div class="col-md-12">
+        <h3 class="list-heading">{% trans %}You searched for{% endtrans %}: <em>{{ request.args.get('q', '') }}</em></h3>
+      </div>
+    </div>
+      {% block filter %}
+      <!--Filter Option -->
+      <!--
+      <div class="col-md-3">
+        <select class="form-control select-sort">
+          <option>Discount</option>
+          <option>Low Price First</option>
+          <option>High Price First</option>
+          <option>Popularity</option>
+          <option>What's New</option>
+        </select>
+      </div>
+      -->
+      {% endblock filter %}
+
+    {% if products %}
+    <div class="row">
+      <div class="col-md-12 node-items-block-separator center">
+        <h5 class="text-muted">
+          {{ products.begin_count }} to {{ products.end_count }} of {{ products.count }} results for '{{ request.args.get('q', '') }}'
+        </h5>
+      </div>
+    </div>
+    <div class="row product-list">
+      {% for product in products %}
+        <div class="col-md-3 col-sm-4 col-xs-6 product-list-item">
+        {{ render_product_list(product, product_list_name="Search_Results") }}
+        </div>
+      {% endfor %}
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        {{ render_pagination(products, endpoint='product.product.quick_search', q=request.args.get('q', '')) }}
+      </div>
+    </div>
+
+    {% else %}
+    
+    <div class="row">
+      <div class="col-md-12">
+        <div class="alert alert-warning">
+          {% trans %}Oops! No Products found for your search criteria. Try with something else.{% endtrans %}
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+  </div>
+</section>
+{% endblock main %}
