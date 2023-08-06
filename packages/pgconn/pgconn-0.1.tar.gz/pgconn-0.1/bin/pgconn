@@ -1,0 +1,29 @@
+#!/usr/bin/env python
+from pgconn.argument_parser import ArgumentParser 
+from pgconn.logger_factory import LoggerFactory
+from pgconn.pg_pass_parser import PgPassParser
+from pgconn.menu_builder import MenuBuilder
+from pgconn.item_executor import ItemExecutor
+import os
+
+
+arguments = ArgumentParser()
+arguments.parse()
+
+scriptName = os.path.basename(__file__)
+logger = LoggerFactory.createLogger(scriptName, arguments.isVerbose())
+
+if arguments.isValid():
+	parser = PgPassParser(logger, arguments)
+	parser.parse()
+
+	menu = MenuBuilder(logger, parser.getDatabases())
+	menu.display()
+
+	executor = ItemExecutor(logger, parser.getDatabases(), menu.getSelection())
+	executor.execute()
+	
+else:
+	arguments.printUsage()
+
+
