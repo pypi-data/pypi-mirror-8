@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-6">
+        <h2>Current Printer</h2>
+        {% if current_printer %}
+        <dl>
+            <dt>Product</dt>
+            <dd>{{ current_printer.product }}</dd>
+            <dt>Manufacturer</dt>
+            <dd>{{ current_printer.manufacturer }}</dd>
+        </dl>
+        {% else %}
+        <p class="text-danger">
+            There is currently no printer set to be used.
+            Select one from <a href="{{ url_for('administration') }}">admin</a>
+        </p>
+        {% endif %}
+    </div>
+    <div class="col-md-6 pull-right">
+    </div>
+    <div class="col-md-12">
+      <h2>Playground</h2>
+      <div class="col-lg-6">
+        <div class="input-group">
+          <input type="text" id="text" class="form-control">
+          <span class="input-group-btn">
+            <button class="btn btn-default" id="print" type="button">Print</button>
+          </span>
+        </div><!-- /input-group -->
+      </div>
+      <div class="btn-toolbar" role="toolbar">
+        <div class="btn-group">
+            <button type="button" id="cut" class="btn btn-default">Cut</button>   
+        </div>
+       </div>
+    <div class="row">
+       <div class="alert alert-info" role="alert" id="about-cut">
+        <strong>Heads up!<strong> May not print till you hit Cut!
+       </div>
+    </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        $('button#print').click(function() {
+            text = $('input#text').val();
+            if (text.length == 0) {
+                alert('Yo! Nothing to print!');
+                return;
+            }
+            $.post("{{ url_for('test_kit') }}", {
+                'instruction': 'text',
+                'text': text,
+            }).done(function() {
+                $('input#text').val();
+            });
+        });
+        $('button#cut').click(function() {
+            $.post("{{ url_for('test_kit') }}", {
+                'instruction': 'cut',
+            }).done(function() {
+                $('div#about-cut').hide();
+            });
+        });
+    });
+</script>
+{% endblock %}
