@@ -1,0 +1,294 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>dummymp.detect &mdash; DummyMP 0.5b2 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.5b2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="DummyMP 0.5b2 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">DummyMP 0.5b2 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for dummymp.detect</h1><div class="highlight"><pre>
+<span class="c">#!/usr/bin/env python</span>
+<span class="c"># DummyMP - Multiprocessing Library for Dummies!</span>
+<span class="c"># Copyright 2014 Albert Huang.</span>
+<span class="c"># </span>
+<span class="c"># Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
+<span class="c"># you may not use this file except in compliance with the License.</span>
+<span class="c"># You may obtain a copy of the License at</span>
+<span class="c"># </span>
+<span class="c">#   http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="c"># </span>
+<span class="c"># Unless required by applicable law or agreed to in writing, software</span>
+<span class="c"># distributed under the License is distributed on an &quot;AS IS&quot; BASIS,</span>
+<span class="c"># WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or</span>
+<span class="c"># implied. See the License for the specific language governing</span>
+<span class="c"># permissions and limitations under the License.</span>
+<span class="c"># </span>
+<span class="c"># DummyMP Library - CPU availability checker</span>
+<span class="c">#   multiprocessing library for dummies!</span>
+<span class="c">#   (library for easily running functions in parallel)</span>
+<span class="c"># </span>
+
+<span class="kn">import</span> <span class="nn">psutil</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">config</span>
+
+<div class="viewcode-block" id="poll_procs"><a class="viewcode-back" href="../../dummymp.html#dummymp.detect.poll_procs">[docs]</a><span class="k">def</span> <span class="nf">poll_procs</span><span class="p">(</span><span class="n">interval</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Poll for processes and return information about them.</span>
+<span class="sd">    </span>
+<span class="sd">    Polls all processes and returns a dictionary with information about</span>
+<span class="sd">    all of the processes.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        interval (int): Delay before fetching process status. This is</span>
+<span class="sd">            akin to top -d ##, where a delay is specified.</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        tuple: Tuple with the first element being a list of Process</span>
+<span class="sd">        objects, each with a .dict attribute. Each .dict attribute</span>
+<span class="sd">        contains information about the process, stored in the form of a</span>
+<span class="sd">        dict. It includes:</span>
+<span class="sd">        </span>
+<span class="sd">        * ``&#39;username&#39;``:</span>
+<span class="sd">            Username of the user who started the process.</span>
+<span class="sd">        * ``&#39;cpu_percent&#39;``:</span>
+<span class="sd">            Percent of CPU used by the process.</span>
+<span class="sd">        * ``&#39;status&#39;``:</span>
+<span class="sd">            Status of the process (running, stopped, zombie).</span>
+<span class="sd">        </span>
+<span class="sd">        The second element in the tuple contains a summary dictionary </span>
+<span class="sd">        with the total number of running, stopped, and zombie </span>
+<span class="sd">        processes, with keys &#39;running&#39;, &#39;stopped&#39;, and &#39;zombie&#39;, </span>
+<span class="sd">        respectively.</span>
+<span class="sd">        ::</span>
+<span class="sd">        </span>
+<span class="sd">            (</span>
+<span class="sd">                [Process(</span>
+<span class="sd">                    pid=30159, name=&#39;services.exe&#39;,</span>
+<span class="sd">                    dict={&#39;username&#39;:USERNAME, ...}</span>
+<span class="sd">                    ), ...],</span>
+<span class="sd">                {&#39;running&#39;: ##, &#39;stopped&#39;: ##, ...}</span>
+<span class="sd">            )</span>
+<span class="sd">        </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c"># sleep some time</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">interval</span><span class="p">)</span>
+    <span class="n">procs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">procs_status</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">psutil</span><span class="o">.</span><span class="n">process_iter</span><span class="p">():</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">dict</span>  <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">as_dict</span><span class="p">([</span><span class="s">&#39;username&#39;</span><span class="p">,</span> <span class="s">&#39;cpu_percent&#39;</span><span class="p">,</span> <span class="s">&#39;status&#39;</span><span class="p">])</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">procs_status</span><span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">dict</span><span class="p">[</span><span class="s">&#39;status&#39;</span><span class="p">]]</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                <span class="n">procs_status</span><span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">dict</span><span class="p">[</span><span class="s">&#39;status&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">except</span> <span class="n">psutil</span><span class="o">.</span><span class="n">NoSuchProcess</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">procs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+    
+    <span class="c"># return processes sorted by CPU percent usage</span>
+    <span class="n">processes</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">procs</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">dict</span><span class="p">[</span><span class="s">&#39;cpu_percent&#39;</span><span class="p">],</span>
+                       <span class="n">reverse</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">processes</span><span class="p">,</span> <span class="n">procs_status</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="needUpdateCPUAvail"><a class="viewcode-back" href="../../dummymp.html#dummymp.detect.needUpdateCPUAvail">[docs]</a><span class="k">def</span> <span class="nf">needUpdateCPUAvail</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Check if the CPU availability needs to be updated.</span>
+<span class="sd">    </span>
+<span class="sd">    Utilizing configuration and checking the time elapsed from the</span>
+<span class="sd">    previous check, determine whether the CPU availability function,</span>
+<span class="sd">    getCPUAvail(), needs to be run or not to update CPU availability.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        None</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        bool: Boolean indicating whether the CPU availability needs to</span>
+<span class="sd">        be updated or not.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="ow">not</span> <span class="p">(</span> \
+            <span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">DUMMYMP_MODE</span> <span class="o">==</span> <span class="n">config</span><span class="o">.</span><span class="n">DUMMYMP_NUCLEAR</span><span class="p">)</span> <span class="ow">or</span> \
+            <span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="n">config</span><span class="o">.</span><span class="n">LAST_CPU_CHECK</span> <span class="o">&lt;=</span> <span class="n">config</span><span class="o">.</span><span class="n">CPU_CHECK_TIMEDELTA_THRESHOLD</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="getSpawnProcPIDs"><a class="viewcode-back" href="../../dummymp.html#dummymp.detect.getSpawnProcPIDs">[docs]</a><span class="k">def</span> <span class="nf">getSpawnProcPIDs</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Fetch all running DummyMP system process IDs.</span>
+<span class="sd">    </span>
+<span class="sd">    Looking through all of the DummyMP processes, determine if any are</span>
+<span class="sd">    running, and if any, retrieve their system process IDs.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        None</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        list: An list with the system process IDs of current running</span>
+<span class="sd">        spawned DummyMP processes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">pids</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">proc</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">dummymp_procs</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">proc</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
+            <span class="n">pids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">proc</span><span class="o">.</span><span class="n">pid</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">pids</span>
+</div>
+<div class="viewcode-block" id="getTotalCPUs"><a class="viewcode-back" href="../../dummymp.html#dummymp.detect.getTotalCPUs">[docs]</a><span class="k">def</span> <span class="nf">getTotalCPUs</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Get the total number of CPUs on the system.</span>
+<span class="sd">    </span>
+<span class="sd">    Detects and returns the total number of CPUs on the system.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        None</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        int: An integer with the number of CPUs that are on the system.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">psutil</span><span class="o">.</span><span class="n">cpu_count</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="getCPUAvail"><a class="viewcode-back" href="../../dummymp.html#dummymp.detect.getCPUAvail">[docs]</a><span class="k">def</span> <span class="nf">getCPUAvail</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Get number of CPUs available.</span>
+<span class="sd">    </span>
+<span class="sd">    Fetch the number of CPUs available based on the current priority</span>
+<span class="sd">    and limit configuration.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        None</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        int: An integer with the number of CPUs that are available.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="c"># If the time threshold is met, OR we are in NUCLEAR mode, just</span>
+    <span class="c"># return the cached CPU availability.</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">DUMMYMP_MODE</span> <span class="o">==</span> <span class="n">config</span><span class="o">.</span><span class="n">DUMMYMP_NUCLEAR</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="n">config</span><span class="o">.</span><span class="n">LAST_CPU_CHECK</span> <span class="o">&lt;=</span> <span class="n">config</span><span class="o">.</span><span class="n">CPU_CHECK_TIMEDELTA_THRESHOLD</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">config</span><span class="o">.</span><span class="n">CPU_AVAIL</span>
+    
+    <span class="c"># Get number of CPUs!</span>
+    <span class="n">ncpus</span> <span class="o">=</span> <span class="n">psutil</span><span class="o">.</span><span class="n">cpu_count</span><span class="p">()</span>
+    
+    <span class="c"># Initialize array...</span>
+    <span class="n">avg</span> <span class="o">=</span> <span class="p">[]</span>
+    
+    <span class="c"># Check to make sure we aren&#39;t looking at ourselves!</span>
+    <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">total_running</span> <span class="o">==</span> <span class="n">config</span><span class="o">.</span><span class="n">CPU_AVAIL</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">config</span><span class="o">.</span><span class="n">CPU_AVAIL</span>
+    
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Querying CPUs (</span><span class="si">%s</span><span class="s"> mode)...&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">DUMMYMP_STRING</span><span class="p">[</span><span class="n">config</span><span class="o">.</span><span class="n">DUMMYMP_MODE</span><span class="p">]))</span>
+    
+    <span class="c"># Get PIDs of DummyMP spawned processes!</span>
+    <span class="n">dmp_pids</span> <span class="o">=</span> <span class="n">getSpawnProcPIDs</span><span class="p">()</span>
+    
+    <span class="c"># Call twice to get accurate measurements...</span>
+    <span class="n">cur_state</span> <span class="o">=</span> <span class="n">poll_procs</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">DUMMYMP_MINTERVAL</span><span class="p">[</span><span class="n">config</span><span class="o">.</span><span class="n">DUMMYMP_MODE</span><span class="p">])</span>
+    <span class="n">cur_state</span> <span class="o">=</span> <span class="n">poll_procs</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">DUMMYMP_MINTERVAL</span><span class="p">[</span><span class="n">config</span><span class="o">.</span><span class="n">DUMMYMP_MODE</span><span class="p">])</span>
+    
+    <span class="c"># Initialize CPU usage array...</span>
+    <span class="n">cpu_usage_percents</span> <span class="o">=</span> <span class="p">[]</span>
+    
+    <span class="c"># If the process meets threshold, AND is not a process of DummyMP,</span>
+    <span class="c"># add the CPU usage to our list.</span>
+    <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">cur_state</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">dict</span><span class="p">[</span><span class="s">&quot;cpu_percent&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">config</span><span class="o">.</span><span class="n">DUMMYMP_THRESHOLD</span><span class="p">[</span><span class="n">config</span><span class="o">.</span><span class="n">DUMMYMP_MODE</span><span class="p">])</span> <span class="ow">and</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">pid</span> <span class="o">!=</span> <span class="n">os</span><span class="o">.</span><span class="n">getpid</span><span class="p">())</span> <span class="ow">and</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">pid</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">dmp_pids</span><span class="p">):</span>
+            <span class="n">cpu_usage_percents</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">dict</span><span class="p">[</span><span class="s">&quot;cpu_percent&quot;</span><span class="p">])</span>
+    
+    <span class="c"># Add up total CPU usage...</span>
+    <span class="n">total_cpu_usage</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">cpu_usage_percents</span><span class="p">)</span>
+    
+    <span class="c"># ...and calculate the number of CPUs!</span>
+    <span class="n">available_num_cpus</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(((</span><span class="n">ncpus</span> <span class="o">*</span> <span class="mf">100.0</span><span class="p">)</span> <span class="o">-</span> <span class="n">total_cpu_usage</span><span class="p">)</span> <span class="o">/</span> <span class="mf">100.0</span><span class="p">)</span>
+    
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Total external CPU usage: </span><span class="si">%i%%</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">total_cpu_usage</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Available CPUs: </span><span class="si">%i</span><span class="s">/</span><span class="si">%i</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">available_num_cpus</span><span class="p">,</span> <span class="n">ncpus</span><span class="p">))</span>
+    
+    <span class="c"># Update state</span>
+    <span class="n">config</span><span class="o">.</span><span class="n">CPU_AVAIL</span> <span class="o">=</span> <span class="n">available_num_cpus</span>
+    <span class="n">config</span><span class="o">.</span><span class="n">LAST_CPU_CHECK</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+    
+    <span class="c"># Return number of CPUs available!</span>
+    <span class="k">return</span> <span class="n">available_num_cpus</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2015, Albert Huang.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.2.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.6.2</a>
+      
+    </div>
+
+    
+    <a href="https://github.com/alberthdev/dummymp" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>

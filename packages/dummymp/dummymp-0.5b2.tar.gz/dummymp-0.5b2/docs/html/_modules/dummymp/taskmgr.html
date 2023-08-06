@@ -1,0 +1,342 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>dummymp.taskmgr &mdash; DummyMP 0.5b2 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.5b2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="DummyMP 0.5b2 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">DummyMP 0.5b2 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for dummymp.taskmgr</h1><div class="highlight"><pre>
+<span class="c">#!/usr/bin/env python</span>
+<span class="c"># DummyMP - Multiprocessing Library for Dummies!</span>
+<span class="c"># Copyright 2014 Albert Huang.</span>
+<span class="c"># </span>
+<span class="c"># Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
+<span class="c"># you may not use this file except in compliance with the License.</span>
+<span class="c"># You may obtain a copy of the License at</span>
+<span class="c"># </span>
+<span class="c">#   http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="c"># </span>
+<span class="c"># Unless required by applicable law or agreed to in writing, software</span>
+<span class="c"># distributed under the License is distributed on an &quot;AS IS&quot; BASIS,</span>
+<span class="c"># WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or</span>
+<span class="c"># implied. See the License for the specific language governing</span>
+<span class="c"># permissions and limitations under the License.</span>
+<span class="c"># </span>
+<span class="c"># DummyMP Library - Task Manager</span>
+<span class="c">#   multiprocessing library for dummies!</span>
+<span class="c">#   (library for easily running functions in parallel)</span>
+<span class="c"># </span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">multiprocessing</span> <span class="kn">import</span> <span class="n">Process</span><span class="p">,</span> <span class="n">Queue</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">config</span>
+<span class="kn">from</span> <span class="nn">.detect</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">.process</span> <span class="kn">import</span> <span class="n">_runner</span>
+
+<div class="viewcode-block" id="process_queue"><a class="viewcode-back" href="../../dummymp.html#dummymp.taskmgr.process_queue">[docs]</a><span class="k">def</span> <span class="nf">process_queue</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Process inter-process messages.</span>
+<span class="sd">    </span>
+<span class="sd">    Process the inter-process :py:class:`multiprocessing.Queue` </span>
+<span class="sd">    objects, which receive messages from the spawned process for </span>
+<span class="sd">    logging events and function returns.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        None</span>
+<span class="sd">    </span>
+<span class="sd">    Note:</span>
+<span class="sd">        Warnings are emitted to log if an invalid message is received.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c"># Get main process logger</span>
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span>
+    
+    <span class="c"># Loop through queues...</span>
+    <span class="k">for</span> <span class="n">dummymp_queue</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">dummymp_queues</span><span class="p">:</span>
+        <span class="c"># Make sure there&#39;s something to fetch from the queue!</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">dummymp_queue</span><span class="o">.</span><span class="n">empty</span><span class="p">():</span>
+            <span class="c"># Make a request to get the queue, with a timeout to ensure</span>
+            <span class="c"># no blocking (or long waiting)</span>
+            <span class="n">qout</span> <span class="o">=</span> <span class="n">dummymp_queue</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">timeout</span> <span class="o">=</span> <span class="mf">0.001</span><span class="p">)</span>
+            
+            <span class="c"># Check if it&#39;s a list or not</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">qout</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">list</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&quot;WARNING: Received invalid message from process! This may be a bug! Message: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">qout</span><span class="p">))</span>
+                <span class="k">continue</span>
+            
+            <span class="c"># Check the message type IDs!</span>
+            <span class="c"># Format: [ [ DUMMYMP_MSG_TYPE_ID, SYSTEM_PID, INTERNAL_ID ], DATA... ]</span>
+            <span class="k">if</span> <span class="n">qout</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">config</span><span class="o">.</span><span class="n">DUMMYMP_LOG_ID</span><span class="p">:</span>
+                <span class="c"># Append PID info text</span>
+                <span class="n">qout</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s">&quot;[PID </span><span class="si">%i</span><span class="s">] &quot;</span> <span class="o">%</span> <span class="n">qout</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span> <span class="o">+</span> <span class="n">qout</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">msg</span>
+                <span class="c"># Emit the modified log record</span>
+                <span class="c"># BUG: seems like logger.handle() doesn&#39;t do any</span>
+                <span class="c"># filtering - therefore, we need to filter it ourselves.</span>
+                <span class="k">if</span> <span class="n">logger</span><span class="o">.</span><span class="n">isEnabledFor</span><span class="p">(</span><span class="n">qout</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">levelno</span><span class="p">):</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">handle</span><span class="p">(</span><span class="n">qout</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="k">elif</span> <span class="n">qout</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">config</span><span class="o">.</span><span class="n">DUMMYMP_RET_ID</span><span class="p">:</span>
+                <span class="c"># Store return into return dictionary</span>
+                <span class="n">config</span><span class="o">.</span><span class="n">dummymp_rets</span><span class="p">[</span><span class="n">qout</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]]</span> <span class="o">=</span> <span class="n">qout</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&quot;WARNING: Received invalid message from process! (Invalid message type ID!) This may be a bug! Message: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">qout</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="process_process"><a class="viewcode-back" href="../../dummymp.html#dummymp.taskmgr.process_process">[docs]</a><span class="k">def</span> <span class="nf">process_process</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Process the execution queue and inter-process messages.</span>
+<span class="sd">    </span>
+<span class="sd">    Process the execution queue by starting processes in said queue, </span>
+<span class="sd">    handle processes that have completed, and process inter-process </span>
+<span class="sd">    messages via :py:func:`process_queue()`.</span>
+<span class="sd">    </span>
+<span class="sd">    (In plain English: start the queued processes, check processes to </span>
+<span class="sd">    see if they are done running, and grab any inter-process messages </span>
+<span class="sd">    sent from the spawned process.)</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        None</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        bool: A boolean indicating whether the execution queue has </span>
+<span class="sd">        completed or not. Returns True if it has completed, False if it </span>
+<span class="sd">        has not. This return value can be used in a while loop to block </span>
+<span class="sd">        until processes have completed. (This is somewhat similar to </span>
+<span class="sd">        multiprocessing&#39;s :py:meth:`multiprocessing.Process.join()` if</span>
+<span class="sd">        used in a loop.)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">nproc</span> <span class="o">=</span> <span class="mi">0</span>
+    
+    <span class="c"># Get main process logger</span>
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span>
+    
+    <span class="c"># Loop through processes via index!</span>
+    <span class="k">while</span> <span class="n">nproc</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">dummymp_procs</span><span class="p">):</span>
+        <span class="n">dummymp_proc</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">dummymp_procs</span><span class="p">[</span><span class="n">nproc</span><span class="p">]</span>
+        
+        <span class="c"># Check if process is complete! (In this case, ensure that</span>
+        <span class="c"># the process is not in a start queue and it isn&#39;t alive</span>
+        <span class="c"># anymore!)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">dummymp_proc</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">dummymp_start_procs</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">dummymp_proc</span><span class="o">.</span><span class="n">is_alive</span><span class="p">()):</span>
+            <span class="c"># Run process_queue() to fetch the remaining queue items</span>
+            <span class="c"># from the process.</span>
+            <span class="n">process_queue</span><span class="p">()</span>
+            
+            <span class="c"># Remove the queue and process</span>
+            <span class="n">pi</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">dummymp_procs</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">dummymp_proc</span><span class="p">)</span>
+            
+            <span class="c"># Make sure to close the queue!</span>
+            
+            <span class="c"># ...but first, check to make sure the queue is empty.</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">dummymp_queues</span><span class="p">[</span><span class="n">pi</span><span class="p">]</span><span class="o">.</span><span class="n">empty</span><span class="p">():</span>
+                <span class="n">process_queue</span><span class="p">()</span>
+            
+            <span class="c"># Once we&#39;re sure, let&#39;s close things up!</span>
+            <span class="n">config</span><span class="o">.</span><span class="n">dummymp_queues</span><span class="p">[</span><span class="n">pi</span><span class="p">]</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="n">config</span><span class="o">.</span><span class="n">dummymp_queues</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">pi</span><span class="p">)</span>
+            <span class="n">config</span><span class="o">.</span><span class="n">dummymp_procs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">pi</span><span class="p">)</span>
+            
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Process complete!&quot;</span><span class="p">)</span>
+            
+            <span class="c"># Add to the completed count and remove from running count...</span>
+            <span class="n">config</span><span class="o">.</span><span class="n">total_completed</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">config</span><span class="o">.</span><span class="n">total_running</span> <span class="o">-=</span> <span class="mi">1</span>
+            
+            <span class="c"># Make any callbacks, if necessary.</span>
+            <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">PROCESS_END_CALLBACK</span><span class="p">:</span>
+                <span class="n">config</span><span class="o">.</span><span class="n">PROCESS_END_CALLBACK</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">total_completed</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">total_running</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">total_procs</span><span class="p">)</span>
+            
+            <span class="c"># Deincrement index counter, since we just removed a process</span>
+            <span class="c"># from the list.</span>
+            <span class="n">nproc</span> <span class="o">-=</span> <span class="mi">1</span>
+        
+        <span class="c"># Increment</span>
+        <span class="n">nproc</span> <span class="o">+=</span> <span class="mi">1</span>
+    
+    <span class="c"># Fetch available CPUs</span>
+    <span class="n">avail_cpus</span> <span class="o">=</span> <span class="n">getCPUAvail</span><span class="p">()</span> <span class="o">-</span> <span class="n">config</span><span class="o">.</span><span class="n">total_running</span>
+    
+    <span class="c"># Check if we need to update CPU avail</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">needUpdateCPUAvail</span><span class="p">():</span>
+        <span class="n">nproc</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="c"># Loop through process execution queue</span>
+        <span class="k">while</span> <span class="n">nproc</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">dummymp_start_procs</span><span class="p">):</span>
+            <span class="n">dummymp_proc_entry</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">dummymp_start_procs</span><span class="p">[</span><span class="n">nproc</span><span class="p">]</span>
+            
+            <span class="c"># Check to make sure we can meet max_processes limit</span>
+            <span class="c"># (0 means no limit set)</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">max_processes</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">total_running</span> <span class="o">&lt;</span> <span class="n">config</span><span class="o">.</span><span class="n">max_processes</span><span class="p">):</span>
+                
+                <span class="c"># If there&#39;s no available CPUs, check to make sure that a</span>
+                <span class="c"># process isn&#39;t already running, and that the mode set is</span>
+                <span class="c"># not GENEROUS.</span>
+                <span class="k">if</span> <span class="p">((</span><span class="n">avail_cpus</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">total_running</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">DUMMYMP_MODE</span> <span class="o">!=</span> <span class="n">config</span><span class="o">.</span><span class="n">DUMMYMP_GENEROUS</span><span class="p">)):</span>
+                    <span class="c"># Force a single process to run!</span>
+                    <span class="n">avail_cpus</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Not in generous mode, so forcing one task to run.&quot;</span><span class="p">)</span>
+                
+                <span class="c"># Check if we have any available (or &quot;available&quot;) CPUs!</span>
+                <span class="k">if</span> <span class="n">avail_cpus</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%i</span><span class="s"> CPUs available, spawning process!&quot;</span> <span class="o">%</span> <span class="n">avail_cpus</span><span class="p">)</span>
+                    
+                    <span class="c"># Deincrement counter</span>
+                    <span class="n">avail_cpus</span> <span class="o">-=</span> <span class="mi">1</span>
+                    
+                    <span class="c"># Setup Queue</span>
+                    <span class="c"># We create the Queue and Process here so that we can</span>
+                    <span class="c"># prevent the error from opening too many Queue objects</span>
+                    <span class="c"># in multiprocessing.Pipe:</span>
+                    <span class="c">#   IOError: handle out of range in select()</span>
+                    <span class="c"># Bug: http://bugs.python.org/issue10527</span>
+                    <span class="n">q</span> <span class="o">=</span> <span class="n">Queue</span><span class="p">()</span>
+                    
+                    <span class="c"># Extract internal PID, function, final_args, and</span>
+                    <span class="c"># final_kwargs</span>
+                    <span class="n">int_pid</span> <span class="o">=</span> <span class="n">dummymp_proc_entry</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="n">func</span> <span class="o">=</span> <span class="n">dummymp_proc_entry</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="n">final_args</span> <span class="o">=</span> <span class="n">dummymp_proc_entry</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+                    <span class="n">final_kwargs</span> <span class="o">=</span> <span class="n">dummymp_proc_entry</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+                    
+                    <span class="c"># Now add some arguments to the front:</span>
+                    <span class="c"># Function to actually run</span>
+                    <span class="n">final_args</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">func</span><span class="p">)</span>
+                    <span class="c"># Queue</span>
+                    <span class="n">final_args</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">q</span><span class="p">)</span>
+                    <span class="c"># Process ID</span>
+                    <span class="n">final_args</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">int_pid</span><span class="p">)</span>
+                    
+                    <span class="c"># Create Process object</span>
+                    <span class="n">p</span> <span class="o">=</span> <span class="n">Process</span><span class="p">(</span><span class="n">target</span> <span class="o">=</span> <span class="n">_runner</span><span class="p">,</span> <span class="n">args</span> <span class="o">=</span> <span class="n">final_args</span><span class="p">,</span> <span class="n">kwargs</span> <span class="o">=</span> <span class="n">final_kwargs</span><span class="p">)</span>
+                    
+                    <span class="c"># Save it</span>
+                    <span class="n">config</span><span class="o">.</span><span class="n">dummymp_queues</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">q</span><span class="p">)</span>
+                    <span class="n">config</span><span class="o">.</span><span class="n">dummymp_procs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+                    
+                    <span class="c"># Start the process...</span>
+                    <span class="n">p</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+                    
+                    <span class="c"># ...and remove it from the starting queue.</span>
+                    <span class="n">config</span><span class="o">.</span><span class="n">dummymp_start_procs</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">dummymp_proc_entry</span><span class="p">)</span>
+                    
+                    <span class="c"># Increment running counter...</span>
+                    <span class="n">config</span><span class="o">.</span><span class="n">total_running</span> <span class="o">+=</span> <span class="mi">1</span>
+                    
+                    <span class="c"># Make any callbacks, if necessary.</span>
+                    <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">PROCESS_START_CALLBACK</span><span class="p">:</span>
+                        <span class="n">config</span><span class="o">.</span><span class="n">PROCESS_START_CALLBACK</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">total_completed</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">total_running</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">total_procs</span><span class="p">)</span>
+                    
+                    <span class="c"># Deincrement index counter, since we just removed a process</span>
+                    <span class="c"># from the start queue list.</span>
+                    <span class="n">nproc</span> <span class="o">-=</span> <span class="mi">1</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Max processes limit of </span><span class="si">%i</span><span class="s"> reached, waiting for process to terminate.&quot;</span> <span class="o">%</span> <span class="n">config</span><span class="o">.</span><span class="n">max_processes</span><span class="p">)</span>
+            
+            <span class="c"># Increment</span>
+            <span class="n">nproc</span> <span class="o">+=</span> <span class="mi">1</span>
+    
+    <span class="c"># Check to see if we are done!</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">dummymp_procs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;All processes complete, returning True.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">True</span>
+    <span class="k">return</span> <span class="bp">False</span>
+</div>
+<div class="viewcode-block" id="process_until_done"><a class="viewcode-back" href="../../dummymp.html#dummymp.taskmgr.process_until_done">[docs]</a><span class="k">def</span> <span class="nf">process_until_done</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Process the execution queue until all have been completed.</span>
+<span class="sd">    </span>
+<span class="sd">    Process the execution queue until it has indicated that all </span>
+<span class="sd">    processes in the queue have been completed. (This is somewhat </span>
+<span class="sd">    similar to multiprocessing&#39;s </span>
+<span class="sd">    :py:meth:`multiprocessing.Process.join()`.)</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c"># Run process_queue() and process_process() until process_process()</span>
+    <span class="c"># returns False (when it completes the process queue)</span>
+    <span class="k">while</span> <span class="ow">not</span> <span class="n">process_process</span><span class="p">():</span>
+        <span class="n">process_queue</span><span class="p">()</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.001</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2015, Albert Huang.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.2.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.6.2</a>
+      
+    </div>
+
+    
+    <a href="https://github.com/alberthdev/dummymp" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,702 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>dummymp package - API Documentation &mdash; DummyMP 0.5b2 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.5b2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="DummyMP 0.5b2 documentation" href="index.html" />
+    <link rel="prev" title="DummyMP Documentation" href="guide.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="guide.html" title="DummyMP Documentation"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">DummyMP 0.5b2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="dummymp-package-api-documentation">
+<h1>dummymp package - API Documentation<a class="headerlink" href="#dummymp-package-api-documentation" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-dummymp.config">
+<span id="dummymp-config-module-dummymp-configuration-state"></span><h2>dummymp.config module - DummyMP Configuration State<a class="headerlink" href="#module-dummymp.config" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-dummymp.detect">
+<span id="dummymp-detect-module-cpu-availability-checker"></span><h2>dummymp.detect module - CPU Availability Checker<a class="headerlink" href="#module-dummymp.detect" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="dummymp.detect.getCPUAvail">
+<tt class="descclassname">dummymp.detect.</tt><tt class="descname">getCPUAvail</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/dummymp/detect.html#getCPUAvail"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dummymp.detect.getCPUAvail" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get number of CPUs available.</p>
+<p>Fetch the number of CPUs available based on the current priority
+and limit configuration.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">An integer with the number of CPUs that are available.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="dummymp.detect.getSpawnProcPIDs">
+<tt class="descclassname">dummymp.detect.</tt><tt class="descname">getSpawnProcPIDs</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/dummymp/detect.html#getSpawnProcPIDs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dummymp.detect.getSpawnProcPIDs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fetch all running DummyMP system process IDs.</p>
+<p>Looking through all of the DummyMP processes, determine if any are
+running, and if any, retrieve their system process IDs.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">An list with the system process IDs of current running
+spawned DummyMP processes.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="dummymp.detect.getTotalCPUs">
+<tt class="descclassname">dummymp.detect.</tt><tt class="descname">getTotalCPUs</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/dummymp/detect.html#getTotalCPUs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dummymp.detect.getTotalCPUs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the total number of CPUs on the system.</p>
+<p>Detects and returns the total number of CPUs on the system.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">An integer with the number of CPUs that are on the system.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="dummymp.detect.needUpdateCPUAvail">
+<tt class="descclassname">dummymp.detect.</tt><tt class="descname">needUpdateCPUAvail</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/dummymp/detect.html#needUpdateCPUAvail"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dummymp.detect.needUpdateCPUAvail" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if the CPU availability needs to be updated.</p>
+<p>Utilizing configuration and checking the time elapsed from the
+previous check, determine whether the CPU availability function,
+getCPUAvail(), needs to be run or not to update CPU availability.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Boolean indicating whether the CPU availability needs to
+be updated or not.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="dummymp.detect.poll_procs">
+<tt class="descclassname">dummymp.detect.</tt><tt class="descname">poll_procs</tt><big>(</big><em>interval</em><big>)</big><a class="reference internal" href="_modules/dummymp/detect.html#poll_procs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dummymp.detect.poll_procs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Poll for processes and return information about them.</p>
+<p>Polls all processes and returns a dictionary with information about
+all of the processes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>interval</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; Delay before fetching process status. This is
+akin to top -d ##, where a delay is specified.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Tuple with the first element being a list of Process
+objects, each with a .dict attribute. Each .dict attribute
+contains information about the process, stored in the form of a
+dict. It includes:<ul>
+<li><dl class="first docutils">
+<dt><tt class="docutils literal"><span class="pre">'username'</span></tt>:</dt>
+<dd>Username of the user who started the process.</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><tt class="docutils literal"><span class="pre">'cpu_percent'</span></tt>:</dt>
+<dd>Percent of CPU used by the process.</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><tt class="docutils literal"><span class="pre">'status'</span></tt>:</dt>
+<dd>Status of the process (running, stopped, zombie).</dd>
+</dl>
+</li>
+</ul>
+<p>The second element in the tuple contains a summary dictionary
+with the total number of running, stopped, and zombie
+processes, with keys &#8216;running&#8217;, &#8216;stopped&#8217;, and &#8216;zombie&#8217;,
+respectively.</p>
+<div class="highlight-python"><div class="highlight"><pre>(
+    [Process(
+        pid=30159, name=&#39;services.exe&#39;,
+        dict={&#39;username&#39;:USERNAME, ...}
+        ), ...],
+    {&#39;running&#39;: ##, &#39;stopped&#39;: ##, ...}
+)
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">tuple</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-dummymp.interface">
+<span id="dummymp-interface-module-main-api"></span><h2>dummymp.interface module - Main API<a class="headerlink" href="#module-dummymp.interface" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="dummymp.interface.get_max_processes">
+<tt class="descclassname">dummymp.interface.</tt><tt class="descname">get_max_processes</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/dummymp/interface.html#get_max_processes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dummymp.interface.get_max_processes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get maximum processors for DummyMP to use.</p>
+<p>Fetch and return the maximum number of processors/CPUs for DummyMP
+to use.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Integer specifying the current maximum number of
+processors (or CPUs) for DummyMP to use.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="dummymp.interface.get_priority_mode">
+<tt class="descclassname">dummymp.interface.</tt><tt class="descname">get_priority_mode</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/dummymp/interface.html#get_priority_mode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dummymp.interface.get_priority_mode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the priority mode that DummyMP is using.</p>
+<p>Fetch and return the priority mode integer constant that DummyMP is
+using.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Integer constant specifying the priority mode integer
+constant that DummyMP is using.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="dummymp.interface.get_returns">
+<tt class="descclassname">dummymp.interface.</tt><tt class="descname">get_returns</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/dummymp/interface.html#get_returns"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dummymp.interface.get_returns" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get function returns from completed function runs.</p>
+<p>Fetch and return a dictionary of function returns from completed
+function runs. The dictionary is indexed by call order, zero
+indexed.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Dictionary of function returns, indexed by call order,
+and zero indexed.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">dict</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="dummymp.interface.get_version">
+<tt class="descclassname">dummymp.interface.</tt><tt class="descname">get_version</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/dummymp/interface.html#get_version"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dummymp.interface.get_version" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get DummyMP&#8217;s version</p>
+<p>Fetch and return the DummyMP library version.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">String specifying the DummyMP library version.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="dummymp.interface.killall">
+<tt class="descclassname">dummymp.interface.</tt><tt class="descname">killall</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/dummymp/interface.html#killall"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dummymp.interface.killall" title="Permalink to this definition">¶</a></dt>
+<dd><p>Kill all currently running processes and remove them from queue.</p>
+<p>Kill all of the currently running processes and remove them from
+the internal running queue.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="dummymp.interface.reset">
+<tt class="descclassname">dummymp.interface.</tt><tt class="descname">reset</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/dummymp/interface.html#reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dummymp.interface.reset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reset DummyMP state and kill all currently running processes.</p>
+<p>This resets the DummyMP state, clearing any configuration or state
+data set. Before resetting, this will kill all of the currently
+running processes and remove them from the internal running queue.
+(This calls <a class="reference internal" href="#dummymp.interface.killall" title="dummymp.interface.killall"><tt class="xref py py-func docutils literal"><span class="pre">killall()</span></tt></a> before resetting.)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="dummymp.interface.run">
+<tt class="descclassname">dummymp.interface.</tt><tt class="descname">run</tt><big>(</big><em>func</em>, <em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/dummymp/interface.html#run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dummymp.interface.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run a function with multiprocessing.</p>
+<p>Run a function with multiprocessing. This actually queues the
+function and its arguments for running - you need to run
+<a class="reference internal" href="#dummymp.taskmgr.process_process" title="dummymp.taskmgr.process_process"><tt class="xref py py-func docutils literal"><span class="pre">process_process()</span></tt></a> or <a class="reference internal" href="#dummymp.taskmgr.process_until_done" title="dummymp.taskmgr.process_until_done"><tt class="xref py py-func docutils literal"><span class="pre">process_until_done()</span></tt></a>
+in order to actually execute the function.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>func</strong> (<em>function</em>) &#8211; Function to run.</li>
+<li><strong>args</strong> (<a href="#id1"><span class="problematic" id="id2">*</span></a>args) &#8211; Arguments to use with the function.</li>
+<li><strong>kwargs</strong> (<a href="#id3"><span class="problematic" id="id4">**</span></a>kwargs) &#8211; Keyword arguments to use with the function.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="dummymp.interface.set_args_deepcopy">
+<tt class="descclassname">dummymp.interface.</tt><tt class="descname">set_args_deepcopy</tt><big>(</big><em>tf</em><big>)</big><a class="reference internal" href="_modules/dummymp/interface.html#set_args_deepcopy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dummymp.interface.set_args_deepcopy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set whether to deepcopy arguments or not.</p>
+<p>Change whether DummyMP will deepcopy the arguments or not. If it is
+disabled, it is up to the user to ensure that a copy of the
+arguments is preserved for further use.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>tf</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; Boolean indicating whether to enable argument
+deepcopy or not.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="dummymp.interface.set_end_callback">
+<tt class="descclassname">dummymp.interface.</tt><tt class="descname">set_end_callback</tt><big>(</big><em>callback</em><big>)</big><a class="reference internal" href="_modules/dummymp/interface.html#set_end_callback"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dummymp.interface.set_end_callback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the process completion callback for DummyMP.</p>
+<p>Set the callback for DummyMP to call when a process has completed.</p>
+<p>The callback is called with the following arguments:
+(config.total_completed, config.total_running, config.total_procs)</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">total_completed</span></tt>: Total processes completed.</li>
+<li><tt class="docutils literal"><span class="pre">total_running</span></tt>: Total processes currently running.</li>
+<li><tt class="docutils literal"><span class="pre">total_procs</span></tt>: Total processes overall, regardless of whether
+they are running or not.</li>
+</ul>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>callback</strong> (<em>function</em>) &#8211; Function callback to call when a process
+has completed.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="dummymp.interface.set_kwargs_deepcopy">
+<tt class="descclassname">dummymp.interface.</tt><tt class="descname">set_kwargs_deepcopy</tt><big>(</big><em>tf</em><big>)</big><a class="reference internal" href="_modules/dummymp/interface.html#set_kwargs_deepcopy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dummymp.interface.set_kwargs_deepcopy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set whether to deepcopy keyword arguments or not.</p>
+<p>Change whether DummyMP will deepcopy the keyword arguments or not.
+If it is disabled, it is up to the user to ensure that a copy of
+the keyword arguments is preserved for further use.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>tf</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; Boolean indicating whether to enable keyword
+argument deepcopy or not.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="dummymp.interface.set_max_processes">
+<tt class="descclassname">dummymp.interface.</tt><tt class="descname">set_max_processes</tt><big>(</big><em>max_proc</em><big>)</big><a class="reference internal" href="_modules/dummymp/interface.html#set_max_processes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dummymp.interface.set_max_processes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set maximum processors for DummyMP to use.</p>
+<p>Set the maximum number of processors/CPUs for DummyMP to use.
+Regardless of priority mode, the number of processors/CPUs it takes
+advantage of will be capped at the number you specify.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>max_proc</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; Integer specifying the maximum number of
+processors (or CPUs) for DummyMP to use.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="dummymp.interface.set_priority_mode">
+<tt class="descclassname">dummymp.interface.</tt><tt class="descname">set_priority_mode</tt><big>(</big><em>mode</em><big>)</big><a class="reference internal" href="_modules/dummymp/interface.html#set_priority_mode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dummymp.interface.set_priority_mode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the priority mode for DummyMP.</p>
+<p>Set the priority mode for DummyMP. The priority mode controls how
+conscious DummyMP is of other running processes on the system.</p>
+<p>Available modes:</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>DUMMYMP_GENEROUS   - Generous mode.</dt>
+<dd>Very conservative about using any CPU, and
+ensures that no one else is disrupted.
+Note that this is VERY GENEROUS - if all
+CPUs are taken, DummyMP will wait until
+there are available CPUs! (All other modes
+will run a single process, regardless of
+CPU usage.) This is the slowest mode!</dd>
+<dt>DUMMYMP_NORMAL     - Normal mode.</dt>
+<dd>Careful not to take up too much resources
+on the CPU, but it will try to get things
+done. This is faster than GENEROUS, but it
+isn&#8217;t the fastest. This mode is the
+default and is recommended for most
+conditions.</dd>
+<dt>DUMMYMP_AGGRESSIVE - Aggressive mode.</dt>
+<dd>This mode considers other users, but it
+may spawn processes anyway depending on
+how other processes behave. This is faster
+than NORMAL, and is recommended for
+semi-important conditions.</dd>
+<dt>DUMMYMP_EXTREME    - Extreme mode.</dt>
+<dd>This mode somewhat considers other users,
+but unless the other processes are using a
+significant portion of the CPU, it will
+spawn processes anyway. This is faster
+than AGGRESSIVE, and is recommended for
+important conditions.</dd>
+<dt>DUMMYMP_NUCLEAR    - Nuclear mode.</dt>
+<dd>This mode does NOT consider other users,
+and just runs as many processes as it can
+allow (total number of cores). This is
+much faster than EXTREME, and is
+recommended for really important
+conditions. Note that this may earn you
+very angry co-workers knocking down your
+door with pitchforks, so use sparingly!</dd>
+</dl>
+</div></blockquote>
+<p>Regardless of priority mode, if the number of CPUs to use is
+specified, the number of processors/CPUs it takes advantage of will
+always be capped at the maximum number specified.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>mode</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; Integer constant specifying the mode for DummyMP to
+use.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="dummymp.interface.set_start_callback">
+<tt class="descclassname">dummymp.interface.</tt><tt class="descname">set_start_callback</tt><big>(</big><em>callback</em><big>)</big><a class="reference internal" href="_modules/dummymp/interface.html#set_start_callback"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dummymp.interface.set_start_callback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the process starting callback for DummyMP.</p>
+<p>Set the callback for DummyMP to call when a process is initially
+started.</p>
+<p>The callback is called with the following arguments:
+(config.total_completed, config.total_running, config.total_procs)</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">total_completed</span></tt>: Total processes completed.</li>
+<li><tt class="docutils literal"><span class="pre">total_running</span></tt>: Total processes currently running.</li>
+<li><tt class="docutils literal"><span class="pre">total_procs</span></tt>: Total processes overall, regardless of whether
+they are running or not.</li>
+</ul>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>callback</strong> (<em>function</em>) &#8211; Function callback to call when a process
+starts.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-dummymp.loghandler">
+<span id="dummymp-loghandler-module-logging-redirector-for-dummymp"></span><h2>dummymp.loghandler module - Logging Redirector for DummyMP<a class="headerlink" href="#module-dummymp.loghandler" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="dummymp.loghandler.DummyMPLogHandler">
+<em class="property">class </em><tt class="descclassname">dummymp.loghandler.</tt><tt class="descname">DummyMPLogHandler</tt><big>(</big><em>int_pid</em>, <em>queue</em><big>)</big><a class="reference internal" href="_modules/dummymp/loghandler.html#DummyMPLogHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dummymp.loghandler.DummyMPLogHandler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">logging.Handler</span></tt></p>
+<p>DummyMP logging handler to allow multiprocess logging.</p>
+<p>This class is a custom logging handler to allow spawned processes
+(from <a class="reference external" href="http://docs.python.org/library/multiprocessing.html#module-multiprocessing" title="(in Python v2.7)"><tt class="xref py py-mod docutils literal"><span class="pre">multiprocessing</span></tt></a>) to log without any issues. This
+works by intercepting emitted log records, and sending them via
+queue to the master process. The master process will process each
+record and call <a class="reference external" href="http://docs.python.org/library/logging.html#logging.Logger.handle" title="(in Python v2.7)"><tt class="xref py py-meth docutils literal"><span class="pre">logging.Logger.handle()</span></tt></a> to emit the
+logging record at the master process level.</p>
+<p>Note that this class can be used as a general multiprocess logging
+handler simply by removing the int_pid attribute.</p>
+<dl class="attribute">
+<dt id="dummymp.loghandler.DummyMPLogHandler.queue">
+<tt class="descname">queue</tt><a class="headerlink" href="#dummymp.loghandler.DummyMPLogHandler.queue" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference external" href="http://docs.python.org/library/multiprocessing.html#multiprocessing.Queue" title="(in Python v2.7)"><tt class="xref py py-class docutils literal"><span class="pre">multiprocessing.Queue</span></tt></a></p>
+<p>The Queue object to
+forward logging records to.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dummymp.loghandler.DummyMPLogHandler.int_pid">
+<tt class="descname">int_pid</tt><a class="headerlink" href="#dummymp.loghandler.DummyMPLogHandler.int_pid" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>int</em></p>
+<p>The internal PID used to reference the process.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dummymp.loghandler.DummyMPLogHandler.emit">
+<tt class="descname">emit</tt><big>(</big><em>record</em><big>)</big><a class="reference internal" href="_modules/dummymp/loghandler.html#DummyMPLogHandler.emit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dummymp.loghandler.DummyMPLogHandler.emit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method override to forward logging records to the internal
+Queue object.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-dummymp.process">
+<span id="dummymp-process-module-function-process-wrapper"></span><h2>dummymp.process module - Function Process Wrapper<a class="headerlink" href="#module-dummymp.process" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="dummymp.process._runner">
+<tt class="descclassname">dummymp.process.</tt><tt class="descname">_runner</tt><big>(</big><em>process_id</em>, <em>dummymp_queue</em>, <em>func</em>, <em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/dummymp/process.html#_runner"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dummymp.process._runner" title="Permalink to this definition">¶</a></dt>
+<dd><p>Multiprocess function wrapper for running a function given args.</p>
+<p>This function wraps an existing function with its args, and allows
+for additional fields related to multiprocessing. In particular,
+the internal process ID and the <a class="reference external" href="http://docs.python.org/library/multiprocessing.html#multiprocessing.Queue" title="(in Python v2.7)"><tt class="xref py py-class docutils literal"><span class="pre">multiprocessing.Queue</span></tt></a>
+object are added to facilitate communication between the subprocess
+and the master process.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>process_id</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; The internal process ID for the particular
+process. This is NOT the actual system process ID.</li>
+<li><strong>dummymp_queue</strong> (<a class="reference external" href="http://docs.python.org/library/multiprocessing.html#multiprocessing.Queue" title="(in Python v2.7)"><tt class="xref py py-class docutils literal"><span class="pre">multiprocessing.Queue</span></tt></a>) &#8211; The Queue
+object that the process should send data to. The Queue
+should be a Queue made specifically for this process.</li>
+<li><strong>func</strong> (<em>function</em>) &#8211; The function that the process should call.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><p>Nothing... but the function will periodically send messages to
+the Queue in this format:</p>
+<blockquote>
+<div><p>[ [ DUMMYMP_MSG_TYPE_ID, SYSTEM_PID, INTERNAL_ID ], DATA... ]</p>
+</div></blockquote>
+<dl class="docutils">
+<dt>Possible DUMMYMP_MSG_TYPE_IDs include:</dt>
+<dd><p class="first">DUMMYMP_LOG_ID: ID for log records. The entire format is:</p>
+<blockquote>
+<div><p>[ [ DUMMYMP_LOG_ID, SYSTEM_PID, INTERNAL_ID ], LOGGING_RECORD ]</p>
+<p>When a message of this type is sent, the corresponding
+LOGGING_RECORD is emitted at the master process level.
+(In plain English: the logging message gets sent to the
+main process, and is printed from there.)</p>
+</div></blockquote>
+<p>DUMMYMP_RET_ID: ID for return data. The entire format is:</p>
+<blockquote class="last">
+<div><p>[ [ DUMMYMP_RET_ID, SYSTEM_PID, INTERNAL_ID ], RETURN_VAL ]</p>
+<p>When a message of this type is sent, the RETURN_VAL is
+stored in a dictionary at the master process level to
+archive the return value from this process for future
+retrieval. (In plain English: the return values are
+sent to the main process, and are stored in a
+dictionary for reference.)</p>
+</div></blockquote>
+</dd>
+</dl>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-dummymp.taskmgr">
+<span id="dummymp-taskmgr-module-process-task-manager-and-api"></span><h2>dummymp.taskmgr module - Process/Task Manager and API<a class="headerlink" href="#module-dummymp.taskmgr" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="dummymp.taskmgr.process_process">
+<tt class="descclassname">dummymp.taskmgr.</tt><tt class="descname">process_process</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/dummymp/taskmgr.html#process_process"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dummymp.taskmgr.process_process" title="Permalink to this definition">¶</a></dt>
+<dd><p>Process the execution queue and inter-process messages.</p>
+<p>Process the execution queue by starting processes in said queue,
+handle processes that have completed, and process inter-process
+messages via <a class="reference internal" href="#dummymp.taskmgr.process_queue" title="dummymp.taskmgr.process_queue"><tt class="xref py py-func docutils literal"><span class="pre">process_queue()</span></tt></a>.</p>
+<p>(In plain English: start the queued processes, check processes to
+see if they are done running, and grab any inter-process messages
+sent from the spawned process.)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A boolean indicating whether the execution queue has
+completed or not. Returns True if it has completed, False if it
+has not. This return value can be used in a while loop to block
+until processes have completed. (This is somewhat similar to
+multiprocessing&#8217;s <a class="reference external" href="http://docs.python.org/library/multiprocessing.html#multiprocessing.Process.join" title="(in Python v2.7)"><tt class="xref py py-meth docutils literal"><span class="pre">multiprocessing.Process.join()</span></tt></a> if
+used in a loop.)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="dummymp.taskmgr.process_queue">
+<tt class="descclassname">dummymp.taskmgr.</tt><tt class="descname">process_queue</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/dummymp/taskmgr.html#process_queue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dummymp.taskmgr.process_queue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Process inter-process messages.</p>
+<p>Process the inter-process <a class="reference external" href="http://docs.python.org/library/multiprocessing.html#multiprocessing.Queue" title="(in Python v2.7)"><tt class="xref py py-class docutils literal"><span class="pre">multiprocessing.Queue</span></tt></a>
+objects, which receive messages from the spawned process for
+logging events and function returns.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Warnings are emitted to log if an invalid message is received.</p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="dummymp.taskmgr.process_until_done">
+<tt class="descclassname">dummymp.taskmgr.</tt><tt class="descname">process_until_done</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/dummymp/taskmgr.html#process_until_done"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dummymp.taskmgr.process_until_done" title="Permalink to this definition">¶</a></dt>
+<dd><p>Process the execution queue until all have been completed.</p>
+<p>Process the execution queue until it has indicated that all
+processes in the queue have been completed. (This is somewhat
+similar to multiprocessing&#8217;s
+<a class="reference external" href="http://docs.python.org/library/multiprocessing.html#multiprocessing.Process.join" title="(in Python v2.7)"><tt class="xref py py-meth docutils literal"><span class="pre">multiprocessing.Process.join()</span></tt></a>.)</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-dummymp">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-dummymp" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">dummymp package - API Documentation</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-dummymp.config">dummymp.config module - DummyMP Configuration State</a></li>
+<li><a class="reference internal" href="#module-dummymp.detect">dummymp.detect module - CPU Availability Checker</a></li>
+<li><a class="reference internal" href="#module-dummymp.interface">dummymp.interface module - Main API</a></li>
+<li><a class="reference internal" href="#module-dummymp.loghandler">dummymp.loghandler module - Logging Redirector for DummyMP</a></li>
+<li><a class="reference internal" href="#module-dummymp.process">dummymp.process module - Function Process Wrapper</a></li>
+<li><a class="reference internal" href="#module-dummymp.taskmgr">dummymp.taskmgr module - Process/Task Manager and API</a></li>
+<li><a class="reference internal" href="#module-dummymp">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="guide.html"
+                        title="previous chapter">DummyMP Documentation</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/dummymp.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2015, Albert Huang.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.2.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.6.2</a>
+      
+      |
+      <a href="_sources/dummymp.txt"
+          rel="nofollow">Page source</a></li>
+    </div>
+
+    
+    <a href="https://github.com/alberthdev/dummymp" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>

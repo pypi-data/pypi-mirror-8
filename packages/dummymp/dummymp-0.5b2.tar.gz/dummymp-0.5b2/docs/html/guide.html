@@ -1,0 +1,664 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>DummyMP Documentation &mdash; DummyMP 0.5b2 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.5b2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="DummyMP 0.5b2 documentation" href="index.html" />
+    <link rel="next" title="dummymp package - API Documentation" href="dummymp.html" />
+    <link rel="prev" title="Welcome to DummyMP’s documentation!" href="index.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="dummymp.html" title="dummymp package - API Documentation"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to DummyMP’s documentation!"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">DummyMP 0.5b2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="contents topic" id="contents">
+<p class="topic-title first">Contents</p>
+<ul class="simple">
+<li><a class="reference internal" href="#dummymp-documentation" id="id1">DummyMP Documentation</a><ul>
+<li><a class="reference internal" href="#how-to-use" id="id2">How to use?</a><ul>
+<li><a class="reference internal" href="#step-0-figure-out-your-functions" id="id3">Step 0: Figure out your functions!</a></li>
+<li><a class="reference internal" href="#step-1-load-and-configure-dummymp" id="id4">Step 1: Load and Configure DummyMP</a></li>
+<li><a class="reference internal" href="#step-2-queue-function-into-dummymp" id="id5">Step 2: Queue Function into DummyMP</a></li>
+<li><a class="reference internal" href="#step-3-run-dummymp" id="id6">Step 3: Run DummyMP</a></li>
+<li><a class="reference internal" href="#step-4-fetch-return-results" id="id7">Step 4: Fetch Return Results</a></li>
+<li><a class="reference internal" href="#step-5-cleanup-if-necessary" id="id8">Step 5: Cleanup (if necessary)</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#optimization" id="id9">Optimization</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="dummymp-documentation">
+<h1><a class="toc-backref" href="#id1">DummyMP Documentation</a><a class="headerlink" href="#dummymp-documentation" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="how-to-use">
+<h2><a class="toc-backref" href="#id2">How to use?</a><a class="headerlink" href="#how-to-use" title="Permalink to this headline">¶</a></h2>
+<p>Note: Although the whole API is covered in this guide, it is not a
+substitute for the API documentation. The API documentation can be found
+in all of the source files, and is formatted to be accessible with
+pydoc.</p>
+<div class="section" id="step-0-figure-out-your-functions">
+<h3><a class="toc-backref" href="#id3">Step 0: Figure out your functions!</a><a class="headerlink" href="#step-0-figure-out-your-functions" title="Permalink to this headline">¶</a></h3>
+<p>The first thing to do is to figure out what functions you can
+parallelize. Functions that can run independently from other functions
+are strong candidates for parallelization. Functions that depend on each
+other&#8217;s output (sequential functions) are weak candidates for
+parallelization.</p>
+<p>Functions that tend to be good candidates for parallelization include
+functions that are repeated often, usually in a loop.</p>
+<p>Note that it&#8217;s not necessarily the function itself that defines if it
+can be parallelized or not, but the use of the function.</p>
+<p>Here are some examples to help explain what works and what doesn&#8217;t.</p>
+<p>This is an example of a function that works great with parallelization:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">incr</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span>
+<span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">):</span>
+    <span class="k">print</span> <span class="n">incr</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This is an example of a function that will not work well with
+parallelization:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">incr</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span>
+<span class="n">x</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="k">while</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="p">:</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">incr</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Notice how the functions are exactly the same, but the usage of those
+functions determined whether it could be parallelized or not.</p>
+<p>The latter example requires the previous result before the next result
+could be computed. Because of that, you must run the code in order, and
+therefore you can not split the operation up.</p>
+<p>With the former, however, you are simply incrementing each number in the
+range. There is no dependency on any result, and therefore it&#8217;s possible
+to split the operation up.</p>
+<p>If you have trouble visualizing this, try evaluating the statements.
+Let&#8217;s make the function more complicated so that we can&#8217;t guess
+anything.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">setn</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">n</span>
+</pre></div>
+</div>
+<p>For the first example with the for loop, it will evaluate to:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">print</span> <span class="n">setn</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">setn</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">setn</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">setn</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">setn</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>For the second one, it&#8217;s very different. We have no idea what the output
+will be, and the input to the function depends on the output after the
+intial run. Here&#8217;s how it will look like:</p>
+<div class="highlight-python"><div class="highlight"><pre>x = setn(0)
+print(x)
+x = setn(?)
+print(x)
+x = setn(?)
+print(x)
+...
+</pre></div>
+</div>
+<p>(? indicates unknown input.)</p>
+<p>Furthermore, since we have a condition set on the output, we don&#8217;t even
+know when this loop will stop!</p>
+<p>In the end, the general rule for determining parallelization:</p>
+<ul class="simple">
+<li>If inputs (both variable and state, such as files) are known all of
+the time, it is likely to work with parallelization. (This includes
+pre-determined and static inputs.)</li>
+<li>If there is any uncertainty for the inputs (variables depends on
+previous state, files need to be created, etc.), it is unlikely to
+work with parallelization.</li>
+</ul>
+<p>To conclude, here are some applications that can be parallelized:</p>
+<ul class="simple">
+<li>Some math algorithms (matrix multiplication of a large matrix, for
+instance)</li>
+<li>Data file processing</li>
+<li>Computing statistics from multiple data sets</li>
+<li>Rendering multiple parts of a grid (such as map image rendering)</li>
+<li>Bulk distributed database queries</li>
+</ul>
+</div>
+<div class="section" id="step-1-load-and-configure-dummymp">
+<h3><a class="toc-backref" href="#id4">Step 1: Load and Configure DummyMP</a><a class="headerlink" href="#step-1-load-and-configure-dummymp" title="Permalink to this headline">¶</a></h3>
+<p>First things first - we need to load the DummyMP module! Nothing special
+here:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">dummymp</span>
+</pre></div>
+</div>
+<p>DummyMP automatically tries to expose all functions and such through the
+dummymp module, so there&#8217;s no need to do anything more complicated than
+this.</p>
+<p>Next, we need to setup DummyMP, as necessary.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># Remember - everything here is optional! Configure only things you</span>
+<span class="c"># want to configure - no configuration necessary to run DummyMP!</span>
+
+<span class="c"># Set the maximum number of processes to spawn. By default, this</span>
+<span class="c"># value is 0 - the maximum defaults to the number of CPU cores on</span>
+<span class="c"># the system. Note that the process manager won&#39;t spawn this many</span>
+<span class="c"># processes - it still depends on system CPU usage and the</span>
+<span class="c"># &quot;aggression&quot; level (see next code block).</span>
+<span class="n">dummymp</span><span class="o">.</span><span class="n">set_max_processes</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+
+<span class="c"># Set the priority mode for the process manager. This determines</span>
+<span class="c"># how aggressive the process manager should be when trying to</span>
+<span class="c"># start running functions in the queue. The following modes are</span>
+<span class="c"># available:</span>
+<span class="c">#     dummymp.DUMMYMP_GENEROUS</span>
+<span class="c">#         Very generous - on a crowded server, tries not to step on</span>
+<span class="c">#         anyone&#39;s toes! This is for a task that you don&#39;t mind</span>
+<span class="c">#         getting done later - much later.</span>
+<span class="c">#           - SPECIAL FEATURE: if this is used, it will not try to</span>
+<span class="c">#             start a process, even if all CPUs are used (and no</span>
+<span class="c">#             processes have been deployed by DummyMP)!</span>
+<span class="c">#           - The process manager checks activity the fastest -</span>
+<span class="c">#             every 5s - because it cares about the other users on</span>
+<span class="c">#             the server. Higher values mean less frequent checking.</span>
+<span class="c">#           - The checking interval (top -d ##) is the slowest -</span>
+<span class="c">#             0.5s - because it has a minimal impact on the server,</span>
+<span class="c">#             and it allows processes to gain higher CPU usage</span>
+<span class="c">#             values, as measured by DummyMP. Faster means lower</span>
+<span class="c">#             measure CPU usage values (more instantaneous), and</span>
+<span class="c">#             more impact on the server.</span>
+<span class="c">#           - The CPU usage threshold is the lowest - 20% - because</span>
+<span class="c">#             it wants to consider even potentially CPU intensive</span>
+<span class="c">#             processes. It considers a process taking at least 20%</span>
+<span class="c">#             CPU usage to be active. If a process does not meet</span>
+<span class="c">#             this threshold, it is not counted towards the amount</span>
+<span class="c">#             of CPUs used. Higher thresholds means lower chances of</span>
+<span class="c">#             a process counting towards this threshold.</span>
+<span class="c">#           Summary:</span>
+<span class="c">#           - Activity check interval: 5s</span>
+<span class="c">#           - Checking interval: 0.5s</span>
+<span class="c">#           - CPU usage threshold: 20%</span>
+<span class="c">#     dummymp.DUMMYMP_NORMAL</span>
+<span class="c">#         Just act normal - on a crowded server, be respectful, but</span>
+<span class="c">#         you still need to get your work done!</span>
+<span class="c">#           - Activity check interval: 10s</span>
+<span class="c">#           - Checking interval: 0.35s</span>
+<span class="c">#           - CPU usage threshold: 30%</span>
+<span class="c">#     dummymp.DUMMYMP_AGGRESSIVE</span>
+<span class="c">#         Be somewhat aggressive - you have a deadline to meet, but</span>
+<span class="c">#         you don&#39;t want to piss off anyone, and slow down your own</span>
+<span class="c">#         work, either!</span>
+<span class="c">#           - Activity check interval: 20s</span>
+<span class="c">#           - Checking interval: 0.2s</span>
+<span class="c">#           - CPU usage threshold: 50%</span>
+<span class="c">#     dummymp.DUMMYMP_EXTREME</span>
+<span class="c">#         Be very aggressive - you have something due soon, and it&#39;s</span>
+<span class="c">#         URGENT. You might piss off a few, but it&#39;s something you</span>
+<span class="c">#         can apologize later over a coffee break.</span>
+<span class="c">#           - Activity check interval: 30s</span>
+<span class="c">#           - Checking interval: 0.1s</span>
+<span class="c">#           - CPU usage threshold: 80%</span>
+<span class="c">#     dummymp.DUMMYMP_NUCLEAR</span>
+<span class="c">#         You need to get stuff done NOW, otherwise things will go</span>
+<span class="c">#         wrong. Lots of things to get done, so little time. You</span>
+<span class="c">#         may need to lock your office door and unplug your phone -</span>
+<span class="c">#         this WILL piss off everyone on the server! You may need to</span>
+<span class="c">#         buy everyone lunch for the day (maybe two) to make up for</span>
+<span class="c">#         your insane aggression.</span>
+<span class="c">#</span>
+<span class="c">#         NOTE: this won&#39;t necessarily help much if there are other</span>
+<span class="c">#               CPU intensive processes on the server, since both</span>
+<span class="c">#               DummyMP and the other processes will be fighting,</span>
+<span class="c">#               eventually splitting CPU usage and decreasing</span>
+<span class="c">#               efficiency.</span>
+<span class="c">#           - SPECIAL FEATURE: This is truly nuclear. It will use</span>
+<span class="c">#             the number of CPU cores available on the system,</span>
+<span class="c">#             ALWAYS. Regardless of any CPU intensive processes,</span>
+<span class="c">#             it will always spawn that number of processes - the</span>
+<span class="c">#             maximum! Oh, and it doesn&#39;t check activity, since the</span>
+<span class="c">#             number of CPUs available will stay constant.</span>
+<span class="c">#           - Activity check interval: what checking?</span>
+<span class="c">#           - Checking interval: 0.1s (not that this matters)</span>
+<span class="c">#           - CPU usage threshold: the sky&#39;s the limit!</span>
+<span class="n">dummymp</span><span class="o">.</span><span class="n">set_priority_mode</span><span class="p">(</span><span class="n">dummymp</span><span class="o">.</span><span class="n">DUMMYMP_AGGRESSIVE</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>It is also possible to create a custom DummyMP mode:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">####################################################################</span>
+<span class="c"># ADVANCED USAGE:</span>
+<span class="c">####################################################################</span>
+<span class="c"># You can also define your own priority mode. Note that this isn&#39;t</span>
+<span class="c"># officially supported by the API (yet), but it should work as long</span>
+<span class="c"># as everything required is done. (Basically, everything in this</span>
+<span class="c"># code block!)</span>
+<span class="c">#</span>
+<span class="c"># First, you need to make your own constant. We use positive and</span>
+<span class="c"># negative numbers to denote the priority (a loose *nix nice style</span>
+<span class="c"># priority, -20 to 20, lowest number indicating higest priority).</span>
+<span class="c">#</span>
+<span class="c"># The current constants are:</span>
+<span class="c">#   DUMMYMP_GENEROUS    = 15</span>
+<span class="c">#   DUMMYMP_NORMAL      = 0</span>
+<span class="c">#   DUMMYMP_AGGRESSIVE  = -5</span>
+<span class="c">#   DUMMYMP_EXTREME     = -10</span>
+<span class="c">#   DUMMYMP_NUCLEAR     = -20</span>
+<span class="c"># Do NOT use any of these numbers, as they will conflict with</span>
+<span class="c"># already defined modes. Instead, use a number between any two #s</span>
+<span class="c"># (or a number between -20 and 20, inclusive) to denote your</span>
+<span class="c"># priority:</span>
+<span class="n">DUMMYMP_CUSTOM</span> <span class="o">=</span> <span class="o">-</span><span class="mi">3</span>
+
+<span class="c"># Now, add your own rules!</span>
+<span class="c"># First, set the CPU threshold. The maximum CPU usage can be up to</span>
+<span class="c"># infinity. The value is top-style percentage:</span>
+<span class="c">#   (100% * # of cores used)</span>
+<span class="n">dummymp</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">DUMMYMP_THRESHOLD</span><span class="p">[</span><span class="n">DUMMYMP_CUSTOM</span><span class="p">]</span> <span class="o">=</span> <span class="mi">75</span>
+
+<span class="c"># Next, set the top -d ## interval. The value is in seconds - you</span>
+<span class="c"># can test these values with the top command. Longer values</span>
+<span class="c"># generally mean more accumulated CPU usage statistics. It also</span>
+<span class="c"># means that the CPU statistics will take somewhat longer (since it</span>
+<span class="c"># delays by 2 * interval secs).</span>
+<span class="n">dummymp</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">DUMMYMP_MINTERVAL</span><span class="p">[</span><span class="n">DUMMYMP_CUSTOM</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.3</span>
+
+<span class="c"># Now we need to set the refresh interval. This is how often DummyMP</span>
+<span class="c"># will query system CPU usage.</span>
+<span class="n">dummymp</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">DUMMYMP_MREFRESH</span><span class="p">[</span><span class="n">DUMMYMP_CUSTOM</span><span class="p">]</span> <span class="o">=</span> <span class="mi">12</span>
+
+<span class="c"># Finally, we need to give it a name. The name shows up in the debug</span>
+<span class="c"># logs of DummyMP.</span>
+<span class="n">dummymp</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">DUMMYMP_STRING</span><span class="p">[</span><span class="n">DUMMYMP_CUSTOM</span><span class="p">]</span> <span class="o">=</span> <span class="s">&quot;Custom&quot;</span>
+
+<span class="c"># That&#39;s it! Well, one more thing - set this new priority mode!</span>
+<span class="n">dummymp</span><span class="o">.</span><span class="n">set_priority_mode</span><span class="p">(</span><span class="n">DUMMYMP_CUSTOM</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Alright, back to regular setup:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># Set whether to deepcopy the arguments or not.</span>
+<span class="c">#</span>
+<span class="c"># (Deepcopy is making a &quot;true&quot; copy of a variable, such that</span>
+<span class="c"># changing the variable within DummyMP won&#39;t change the original,</span>
+<span class="c"># since it&#39;s a deepcopy of said original.)</span>
+<span class="c">#</span>
+<span class="c"># By default, this is set to True. You may wish to set this to False</span>
+<span class="c"># if you are deepcopying yourself, or if your inputs do not require</span>
+<span class="c"># deepcopying.</span>
+<span class="c">#</span>
+<span class="c"># Lists and dictionaries usually require deepcopying, since the</span>
+<span class="c"># function uses a reference of the list/dict, and any operation done</span>
+<span class="c"># to them will reflect back to the original.</span>
+<span class="n">dummymp</span><span class="o">.</span><span class="n">set_args_deepcopy</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+
+<span class="c"># Set whether to deepcopy the keyword arguments or not.</span>
+<span class="c">#</span>
+<span class="c"># Same concept as above - default is True.</span>
+<span class="n">dummymp</span><span class="o">.</span><span class="n">set_kwargs_deepcopy</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+
+<span class="c"># Set the callback function when a process is started.</span>
+<span class="c">#</span>
+<span class="c"># This function is called with the following arguments:</span>
+<span class="c">#     callback(total_completed, total_running, total_processes)</span>
+<span class="c">#       total_completed: total processes that have finished running</span>
+<span class="c">#       total_running:   current # of processes that are running</span>
+<span class="c">#       total_processes: total processes overall</span>
+<span class="c">#     All arguments are integers.</span>
+<span class="c">#</span>
+<span class="c"># Callbacks are generally used for updating progress shown to the</span>
+<span class="c"># user, since DummyMP does not show progress on its own.</span>
+<span class="c"># An example function is given below:</span>
+
+<span class="k">def</span> <span class="nf">update_start</span><span class="p">(</span><span class="n">total_completed</span><span class="p">,</span> <span class="n">total_running</span><span class="p">,</span> <span class="n">total_procs</span><span class="p">):</span>
+    <span class="c"># Example of what this might output:</span>
+    <span class="c">#     Starting process! (4 running, 4/10 completed)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Starting process! (</span><span class="si">%i</span><span class="s"> running, </span><span class="si">%i</span><span class="s">/</span><span class="si">%i</span><span class="s"> completed)&quot;</span> \
+        <span class="o">%</span> <span class="p">(</span><span class="n">total_running</span><span class="p">,</span> <span class="n">total_completed</span><span class="p">,</span> <span class="n">total_procs</span><span class="p">))</span>
+
+<span class="n">set_start_callback</span><span class="p">(</span><span class="n">update_start</span><span class="p">)</span>
+
+<span class="c"># Set the callback function when a process has completed.</span>
+<span class="c">#</span>
+<span class="c"># Same concept as above, except the callback is run once the process</span>
+<span class="c"># terminates.</span>
+<span class="c"># An example function is given below:</span>
+
+<span class="k">def</span> <span class="nf">update_end</span><span class="p">(</span><span class="n">total_completed</span><span class="p">,</span> <span class="n">total_running</span><span class="p">,</span> <span class="n">total_procs</span><span class="p">):</span>
+    <span class="c"># Example of what this might output:</span>
+    <span class="c">#     Process done! (3 running, 5/10 completed)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Process done! (</span><span class="si">%i</span><span class="s"> running, </span><span class="si">%i</span><span class="s">/</span><span class="si">%i</span><span class="s"> completed)&quot;</span> \
+        <span class="o">%</span> <span class="p">(</span><span class="n">total_running</span><span class="p">,</span> <span class="n">total_completed</span><span class="p">,</span> <span class="n">total_procs</span><span class="p">))</span>
+
+<span class="n">set_end_callback</span><span class="p">(</span><span class="n">update_end</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>That&#8217;s it for configuration!</p>
+</div>
+<div class="section" id="step-2-queue-function-into-dummymp">
+<h3><a class="toc-backref" href="#id5">Step 2: Queue Function into DummyMP</a><a class="headerlink" href="#step-2-queue-function-into-dummymp" title="Permalink to this headline">¶</a></h3>
+<p>Remember our complicated function from earlier?</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">setn</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">n</span>
+</pre></div>
+</div>
+<p>Let&#8217;s assume this is our code:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">y</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">):</span>
+    <span class="n">y</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">incr</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>It might be tempting to assuming this can&#8217;t be parallelized, since you
+could unwrap it to look like this:</p>
+<div class="highlight-python"><div class="highlight"><pre>y.append(?)
+y.append(?)
+y.append(?)
+y.append(?)
+y.append(?)
+</pre></div>
+</div>
+<p>But wait! Remember that DummyMP supports ordered returns - that is, the
+order you add the functions into DummyMP is the order they will come
+back. Therefore, unwrapping it can now look like this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">y</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">incr</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+<span class="n">y</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">incr</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+<span class="n">y</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">incr</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+<span class="n">y</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">incr</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+<span class="n">y</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">incr</span><span class="p">(</span><span class="mi">4</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>From here, let&#8217;s make things work! First, let&#8217;s rewrite the loop so that
+we are queueing the functions instead!</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">):</span>
+    <span class="n">dummymp</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">incr</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Notice how the function call is converted to a queued function. This
+works with keyword arguments as well. Here are some examples below.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># Before:</span>
+<span class="n">myfunc</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>
+
+<span class="c"># After:</span>
+<span class="n">dummymp</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">myfunc</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>
+
+<span class="c"># Before:</span>
+<span class="n">myfunc</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+
+<span class="c"># After:</span>
+<span class="n">dummymp</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">myfunc</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+
+<span class="c"># Before:</span>
+<span class="n">myfunc</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+
+<span class="c"># After:</span>
+<span class="n">dummymp</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">myfunc</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Depending on your program, sometimes determing the function&#8217;s arguments
+may be a bit slow. An optional optimization would be to run the DummyMP
+processing code within your loop:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">):</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">sluggish_function</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">dummymp</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">incr</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+    <span class="c"># Start processing the queue while in the loop!</span>
+    <span class="n">dummymp</span><span class="o">.</span><span class="n">process_process</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>(This is also available in the &#8220;Optimization&#8221; section.)</p>
+<p>This will slow down the loop a bit, but will allow processes to start
+sooner, rather than waiting for the queuing to finish.</p>
+</div>
+<div class="section" id="step-3-run-dummymp">
+<h3><a class="toc-backref" href="#id6">Step 3: Run DummyMP</a><a class="headerlink" href="#step-3-run-dummymp" title="Permalink to this headline">¶</a></h3>
+<p>This is the easiest step! The simplest thing to do is this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># Process everything until done. This blocks and doesn&#39;t move</span>
+<span class="c"># forward until that condition is met.</span>
+<span class="n">dummymp</span><span class="o">.</span><span class="n">process_until_done</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>If you want to handle termination, you can do this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">try</span><span class="p">:</span>
+    <span class="c"># Process everything until done. This blocks and doesn&#39;t move</span>
+    <span class="c"># forward until that condition is met.</span>
+    <span class="n">dummymp</span><span class="o">.</span><span class="n">process_until_done</span><span class="p">()</span>
+<span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+    <span class="c"># Stop all of the currently running processes.</span>
+    <span class="n">dummymp</span><span class="o">.</span><span class="n">killall</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>For those who like to do things in a controllable loop, there&#8217;s a way to
+do it without blocking! (This is likely the case for GUI applications,
+or applications that need to be able to accept user input all the time.)</p>
+<p>Remember this?</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">dummymp</span><span class="o">.</span><span class="n">process_process</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>This function also returns a boolean indicating whether processes are
+still running or not. True if there are, False if there are not.</p>
+<p>Therefore, you can write something like this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">while</span> <span class="ow">not</span> <span class="n">dummymp</span><span class="o">.</span><span class="n">process_process</span><span class="p">():</span>
+    <span class="c"># Keep processing the queue!</span>
+    <span class="n">dummymp</span><span class="o">.</span><span class="n">process_queue</span><span class="p">()</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.001</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This is essentially the code for dummymp.process_until_done().</p>
+<p>A more realistic version could look like this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">while</span> <span class="n">gui</span><span class="o">.</span><span class="n">alive</span><span class="p">():</span>
+    <span class="n">dmp_ready</span> <span class="o">=</span> <span class="n">dummymp</span><span class="o">.</span><span class="n">process_process</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">dmp_ready</span><span class="p">:</span>
+        <span class="n">dummymp</span><span class="o">.</span><span class="n">process_queue</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">gui</span><span class="o">.</span><span class="n">alert</span><span class="p">(</span><span class="s">&quot;Everything done!&quot;</span><span class="p">)</span>
+
+    <span class="n">gui</span><span class="o">.</span><span class="n">handle_input</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="step-4-fetch-return-results">
+<h3><a class="toc-backref" href="#id7">Step 4: Fetch Return Results</a><a class="headerlink" href="#step-4-fetch-return-results" title="Permalink to this headline">¶</a></h3>
+<p>After everything is said and done, you might want the results of running
+these functions. Slightly more complcated, but still relatively simple:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">rets</span> <span class="o">=</span> <span class="n">dummymp</span><span class="o">.</span><span class="n">get_returns</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The returns are serialized in a dictionary whose keys are the order the
+functions were called, starting at 0.</p>
+<p>For example, if this were the code:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">bla</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">n</span> <span class="o">*</span> <span class="mi">2</span>
+
+<span class="n">dummymp</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">bla</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">dummymp</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">bla</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">dummymp</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">bla</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+
+<span class="n">rets</span> <span class="o">=</span> <span class="n">dummymp</span><span class="o">.</span><span class="n">get_returns</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>...rets would look like this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="mi">6</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>For the example we had earlier:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">setn</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">n</span>
+
+<span class="n">y</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">):</span>
+    <span class="n">y</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">incr</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>We can finally, with a bit of trickery, get the original desired result
+with DummyMP:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">y</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">):</span>
+    <span class="n">dummymp</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">incr</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+
+<span class="n">dummymp</span><span class="o">.</span><span class="n">process_until_done</span><span class="p">()</span>
+
+<span class="n">rets</span> <span class="o">=</span> <span class="n">dummymp</span><span class="o">.</span><span class="n">get_returns</span><span class="p">()</span>
+
+<span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">):</span>
+    <span class="n">y</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rets</span><span class="p">[</span><span class="n">x</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>That&#8217;s it!</p>
+</div>
+<div class="section" id="step-5-cleanup-if-necessary">
+<h3><a class="toc-backref" href="#id8">Step 5: Cleanup (if necessary)</a><a class="headerlink" href="#step-5-cleanup-if-necessary" title="Permalink to this headline">¶</a></h3>
+<p>If you need to run more things with DummyMP, it may be a good idea to
+reset everything, especially if there are returns involved. (Otherwise,
+the return indexes will keep incrementing, resulting in a longer than
+necessary return dictionary...)</p>
+<p>That&#8217;s easy to do:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># Reset everything!</span>
+<span class="n">dummymp</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Note that this will purge everything, including configuration. If you
+set any options (including advanced custom options), you will need to
+set them up again.</p>
+</div>
+</div>
+<div class="section" id="optimization">
+<h2><a class="toc-backref" href="#id9">Optimization</a><a class="headerlink" href="#optimization" title="Permalink to this headline">¶</a></h2>
+<p>To speed things up, it&#8217;s not a bad idea to get the CPU availability at
+the very beginning so that DummyMP doesn&#8217;t have to:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># Get the CPU availability immediately</span>
+<span class="n">dummymp</span><span class="o">.</span><span class="n">getCPUAvail</span><span class="p">()</span>
+
+<span class="c"># Get processing! Processing/DummyMP code goes below...</span>
+</pre></div>
+</div>
+<p>If you have a lot of function calls, it may take a while before you
+queue everything. Why not queue functions AND run them at the same time?</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># Loop</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1000</span><span class="p">):</span>
+    <span class="c"># Queue function with argument!</span>
+    <span class="n">dummymp</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">myfunc</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+
+    <span class="c"># Process queue and handle processes!</span>
+    <span class="n">dummymp</span><span class="o">.</span><span class="n">process_process</span><span class="p">()</span>
+
+<span class="c"># Now wait until everything&#39;s done!</span>
+<span class="n">dummymp</span><span class="o">.</span><span class="n">process_until_done</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">DummyMP Documentation</a><ul>
+<li><a class="reference internal" href="#how-to-use">How to use?</a><ul>
+<li><a class="reference internal" href="#step-0-figure-out-your-functions">Step 0: Figure out your functions!</a></li>
+<li><a class="reference internal" href="#step-1-load-and-configure-dummymp">Step 1: Load and Configure DummyMP</a></li>
+<li><a class="reference internal" href="#step-2-queue-function-into-dummymp">Step 2: Queue Function into DummyMP</a></li>
+<li><a class="reference internal" href="#step-3-run-dummymp">Step 3: Run DummyMP</a></li>
+<li><a class="reference internal" href="#step-4-fetch-return-results">Step 4: Fetch Return Results</a></li>
+<li><a class="reference internal" href="#step-5-cleanup-if-necessary">Step 5: Cleanup (if necessary)</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#optimization">Optimization</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Welcome to DummyMP&#8217;s documentation!</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="dummymp.html"
+                        title="next chapter">dummymp package - API Documentation</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/guide.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2015, Albert Huang.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.2.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.6.2</a>
+      
+      |
+      <a href="_sources/guide.txt"
+          rel="nofollow">Page source</a></li>
+    </div>
+
+    
+    <a href="https://github.com/alberthdev/dummymp" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>

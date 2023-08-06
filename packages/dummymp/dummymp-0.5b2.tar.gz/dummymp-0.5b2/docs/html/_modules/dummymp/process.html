@@ -1,0 +1,195 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>dummymp.process &mdash; DummyMP 0.5b2 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.5b2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="DummyMP 0.5b2 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">DummyMP 0.5b2 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for dummymp.process</h1><div class="highlight"><pre>
+<span class="c">#!/usr/bin/env python</span>
+<span class="c"># DummyMP - Multiprocessing Library for Dummies!</span>
+<span class="c"># Copyright 2014 Albert Huang.</span>
+<span class="c"># </span>
+<span class="c"># Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
+<span class="c"># you may not use this file except in compliance with the License.</span>
+<span class="c"># You may obtain a copy of the License at</span>
+<span class="c"># </span>
+<span class="c">#   http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="c"># </span>
+<span class="c"># Unless required by applicable law or agreed to in writing, software</span>
+<span class="c"># distributed under the License is distributed on an &quot;AS IS&quot; BASIS,</span>
+<span class="c"># WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or</span>
+<span class="c"># implied. See the License for the specific language governing</span>
+<span class="c"># permissions and limitations under the License.</span>
+<span class="c"># </span>
+<span class="c"># DummyMP Library - Process Wrapper</span>
+<span class="c">#   multiprocessing library for dummies!</span>
+<span class="c">#   (library for easily running functions in parallel)</span>
+<span class="c"># </span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">config</span>
+<span class="kn">from</span> <span class="nn">.loghandler</span> <span class="kn">import</span> <span class="o">*</span>
+
+<div class="viewcode-block" id="_runner"><a class="viewcode-back" href="../../dummymp.html#dummymp.process._runner">[docs]</a><span class="k">def</span> <span class="nf">_runner</span><span class="p">(</span><span class="n">process_id</span><span class="p">,</span> <span class="n">dummymp_queue</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Multiprocess function wrapper for running a function given args.</span>
+<span class="sd">    </span>
+<span class="sd">    This function wraps an existing function with its args, and allows </span>
+<span class="sd">    for additional fields related to multiprocessing. In particular, </span>
+<span class="sd">    the internal process ID and the :py:class:`multiprocessing.Queue`</span>
+<span class="sd">    object are added to facilitate communication between the subprocess</span>
+<span class="sd">    and the master process.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        process_id (int): The internal process ID for the particular</span>
+<span class="sd">            process. This is NOT the actual system process ID.</span>
+<span class="sd">        dummymp_queue (:py:class:`multiprocessing.Queue`): The Queue</span>
+<span class="sd">            object that the process should send data to. The Queue</span>
+<span class="sd">            should be a Queue made specifically for this process.</span>
+<span class="sd">        func (function): The function that the process should call.</span>
+<span class="sd">        *args: The arguments that should be passed to the function.</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        Nothing... but the function will periodically send messages to</span>
+<span class="sd">        the Queue in this format:</span>
+<span class="sd">            [ [ DUMMYMP_MSG_TYPE_ID, SYSTEM_PID, INTERNAL_ID ], DATA... ]</span>
+<span class="sd">        </span>
+<span class="sd">        Possible DUMMYMP_MSG_TYPE_IDs include:</span>
+<span class="sd">            DUMMYMP_LOG_ID: ID for log records. The entire format is:</span>
+<span class="sd">                </span>
+<span class="sd">                [ [ DUMMYMP_LOG_ID, SYSTEM_PID, INTERNAL_ID ], LOGGING_RECORD ]</span>
+<span class="sd">                </span>
+<span class="sd">                When a message of this type is sent, the corresponding</span>
+<span class="sd">                LOGGING_RECORD is emitted at the master process level.</span>
+<span class="sd">                (In plain English: the logging message gets sent to the</span>
+<span class="sd">                main process, and is printed from there.)</span>
+<span class="sd">            </span>
+<span class="sd">            DUMMYMP_RET_ID: ID for return data. The entire format is:</span>
+<span class="sd">                </span>
+<span class="sd">                [ [ DUMMYMP_RET_ID, SYSTEM_PID, INTERNAL_ID ], RETURN_VAL ]</span>
+<span class="sd">                </span>
+<span class="sd">                When a message of this type is sent, the RETURN_VAL is </span>
+<span class="sd">                stored in a dictionary at the master process level to </span>
+<span class="sd">                archive the return value from this process for future </span>
+<span class="sd">                retrieval. (In plain English: the return values are </span>
+<span class="sd">                sent to the main process, and are stored in a </span>
+<span class="sd">                dictionary for reference.)</span>
+<span class="sd">        </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c"># Get the default logger</span>
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span>
+    
+    <span class="c"># Set to DEBUG so that we get ALL messages</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+    
+    <span class="c"># Switch out the logging handler...</span>
+    
+    <span class="c"># First, remove existing handlers...</span>
+    <span class="n">hdlrs</span> <span class="o">=</span> <span class="n">logger</span><span class="o">.</span><span class="n">handlers</span>
+    <span class="k">for</span> <span class="n">hdlr</span> <span class="ow">in</span> <span class="n">hdlrs</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">removeHandler</span><span class="p">(</span><span class="n">hdlr</span><span class="p">)</span>
+    
+    <span class="c"># Initialize our DummyMPLogHandler...</span>
+    <span class="n">dmp_handler</span> <span class="o">=</span> <span class="n">DummyMPLogHandler</span><span class="p">(</span><span class="n">process_id</span><span class="p">,</span> <span class="n">dummymp_queue</span><span class="p">)</span>
+    
+    <span class="c"># ...and then add that handler instance to the main logger!</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">dmp_handler</span><span class="p">)</span>
+    
+    <span class="c"># Call the function!</span>
+    <span class="n">ret</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    
+    <span class="c"># Send the return value through the queue!</span>
+    <span class="n">dummymp_queue</span><span class="o">.</span><span class="n">put</span><span class="p">([</span> <span class="p">[</span><span class="n">config</span><span class="o">.</span><span class="n">DUMMYMP_RET_ID</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">getpid</span><span class="p">(),</span> <span class="n">process_id</span><span class="p">],</span> <span class="n">ret</span> <span class="p">])</span>
+    
+    <span class="c"># Pause to avoid losing queue (may be a race condition bug?)</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2015, Albert Huang.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.2.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.6.2</a>
+      
+    </div>
+
+    
+    <a href="https://github.com/alberthdev/dummymp" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>

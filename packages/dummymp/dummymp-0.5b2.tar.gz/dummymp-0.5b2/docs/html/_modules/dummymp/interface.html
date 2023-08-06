@@ -1,0 +1,417 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>dummymp.interface &mdash; DummyMP 0.5b2 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.5b2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="DummyMP 0.5b2 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">DummyMP 0.5b2 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for dummymp.interface</h1><div class="highlight"><pre>
+<span class="c">#!/usr/bin/env python</span>
+<span class="c"># DummyMP - Multiprocessing Library for Dummies!</span>
+<span class="c"># Copyright 2014 Albert Huang.</span>
+<span class="c"># </span>
+<span class="c"># Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
+<span class="c"># you may not use this file except in compliance with the License.</span>
+<span class="c"># You may obtain a copy of the License at</span>
+<span class="c"># </span>
+<span class="c">#   http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="c"># </span>
+<span class="c"># Unless required by applicable law or agreed to in writing, software</span>
+<span class="c"># distributed under the License is distributed on an &quot;AS IS&quot; BASIS,</span>
+<span class="c"># WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or</span>
+<span class="c"># implied. See the License for the specific language governing</span>
+<span class="c"># permissions and limitations under the License.</span>
+<span class="c"># </span>
+<span class="c"># DummyMP Library - Interface for programs</span>
+<span class="c">#   multiprocessing library for dummies!</span>
+<span class="c">#   (library for easily running functions in parallel)</span>
+<span class="c"># </span>
+<span class="c"># TODO: Potentially add interface for killing individual processes?</span>
+<span class="c">#       This would require some changes in config.py and taskmgr.py</span>
+<span class="c">#       for enhanced information, paricularly with internal process ID</span>
+<span class="c">#       tracking.</span>
+<span class="c"># </span>
+
+<span class="kn">from</span> <span class="nn">multiprocessing</span> <span class="kn">import</span> <span class="n">Process</span><span class="p">,</span> <span class="n">Queue</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">config</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">_version</span>
+<span class="kn">from</span> <span class="nn">.taskmgr</span> <span class="kn">import</span> <span class="n">process_queue</span>
+
+<span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">3</span><span class="p">:</span>
+    <span class="c"># This must be imported for reload() to work</span>
+    <span class="kn">from</span> <span class="nn">imp</span> <span class="kn">import</span> <span class="nb">reload</span>
+
+<div class="viewcode-block" id="set_max_processes"><a class="viewcode-back" href="../../dummymp.html#dummymp.interface.set_max_processes">[docs]</a><span class="k">def</span> <span class="nf">set_max_processes</span><span class="p">(</span><span class="n">max_proc</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Set maximum processors for DummyMP to use.</span>
+<span class="sd">    </span>
+<span class="sd">    Set the maximum number of processors/CPUs for DummyMP to use. </span>
+<span class="sd">    Regardless of priority mode, the number of processors/CPUs it takes </span>
+<span class="sd">    advantage of will be capped at the number you specify.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        max_proc (int): Integer specifying the maximum number of </span>
+<span class="sd">            processors (or CPUs) for DummyMP to use.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">config</span><span class="o">.</span><span class="n">max_processes</span> <span class="o">=</span> <span class="n">max_proc</span>
+</div>
+<div class="viewcode-block" id="get_max_processes"><a class="viewcode-back" href="../../dummymp.html#dummymp.interface.get_max_processes">[docs]</a><span class="k">def</span> <span class="nf">get_max_processes</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Get maximum processors for DummyMP to use.</span>
+<span class="sd">    </span>
+<span class="sd">    Fetch and return the maximum number of processors/CPUs for DummyMP </span>
+<span class="sd">    to use.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        None</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        int: Integer specifying the current maximum number of </span>
+<span class="sd">        processors (or CPUs) for DummyMP to use.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">config</span><span class="o">.</span><span class="n">max_processes</span>
+</div>
+<div class="viewcode-block" id="set_priority_mode"><a class="viewcode-back" href="../../dummymp.html#dummymp.interface.set_priority_mode">[docs]</a><span class="k">def</span> <span class="nf">set_priority_mode</span><span class="p">(</span><span class="n">mode</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Set the priority mode for DummyMP.</span>
+<span class="sd">    </span>
+<span class="sd">    Set the priority mode for DummyMP. The priority mode controls how </span>
+<span class="sd">    conscious DummyMP is of other running processes on the system.</span>
+<span class="sd">    </span>
+<span class="sd">    Available modes:</span>
+<span class="sd">    </span>
+<span class="sd">        DUMMYMP_GENEROUS   - Generous mode.</span>
+<span class="sd">                             Very conservative about using any CPU, and </span>
+<span class="sd">                             ensures that no one else is disrupted. </span>
+<span class="sd">                             Note that this is VERY GENEROUS - if all </span>
+<span class="sd">                             CPUs are taken, DummyMP will wait until </span>
+<span class="sd">                             there are available CPUs! (All other modes </span>
+<span class="sd">                             will run a single process, regardless of </span>
+<span class="sd">                             CPU usage.) This is the slowest mode!</span>
+<span class="sd">        DUMMYMP_NORMAL     - Normal mode.</span>
+<span class="sd">                             Careful not to take up too much resources </span>
+<span class="sd">                             on the CPU, but it will try to get things </span>
+<span class="sd">                             done. This is faster than GENEROUS, but it </span>
+<span class="sd">                             isn&#39;t the fastest. This mode is the </span>
+<span class="sd">                             default and is recommended for most </span>
+<span class="sd">                             conditions.</span>
+<span class="sd">        DUMMYMP_AGGRESSIVE - Aggressive mode.</span>
+<span class="sd">                             This mode considers other users, but it </span>
+<span class="sd">                             may spawn processes anyway depending on </span>
+<span class="sd">                             how other processes behave. This is faster </span>
+<span class="sd">                             than NORMAL, and is recommended for </span>
+<span class="sd">                             semi-important conditions.</span>
+<span class="sd">        DUMMYMP_EXTREME    - Extreme mode.</span>
+<span class="sd">                             This mode somewhat considers other users, </span>
+<span class="sd">                             but unless the other processes are using a </span>
+<span class="sd">                             significant portion of the CPU, it will </span>
+<span class="sd">                             spawn processes anyway. This is faster </span>
+<span class="sd">                             than AGGRESSIVE, and is recommended for </span>
+<span class="sd">                             important conditions.</span>
+<span class="sd">        DUMMYMP_NUCLEAR    - Nuclear mode.</span>
+<span class="sd">                             This mode does NOT consider other users, </span>
+<span class="sd">                             and just runs as many processes as it can </span>
+<span class="sd">                             allow (total number of cores). This is </span>
+<span class="sd">                             much faster than EXTREME, and is </span>
+<span class="sd">                             recommended for really important </span>
+<span class="sd">                             conditions. Note that this may earn you </span>
+<span class="sd">                             very angry co-workers knocking down your </span>
+<span class="sd">                             door with pitchforks, so use sparingly!</span>
+<span class="sd">    </span>
+<span class="sd">    Regardless of priority mode, if the number of CPUs to use is </span>
+<span class="sd">    specified, the number of processors/CPUs it takes advantage of will </span>
+<span class="sd">    always be capped at the maximum number specified.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        mode (int): Integer constant specifying the mode for DummyMP to </span>
+<span class="sd">            use.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">config</span><span class="o">.</span><span class="n">DUMMYMP_MODE</span> <span class="o">=</span> <span class="n">mode</span>
+</div>
+<div class="viewcode-block" id="set_start_callback"><a class="viewcode-back" href="../../dummymp.html#dummymp.interface.set_start_callback">[docs]</a><span class="k">def</span> <span class="nf">set_start_callback</span><span class="p">(</span><span class="n">callback</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Set the process starting callback for DummyMP.</span>
+<span class="sd">    </span>
+<span class="sd">    Set the callback for DummyMP to call when a process is initially</span>
+<span class="sd">    started.</span>
+<span class="sd">    </span>
+<span class="sd">    The callback is called with the following arguments:  </span>
+<span class="sd">    (config.total_completed, config.total_running, config.total_procs)</span>
+<span class="sd">    </span>
+<span class="sd">    * ``total_completed``: Total processes completed.</span>
+<span class="sd">    * ``total_running``: Total processes currently running.</span>
+<span class="sd">    * ``total_procs``: Total processes overall, regardless of whether</span>
+<span class="sd">      they are running or not.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        callback (function): Function callback to call when a process </span>
+<span class="sd">            starts.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">config</span><span class="o">.</span><span class="n">PROCESS_START_CALLBACK</span> <span class="o">=</span> <span class="n">callback</span>
+</div>
+<div class="viewcode-block" id="set_end_callback"><a class="viewcode-back" href="../../dummymp.html#dummymp.interface.set_end_callback">[docs]</a><span class="k">def</span> <span class="nf">set_end_callback</span><span class="p">(</span><span class="n">callback</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Set the process completion callback for DummyMP.</span>
+<span class="sd">    </span>
+<span class="sd">    Set the callback for DummyMP to call when a process has completed.</span>
+<span class="sd">    </span>
+<span class="sd">    The callback is called with the following arguments:</span>
+<span class="sd">    (config.total_completed, config.total_running, config.total_procs)</span>
+<span class="sd">    </span>
+<span class="sd">    * ``total_completed``: Total processes completed.</span>
+<span class="sd">    * ``total_running``: Total processes currently running.</span>
+<span class="sd">    * ``total_procs``: Total processes overall, regardless of whether</span>
+<span class="sd">      they are running or not.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        callback (function): Function callback to call when a process</span>
+<span class="sd">            has completed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">config</span><span class="o">.</span><span class="n">PROCESS_END_CALLBACK</span> <span class="o">=</span> <span class="n">callback</span>
+</div>
+<div class="viewcode-block" id="get_priority_mode"><a class="viewcode-back" href="../../dummymp.html#dummymp.interface.get_priority_mode">[docs]</a><span class="k">def</span> <span class="nf">get_priority_mode</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Get the priority mode that DummyMP is using.</span>
+<span class="sd">    </span>
+<span class="sd">    Fetch and return the priority mode integer constant that DummyMP is</span>
+<span class="sd">    using.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        None</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        int: Integer constant specifying the priority mode integer </span>
+<span class="sd">        constant that DummyMP is using.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">config</span><span class="o">.</span><span class="n">DUMMYMP_MODE</span>
+</div>
+<div class="viewcode-block" id="get_version"><a class="viewcode-back" href="../../dummymp.html#dummymp.interface.get_version">[docs]</a><span class="k">def</span> <span class="nf">get_version</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Get DummyMP&#39;s version</span>
+<span class="sd">    </span>
+<span class="sd">    Fetch and return the DummyMP library version.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        None</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        str: String specifying the DummyMP library version.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">_version</span><span class="o">.</span><span class="n">__version__</span>
+</div>
+<div class="viewcode-block" id="get_returns"><a class="viewcode-back" href="../../dummymp.html#dummymp.interface.get_returns">[docs]</a><span class="k">def</span> <span class="nf">get_returns</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Get function returns from completed function runs.</span>
+<span class="sd">    </span>
+<span class="sd">    Fetch and return a dictionary of function returns from completed</span>
+<span class="sd">    function runs. The dictionary is indexed by call order, zero</span>
+<span class="sd">    indexed.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        None</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        dict: Dictionary of function returns, indexed by call order, </span>
+<span class="sd">        and zero indexed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">config</span><span class="o">.</span><span class="n">dummymp_rets</span>
+</div>
+<div class="viewcode-block" id="killall"><a class="viewcode-back" href="../../dummymp.html#dummymp.interface.killall">[docs]</a><span class="k">def</span> <span class="nf">killall</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Kill all currently running processes and remove them from queue.</span>
+<span class="sd">    </span>
+<span class="sd">    Kill all of the currently running processes and remove them from </span>
+<span class="sd">    the internal running queue.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c"># Clear out all of the processes!</span>
+    <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">dummymp_procs</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="c"># Pick the first one</span>
+        <span class="n">dummymp_proc</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">dummymp_procs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c"># Attempt to terminate...</span>
+            <span class="n">dummymp_proc</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">pass</span>
+        
+        <span class="c"># Run process_queue() once to get any queue items</span>
+        <span class="n">process_queue</span><span class="p">()</span>
+        
+        <span class="c"># Remove the queue and process</span>
+        <span class="n">pi</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">dummymp_procs</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">dummymp_proc</span><span class="p">)</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">dummymp_queues</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">pi</span><span class="p">)</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">dummymp_procs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">pi</span><span class="p">)</span>
+        
+        <span class="c"># Add to the completed count and remove from running count...</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">total_completed</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">total_running</span> <span class="o">-=</span> <span class="mi">1</span>
+        
+        <span class="c"># Make any callbacks, if necessary.</span>
+        <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">PROCESS_END_CALLBACK</span><span class="p">:</span>
+            <span class="n">config</span><span class="o">.</span><span class="n">PROCESS_END_CALLBACK</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">total_completed</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">total_running</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">total_procs</span><span class="p">)</span>
+            
+</div>
+<div class="viewcode-block" id="reset"><a class="viewcode-back" href="../../dummymp.html#dummymp.interface.reset">[docs]</a><span class="k">def</span> <span class="nf">reset</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Reset DummyMP state and kill all currently running processes.</span>
+<span class="sd">    </span>
+<span class="sd">    This resets the DummyMP state, clearing any configuration or state </span>
+<span class="sd">    data set. Before resetting, this will kill all of the currently </span>
+<span class="sd">    running processes and remove them from the internal running queue. </span>
+<span class="sd">    (This calls :py:func:`killall()` before resetting.)</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">killall</span><span class="p">()</span>
+    <span class="nb">reload</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="set_args_deepcopy"><a class="viewcode-back" href="../../dummymp.html#dummymp.interface.set_args_deepcopy">[docs]</a><span class="k">def</span> <span class="nf">set_args_deepcopy</span><span class="p">(</span><span class="n">tf</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Set whether to deepcopy arguments or not.</span>
+<span class="sd">    </span>
+<span class="sd">    Change whether DummyMP will deepcopy the arguments or not. If it is </span>
+<span class="sd">    disabled, it is up to the user to ensure that a copy of the </span>
+<span class="sd">    arguments is preserved for further use.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        tf (bool): Boolean indicating whether to enable argument</span>
+<span class="sd">            deepcopy or not.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">config</span><span class="o">.</span><span class="n">DUMMYMP_ARGS_DEEPCOPY</span> <span class="o">=</span> <span class="n">tf</span>
+</div>
+<div class="viewcode-block" id="set_kwargs_deepcopy"><a class="viewcode-back" href="../../dummymp.html#dummymp.interface.set_kwargs_deepcopy">[docs]</a><span class="k">def</span> <span class="nf">set_kwargs_deepcopy</span><span class="p">(</span><span class="n">tf</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Set whether to deepcopy keyword arguments or not.</span>
+<span class="sd">    </span>
+<span class="sd">    Change whether DummyMP will deepcopy the keyword arguments or not. </span>
+<span class="sd">    If it is disabled, it is up to the user to ensure that a copy of </span>
+<span class="sd">    the keyword arguments is preserved for further use.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        tf (bool): Boolean indicating whether to enable keyword </span>
+<span class="sd">            argument deepcopy or not.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">config</span><span class="o">.</span><span class="n">DUMMYMP_KWARGS_DEEPCOPY</span> <span class="o">=</span> <span class="n">tf</span>
+</div>
+<div class="viewcode-block" id="run"><a class="viewcode-back" href="../../dummymp.html#dummymp.interface.run">[docs]</a><span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Run a function with multiprocessing.</span>
+<span class="sd">    </span>
+<span class="sd">    Run a function with multiprocessing. This actually queues the </span>
+<span class="sd">    function and its arguments for running - you need to run </span>
+<span class="sd">    :py:func:`.process_process()` or :py:func:`.process_until_done()` </span>
+<span class="sd">    in order to actually execute the function.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        func (function): Function to run.</span>
+<span class="sd">        args (*args): Arguments to use with the function.</span>
+<span class="sd">        kwargs (**kwargs): Keyword arguments to use with the function.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c"># We need to perform a deepcopy, since we want the original</span>
+    <span class="c"># arguments before running! Without a deepcopy, list, dict, and</span>
+    <span class="c"># possibly other arguments could be changed, making the function</span>
+    <span class="c"># call invalid!</span>
+    <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">DUMMYMP_ARGS_DEEPCOPY</span><span class="p">:</span>
+        <span class="n">final_args_tuple</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">final_args_tuple</span> <span class="o">=</span> <span class="n">args</span>
+    
+    <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">DUMMYMP_KWARGS_DEEPCOPY</span><span class="p">:</span>
+        <span class="n">final_kwargs</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">final_kwargs</span> <span class="o">=</span> <span class="n">kwargs</span>
+    
+    <span class="c"># Convert args tuple to a list</span>
+    <span class="n">final_args</span>   <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">final_arg</span> <span class="ow">in</span> <span class="n">final_args_tuple</span><span class="p">:</span>
+        <span class="n">final_args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">final_arg</span><span class="p">)</span>
+    
+    <span class="c"># Create our start entry</span>
+    <span class="n">start_entry</span> <span class="o">=</span> <span class="p">[</span> <span class="n">config</span><span class="o">.</span><span class="n">total_procs</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">final_args</span><span class="p">,</span> <span class="n">final_kwargs</span> <span class="p">]</span>
+    
+    <span class="c"># Append our start entry!</span>
+    <span class="n">config</span><span class="o">.</span><span class="n">dummymp_start_procs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">start_entry</span><span class="p">)</span>
+    
+    <span class="c"># Increment total process count</span>
+    <span class="n">config</span><span class="o">.</span><span class="n">total_procs</span> <span class="o">+=</span> <span class="mi">1</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2015, Albert Huang.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.2.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.6.2</a>
+      
+    </div>
+
+    
+    <a href="https://github.com/alberthdev/dummymp" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>
