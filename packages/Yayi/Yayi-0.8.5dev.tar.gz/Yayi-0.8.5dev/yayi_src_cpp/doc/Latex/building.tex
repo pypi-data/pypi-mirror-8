@@ -1,0 +1,196 @@
+\chapter{Building Yayi}
+This part explains how to build Yayi. As the reader will see, some step should be followed in order. First of all, some (but very few) third-party software should be installed and/or configured, as explained in \S \ref{sec:preparing_thirdparties}. 
+
+\section{x86 vs. x64}
+\label{sec:x86x64}
+% Mettre le nécessaire pour la compilation x64. 
+If you are not aware of this kind of problems, simply put: ask yourself if your images are very very big (in number of pixels, which may be the case in 3D or 4D), or you have to manipulate many images. If the answer is yes, you might consider reading this part. 
+
+\subsubsection{Dependencies}
+First of all, in order to run an x64 process, your operating system should allow to do so\footnote{This seems to be obvious, but let's be perfectly clear}. This is the case for decently recent versions of Ubuntu, for Mac OS X > 10.6 or for Windows Vista x64 or 7 x64.
+
+\subsubsection{For Visual C++ Studio/Express}
+\label{sec:build_yayi_express}
+
+
+
+
+
+
+\section{Preparing the third-parties}
+\label{sec:preparing_thirdparties}
+
+ 
+
+\subsection{Image I/O libraries}
+The needed image I/O libraries are shipped with Yayi in the form of compressed archives. Prior to Yayi v0.0.7, these archives should be decompressed manually.
+\begin{bash}
+$> cd Yayi/plugins/external_libraries
+$> tar xzf jpegsrc.v7.tar.gz
+$> tar xzf zlib-1.2.3.tar.gz
+$> tar xjf libpng-1.2.38-no-config.tar.bz2
+\end{bash}
+
+Starting Yayi v0.0.8, these archives are decompressed automatically during the building process (indirectly uses Python), so no manual intervention is needed.
+
+\subsection{Boost}
+\label{sub:thirdparties:boost}
+The compilation of Boost is a bit tricky, and people are often afraid of it. However, the compilation of Boost is not particularly hard. The thing usually disturbing developers seems to be the dedicated cross-platform build system of Boost. In the facts, compiling Boost reduces merely to 2 lines in bash, as explained below. 
+
+
+\subsubsection{On Linux/MacOSX}
+\begin{bash}
+$> ./bootstrap.sh
+$> ./bjam --prefix=your_install_prefix_directory --ignore-config install
+\end{bash}
+
+The \lstinline|--ignore-config| option is to avoid any troubleshooting between your freshly untared version of boost, and a possibly preinstalled version of boost in your system. 
+Note that \lstinline|bjam| was replaced by \lstinline|b2|. 
+
+\paragraph{Remarks on Ubuntu} Please note that the Ubuntu package curiously does not contain all the necessary libraries for properly compiling Yayi (Boost.UnitTest is not complete)\footnote{Check if this is still true for 1.42}. 
+
+\paragraph{Compilation of universal binaries on MacOSX}
+
+If you would like to generate universal binaries for MacOSX (same binaries containing both the x86 and x64 versions), you must add the following options to bjam:
+\begin{bash}
+./b2 --prefix=your_install_prefix_directory address-model=32_64 architecture=x86 --ignore-config install
+\end{bash}
+
+Note that since v0.08, Yayi by default compiles as universal binaries. If boost was not compiled as universal binaries, you may encounter link issues.
+
+
+\paragraph{Remarks on MacOSX}
+This was the theory. Now the practice: building under MacOSX can be a perfect pain in your delicate bottom. The problems are the following:
+\begin{itemize}
+\item curiously, the \lstinline|~| is not developed for your prefix installation (hence \lstinline|--prefix=~/usr/local| will not properly go to your \lstinline|$HOME/usr/local| but into a subdirectory of your current directory). You must provide the full installation prefix.
+\item the compiler shipped by Apple and targeted as being the default on new versions of OSX, namely \lstinline|llvm|, does not seem to be perfectly compatible with boost. 
+\item the version of python shipped by Apple does not seem to be compatible with packages that are really interesting for us (namely \lstinline|numpy|). 
+\end{itemize}
+
+The second point may make you willing to install the official version of Python. This can easily be done by downloading the installation package from the official Python web page, and double click on it. You should however ensure during your build steps that this is precisely the version used for compilation, including boost. You may check the version of Python with the following command:
+
+\begin{bash}
+./b2 -q  --prefix=your_install_prefix_directory --debug-configuration install
+\end{bash}
+
+which flushes in the terminal the complete version of Python, its headers and library location, and also the compiler chosen by the boost toolchain. 
+
+If you have installed the official Python, I strongly encourage you to read \S \ref{sub:python}. 
+
+
+
+
+\subsubsection{On Windows}
+\begin{bash}
+$> ./bootstrap.sh
+$> ./bjam --prefix=your_install_prefix_directory --build-type=complete --layout=versioned --ignore-config install
+\end{bash}
+
+However, the compilation takes a long time, and some parts (though not necessary for Yayi) are easily missed. You might consider the installation made from BoostPro\footnote{\url{http://www.boostpro.com/}} for your specific flavour of Visual. 
+
+\subsection{Additional extensions and libraries}
+
+\subsubsection{HDF5}
+HDF5\footnote{\url{http://www.hdfgroup.org/HDF5/}} is a portable and extensible file format for storing data, among which multidimensional array (images). 
+\begin{bash}
+$> cd your_path_to_uncompressed_hdf5_library
+$> ./configure --prefix=$HDF5_INSTALL_DIR
+$> make
+$> make install
+$> make check-install
+\end{bash}
+
+See \S \ref{configure:HDF5} for enabling HDF5 in the cmake configuration.
+
+\subsubsection{Numpy}
+Numpy\footnote{\url{http://numpy.scipy.org/}} is a Python package delivering highly optimised mathematical operations on array, matrices, etc. Yayi is able to import/export images from/to Numpy N dimensional array format, which then can be processed by Numpy or any Python package expecting a Numpy array. 
+
+\paragraph*{Installing Numpy}:
+In order to use the Numpy extensions, the Numpy package should first be installed. 
+\begin{enumerate}
+\item On Ubuntu: this is quite easily done with the package manager. 
+\item On Windows: download the self-runnable package corresponding to your Python installation (from the Numpy website) and run it.
+\item On Mac OSX: to the author knowledge, the Numpy package is available only for official Python installation (from \url{http://www.python.org}), and not for the flavour of Python coming with Mac OSX. Once the official Python distribution installed, installing Numpy 
+\end{enumerate}
+
+See \S \ref{configure:numpy} for enabling Numpy in the cmake configuration.
+
+
+\subsection{Python}
+\label{sub:python}
+There is no need to present Python (I hope.) Installing Python is a routine, however there is one thing to care about under MacOSX. As pointed out in \S \ref{sub:thirdparties:boost}, if you have installed an other version of Python than the official, you have to check carefully if this version you installed is properly used by your toolchain and by cmake. It is possible to check this by inspecting the outputs given by cmake during the configuration. You should see something like
+
+\begin{bash}
+-- Found PythonLibs: /usr/lib/libpython2.7.dylib 
+-- Found PythonInterp: /Library/Frameworks/Python.framework/Versions/2.7/bin/python (found version "2.7.2")
+\end{bash}
+
+Sometime, unfortunately more often than expected, the default dylib at \lstinline|/usr/lib| is not properly updated during the installation of the official Python. This will result in wonderful and unexplainable crashes. 
+
+
+\begin{bash}
+otool -v -L ../../../Tmp/YAYI_SVN1342/unix_makefiles/debug/YayiCommonPython.so
+\end{bash}
+
+In order to replace the Apple Python library by the official one, you may type (supposing you have Python 2.7):
+\begin{bash}
+sudo mv /usr/lib/libpython2.7.dylib /usr/lib/libpython2.7_apple.dylib
+sudo ln -s /Library/Frameworks/Python.framework/Versions/2.7/lib/libpython2.7.dylib /usr/lib/libpython2.7.dylib
+\end{bash}
+
+
+
+\section{Configuring}
+
+% ajouter la configuration basique
+
+
+\subsection{Release/Debug}
+For command line environments, the builds of Yayi are made in debug mode by default, and the generated binaries may be particularly slow at runtime. In order to activate the optimization, you should build Yayi in \textit{release} mode, with the following command:
+\begin{bash}
+$> cmake -DCMAKE_BUILD_TYPE=Release CMakeLists.txt
+\end{bash}
+%$
+
+This also means that switching from one configuration to the other might trigger the need to recompile already compiled files several files\footnote{Starting Yayi 0.08, there is no troubleshooting among configurations launched on the command line.}.  
+
+There is no such matters on IDE that are natively ``multi-configurations'', such as XCode of Visual Studio, and the developer is able to switch from one configuration to the other directly from the IDE. This is true even if the developer is using MSBuild, where selecting the configuration becomes 
+\begin{bash}
+$> msbuild YAYI.sln /p:configuration=release
+\end{bash} 
+%$
+
+The \lstinline|/p:configuration=release| switch select the release configuration. See \S \ref{sub:msbuild_build} for more details.
+
+\subsection{Numpy extensions}
+\label{configure:numpy}
+The Numpy extensions are disabled by default. In order to activate the Numpy support, the \verb|ENABLE_NUMPY| flag should be set during the configuration of CMake. 
+\begin{bash}
+$> cmake -DENABLE_NUMPY=True CMakeLists.txt
+$> make
+\end{bash}
+%$
+There is nothing more to configure for Numpy, since all the needed path for building the Numpy components will be asked by cmake/Python to the package itself.
+
+\subsection{HDF5 extensions}
+\label{configure:HDF5}
+In order to enable the HDF5 extensions, you should first inform \textit{cmake} to do so, and then you should provide the directory in which the library is installed. 
+\begin{bash}
+> cmake -DENABLE_HDF5=True -DHDF5_INSTALL_DIR=$HDF5_INSTALL_DIR CMakeLists.txt
+> make
+\end{bash}
+
+%$
+
+\section{Building}
+
+
+
+\subsection{Visual C++ Studio/Express}
+
+\subsection{MSBuild}
+\label{sub:msbuild_build}
+The \lstinline|/m:4| is to tell msbuild to use 4 cores, while the \lstinline|/p:configuration=release| select the release configuration. It is (as far as I know) impossible to access directly the tests and packaging targets, so you have to type the \lstinline|ctest| and \lstinline|cpack| commands. 
+
+
+\section{Creating packages}

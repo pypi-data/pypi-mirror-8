@@ -1,0 +1,164 @@
+/*!
+@page build_yayi Building Yayi from sources
+
+@tableofcontents
+
+Building Yayi from sources depends on your skills and your needs:
+- Yayi is enterely written in C++, and depends on libraries that are
+available on a large spectrum of systems. Hence you might be willing to build Yayi if there is no prebuild binaries that suits your needs. 
+- Yayi comes with some dependencies, and you should ensure that these dependencies are available prior to Yayi's compilation. 
+- Some parts are optional (@ref install_numpy/@ref install_hdf5, x64 vs x86), and a finer level of build is also available. 
+
+But first things first, a proper build environment should be @subpage build_setup "set up". If you are familiar with a compilation framework and cmake, you may
+skip this part. 
+
+
+@section sec_x86x64 x86 vs. x64
+Before going any further, one might wonder if the project should be built using x64 or x86. 
+@todo ajouter dependance python x64
+
+First of all, in order to run an x64 process, your operating system should allow to do so. 
+This is the case for decently recent versions of Ubuntu, for Mac OS X > 10.6 or for Windows Vista x64 or 7 x64.
+
+If you are not aware of this kind of problems, simply put: ask yourself if your images are very very big (in number of pixels, which may be the case in 3D or 4D), 
+or you have to manipulate many images. If the answer is yes, you might consider reading this part. 
+
+
+@section depend Dependencies
+There is not that much dependencies to make before being able to build Yayi. The dependencies are listed below:
+- @subpage compil_boost "Boost": this one is mendatory
+- @subpage install_python "Python": this one is mendatory, although it would in the future be possible to build only the C++ part of Yayi.
+- @subpage install_hdf5 "HDF5": this is an optional file format.
+- @subpage install_numpy "Numpy": this is an optional module of Python, widely used in the scientific community.
+
+
+
+@section build_yayi_cmd Building
+Minimal command samples are given below for the main/known platforms.
+
+@subsection build_yayi_cmd_unix Unix
+@code{bash}
+$> cd YAYI_PATH/build
+$> mkdir yayimake
+$> cd yayimake
+$> cmake -DBOOST_ROOT=YOUR_BOOST_INSTALL_DIRECTORY ..
+$> make -j 4
+@endcode
+The <b>-j 4</b> option uses 4 cores for the compilation.
+
+@subsection build_yayi_cmd_osx Mac
+Opens Yayi in Xcode
+@code{bash}
+$> cd YAYI_PATH/build
+$> mkdir yayixcode
+$> cd yayixcode
+$> cmake -G Xcode -DBOOST_ROOT=YOUR_BOOST_INSTALL_DIRECTORY ..
+$> open YAYI.xcodeproj/
+@endcode
+The compilation uses natively several cores.
+
+Compiles Yayi using make
+@code{bash}
+$> cd YAYI_PATH/build
+$> mkdir yayixcode
+$> cd yayixcode
+$> cmake -DBOOST_ROOT=YOUR_BOOST_INSTALL_DIRECTORY ..
+$> make -j 4
+@endcode
+
+
+@subsection build_yayi_cmd_win Visual C++ Studio/Express
+
+@subsubsection sub_visual_build Visual Studio IDE
+Configures Yayi for Visual Studio 2010 and opens it:
+@code{bash}
+$> cd YAYI_PATH/build
+$> mkdir yayivisual
+$> cd yayivisual
+$> cmake -G "Visual Studio 10" -DBOOST_ROOT=YOUR_BOOST_INSTALL_DIRECTORY ..
+$> Yayi.sln
+@endcode
+This uses Visual Studio 10, 32 bits version, while
+@code{bash}
+$> cmake -G "Visual Studio 10 win64" -DBOOST_ROOT=YOUR_BOOST_INSTALL_DIRECTORY ..
+@endcode
+uses 64 bits version.
+
+@subsubsection sub_msbuild_build MSBuild
+Configures Yayi for Visual Studio 2012 and compiles the release version with MSBuild:
+@code{bash}
+$> cd YAYI_PATH/build
+$> mkdir yayivisual
+$> cd yayivisual
+$> cmake -G "Visual Studio 10" -DBOOST_ROOT=YOUR_BOOST_INSTALL_DIRECTORY ..
+$> msbuild YAYI.sln /p:configuration=release /m:4
+@endcode
+
+The <b>/m:4</b> is to tell msbuild to use 4 cores, while the <b>/p:configuration=release</b> selects the release configuration. 
+It is (as far as I know) impossible to access directly the tests and packaging targets, so you have to type the <b>ctest</b> and <b>cpack</b> commands. 
+
+
+@section build_yayi_test Testing
+
+
+@section build_yayi_configurations Finer configuration
+
+
+@subsection release_debug Release/Debug
+For command line environments, the builds of Yayi are made in debug mode by default, and the generated binaries may be particularly slow at runtime. 
+In order to activate the optimization, you should build Yayi in @e release mode, with the following command:
+@code{bash}
+$> cmake -DCMAKE_BUILD_TYPE=Release ..
+@endcode
+
+This also means that switching from one configuration to the other might trigger the need to recompile already compiled files several files.
+Starting Yayi 0.08, there is no troubleshooting among configurations launched on the command line. 
+
+There is no such matters on IDE that are natively "multi-configurations", such as XCode of Visual Studio, and the developer is able to switch from one configuration 
+to the other directly from the IDE. This is true even if the developer is using MSBuild, where selecting the configuration becomes 
+@code{bash}
+$> msbuild YAYI.sln /p:configuration=release
+@endcode
+
+The <b>/p:configuration=release</b> switch select the release configuration. See @ref sub_msbuild_build for more details.
+
+@subsection configure_numpy Numpy extensions
+The Numpy extensions are disabled by default. In order to activate the Numpy support, the @b ENABLE_NUMPY flag should be set
+during the configuration of CMake. 
+@code{bash}
+$> cmake -DENABLE_NUMPY=True ..
+$> make
+@endcode
+
+There is nothing more to configure for Numpy, since all the needed path for building the Numpy components will be asked by cmake/Python to the package itself.
+
+@subsection configure_HDF5 HDF5 extensions
+In order to enable the HDF5 extensions, cmake should be informed of this intention and the path of HDF5 libraries should be given. 
+@code{bash}
+> cmake -DENABLE_HDF5=True -DHDF5_INSTALL_DIR=$HDF5_INSTALL_DIR ..
+> make
+@endcode
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+*/

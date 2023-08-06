@@ -1,0 +1,444 @@
+\chapter{Pixel-wise operations}
+\label{chap:pixel_wise_operations}
+
+
+
+
+\section{Arithmetic operations}
+\label{sub:arithmetics}
+This class of functions defines the arithmetic operations on images. It suppose that the space $F$ is equipped with the following operations $+$, $-$, $\times$, $\div$ for the following functions:
+\begin{enumerate}
+\item 
+\end{enumerate}
+
+\section{Logical operations}
+\label{sub:logics}
+
+\section{Comparison of images}
+\label{sub:comparisons}
+
+\section{Lookup table}
+A lookup table transform is simply a mapping of the pixels from the value space of a source image \lstinline|imin| to the value space of the target image \lstinline|imout|. It is implemented using simply an \lstinline|std::map|, which could be slow in some circumstances, but guarantee a complexity in $O(k)$, $k$ being the number of values to be mapped. 
+
+\section{Special mathematical functions}
+\label{sub:special_funcs}
+The group of \textit{special functions} contains functions that transform the value of each pixels according to a well-known mathematical function such as $x \mapsto e^x$, $x \mapsto x^y$, ...
+
+
+\subsection{Logarithm}
+\paragraph{header} \lstinline|<Yayi/core/yayiPixelProcessing/include/image_math_t.hpp>|
+
+\begin{cpp}
+template <class imin_t, class imout_t>
+yaRC logarithm_t(const imin_t &imin, imout_t &imout)
+\end{cpp}
+
+$\forall p \in supp(\text{\lstinline|imin|}) \cap supp(\text{\lstinline|imout|})$, \lstinline|imout.pixel|$(p)$ $\leftarrow$  $\log (\text{\lstinline|imin.pixel|}(p) )$. 
+
+\subsection{Random}
+\label{sub:random}
+The \textit{random} group of functions contains the functions that associate to each pixel, independently, a value drawn from a random distribution. Currently Yayi integrates only the Gaussian normal distribution. 
+
+
+
+\newpage
+
+\section{Colour space transforms}
+\label{sub:color_space_transforms}
+
+\subsection{HLS}
+\textit{HLS} stands for Hue, Luminance and Saturation. This is a colour space specially designed for an intuitive handling of the colour. Unfortunately, a  consensus on how to build this colour space does not really exist. 
+
+\subsubsection{Classical definition}
+
+
+\paragraph{Scientific background}
+The classical definition is the following:
+
+\begin{equation}{
+	\left\{
+	\begin{array}{lll}
+		l_{hls} & = & \frac{1}{2} \left( \max(r,g,b) + \min(r,g,b) \right) \\
+		s_{hls} & = & \frac{1}{2}(\max(r,g,b) - \min(r,g,b)) * \left\{
+			\begin{array}{ll}
+				\frac{1}{l_{hls}}& \textit{if $l_{hls} \leq 0.5$}\\
+				\frac{1}{1-l_{hls}}& \textit{if $l_{hls} > 0.5$}\\
+			\end{array}
+			\right. \\% \\
+		h_{hls} & = &  \left\{  
+			\begin{array}{ll}
+				\frac{g-b}{\max(r,g,b) - \min(r,g,b)}     & \textit{if $r = \max(r,g,b)$} \\
+				\frac{b-r}{\max(r,g,b) - \min(r,g,b)} + 2 & \textit{if $g = \max(r,g,b)$} \\
+				\frac{r-g}{\max(r,g,b) - \min(r,g,b)} + 4 & \textit{if $b = \max(r,g,b)$}	
+			\end{array}\right.
+	\end{array}
+	\right.
+	\label{equ:hls_transformation_classique}
+}\end{equation}
+
+Or cet espace, malgré les représentations graphique en forme de cône que l'on peut trouver sur l'espace public, n'est pas conique. Par ailleurs, la division par l'opérateur $\max - \min$ est source d'instabilités numérique lorsque les deux tendent vers $0$. Cette instabilité entraîne des variations très importante pour des petites variations des coordonnées initiales. Enfin, un certain nombre de contraintes sont définies dans \cite{angulo_lopez_2003} de manière d'un part à assurer la cohérence des calculs que l'on fait sur l'espace \HLS d'arrivée, d'autre part la correcte indépendance de l'axe achromatique et du plan chromatique. 
+La définition de l'équation \ref{equ:hls_transformation_classique} ne vérifie pas ces contraintes, ce qui a produit un certain nombre de travaux sur une normalisation plus correcte de cet espace.
+
+Concernant la forme cylindrique du cône pour \colorspace{HSV} et du double cône pour \HLS , Hanbury \cite{hanbury_taming_2002} apporté des modifications aux axes de saturation des ces espaces, de manière à leur rendre leur propriété coniques:
+
+\begin{equation}
+	\begin{array}{ll}
+		s_{hsv}^{\textit{\tiny con}} = s_{hsv} v_{hsv}\\
+		s_{hls}^{\textit{\tiny con}} = s_{hls} \left[1 - 2 \left|\frac{1}{2} - l_{hls} \right| \right]	
+	\end{array}
+	\label{equ:modification_saturation}
+\end{equation}
+
+Des développements ont été réalisé par Levkowitz \cite{levkowitz:ghls:93} sur un espace couleur \HLS général, appelé \textit{GHLS}, proposant une définition de la teinte de manière trigonométrique. Voici les équations concernant cette transformation:
+
+\begin{eqnarray}
+	l_{\textit{\tiny ghls}} & = & 0.2125 r + 0.7154 g + 0.0721 b \nonumber \\
+	c_{1} & = & r - \frac{g + b}{2} \nonumber \\
+	c_{2} & = & \frac{\sqrt{3}}{2}(b-g) \nonumber 
+	%\label{equ;transformation_GHLS_1}
+\end{eqnarray}
+
+La chroma, donnée par $c = \sqrt{c_1^2 + c_2^2}$, permet ensuite le calcul de la saturation et de la teinte comme suit:
+\begin{equation}
+	h_{\textit{\tiny ghls}} = \left\{ 
+		\begin{array}{ll}
+			\text{non-définie} & c = 0\\
+			\arccos{\frac{c_1}{c}} & c \neq 0 \text{ et } c_2 \leq 0 \\
+			2\pi - \arccos{\frac{c_1}{c}} & c \neq 0 \text{ et } c_2 > 0
+		\end{array}
+	\right.
+	\label{equ;transformation_GHLS_H}
+\end{equation}
+
+et enfin la saturation:
+\begin{equation}
+s_{\textit{\tiny ghls}} = \frac{2}{\sqrt{3}} \cdot c \sin\left({\frac{2\pi}{3} - h'}\right)
+\label{equ:transformation_GHLS_S}
+\end{equation}
+
+avec $h' \equiv h [\frac{\pi}{3}]$. 
+
+
+Angulo et Hanbury se sont ensuite intéressés à la transformation géométrique sous-jacente du cube RGB vers l'espace \HLS, et plus particulièrement aux normes utilisées pour la projection du vecteur couleur sur le plan chromatique.
+
+\subsubsection{$\ell^1$ norm}
+
+
+\paragraph{Scientific background}
+Les travaux d'Angulo \cite{angulo_lopez_2003} utilisent cet espace pour mettre en évidence des zones de reflet dans les images. Ceci est par ailleurs significatif de la différence de réponse que présentent ces espaces aux traitements.
+ 
+La norme $\ell^1$ est utilisée pour ses propriétés d'inversibilité. En utilisant le même type de projection sur le plan chromatique, les relations de teinte et de saturation sont :
+
+\begin{equation}
+	\begin{array}{ll}
+		l_{1} = \frac{1}{3}\left({max + med + min} \right) \\
+		s_{1} = \frac{3}{2}\cdot \left\{
+			\begin{array}{ll}
+				max - l_{1} & \textit{si $max + min \geq 2 med$} \\
+				l_{1} - min & \textit{si $max + min < 2 med$}
+			\end{array}
+			\right. \\
+		h_{1} = \frac{\pi}{3} \left[ \lambda + \frac{1}{2} - (-1)^\lambda \frac{3}{2}\frac{l_{1} - med}{s_{1}} \right]
+		\end{array}
+		\label{equ:norme_L1}
+\end{equation}
+
+avec :
+\[
+\lambda = \left\{  
+	\begin{array}{ll}
+		0 &  \textit{si $r > g \geq b$} \\
+		1 &  \textit{si $g \geq r > b$} \\
+		2 &  \textit{si $g > b \geq r$} \\
+		3 &  \textit{si $b \geq g > r$} \\
+		4 &  \textit{si $b > r \geq g$} \\
+		5 &  \textit{si $r \geq b > g$}
+	\end{array}
+\right.
+\]
+
+$\lambda$ détermine le quartier du cercle unité sur lequel une couleur se trouve, et on le considère souvent à juste titre comme étant la teinte dominante. Nous noterons $\varphi = \frac{1}{2} - (-1)^{\lambda} \frac{3}{2}\frac{l_{1} - med}{s_{1}}, \varphi \in [0,1]$ et avons donc $h_{1} = \frac{\pi}{3} \left[ \lambda + \varphi \right]$.
+
+L'inversion de cette espace se fait d'abord par la détermination de $\lambda$ et de $\varphi$ à partir de $h_1$ et de la fonction $x \mapsto \left\lfloor x \right\rfloor$. Il vient:
+
+\[
+	med = l_1 + (-1)^{\lambda} \frac{2 s_1}{3}  \left(\varphi - \frac{1}{2} \right) \\
+\]
+
+Suivant la valeur de $l_1$ et de $med$, nous avons ensuite, par la condition sur $s_1$ de l'équation \ref{equ:norme_L1} :
+\begin{equation}
+	\begin{array}{l}
+	l_1 \geq med \Rightarrow \left\{
+		\begin{array}{lll}
+				max & = & l_1 + \frac{2}{3}s_1\\
+				min & = & 3 l_1 - max - med
+		\end{array}
+	\right. \\
+	l_1 < med \Rightarrow \left\{
+		\begin{array}{lll}
+				min & = & l_1 - \frac{2}{3}s_1\\
+				max & = & 3 l_1 - min - med
+		\end{array}
+	\right.
+	\end{array}
+\end{equation}
+
+Nous retrouvons ensuite le même choix concernant le secteur $\lambda$ et la correspondance entre {\scriptsize $\left[\begin{array}{l}max\\ med\\ min \end{array}\right]$} et $(r,g,b)$. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\subsection{YUV \& $YC_bC_r$}
+
+
+
+\paragraph{Module} YayiPixelProcessing
+
+\paragraph{Template functions} Defined in \\
+\lstinline|<Yayi/core/yayiPixelProcessing/include/image_color_process_yuv_t.hpp>|
+\begin{cpp}
+// Forward YUV transform
+template <class image_in_, class image_out_>
+yaRC color_RGB_to_YUV_t(const image_in_& imin, image_out_& imo)
+
+// Reverse YUV transform
+template <class image_in_, class image_out_>
+yaRC color_YUV_to_RGB_t(const image_in_& imin, image_out_& imo)
+\end{cpp}
+
+
+\paragraph{Compiled functions} Defined in \\
+\lstinline|<Yayi/core/yayiPixelProcessing/image_color_process.hpp>|
+\begin{cpp}
+// Forward YUV transform
+yaRC color_RGB_to_YUV(const IImage* imin, IImage* imout);
+
+// Reverse YUV transform
+yaRC color_YUV_to_RGB(const IImage* imin, IImage* imout);
+\end{cpp}
+
+
+\paragraph{Python exports} 
+\begin{python}
+# Forward YUV transform
+color_RGB_to_YUV
+
+# Reverse YUV transform
+color_YUV_to_RGB
+\end{python}
+
+
+\paragraph{Scientific background}
+\YUV and $YC_bC_r$ are mostly used for video coding. The former involves a matrix transform from the \RGB colour space, defined by the following matrix:
+
+\begin{equation}
+\cstmat{RGB}{YUV}= \left[
+    \begin{array}{lll}
+      0.299 & 0.587 & 0.114 \\
+      -0.147 & -0.289 & 0.437 \\
+      0.615 & -0.515 & -0.1
+     \end{array}
+	\right] 
+\label{equ:RGB2YUV}
+\end{equation}
+
+A more general expression of the \RGB $\mapsto$ $YC_{b}C_{r}$ transform is given by the following formula:
+\begin{equation}
+    \left\{ 
+        \begin{array}{lll}
+Y    &= &c_1 \cdot R + c_2 \cdot G + c_3 \cdot B \\
+C_{b}&= &\frac{1}{2}\frac{B - Y}{1 - c_3} \\
+C_{r}&= &\frac{1}{2}\frac{R - Y}{1 - c_1} \\
+        \end{array}
+    \right.
+	\label{equ:RGB2YCbCr}
+\end{equation}
+
+Some of the standard coefficient are given in Tab. \ref{table:RGB2YCbCr}, which depend on the definition of the luminance function. 
+\begin{table}[f]
+\begin{center}
+    \begin{tabular}[b]{llll}
+Standard & $c_1$ (red) & $c_2$ (green) & $c_3$ (blue)\\ \hline
+Rec.601  & $0.2989$	& $0.5866$ & $0.1145$\\
+Rec.709  & $0.2126$ & $0.7152$ & $0.0722$
+    \end{tabular}
+\end{center}
+\label{table:RGB2YCbCr}
+\caption{$YC_{b}C_{r}$ standard coefficients}
+\end{table}
+
+
+
+
+\subsection{XYZ and xyY}
+% à implémenter
+
+
+\subsection{Lab}
+% à implémenter
+
+
+
+\chapter{Low-level MM}
+In this section, low-level morphology module is explained. This module contains the following functions:
+
+\begin{itemize}
+\item Erosion and dilation
+\item Minkovski additions and subtraction 
+\item Openings and Closings
+\item Hit or miss transform
+\item Geodesic erosions and dilations
+\end{itemize}
+
+\section{Erosions, dilations}
+\label{sec:erodil}
+The erosion and dilation are the two basic yet major operations in Mathematical Morphology. Most of the more advanced filtering can be expressed by erosions and dilations. 
+
+\section{Minkovski additions, subtraction }
+
+\section{Openings, Closings}
+
+\section{Geodesic erosions and dilations}
+
+\section{Hit-or-miss transform}
+We use the implementation following the work of Naegel \cite{naegel_htm:2007}. Currently, the only method implemented is the one described by Soille \cite{soille:1999}. 
+
+
+
+\chapter{Labelling}
+Labelling consists in applying an equivalence relation on the neighbourhoods of the image. The labelling is the quotient group of this equivalence relation. 
+
+
+
+Afin de clarifier le contenu, prenons un exemple simple, la \textit{labellisation}. Le but est d'identifier chaque composante connexe d'une image $\mathcal I$. Le procédé d'identification est généralement une nouvelle image $\mathcal O$ dans laquelle chaque composante connexe possède une valeur unique, généralement un nombre entier, permettant ainsi d'identifier chaque point de $\mathcal I$ à sa composante connexe. Un algorithme à base de lacets, dont nous nous servirons, a été proposé dans \cite{schmitt:89}.
+
+Commençons par la labellisation pour les images binaires: il y a ici deux \textit{classes} de point: le fond et la forme. Deux points de $\mathcal I$ font partie de la même composante connexe si les deux conditions suivantes sont réunies:
+\begin{enumerate}
+	\item both points belong to the same neighborhood
+	\item les deux points font partie de la même classe, fond ou forme
+\end{enumerate}
+
+
+Continuons notre exemple sur des images à teinte de gris (par exemple dans $\N_{256}$) avec la labellisation dite en \og zones plates \fg \cite{crespo:flat_zones:97, salembier:flat_zones:95}; la condition caractéristique est la suivante: deux points \textit{voisins} appartiennent à la même composante connexe (ici, zone plate) s'ils ont même teinte de gris. 
+De manière analogue, la labellisation en zones $\lambda$-plates définit la composante connexe par un assouplissement de l'égalité stricte du cadre de la zone plate: deux points \textit{voisins} appartiennent à la même composante connexe si leur teinte de gris ne diffère par de plus de $\lambda$, $\lambda$ étant un paramètre de la labellisation.\\
+
+Plus généralement, nous observons que la labellisation est une transformation d'une image $\mathcal I$ en classes d'équivalence. Chaque classe d'équivalence définit une composante connexe. Ce qui est caractéristique à toute labellisation est la connexité (de voisinage) de deux points qui, soumise à une équivalence supplémentaire, donne lieu à la relation d'équivalence caractéristique suivante:
+
+\[
+	\cong_{{\mathcal N}, {\mathcal R}} : 
+		\left\{
+		\begin{array}{lcl}
+			\ens{E}^2&\rightarrow&\{0,1\}\\
+			(x,y) &\mapsto& \left(x \cong_{\mathcal N} y\right) \wedge \left(\mathcal{I}(x) \cong_{\mathcal R} \mathcal{I}(y)\right)
+		\end{array}
+		\right.
+\]
+
+avec
+\[
+	\cong_{\mathcal N} : 
+		\left\{
+		\begin{array}{lcl}
+			\ens{E}^2&\rightarrow&\{0,1\}\\
+			(x,y) &\mapsto& \left(x \in \neighbor{y}\right) \wedge \left(y \in \neighbor{x}\right)
+		\end{array}
+		\right.
+\]
+
+
+
+Une image labélisée en composantes connexes est donc l'ensemble quotient \footnote{définition \ref{def:ensemble_quotient} page \pageref{def:ensemble_quotient}} de l'image de départ selon la relation d'équivalence $\cong_{{\mathcal N}, {\mathcal R}}$. Comme nous l'avons exprimé, la relation d'équivalence $\cong_{\mathcal N}$ - connexité des éléments de la composante connexe - est caractéristique du procédé de labellisation, et donc aucune labellisation ne peut s'y soustraire. Par contre, la relation d'équivalence $\cong_{\mathcal R}$ est dépendante de l'application visée. Ainsi, la labellisation en zones plates est liée à la relation:
+
+\[
+	\cong_{flat zones} : 
+		\left\{
+		\begin{array}{lcl}
+			\ens{E}^2&\rightarrow&\{0,1\}\\
+			(x,y) &\mapsto& \left(\mathcal{I}(x) = \mathcal{I}(y)\right)
+		\end{array}
+		\right.
+\]
+
+au sens de l'égalité stricte. La labellisation en $\lambda$-zone plate est liée à la relation:
+\[
+	\cong_{\lambda-flat zones} : 
+		\left\{
+		\begin{array}{lcl}
+			\ens{E}^2&\rightarrow&\{0,1\}\\
+			(x,y) &\mapsto& \left(\left|\mathcal{I}(x) - \mathcal{I}(y)\right| \leq \lambda\right)
+		\end{array}
+		\right.
+\]
+
+ou plus généralement sur l'espace $\ens{F}$ normé par $\cdot \mapsto \left\| \cdot \right\|_\ens{F}$:
+\[
+	\cong_{\lambda-flat zones, \left\| \cdot \right\|_\ens{F}} : 
+		\left\{
+		\begin{array}{lcl}
+			\ens{E}^2&\rightarrow&\{0,1\}\\
+			(x,y) &\mapsto& \left(\left\|\mathcal{I}(x) - \mathcal{I}(y)\right\|_\ens{F} \leq \lambda\right)
+		\end{array}
+		\right.
+\]
+
+
+
+
+
+
+
+
+
+
+
+
+
+\chapter{Reconstruction algorithms}
+
+\section{Scientific background}
+A reconstruction can be considered as the asymptotic behaviour of the geodesic erosions/dilations (see \S \ref{sec:erodil}). 
+\section{Reconstruction}
+
+\section{Levelings}
+According to Meyer \cite{levelings_meyer:1999}, the levelings can be defined as follow:
+
+\begin{definition}[Leveling]
+An image $g$ is a leveling of an image $f$ iff:
+\[
+	\forall p,q \text{ neighbors}, g_p > g_q \Rightarrow f_p \geq g_p \wedge g_q \geq f_q
+\]
+\label{def:leveling}
+\end{definition}
+
+Some implementations can be found on the Web, but they are often \textit{biased}. Levelings often are considered as image simplification, by the use of two morphological reconstructions. 
+Indeed, the definition \ref{def:leveling} can be reformulated as the following statement: if any variation occurs in the leveling, then the orientation of this variation is the same as in the marker function. This is why any flat (constant) function is a leveling of any marker image.
+An implementation of the leveling can however be found in \cite{gomila_2001}, which is actually the one implemented in Yayi. 
+
+
+\chapter{Distance functions}
+
+\section{Exact distance transform}
+The algorithm is first described in \cite{raffi:phd:2007}.
+
+\section{Quasi-distance transform}
+The quasi-distance has been defined by Beucher \cite{beucher:residues:2005}. An efficient algorithm has been proposed in \cite{enficiaud:qd:2010} (initially in \cite{raffi:phd:2007}), and is implemented in Yayi. 
+
+\chapter{Segmentation algorithms}
+
+\subsection{Unbiased isotropic watershed transform}
+
+
+\subsection{Viscous flooding}

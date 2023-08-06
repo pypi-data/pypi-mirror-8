@@ -1,0 +1,325 @@
+\documentclass[a4paper, fleqn, 10pt]{book}
+
+
+\usepackage{ucs}
+\usepackage[english, french]{babel}				% pour que tex comprenne le francais (frenchb pour babelbib mais je ne sais pas si ca marche bien)
+\usepackage[fixlanguage]{babelbib}
+\selectbiblanguage{english}
+
+\usepackage[T1]{fontenc}
+\usepackage{textcomp}
+\usepackage[utf8x]{inputenc}								% les caractères francais
+%
+\usepackage{a4wide}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{xcolor}							% utilisation de la couleur pour le texte
+
+\usepackage[hmargin=2cm,vmargin=2cm]{geometry}
+
+%% Environnement pour le code
+\usepackage{listings}
+\usepackage{listingsutf8}
+\lstloadlanguages{C++}
+\lstnewenvironment{mycpp}[1][]
+{
+  \lstset
+  {
+	   language={C++},
+	   %  basicstyle=\small, % swap this and the following line for prop. font
+	   basicstyle=\footnotesize\ttfamily,
+	   flexiblecolumns=true,  
+	   xleftmargin = 12pt,
+	   #1, 
+	   numbers=left,
+	   numberstyle=\tiny,
+	   escapeinside={(*@}{@*)}
+  } %lstset
+	\csname lst@SetFirstLabel\endcsname
+}
+{
+	\csname lst@SaveFirstLabel\endcsname
+}
+\newcommand{\lcpp}[1]{\lstinline!#1!}
+
+\lstdefinestyle{cppstyle} 
+{	language=C++, 
+	basicstyle=\small\sffamily,
+	tabsize=2, 
+	breaklines=true, 
+	numberstyle=\tiny,
+	numbers=left,
+	numbersep=10pt, 
+	stepnumber=1,
+	xleftmargin=4mm,
+	frame=leftline,
+	framerule=1pt,
+	rulecolor=\color{purple}, 
+	commentstyle=\color{purple},
+	keywordstyle=\color{red}\bfseries,   
+	stringstyle=\color{green}\ttfamily,
+	identifierstyle=\small,
+	showspaces=false,
+	showtabs=false,
+	showstringspaces=false
+}
+
+\lstnewenvironment{cpp}
+{\lstset{style=cppstyle}}
+{}
+
+
+\lstdefinestyle{pythonstyle} 
+{	language=Python, 
+	basicstyle=\small\sffamily,
+	tabsize=2, 
+	breaklines=true, 
+	numberstyle=\tiny,
+	numbers=left,
+	numbersep=10pt, 
+	stepnumber=1,
+	xleftmargin=4mm,
+	frame=leftline,
+	framerule=1pt,
+	rulecolor=\color{purple}, 
+	identifierstyle=\small,
+	showspaces=false,
+	showtabs=false,
+	showstringspaces=false
+}
+
+\lstnewenvironment{python}
+{\lstset{style=pythonstyle}}
+{}
+
+\newenvironment{function_desc}[4]
+{
+\paragraph{Interface header} \lstinline|#1|
+\begin{cpp}
+#2
+\end{cpp}
+
+\paragraph{Template header} \lstinline|#3|
+\begin{cpp}
+#4
+\end{cpp}
+}
+{
+}
+
+\lstdefinestyle{bashstyle}
+{	language=bash,
+	basicstyle=\small\sffamily,
+	backgroundcolor=\color[gray]{0.95},
+	inputencoding=utf8x,
+	extendedchars=false,
+	tabsize=2,
+	breaklines=true,
+	numberstyle=\tiny,
+	numbers=left,
+	numbersep=10pt,
+	stepnumber=1,
+	xleftmargin=4mm,
+	frame=leftline,
+	framerule=1pt,
+	rulecolor=\color{green},
+	commentstyle=\color{red},
+	keywordstyle=\color{red}\bfseries,
+	stringstyle=\color{green}\ttfamily,
+	showspaces=false,
+	showtabs=false,
+	showstringspaces=false
+}
+\lstnewenvironment{bash}
+{\lstset{style=bashstyle}}
+{}
+
+
+\renewcommand{\familydefault}{cmss}
+%
+\usepackage[sans]{dsfont}
+
+\newcommand{\N}							{\ensuremath{\mathds{N}}}
+\newcommand{\K}							{\ensuremath{\mathds{K}}}
+\newcommand{\R}							{\ensuremath{\mathds{R}}}
+\newcommand{\Z}							{\ensuremath{\mathds{Z}}}
+
+\newcommand{\ens}[1]                    {\ensuremath{\mathbf{#1}}}
+\newcommand{\neighbor}[1]               {\ensuremath{\mathcal{N}_{#1}}}															% voisinage
+
+\usepackage{theorem}
+%\DeclareInstance{theoremstyle}{exemple}{std}
+%{
+%  pre-skip   = 1cm,
+%  post-skip  = 1cm,
+%  body-style = \ttfamily,
+%  head-style = \sffamily,
+%  post-head-action = \newline,
+%}
+% __________________________________________________
+%
+% Exemple d'environement coloré mais ne marche pas bien
+% 
+% __________________________________________________
+\definecolor{ColorTheorem}{gray}{0.85}
+\definecolor{HighlightTheorem}{rgb}{.70, .70, .89}
+\definecolor{ColorDemo}{gray}{.30}
+\definecolor{HighlightDemo}{gray}{.90}
+
+\theoremstyle{break} 
+%\theoremstyle{mytheoremstyle} 
+
+{
+	\theorembodyfont{\itshape\mdseries\rmfamily}%\color{ColorTheorem}}
+	%\theoremheaderfont{\scshape}
+	\theoremheaderfont{\rmfamily\bfseries\upshape}
+
+	\newtheorem{theoreme}{Theorem}[chapter]
+	\newtheorem{proposition}{Proposition}[chapter]
+	\newtheorem{lemme}{Lemme}[chapter]
+	
+	\newtheorem{definition}{\colorbox{ColorTheorem}{Definition}}[chapter]
+}
+
+
+\newcommand{\matcst}[1]		{\ensuremath{\mathbf{\mathcal #1}}}													% matrix color space transform
+\newcommand{\cstmat}[2]		{\ensuremath{\matcst{M}_{#1 \rightarrow #2}}}
+\newcommand{\colorspace}[1]	{{\small #1}\xspace }
+\newcommand{\RGB}						{\colorspace{RGB}\xspace}
+\newcommand{\HLS}						{\colorspace{HLS}\xspace}
+\newcommand{\XYZ}						{\colorspace{XYZ}\xspace}
+\newcommand{\Lab}						{\colorspace{Lab}\xspace}
+\newcommand{\Luv}						{\colorspace{Luv}\xspace}
+\newcommand{\YUV}						{\colorspace{YUV}\xspace}
+
+
+\graphicspath{{figures/}}
+
+
+
+\usepackage{hyperref}
+
+\title{Yayi: Generic meta-programming techniques for Image Processing and Mathematical Morphology}
+\author{Raffi Enficiaud}
+%\institute {
+%  Raffi Enficiaud \at
+%  Centre de Morphologie Math{\'e}matique\\
+%  ENSMP, 35 rue Saint Honor{\'e}e 77305 Fontainebleau cedex\\
+%  \email{\{raffi.enficiaud\}@cmm.ensmp.fr}
+%}
+%
+%\date{Received:  / Revised: date}
+
+\begin{document}
+\selectlanguage{english}
+
+\maketitle
+
+\part{Front-matter}
+This document presents Yayi, a generic library for Mathematical Morphology and Image Processing, using the meta-programming approach. The core of Yayi is written in C++, and a good knowledge of the language is needed to follow the internal parts of the code. However, their also exist some very accessible interfaces in order to design and write new processing. 
+
+
+Keywords: Mathematical morphology, generic, C++, meta-programming.
+
+\clearpage 
+\tableofcontents
+
+\clearpage 
+\listoffigures
+
+
+\chapter{Introduction}
+Yayi is a library dedicated to Mathematical Morphology (MM). It is almost entirely written in C++, and this choice will be explained in details throughout this document. Currently, it also provides an interface to the Python\footnote{\url{http://www.python.org}} programming language. The current document describes the content of Yayi, the installation procedures, the algorithmic implementations as well as some scientific background to MM. Most of this work is based on a previous similar attempt, \textit{Morph-M} \footnote{\url{http://cmm.ensmp.fr/Morph-M/}} (formerly Morphée), using the paradigms of meta-programming and generic object oriented programming. This work began with Romain Lerallut and myself (Raffi Enficiaud), and is described in my PhD. Thesis \cite{raffi:phd:2007} (in French). 
+
+Also, the initial algorithms that were implemented under the meta-programming paradigms came from an initiative internal to the \textit{Mathematical Morphology Centre} \footnote{\url{http://cmm.ensmp.fr}} (CMM) called XLim \cite{xlim3D:web}. Some algorithms were however either new in Morph-M, more accurate, or extended in any dimension or for any ordered type. 
+
+\section{Reusable components for image processing and mathematical morphology}
+To the author knowledge, the pioneering ideas of reusable software for image processing and mathematical morphology come from Darbon et al. \cite{darbon:2002}. Taking the philosophy of the STL, it is possible to thing of images as being some \textit{containers of pixels}. Of course, images cannot always be seen as such, but this view fits some major purposes which will be explained below. 
+
+One then may be wanting to process the whole content of the images. This is usually implemented using iterators:
+\begin{cpp}
+for(iterator it(im.begin()), ite(im.end()); it != ite; ++it)
+{
+  // do something
+}
+\end{cpp}
+
+The previous code does not explicitly state one of the major aspect in using iterators: they allow the decoupling of the pixels organisation (which is part of the image's internals) and the algorithms. The logic of sequencing the pixels is within the iterator, rather than in the algorithm or in the image. Since the iterators implement somewhat unified interface (such as increment, compare and deference), the code using the image is no longer sensitive to the internal organisation of the image itself. 
+This is the basis of \textbf{multi-dimensional} image processing.
+
+
+
+\section{Meta-programming}
+We may refer as \textit{meta-programming} the idea of performing some processing during the code generation phase. In C++, the code generation phase is the compilation.
+An example where meta-programming is useful is the selection of the most efficient implementation given the types on which an algorithm should run. Suppose we have the following code, given an arbitrary value v:
+
+\begin{cpp}
+for(iterator it(im.begin()), ite(im.end()); it != ite; ++it)
+{
+  *it = v;
+}
+\end{cpp}
+
+In some extent, we know that the pixels lie in a linear table. Rather than iterating over the image, a \lstinline|memset| should be much more efficient\footnote{one of the reason being that it would not involve complex iterator incrementation operation any more, but also dedicated SSE/SSE2 implementations, etc.}. It is however not possible to call \lstinline|memset| for all the combinations covered by the previous code:
+\begin{enumerate}
+\item the iterator may have a complex iteration scheme (for instance every two pixels)
+\item the type returned by the iterator may not be POD
+\item the value $v$ equals some a priori known values that could be used through \lstinline|memset|
+\end{enumerate}
+
+It is possible during the compilation for the compiler to perform some tests, and generate the adequate code for the combination of iterator and pixel type. These tests could be summarized as:
+\begin{enumerate}
+\item do the iterators span a continuous block of memory?
+\item is it possible to set the value of the pixel by filling the memory where the object lies? \label{meta-prog:testvalue}
+\end{enumerate}
+
+For the test \# \ref{meta-prog:testvalue}, the answer is always ``yes'' for char/unsigned char types, but depends on the value for other types. 
+\begin{enumerate}
+\item true if the value $v = 0$\footnote{works also for IEEE-754 floating point numbers, see \url{http://en.wikipedia.org/wiki/Signed_zero}}
+\item false if the value $v \neq 0$
+\end{enumerate}
+This last test cannot be done at compilation time, since $v$ is a parameter of the final function. However, there is a path for optimisations, and some steps can be performed during the compilation. 
+
+
+\subsection{Specializing and Incremental software programming}
+
+
+\subsection{Performances issues}
+
+ We refer to the book of Alexandrescu \cite{alexandrescu_a_moderncpp}. 
+
+
+\include{architecture_design}
+
+\include{building}
+
+
+\part{Data structures}
+
+This part provides the details about the data structures used in Yayi. 
+
+\include{data_structures}
+
+
+
+\part{Functional reference}
+This part describes the functions implemented in Yayi. Rather than providing an exhaustive list of functions, the mathematical details and choices are provided, as well as the corresponding references where needed. 
+
+\include{functions}
+
+\chapter{Extensions}
+\include{extensions}
+
+
+\chapter{Conclusion}
+
+\section{Possible improvements}
+
+
+\bibliographystyle{cell}
+\bibliography{bib_all_utf8}
+
+
+\end{document}

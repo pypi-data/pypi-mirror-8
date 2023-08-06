@@ -1,0 +1,287 @@
+\chapter{Images}
+\label{chap:image;structure}
+
+Images are the main object of interest in the application. Several design exist in other free (or commercial libraries). In Yayi, emphasis was put in the maximal genericity, which is taken in two senses:
+\begin{itemize}
+\item genericity over the type of the pixel, which means that images can contain any type of pixels, as long as these types meet some requirements. This point will be discussed further in \S \ref{image:pixel_type}.
+\item genericity over the geometry, or more precisely over the dimension of the support of the image. This point will be addressed in \S \ref{image:dimension}.
+\end{itemize}
+
+From the aforementioned points, images in Yayi can be considered as containers of pixels, in the same way as STL template structures are containers of the template type \lstinline|T|. The difference lies in the fact that the order of the elements in images, as well are their spatial relationship, are of particular interest. Images cannot be considered as vectors of pixels. In that extent, images should provide more services than containers, listed below. 
+
+\begin{itemize}
+\item information about their geometric structure, the allocation in memory, the type of the pixels
+\item access to the set of pixels in a generic manner
+\end{itemize}
+
+Information about the structural nature of the images are easily addressed by the implementation, with the fact that some implementation details should be taken into account. These details mainly deal with the fact that, by design, we would like to manipulate a set of template structures in a similar fashion. The means that images are constrained by a common \textit{interface}, which should be independent of any of the template parameters of the image (pixels and geometry). The details are given in \S \ref{image:interface}, \ref{image:pixel_type}, and \ref{image:dimension}.
+
+In the same way as STL containers, image processing algorithm often need access to the entire set or a subset of pixels. This kind of access addresses the formulations such as:
+\[
+\forall p \in \mathcal{I}, \text{do process } p
+\]
+where all pixels of the image $\mathcal{I}$ are processed, or more generally
+\[
+\forall p \in f(\mathcal{I}), \text{do process } p
+\]
+where the function $f$ selects a subset of the support of $\mathcal{I}$. 
+
+To implement these kind of requested features without coupling the container (the image) and the algorithms \footnote{for instance in order to avoid the algorithm to be written for 2D images only, or to hide the mechanism of subset selection, etc.}, different kind of \textit{iterators} over the image are provided. The details are given in \S \ref{sec:iterators}.
+
+Let just start by an \textit{hello world} example of how to create images:
+
+\paragraph{Template way}
+\begin{cpp}
+#include <Yayi/core/yayiImageCore/include/yayiImageCore_Impl.hpp>
+
+void test(){
+  // 2D image of unsigned short, size 20(x), 30(y)
+  Image<yaUINT16> im2D_ui16;
+  yaRC res = im2D_ui16.SetSize(c2D(20, 30));
+  if(res != yaRC_ok)
+    std::cerr << "Error" << std::endl;
+  res = im2D_ui16.Allocate();
+  if(res != yaRC_ok)
+    std::cerr << "Error" << std::endl;
+
+  // 4D image of double, size 11(x), 23(y), 21(z), 56(t)
+  Image<yaF_double, s_coordinate<4> > im4D_d;
+  s_coordinate<4> size4d(c4D(11, 23, 21, 56));
+  yaRC res4 = im4D_d.SetSize(size4d);
+  if(res4 != yaRC_ok)
+    std::cerr << "Error" << std::endl;
+  
+  res4 = im4D_d.Allocate();
+  if(res4 != yaRC_ok)
+    std::cerr << "Error" << std::endl;
+  
+}
+\end{cpp}
+
+\paragraph{Interface way}
+\begin{cpp}
+#include <Yayi/core/yayiImageCore/yayiImageCore.hpp>
+
+void test(){
+  // 2D image of unsigned short, size 20(x), 30(y)
+  IImage* im = IImage::Create(type(type::c_scalar, type::s_ui16), 2);
+  
+  IImage::coordinate_type coord = c2D(20, 30);
+
+  yaRC res = im->SetSize(coord);
+  if(res != yaRC_ok)
+    std::cerr << "Error during the size settings: " << res << std::endl;
+  
+  res = im->AllocateImage();
+  if(res != yaRC_ok)
+    std::cerr << "Error during the allocation: " << res << std::endl;
+
+  // do not forget to delete the image
+  delete im;
+}  
+\end{cpp}
+
+
+
+Pretty easy, right ?! Now let's begin...
+
+
+\section{Image interface}
+\label{image:interface}
+The image interface is a pure virtual class that is common to all images in Yayi. The services provided by the image class are (non exhaustive list):
+\begin{itemize}
+\item Setting and retrieval of the geometry
+\item Allocation and release of the pixels
+\item Transportation of the pixel values to/from the buffer
+\item Iteration over the pixels
+\end{itemize}
+
+Since this class is common to all images, the interface is any dimensional and for any type of pixels. However, the real instances of image are not any-dimensional, and are specified for one type of pixels only. Hence the interface should be able to transport generic versions of positional and value information:
+\begin{enumerate}
+\item positions used by the interface should be able to encode any-dimensional information
+\item pixels values of the interface should be able to encode any supported type of pixel
+\end{enumerate} 
+
+For the former, a specific version of coordinates has been defined (see \S \ref{sec:points}, \S \ref{image:pixel_type}.) The the latter, a special \textit{variant} has been defined (see \S \ref{variant}.)
+
+\section{Pixel type}
+\label{image:pixel_type}
+As mentioned earlier, Images in Yayi can contain any type of pixels. This is not totally true: pixels are concepts in Yayi, and the type that can be contained in images should meet the requirements of the concept. 
+
+\subsection{Pixel concept}
+
+\begin{itemize}
+\item default constructible (in order to enable to allocation of an array of pixels)
+\item copy constructible
+\item assignable
+\item comparable for certain mathematical morphology operations, although this is dependant of the underlying operation. For instance, basic low-level morphology involves mainly \lstinline|min| and \lstinline|max|
+\item variant transformable, in order to ensure their transport over the interface. 
+\end{itemize}
+
+\subsection{Variant transformable concept}
+
+See \S \ref{variant} for details about the variant structure. 
+
+\section{Dimension}
+\label{image:dimension}
+Images in Yayi can be of any dimension. 
+
+\subsection{Template parameter}
+
+
+
+\subsection{Runtime}
+
+\section{Pixel buffer}
+
+\section{Iterators}
+\label{sec:iterators}
+Images propose a container interface: the pixels are the contained elements.
+
+\subsection{Bloc iterator}
+\label{sub:blocit}
+
+\begin{figure}[htb]
+\begin{center}
+   \includegraphics[width=0.5\textwidth]{basic_iterator.pdf}
+   \caption{Bloc iterator}
+   \label{fig:image_basic_iterator}
+\end{center}
+\end{figure}
+
+An example of use of the block iterator is given in the following code:
+\begin{cpp}
+typedef Image<yaUINT16> image_t;
+image_t im1;
+  
+im1.SetSize(c2D(5,5));
+im1.AllocateImage();
+  
+int i = 0;
+for(image_t::iterator it = im1.begin_block(), ite = im1.end_block(); 
+    it != ite; 
+    ++it, i++) {
+  *it = i;
+}
+\end{cpp}
+
+Block iterators are \lstinline|random_access| iterators.
+
+\subsection{Window iterator}
+\label{sub:window}
+This is basically the same idea as block iterators, the difference being the subset of points on which the iteration is made. Window iterators operate on an hyperrectangle (see \ref{chap:graph:points:rectangles}) contained inside the support of the image.
+
+
+An example of use of the window iterators is given in the following code:
+\begin{cpp}
+typedef Image<yaUINT16> image_t;
+image_t im1;
+
+im1.SetSize(c2D(5,5));
+im1.AllocateImage();
+
+for(image_t::iterator it = im1.begin_block(), ite = im1.end_block(); it != ite; ++it)
+  *it = 0;
+
+s_hyper_rectangle<2> rect(c2D(1,1), c2D(3,3));
+  
+int i = 0;
+for(image_t::window_iterator it = im1.begin_window(rect), ite = im1.end_window(rect); 
+    it != ite; 
+    ++it, i++) {
+  *it = i;
+}
+
+std::cout << im1 << std::endl;
+\end{cpp}
+
+prints
+\begin{cpp}
+0 0 0 0 0
+0 0 1 2 0
+0 3 4 5 0
+0 6 7 8 0
+0 0 0 0 0
+\end{cpp}
+
+
+
+\section{Properties}
+\label{sec:image_properties}
+
+Images may also contain some properties. 
+\subsection{Color space}
+It is possible to associate a color space to an image. The color space is defined by
+\begin{enumerate}
+\item a major color space, which sets the main definition of the color space
+\item a minor color space, which sets the different variants that may exist among color space definitions. For instance, in the HLS color space, there exists the GHLS, HLS $\ell_1$, classical HLS, etc.
+\item a gamma value, applicable for colorimetric color space (XYZ, La*b*.)
+\item the RGB primaries, applicable for color space computed from RGB (eg. XYZ.)
+\end{enumerate}
+
+\subsection{Spatial resolution}
+TBD.
+
+\chapter{Structuring elements}
+\label{chap:se}
+
+
+\section{Point list structuring elements}
+\label{sec:se:point_list}
+An point list structuring element is defined by a set of offset, each of them describing one point of the neighborhood in the final image. Each point is defined relative to the center of the structuring element, always at point $P(0)$\footnote{$P$ depends on the dimension}.
+ 
+
+\subsection{Rigid structuring elements}
+
+\subsection{Polymorphic structuring elements}
+
+\section{Image structuring elements}
+
+
+\section{Functional structuring elements}
+TBD.
+
+
+\chapter{Neighborhoods}
+\label{chap:neighborhood}
+A neighborhood is formed by a pair of image and structuring element. The image is the support, and the structuring element defines the topology over the image. 
+
+
+\chapter{Variant}
+\label{variant}
+
+Variant is a data structure that addresses some limitations of the C++ language when non-template interfaces are used (eg. to plus into another environment such as Python) with template structures. The interface should be insensitive to the exact nature of the types beyond. One way to do this is to consider a ``super'' type, which can contain any other type. For instance, the type \lstinline|uint32_t| can encode any unsigned integer whose range vary from 0 to \lstinline|std::numeric_limits<uint32_t>::max()|, but not more (for instance packed RGB pixel where each channel is 16 bits.) There is no native type that is able to encode ``any'' allowed pixel type in Yayi.  
+
+Extending the ``super'' type concept is just one step beyond the aforementioned approach: variant is a convenient way to encode any other type. 
+
+\section{Design issues}
+
+
+\section{Extending variants}
+
+\subsection{To/from type ``T'' transform}
+
+\subsection{Python wrapper}
+
+\chapter{Graphs, points, hyper-rectangles}
+\label{chap:graph:points:rectangles}
+
+
+\section{Points}
+\label{sec:points}
+Since Yayi is generic over the geometry of the image, a convenient way to the positions in the (generic) image plane should be adopted. 
+
+
+
+\section{Hyper-rectangles}
+\label{hyperrectangles}
+Hyperrectangles are a mean to encode a pave in the space spanned by the image dimension. Hyperrectangle define a starting point and a size, and provide additional useful methods. 
+
+\subsection{Interface hyperrectangles}
+Hyper-rectangles should be \textit{interface transportable}, and are convertible to/from variants. 
+
+
+\chapter{Lattices}
+\label{lattice}
+
+Not implemented yet. 
