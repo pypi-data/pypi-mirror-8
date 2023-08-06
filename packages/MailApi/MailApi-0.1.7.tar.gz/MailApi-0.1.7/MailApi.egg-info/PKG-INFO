@@ -1,0 +1,85 @@
+Metadata-Version: 1.1
+Name: MailApi
+Version: 0.1.7
+Summary: An interface to iredadmin
+Home-page: https://github.com/paszabo/mailapi
+Author: Paul Szabo
+Author-email: paul@cupromotions.ca
+License: UNKNOWN
+Description: # iRedAdmin API
+        
+        A programmer friendly interface for iRedAdmin (OSE version)
+        
+        # Known Limitations
+        
+        - Only supports MD5 passwords
+        - Only supports MySQL
+        
+        
+        # Getting Started
+        
+        1. `$ virtualenv -p $(which python2.7) venv`
+        2. `$ source venv/bin/activate`
+        3. `(venv)$ python setup.py develop`
+        
+        # Usage
+        
+        Before you can start making API calls, you must initialize a connection to the database back end you wish to manage.
+        
+        To do so simply call the `init_db` method with a SQLAlchemy database URL.  If you're unclear on how to create one, see: http://docs.sqlalchemy.org/en/latest/core/engines.html#database-urls
+        
+        Example:
+        
+                    import mailapi, mailapi.domain
+        
+                    mailapi.domain.get_all_domains() # throws a RuntimeError
+        
+                    mailapi.init_db('mysql://scott:tiger@192.168.0.1:3306/vmail') # Initialize the db connection
+        
+                    mailapi.domain.get_all_domains() # works!
+        
+        # Need Help?
+        
+        I suggest you look at the test cases in ./tests as they illustrate how this package should be used and the expected outcomes.
+        
+        # Running Unit Test Suite
+        
+        Easy...
+        
+        `(venv)$ TEST_DB_CONN_STR='mysql://scott:tiger@192.168.0.1:3306/vmail' python setup.py test`
+        
+        # I Need Feature x, y, z
+        
+        Lol, fork me bro
+        
+        
+        # 0.1.7
+        
+        - Custom exception class definitions
+            - They are mostly self-explanatory, but here is the break down:
+                - AliasExists: raised when trying to create an alias that already exists in the database
+                - DbInitError: raised when init_db has not been called
+                - MailboxExists: raised when adding a mailbox that already exists in the database
+                - NoSuchMailbox: raised when trying to access a mailbox that does not exist in the database
+                - DomainExists: raised when trying to create a domain that already exists
+                - NoSuchDomain: raised when trying to access a domain that does not exist in the database
+        
+        # 0.1.6
+        
+        - bookkeeping fixes:
+            - populates created and modified date fields when adding a mailbox
+            - populates modified and lastpasswordchange fields when resetting password
+        
+        # 0.1.5
+        
+        - fixes issue where the all aliases were not deleted when deleting a mailbox
+        
+        # 0.1.4
+        
+        - mailbox search
+        - reset mailbox password
+        
+Keywords: iredadmin iredmail email api
+Platform: UNKNOWN
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 2.7
