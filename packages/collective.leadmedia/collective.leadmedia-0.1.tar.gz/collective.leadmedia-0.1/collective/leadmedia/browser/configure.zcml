@@ -1,0 +1,53 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:plone="http://namespaces.plone.org/plone"
+i18n_domain="collective.leadmedia">
+
+	<browser:page
+         for="plone.app.contenttypes.interfaces.IFolder"
+         name="media_view"
+         class=".views.FolderLeadMediaView"
+         template="templates/folder_leadmedia_view.pt"
+         layer="..interfaces.ILeadMediaSpecific"
+         permission="zope2.View"
+    />
+
+    <browser:menuItem
+        for="plone.app.contenttypes.interfaces.IFolder"
+        menu="plone_displayviews"
+        title="Media View"
+        action="media_view"
+        layer="..interfaces.ILeadMediaSpecific"
+        description="View with lead media displayed"
+    />
+
+    <browser:page
+         for="plone.app.contenttypes.interfaces.ICollection"
+         name="collection_media_view"
+         class=".views.CollectionLeadMediaView"
+         template="templates/collection_media_view.pt"
+         layer="..interfaces.ILeadMediaSpecific"
+         permission="zope2.View"
+    />
+
+    <browser:menuItem
+        for="plone.app.contenttypes.interfaces.ICollection"
+        menu="plone_displayviews"
+        title="Media View"
+        action="collection_media_view"
+        layer="..interfaces.ILeadMediaSpecific"
+        description="View with lead media displayed"
+    />
+
+    <!-- Viewlets -->
+    <browser:viewlet
+            name="leadmedia"
+            for="plone.app.contenttypes.interfaces.IDocument"
+            class=".viewlets.LeadMediaViewlet"
+            manager="plone.app.layout.viewlets.interfaces.IAboveContentBody"
+            template="viewlets_templates/leadmedia.pt"
+            permission="zope2.View"
+    />
+
+</configure>

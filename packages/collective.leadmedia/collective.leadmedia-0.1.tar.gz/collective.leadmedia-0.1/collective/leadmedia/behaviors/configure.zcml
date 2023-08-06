@@ -1,0 +1,44 @@
+<configure
+  xmlns="http://namespaces.zope.org/zope"
+  xmlns:browser="http://namespaces.zope.org/browser"
+  xmlns:plone="http://namespaces.plone.org/plone"
+  xmlns:zcml="http://namespaces.zope.org/zcml"
+  i18n_domain="collective.leadmedia">
+
+  <include package="plone.behavior" file="meta.zcml"/>
+
+  <plone:behavior
+    title="Slideshow"
+    description="Adds slideshow"
+    provides=".slideshow.ISlideshow"
+    factory=".slideshow.Slideshow"
+    for="plone.dexterity.interfaces.IDexterityContainer"
+    marker=".slideshow.ISlideshow"
+    />
+
+  <browser:viewlet
+    name="slideshow"
+    for=".slideshow.ISlideshow"
+    class=".viewlets.SlideshowViewlet"
+    manager="plone.app.layout.viewlets.interfaces.IAboveContentBody"
+    template="templates/slideshow.pt"
+    permission="zope2.View"
+    />
+
+   <browser:page
+         for="*"
+         name="get_slideshow_item"
+         class=".slideshow.getSlideshowItem"
+         template="templates/slideshow_item.pt"
+         permission="zope2.View"
+    />
+
+    <browser:page
+         for="plone.app.contenttypes.interfaces.IFolder"
+         name="slideshowListing"
+         class=".slideshow.slideshowListingView"
+         template="templates/slideshow_listing.pt"
+         permission="zope2.View"
+    />
+
+</configure>

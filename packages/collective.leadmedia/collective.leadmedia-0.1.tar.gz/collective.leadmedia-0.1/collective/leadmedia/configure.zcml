@@ -1,0 +1,93 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:five="http://namespaces.zope.org/five"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+    xmlns:zcml="http://namespaces.zope.org/zcml"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    i18n_domain="collective.leadmedia">
+
+  <five:registerPackage package="." initialize=".initialize" />
+
+
+  <include package=".browser" />
+  <include package=".behaviors" />
+  
+  <genericsetup:registerProfile
+      name="default"
+      title="Collective Leadmedia"
+      directory="profiles/default"
+      description='Adds a slideshow to any dexterity folderish type.'
+      provides="Products.GenericSetup.interfaces.EXTENSION"
+      />
+
+  <!-- Register the import step -->
+  <genericsetup:importStep
+      name="collective.leadmedia"
+      title="collective.leadmedia special import handlers"
+      description=""
+      handler="collective.leadmedia.setuphandlers.import_various" />
+
+  <!-- Register the upgrade step -->
+  <genericsetup:upgradeStep
+      title="Add leadmedia catalog indexes"
+      description="Add the hasMedia and leadMedia indexes"
+      source="1000"
+      destination="1001"
+      handler="collective.leadmedia.setuphandlers.add_catalog_indexes"
+      profile="collective.leadmedia:default" />
+
+  <adapter
+      for="plone.dexterity.interfaces.IDexterityContainer"
+      provides=".interfaces.ICanContainMedia"
+      factory=".adapters.MediaHandling"
+      />
+
+  <adapter
+      for="plone.app.contenttypes.interfaces.IFolder"
+      provides=".interfaces.ICanContainMedia"
+      factory=".adapters.MediaHandling"
+      />
+  
+ <adapter
+      for="plone.app.contenttypes.interfaces.ICollection"
+      provides=".interfaces.ICanContainMedia"
+      factory=".adapters.MediaHandling"
+      />
+
+  <subscriber
+        for="plone.dexterity.interfaces.IDexterityContainer
+        zope.lifecycleevent.interfaces.IObjectModifiedEvent"
+        handler="collective.leadmedia.events.reindexMedia" />
+
+  <subscriber
+        for="plone.app.contenttypes.interfaces.IFolder
+        zope.lifecycleevent.interfaces.IObjectModifiedEvent"
+        handler="collective.leadmedia.events.reindexMedia" />
+
+  <subscriber
+        for="plone.app.contenttypes.interfaces.ICollection
+        zope.lifecycleevent.interfaces.IObjectModifiedEvent"
+        handler="collective.leadmedia.events.reindexMedia" />
+
+  <!-- if image cropping present -->
+  <subscriber
+      for="plone.app.contenttypes.interfaces.IImage
+      zope.lifecycleevent.interfaces.IObjectAddedEvent
+      "
+      handler=".utils.imageObjectCreated"
+      zcml:condition="installed plone.app.imagecropping"/>
+
+  <adapter name="hasMedia" factory=".indexers.hasMedia" />
+  <adapter name="leadMedia" factory=".indexers.leadMedia" />
+  <adapter name="hasMedia" factory=".indexers.folder_hasMedia" />
+  <adapter name="leadMedia" factory=".indexers.folder_leadMedia" />
+  <adapter name="hasMedia" factory=".indexers.collection_hasMedia" />
+  <adapter name="leadMedia" factory=".indexers.collection_leadMedia" />
+
+  <subscriber
+        for="plone.dexterity.interfaces.IDexterityContainer
+        zope.lifecycleevent.interfaces.IObjectAddedEvent"
+        handler=".events.objectAddedEvent" />
+  
+</configure>
