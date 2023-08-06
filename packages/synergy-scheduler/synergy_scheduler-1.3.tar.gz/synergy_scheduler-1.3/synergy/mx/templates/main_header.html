@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', file='scheduler_ui.css') }}">
+    <script type="text/javascript" src="{{ url_for('static', file='jquery-1.8.2.min.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', file='jquery.dataTables-1.9.4.min.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', file='scheduler_ui.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', file='navigation_menu.js') }}"></script>
+    <title>main_header</title>
+</head>
+
+<body>
+<table style="width: 100%" class="header-table">
+    <thead>
+    <tr>
+        <th>Synergy Scheduler</th>
+        <th style="text-align: left">build. {{ get_version() }}</th>
+        <th></th>
+        {%- for mx_rule, mx_name in mx_processing_context.iteritems() -%}
+        <th></th>
+        {%- endfor -%}
+        <th style="text-align: right">page last updated: {{ get_current_time() }}</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td><a href="{{ url_for('scheduler_managed_entries') }}">scheduler managed entries</a></td>
+        <td><a href="{{ url_for('scheduler_freerun_entries') }}">scheduler freerun entries</a></td>
+        {%- for mx_rule, mx_page_name in mx_processing_context.iteritems() %}
+            <td><a href="/{{ mx_rule }}">{{ mx_page_name }}</a></td>
+        {%- endfor -%}
+        <td><a href="{{ url_for('processing_statements') }}">processing statements</a></td>
+        <td><a href="{{ url_for('timetable_details') }}">timetable details</a></td>
+    </tr>
+    </tbody>
+</table>
+<br/>
+<br/>
+
+<div class="body">{% block body %}{% endblock %}</div>
+<br/>
+
+<div id="footer" style="text-align: right">
+    <a href="mailto:mushkevych@users.noreply.github.com?subject=Comments to Scheduler MX page">Feedback</a>
+</div>
+
+</body>
+
+<script type="text/javascript" src="{{ url_for('static', file='context_menu.js') }}"></script>
+</html>
