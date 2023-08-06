@@ -1,0 +1,220 @@
+CHANGES
+=======
+
+0.0.1
+-----
+
+* Add centos to list of alternative users for login
+* Send environment vars to diskimage-builder per image
+* Remove hardcoded root path of a jenkins node
+* Add meta option for passing meta-data
+* Properly reference nodepool config in image update
+* Capture provider name in status logging
+* Line-by-line dib logs
+* Move the ImageUpdater base class for clarity
+* Handle config updates in dib builder thread
+* hostname & subnode-hostname is taken from targets instead of labels
+* Fix attribute error state if node not found
+* Delete correct item in image delete command
+* Pass the nodepool scriptdir to disk-image-create
+* Export image name and filename to DIB
+* Be more atomic when counting nodes
+* Paralellize image deletes
+* Record provider/region/az in /etc/nodepool
+* Ignore min-ready when at capacity
+* Don't retry forever when a provider is stopped
+* Some extra safety around negative numbers
+* Change history allocation from list to dict
+* Revert "Revert "Track last allocations to ensure forward-progress""
+* Avoid passing negative available count to allocator
+* Update documentation for using diskimage-builder
+* Correct ssh key instructions in README
+* Actually correct use of label.providers dict
+* Correct use of label.providers dict
+* Correct errant uses of label.image.is_diskimage
+* Remove setUp() call from setup_config
+* Move pool.stop into addCleanup
+* Logging format for FakeLogger
+* Fix "nodepool image-update provider label" cmd
+* Refactor nodepool to configure glance only when uploading imaes
+* Build images using diskimage-builder
+* Add timestamps to nodepool logging
+* Fix potential floating ip leakage issue
+* Add stdout and stderr to exception when ready script fails
+* Record provider AZ info in graphite
+* Use correct provider in test-case
+* Revert "Track last allocations to ensure forward-progress"
+* Cleaning up index.rst file
+* Drop voluptuous from requirements
+* Enable debugging output
+* Add support for network labels
+* Track last allocations to ensure forward-progress
+* Fix Configuration link in docs
+* Make template and node hostnames configurable
+* Update pbr version
+* Show expected output in test-case error
+* Add @localhost to openstack_citest user example
+* Handle task manager shutdown more correctly
+* Use import from six.moves to import the queue module
+* Pass in hostname as a script parameter
+* Check for stale PID lock when starting
+* Remove libzmq-dev from dependency list
+* Increase watermark sleep in tests for reliability
+* Add warnings about the installation of libzmq1
+* Log task durations
+* Log task manager queue length
+* Prevent listserver tasks from piling up
+* Check the returned image status
+* Display node AZ in `nodepool list` output
+* Support provider AZ lists
+* Use except x as y instead of except x, y
+* Don't accept tasks for stopped managers
+* Create new provider managers on image data changes
+* Add cloud-user to non-root user list
+* Fix typo in launch stats
+* Improve logging/stats around launch errors
+* Fix race in tests
+* Correct update-image to image-update in samples
+* Create launch-timeout setting for providers
+* Fix neutron configuration error
+* Immediately delete a floating IP if doesn't attach
+* Protect against /etc/nodepool not existing
+* Fix tox's insane pip install command
+* Detect neutron net-changes on reconfigure
+* Create snapshots when min-ready is >= 0
+* Fix update-image command
+* Fix missing attribute error in subnodes
+* Add a test for subnodes
+* Add a very basic functional test
+* Add per-test database fixture
+* Finish initial docs
+* Add tests for the allocator
+* Add ready-script and multi-node support
+* Fix the allocation distribution
+* Fix image/label name typo in stats
+* Add 'labels' as a configuration primitive
+* Stop waiting for resources in ERROR state
+* Add the ability to create subnodes
+* Add SubNodes and the ability to delete them
+* Depend on hacking for its dependencies
+* Include provider names in timeout messages
+* Set paramiko version > 1.9.0
+* Delete created keypairs if nova boot fails
+* Raise min_demand due to slow node boot times
+* Keep py3.X compatibility for urllib/urllib2
+* Roll up node stats
+* Keep current and previous snapshot images
+* Preserve HOLD state when job starts
+* Fix more str!=int bugs
+* Remove unhelpful log message
+* Coerce all ids from novaclient to str
+* Node deletion related fixes
+* Use the task manager to get extensions and flavors
+* Delete all building nodes on daemon start
+* Perform all deletes in threads
+* Check server status in batch
+* Add fedora support
+* Make nodepool more robust to offline clouds
+* Retry ssh connections on auth failure
+* Fix typo in allocation
+* Make jenkins get info task synchronous
+* Allow useage of server IDs as well as names
+* Revert delete-rework branch
+* Log state names not numbers
+* Also log provider name when debugging deletes
+* Include check in fake.yaml
+* Run per-provider cleanup threads
+* Decouple cron names from config file names
+* Move cron definition out of the inner loop
+* Move cron loading below provider loading
+* Teach periodicCleanup how to do one provider
+* Use the nonblocking cleanupServer
+* Split out the logic for deleting a nodedb node
+* Make cleanupServer optionally nonblocking
+* Consolidate duplicate logging messages
+* Log how long nodes have been in DELETE state
+* Cleanup nodes in state DELETE immediately
+* Expose paramiko's get_pty parameter
+* Switch node id and ip in debug output
+* Revert "Provide diagnostics when task rate limiting."
+* Revert "Default to a ratelimit of 2/second for API calls"
+* Log the time a node has been in state DELETE
+* Avoid redundant updates of node.state=DELETE
+* Fix early-exit in cleanupOneNode
+* Default to a ratelimit of 2/second for API calls
+* Provide diagnostics when task rate limiting
+* Ignore vim editor backup and swap files
+* Don't load system host keys
+* Document that fake.yaml isn't usable
+* Only attempt to copy files when bootstrapping
+* Add some debugging around image checking
+* Permit using a known keypair when bootstrapping
+* Permit specifying instance networks to use
+* Catch exceptions from nova flavor-list calls
+* Add docs
+* Readme enhancements
+* Pin Sphinx to <1.2
+* Improve README.rst formatting
+* Fix README file
+* Restructure periodic cleanup
+* Add job runtime stats
+* Fix the issue which raise FloatingIpPoolNotFound
+* Improve image logging
+* Fix old pre-nodepoold reference in README
+* Add ability to filter on flavor name
+* Fix the logprint in task_manager.py
+* Skip periodic cleanup if the node is not stale
+* Add more details to developer setup in README
+* add introduction for README document
+* Consider existing nodes when allocating to a target
+* Make ip_id arg match calling and consuming
+* Add gear to requirements
+* Change image debug interpolation order
+* Add the ability to pass pool for AddPublicIP
+* Don't use max_overflow with sqlite
+* Fix another wrong use of server_id
+* Rename ASRT -> AGT
+* Add a thread dump signal handler
+* Pass correct server_id when adding public IP
+* Make image updates independent
+* Add the ability to ignore offline targets
+* Fix stats after min_ready change
+* Fix parsing gearman status
+* Inspect the Gearman queue for immediate demand
+* Make node SSH timeout configurable
+* Ignore hacking warnings
+* Add default location for config file
+* Fix fake provider
+* Fix HOLD state
+* Add image-delete command
+* Add a delete command
+* Add a hold command
+* Add alien-image-list command
+* Add alien-list command
+* Add image-update command
+* Add a nodepool command
+* Add image logging
+* Change use of error numbers to errno
+* Fix image delete logic
+* Fix typo in node check method
+* Fix typo in deleteImage
+* Add option to test jenkins node before use
+* Make jenkins username and private key path configurable
+* Fix error with stats for de-configured resources
+* Move setup scripts destination
+* Reduce timeout when waiting for server deletion
+* Change credentials-id parameter in config file
+* Add an ssh check periodic task
+* Add JenkinsManager
+* Add ProviderManager
+* Delay 1 min before deleting node
+* Cache novaclient objects
+* Tune SQLAlchemy pool parameters
+* Use a sensible SQLAlchemy session model
+* Make the target name required in the schema
+* Require a target name when instantiating a node
+* Use MySQL
+* Make the local script directory configurable
+* Handle paramiko and daemonization
+* Initial commit
+* Added .gitreview
