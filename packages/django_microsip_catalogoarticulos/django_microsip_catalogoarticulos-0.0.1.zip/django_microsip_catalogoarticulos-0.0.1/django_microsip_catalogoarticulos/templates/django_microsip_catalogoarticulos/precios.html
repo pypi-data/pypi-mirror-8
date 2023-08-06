@@ -1,0 +1,48 @@
+{% extends "django_microsip_catalogoarticulos\base.html" %}
+{% block title %}Precios{% endblock %}
+
+<!-- CSS Code -->
+{% block style_css %}{% endblock %}
+
+{% block js_code %}
+{% endblock %}
+
+{% block breadcrumb %}{{ block.super }} {% endblock %}
+{% block content %}
+<div class="page-header">
+	<h1>Precios </h1>
+</div>
+
+
+<!-- <div class="row center">
+	<ul class="pager">
+		{% if page_obj.has_previous %}
+		<li><a href="?page={{ page_obj.previous_page_number }}">«</a></li>
+		{% else %}
+		<li class="disabled"><a href="#">«</a></li>
+		{% endif %}
+		<li class="disabled">Pagina {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}.</li>
+		{% if page_obj.has_next %}
+		<li><a href="?page={{ page_obj.next_page_number }}">»</a></li>
+		{% else %}
+		<li class="disabled"><a href="#">»</a></li>
+		{% endif %}
+	</ul>
+</div> -->
+
+
+{% for articulo,precio in articulos_precios.items %}
+<div class="col-md-4 col-xs-12 col-sm-6">
+	<div id="div_puntos">
+		<div ><b>{{ articulo.nombre }} </b></div>
+		<div><a href="/catalogo/articulo/{{articulo.id}}/"> <img src='{{MEDIA_URL}}{{articulo.imagen}}' style="height: 130px; width: 150px; margin-top:.5em; margin-bottom:.5em; border-radius:5px;"/> </a></div>
+	</div>
+	<div id="div_puntos">
+		<div >$ {{ precio }}</div>
+	</div>
+	<br>
+</div>
+{% endfor %}
+
+<br style="clear:both">
+{% endblock %}
