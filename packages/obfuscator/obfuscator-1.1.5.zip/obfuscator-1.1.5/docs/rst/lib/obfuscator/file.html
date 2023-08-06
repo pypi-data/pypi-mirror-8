@@ -1,0 +1,206 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>obfuscator.file &mdash; obfuscator 1.1.5 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '1.1.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="obfuscator 1.1.5 documentation" href="../../../index.html" />
+    <link rel="up" title="Auto Generated API Documentation" href="../../auto.html" />
+    <link rel="next" title="obfuscator" href="../obfuscator.html" />
+    <link rel="prev" title="Auto Generated API Documentation" href="../../auto.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../obfuscator.html" title="obfuscator"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../../auto.html" title="Auto Generated API Documentation"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../../../index.html">obfuscator 1.1.5 documentation</a> &raquo;</li>
+          <li><a href="../../auto.html" accesskey="U">Auto Generated API Documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-obfuscator.file">
+<span id="obfuscator-file"></span><h1>obfuscator.file<a class="headerlink" href="#module-obfuscator.file" title="Permalink to this headline">¶</a></h1>
+<p>This module contains a file-level interface for the XOR obfuscation methods.</p>
+<dl class="class">
+<dt id="obfuscator.file.ObfuscatedFile">
+<em class="property">class </em><tt class="descclassname">obfuscator.file.</tt><tt class="descname">ObfuscatedFile</tt><big>(</big><em>filename</em><big>)</big><a class="headerlink" href="#obfuscator.file.ObfuscatedFile" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filename</strong> (<em>str</em>) &#8211; The path of the file you want to read/write.</td>
+</tr>
+</tbody>
+</table>
+<p>This class represents an obfuscated data file.  You can use this to store
+some-what sensitive information inside a file.  The documentation for some of
+the functions is purposely light.</p>
+<p>Example #1 - Storing a string:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">obfuscator.file</span> <span class="kn">import</span> <span class="n">ObfuscatedFile</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">of</span> <span class="o">=</span> <span class="n">ObfuscatedFile</span><span class="p">(</span><span class="s">&#39;data.bin&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">bytes</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="nb">ord</span><span class="p">,</span> <span class="s">&quot;my string&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">of</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">bytes</span><span class="p">)</span>  <span class="c"># data.bin is 32 bytes long</span>
+<span class="go">86  # The random key used for encoding; stored in the file</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">read_bytes</span> <span class="o">=</span> <span class="n">of</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">read_bytes</span>
+<span class="go">[109L, 121L, 32L, 115L, 116L, 114L, 105L, 110L, 103L]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">chr</span><span class="p">,</span> <span class="n">read_bytes</span><span class="p">))</span>
+<span class="go">&#39;my string&#39;</span>
+</pre></div>
+</div>
+<p>Example #2 - Storing a string with known key:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">obfuscator.file</span> <span class="kn">import</span> <span class="n">ObfuscatedFile</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">of</span> <span class="o">=</span> <span class="n">ObfuscatedFile</span><span class="p">(</span><span class="s">&#39;data.bin&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">bytes</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="nb">ord</span><span class="p">,</span> <span class="s">&quot;my string&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">my_key</span> <span class="o">=</span> <span class="mh">0xCF</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">of</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">bytes</span><span class="p">,</span> <span class="n">my_key</span><span class="p">)</span>  <span class="c"># data.bin is 32 bytes long</span>
+<span class="go">207</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">read_bytes</span> <span class="o">=</span> <span class="n">of</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>  <span class="c"># Notice how we didn&#39;t use a key</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">chr</span><span class="p">,</span> <span class="n">read_bytes</span><span class="p">))</span>
+<span class="go">&#39;,8a253(/&amp;&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c"># The string is wrong because the key is not stored in the file</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">read_bytes</span> <span class="o">=</span> <span class="n">of</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">my_key</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">chr</span><span class="p">,</span> <span class="n">read_bytes</span><span class="p">))</span>
+<span class="go">&#39;my string&#39;</span>
+<span class="go">&gt;&gt;&gt;</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="obfuscator.file.ObfuscatedFile.read">
+<tt class="descname">read</tt><big>(</big><em>key=None</em><big>)</big><a class="headerlink" href="#obfuscator.file.ObfuscatedFile.read" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function reads a file written by <cite>write</cite>, and returns the
+deobfuscated data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>key</strong> (<em>int</em>) &#8211; The key used during <cite>write()</cite>.  NOTE: If you passed in a
+key during <cite>write()</cite>, you <em>must</em> use the same key here; the key will not
+be stored in the file.  If you let the algorithm choose the key, it is
+stored in the file, and will be used during <cite>read()</cite>.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="obfuscator.file.ObfuscatedFile.write">
+<tt class="descname">write</tt><big>(</big><em>data</em>, <em>key=None</em>, <em>minimum_length=32</em><big>)</big><a class="headerlink" href="#obfuscator.file.ObfuscatedFile.write" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write the data to a file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>data</strong> (<em>iterable</em>) &#8211; The data you want to encode; the length of data must
+be less than 0xFF (header size limitation)</li>
+<li><strong>key</strong> (<em>int</em>) &#8211; The key used during encoding</li>
+<li><strong>minimum_length</strong> (<em>int</em>) &#8211; The minimum number of bytes to write.  If the
+encoding operation produces fewer bytes that this, random bytes are
+appended to the end of the result so len(bytes) == minimum_length.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../../auto.html"
+                        title="previous chapter">Auto Generated API Documentation</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../obfuscator.html"
+                        title="next chapter">obfuscator</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../../_sources/rst/lib/obfuscator/file.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../obfuscator.html" title="obfuscator"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../../auto.html" title="Auto Generated API Documentation"
+             >previous</a> |</li>
+        <li><a href="../../../index.html">obfuscator 1.1.5 documentation</a> &raquo;</li>
+          <li><a href="../../auto.html" >Auto Generated API Documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Timothy McFadden.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

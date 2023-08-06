@@ -1,0 +1,287 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>obfuscator &mdash; obfuscator 1.1.5 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.1.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="obfuscator 1.1.5 documentation" href="../../index.html" />
+    <link rel="up" title="Auto Generated API Documentation" href="../auto.html" />
+    <link rel="prev" title="obfuscator.file" href="obfuscator/file.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="obfuscator/file.html" title="obfuscator.file"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../../index.html">obfuscator 1.1.5 documentation</a> &raquo;</li>
+          <li><a href="../auto.html" accesskey="U">Auto Generated API Documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-obfuscator">
+<span id="obfuscator"></span><h1>obfuscator<a class="headerlink" href="#module-obfuscator" title="Permalink to this headline">¶</a></h1>
+<p>This module contains a simple mechanism for obfuscating a set of data.  Consider
+this &#8220;security through obscurity&#8221;.  This module contains no encryption mechanisms!</p>
+<p>Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">obfuscator</span> <span class="kn">import</span> <span class="n">obfuscate_xor</span><span class="p">,</span> <span class="n">deobfuscate_xor</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="p">,</span> <span class="n">odata</span> <span class="o">=</span> <span class="n">obfuscate_xor</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="p">,</span> <span class="n">odata</span>
+<span class="go">(162, [163, 160, 161, 166, 166, 154, 181, 60, 131, 24, 88, 35, 137, 240, 216, 161, 247, 218, 19, 116, 54, 21, 217, 190, 137, 81, 68, 200, 35, 210, 133, 139])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span> <span class="n">data</span> <span class="o">==</span> <span class="n">deobfuscate_xor</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">odata</span><span class="p">)[:</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)]</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="p">,</span> <span class="n">odata</span> <span class="o">=</span> <span class="n">obfuscate_xor</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">minimum_length</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span> <span class="n">data</span> <span class="o">==</span> <span class="n">deobfuscate_xor</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">odata</span><span class="p">)</span>
+<span class="go">&gt;&gt;&gt;</span>
+</pre></div>
+</div>
+<dl class="function">
+<dt id="obfuscator.deobfuscate">
+<tt class="descclassname">obfuscator.</tt><tt class="descname">deobfuscate</tt><big>(</big><em>key</em>, <em>data</em>, <em>encoder=1</em><big>)</big><a class="headerlink" href="#obfuscator.deobfuscate" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function obfuscates the data using the default operation.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="obfuscator.deobfuscate_offset">
+<tt class="descclassname">obfuscator.</tt><tt class="descname">deobfuscate_offset</tt><big>(</big><em>key</em>, <em>data</em><big>)</big><a class="headerlink" href="#obfuscator.deobfuscate_offset" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function deobfuscates the data using an offset operation.</p>
+<p>The formula used is: [x - key for x in data]</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>key</strong> (<em>int</em>) &#8211; The key used for the offset operation.</li>
+<li><strong>data</strong> (<em>iterable</em>) &#8211; The data you want to obfuscate</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="obfuscator.deobfuscate_rot13">
+<tt class="descclassname">obfuscator.</tt><tt class="descname">deobfuscate_rot13</tt><big>(</big><em>key</em>, <em>data</em><big>)</big><a class="headerlink" href="#obfuscator.deobfuscate_rot13" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function performs a ROT13 decode of the data.  <cite>data</cite> needs
+to be an iterable that contains a representation of str types.  This can be
+either a string of type <cite>str</cite>, or a list of bytes from something like <cite>ord</cite>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>key</strong> (<em>int</em>) &#8211; This value is ignored; it only exists to conform to the other
+methods.</li>
+<li><strong>data</strong> (<em>iterable</em>) &#8211; The data you want to deobfuscate</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="obfuscator.deobfuscate_xor">
+<tt class="descclassname">obfuscator.</tt><tt class="descname">deobfuscate_xor</tt><big>(</big><em>key</em>, <em>data</em><big>)</big><a class="headerlink" href="#obfuscator.deobfuscate_xor" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function deobfuscates the data using an byte-wise XOR operation.</p>
+<p>The formula used is: [x ^ key for x in data]</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>key</strong> (<em>int</em>) &#8211; The key used for the XOR operation.</li>
+<li><strong>data</strong> (<em>iterable</em>) &#8211; The data you want to obfuscate</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="obfuscator.obfuscate">
+<tt class="descclassname">obfuscator.</tt><tt class="descname">obfuscate</tt><big>(</big><em>data</em>, <em>key=None</em>, <em>minimum_length=32</em>, <em>encoder=1</em><big>)</big><a class="headerlink" href="#obfuscator.obfuscate" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function obfuscates the data using the default operation.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="obfuscator.obfuscate_offset">
+<tt class="descclassname">obfuscator.</tt><tt class="descname">obfuscate_offset</tt><big>(</big><em>data</em>, <em>key=None</em>, <em>minimum_length=32</em><big>)</big><a class="headerlink" href="#obfuscator.obfuscate_offset" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function obfuscates the data using an offset operation.</p>
+<p>The formula used is: [x + key for x in data]</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>data</strong> (<em>iterable</em>) &#8211; The data you want to obfuscate</li>
+<li><strong>key</strong> (<em>int</em>) &#8211; The value used for the offset operation.  By default, the
+value will be a random integer between 40 and 127.</li>
+<li><strong>minimum_length</strong> (<em>int</em>) &#8211; The minimum number of bytes to return.  If the
+encoding operation produces fewer bytes that this, random bytes are
+appended to the end of the result so len(bytes) == minimum_length.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="obfuscator.obfuscate_rot13">
+<tt class="descclassname">obfuscator.</tt><tt class="descname">obfuscate_rot13</tt><big>(</big><em>data</em>, <em>key=None</em>, <em>minimum_length=32</em><big>)</big><a class="headerlink" href="#obfuscator.obfuscate_rot13" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function performs a ROT13 encode on the data.  <cite>data</cite> needs
+to be an iterable that contains a representation of str types.  This can be
+either a string of type <cite>str</cite>, or a list of bytes from something like <cite>ord</cite>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>data</strong> (<em>iterable</em>) &#8211; The data you want to obfuscate</li>
+<li><strong>key</strong> (<em>int</em>) &#8211; This value is ignored; it only exists to conform to the other
+methods.</li>
+<li><strong>minimum_length</strong> (<em>int</em>) &#8211; The minimum number of bytes to return.  If the
+encoding operation produces fewer bytes that this, random bytes are
+appended to the end of the result so len(bytes) == minimum_length.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="obfuscator.obfuscate_xor">
+<tt class="descclassname">obfuscator.</tt><tt class="descname">obfuscate_xor</tt><big>(</big><em>data</em>, <em>key=None</em>, <em>minimum_length=32</em><big>)</big><a class="headerlink" href="#obfuscator.obfuscate_xor" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function obfuscates the data using an byte-wise XOR operation.</p>
+<p>The formula used is: [x ^ key for x in data]</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>data</strong> (<em>iterable</em>) &#8211; The data you want to obfuscate</li>
+<li><strong>key</strong> (<em>int</em>) &#8211; The key used for the XOR operation.  By default, the key
+will be a random integer between 1 and 255.</li>
+<li><strong>minimum_length</strong> (<em>int</em>) &#8211; The minimum number of bytes to return.  If the
+encoding operation produces fewer bytes that this, random bytes are
+appended to the end of the result so len(bytes) == minimum_length.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="obfuscator.rot13">
+<tt class="descclassname">obfuscator.</tt><tt class="descname">rot13</tt><big>(</big><em>data</em>, <em>minimum_length=32</em><big>)</big><a class="headerlink" href="#obfuscator.rot13" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function performs a ROT13 encode/decode on the data.  <cite>data</cite> needs
+to be an iterable that contains a representation of str types.  This can be
+either a string of type <cite>str</cite>, or a list of bytes from something like <cite>ord</cite>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>data</strong> (<em>iterable</em>) &#8211; The data you want to obfuscate</li>
+<li><strong>minimum_length</strong> (<em>int</em>) &#8211; The minimum number of bytes to return.  If the
+encoding operation produces fewer bytes that this, random bytes are
+appended to the end of the result so len(bytes) == minimum_length.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="obfuscator/file.html"
+                        title="previous chapter">obfuscator.file</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../_sources/rst/lib/obfuscator.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="obfuscator/file.html" title="obfuscator.file"
+             >previous</a> |</li>
+        <li><a href="../../index.html">obfuscator 1.1.5 documentation</a> &raquo;</li>
+          <li><a href="../auto.html" >Auto Generated API Documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Timothy McFadden.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>
