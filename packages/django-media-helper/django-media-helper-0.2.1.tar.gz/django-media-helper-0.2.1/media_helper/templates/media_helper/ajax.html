@@ -1,0 +1,153 @@
+<script>
+{% comment %} this was taken directly from https://docs.djangoproject.com/en/1.6/ref/contrib/csrf/
+// except for the last couple lines.  You should edit the ajax request to fit your needs
+{% endcomment %}
+
+$(document).ready(function(){
+    function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie != '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = jQuery.trim(cookies[i]);
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+    return cookieValue;
+    }
+    var csrftoken = getCookie('csrftoken');
+
+    function csrfSafeMethod(method) {
+        // these HTTP methods do not require CSRF protection
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
+    function sameOrigin(url) {
+        // test that a given url is a same-origin URL
+        // url could be relative or scheme relative or absolute
+        var host = document.location.host; // host + port
+        var protocol = document.location.protocol;
+        var sr_origin = '//' + host;
+        var origin = protocol + sr_origin;
+        // Allow absolute or scheme relative URLs to same origin
+        return (url == origin || url.slice(0, origin.length + 1) == origin + '/') ||
+        (url == sr_origin || url.slice(0, sr_origin.length + 1) == sr_origin + '/') ||
+            // or any other URL that isn't scheme relative or absolute i.e relative.
+            !(/^(\/\/|http:|https:).*/.test(url));
+    }
+    $.ajaxSetup({
+        beforeSend: function(xhr, settings) {
+            if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
+            // Send the token to same-origin, relative URLs only.
+            // Send the token only if the method warrants CSRF protection
+            // Using the CSRFToken value acquired earlier
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+           }
+        }
+    }); 
+
+    function strip_path(path, position){
+        {# this makes certain assumptions about the URI structure #}
+        strip = [      
+            'url(',
+            window.location.origin,
+            ')',
+            '{{ MEDIA_URL }}',
+            '//'
+        ]
+        $.each(strip, function(){
+            path = path.replace(this, "");
+        })
+        return path
+        
+    }
+    function new_width(element){
+
+        return parseInt(element.width() * window.screen.width/$(window).width());
+    }
+
+    {% comment %}
+    I'm sure there's a better way to do this, but I'll get around to doing that later.
+
+    We're going to create a string that will be converted to a python list of tuples on the server-side.
+    It will look like this:
+    [ 
+        (<upload-folder>/<filename>, <new image size>), 
+    ]
+    {% endcomment %}
+    var images = "[";
+    var image = "";
+    {% autoescape off %}
+    $("{{MEDIA_HELPER_IMAGE_SELECTORS}}").each(function(){
+        image = strip_path($(this)[0].src);
+        images += "('" + image + "'," + new_width($(this)) + "), ";
+
+    });
+    {% endautoescape %}
+
+    images += "]";
+    {% comment %}
+        A similar method as above, but because browsers return the background-image path differently, a few modifications 
+        must be made.
+
+        Ulimately a similar string will be created.
+
+    {% endcomment %}
+    backgrounds = "["
+    background_list = []
+
+    {% autoescape off %}
+    $('{{media_helper.BACKGROUND_SELECTORS}}').each(function(){
+        if ($(this).css('background-image') != "none"){
+            background = strip_path($(this).css('background-image'));
+            {# the stripping pattern works for the back ground image, but there is a closing parenthesis to consider #}
+            backgrounds += "('" + background + "'," + new_width($(this)) + "), ";
+            background_list.push($(this));
+        }
+    });
+    {% endautoescape %}
+
+    backgrounds += "]"
+
+    $.ajax({
+        type: "POST",
+        url: '{% url "media_helper" %}',
+        data: {
+            'width' :window.screen.width,
+            'height': window.screen.height,
+            'images': images,
+            'backgrounds': backgrounds
+        },
+        success: function(data){
+            $('img').each(function(){
+                {# for each image, search the returned dict for a new request path #}
+                {% comment %}
+                    Just a reminder what is sent to the server and what is returned
+                    sent:
+                    [ 
+                        (<upload_to>/<filename.ext>, <new size>), 
+                    ]
+
+                    returned:
+                    {
+                        'MEDIA_URL/<upload_to>/filename.ext': 'MEDIA_URL/<upload_to>/<size>/filename.ext'
+                    }
+                {% endcomment %}
+
+                $(this).attr('src', data['images']["{{MEDIA_URL}}" + strip_path($(this)[0].src)]);
+            });
+            $.each(background_list, function(){
+                url = $(this).css('background-image').split("(")[1].split(")")[0];
+                $(this).css('background-image', 'url("' + data['backgrounds']["{{MEDIA_URL}}" + strip_path(url)] + '")');
+
+            });
+        }
+        
+    });
+});
+
+</script>
+
