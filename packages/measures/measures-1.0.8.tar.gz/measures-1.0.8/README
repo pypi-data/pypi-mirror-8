@@ -1,0 +1,45 @@
+README
+======
+
+A python library to send application metrics using UDP.
+
+.. image:: https://travis-ci.org/globocom/measure.svg?branch=master
+   :target: https://travis-ci.org/globocom/measure
+   :alt: Build Status
+
+How do I get set up?
+--------------------
+
+* Summary of set up
+	
+.. code-block:: bash
+
+	mkvirtualenv measure
+	pip install -r test_requirements.txt
+
+* Usage
+
+.. code-block:: python
+
+	from measure import Measure
+	measure = Measure('myclient', ('localhost', 1984))
+	measure.count('mymetric', dimensions={'name': 'john'})
+
+* How to run tests
+
+.. code-block:: bash
+
+	make tests
+
+Contribution guidelines
+-----------------------
+
+* Write tests
+* Code review
+* Make a pull request :-)
+
+Who do I talk to?
+-----------------
+
+* File an issue at https://github.com/globocom/measure or contact us at
+  busca@corp.globo.com
