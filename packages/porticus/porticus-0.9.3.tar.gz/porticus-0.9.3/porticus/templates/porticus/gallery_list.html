@@ -1,0 +1,32 @@
+{% extends "porticus/base.html" %}
+{% load i18n fb_versions tagging_tags %}
+
+{% block head_title %}{% trans "Galleries" %} - {{ block.super }}{% endblock %}
+
+{% block porticus_content %}<div class="row">
+    <h2>{% trans "Galleries" %}</h2>
+
+    <div>
+        {% for gallery in object_list %}
+        <div class="columns small-6 medium-3 panel radius text-center{% if forloop.last %} end{% endif %}">
+            <a href="{% url 'porticus:gallery-detail' gallery_slug=gallery.slug %}">
+                {% if gallery.image %}
+                    {% version_object gallery.image 'thumbnail' as image_thumb %}
+                    <p><img src="{{ image_thumb.url }}" alt=""></p>
+                {% endif %}
+                <p>{{ gallery }}</p>
+            </a>
+        </div>
+        {% empty %}
+        <div class="text-center"><p class="empty">{% trans "No gallery" %}</p></div>
+        {% endfor %}
+    </div>
+    
+    {% if is_paginated %}<ul class="pagination right">
+        {% if page_obj.has_previous %}<li class="arrow"><a href="?page={{ page_obj.previous_page_number }}">&laquo;</a></li>{% endif %}
+        {% for item in paginator.page_range %}
+        <li{% if item == page_obj.number %} class="current"{% endif %}><a href="?page={{ item }}">{{ item }}</a></li>
+        {% endfor %}
+        {% if page_obj.has_next %}<li class="arrow"><a href="?page={{ page_obj.next_page_number }}">&raquo;</a></li>{% endif %}
+    </ul>{% endif %}
+</div>{% endblock %}
