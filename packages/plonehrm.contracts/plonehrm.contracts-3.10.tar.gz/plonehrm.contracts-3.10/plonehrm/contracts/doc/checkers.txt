@@ -1,0 +1,203 @@
+Tests for notification checkers
+===============================
+
+There is two notifications sent by plonehrm.contracts:
+ - one warning when the contract is going to end
+ - one warning when a trial period is close to end.
+
+Note: for all the tests, we use contracts without a fixed
+duration. This is due to the fact that the method 'current_contract'
+of the contract adapter is used by checkers.
+If we use fixed duration contracts, the tests might will start failing
+once the contracts are expired.
+That is also the reason why we need so many employees ;)
+
+1 - Setup
+---------
+
+We'll need a worklocation and a few employees:
+
+    >>> from plonehrm.contracts.notifications import checkers
+    >>> from Products.plonehrm.interfaces import IContractAdapter
+    >>> from DateTime import DateTime
+
+    >>> self.loginAsPortalOwner()
+
+    >>> portal.invokeFactory('WorkLocation', 'wl')
+    'wl'
+    >>> portal.wl.invokeFactory('Employee', 'emp')
+    'emp'
+    >>> employee = portal.wl.emp
+    >>> portal.wl.invokeFactory('Employee', 'emp2')
+    'emp2'
+    >>> employee2 = portal.wl.emp2
+    >>> portal.wl.invokeFactory('Employee', 'emp3')
+    'emp3'
+    >>> employee3 = portal.wl.emp3
+
+We'll also mock HRMEmailer to get the content of the mails printed.
+    >>> class FakeEmailer(object):
+    ...     def __init__(self, context, template, options, recipients, subject):
+    ...         self.context = context
+    ...         self.template = template
+    ...         self.options = options
+    ...         self.recipients = recipients
+    ...         self.subject = subject
+    ...     def send(self):
+    ...         print self.subject
+    ...         print self.template
+    ...         print self.options
+
+    >>> checkers.old_HRMEmailer = checkers.HRMEmailer
+    >>> checkers.HRMEmailer = FakeEmailer
+
+We also need checklists for the employees:
+    >>> class FakeChecklist(object):
+    ...     def addItem(self, *args, **kwargs):
+    ...         pass
+    ...     def addManagerItem(self, *args, **kwargs):
+    ...         pass
+
+We need checklists for the employees:
+    >>> for emp in [employee, employee2, employee3]:
+    ...     emp.checklist = FakeChecklist()
+
+
+2 - Trial period checker
+------------------------
+
+The trial period is checker is active 7 days before the contract trial
+period ends.
+
+2.1 - Contract without a trial period
+-------------------------------------
+
+If a contract does not have a trial period, nothing is done:
+
+    >>> employee.invokeFactory('Contract', 'contract')
+    'contract'
+    >>> employee.contract.setStartdate(DateTime(2011, 1, 1))
+    >>> employee.contract.setIsFixedDuration(False)
+
+If we use the contract adapter to get the trial period, it returns None:
+
+    >>> IContractAdapter(employee).current_contract()
+    <Contract at /plone/wl/emp/contract>
+
+    >>> IContractAdapter(employee).trial_period_end()
+
+And calling the checker will not send any mail:
+
+    >>> checkers.trial_period_ending_checker(portal, None, None)
+
+
+2.2 - Contract with a trial period
+----------------------------------
+
+We'll had a contract to the second employee, with a trial period of
+two months:
+
+    >>> employee2.invokeFactory('Contract', 'contract')
+    'contract'
+    >>> employee2.contract.setStartdate(DateTime(2011, 1, 1))
+    >>> employee2.contract.setTrialPeriod(2)
+    >>> employee2.contract.setIsFixedDuration(False)
+
+The contract adapter tells us that this contracts trial period
+end the 1st of march 2011:
+
+    >>> IContractAdapter(employee2).trial_period_end()
+    DateTime('2011/03/01')
+
+So if we call the checker before the 21st of february, nothing is done:
+
+    >>> checkers.trial_period_ending_checker(portal, None, DateTime(2011, 2, 21))
+
+But after this date, a notification is sent:
+
+    >>> checkers.trial_period_ending_checker(portal, None, DateTime(2011, 2, 22))
+    title_trial_near_ending
+    <ZopeTwoPageTemplateFile at >
+    {'date': 'Mar 01, 2011', 'link_href': 'http://nohost/plone/wl/emp2', 'link_text': u'title_go_to_employee'}
+
+As usual, the notification is only sent once:
+
+    >>> checkers.trial_period_ending_checker(portal, None, DateTime(2011, 2, 22))
+
+
+2.3 - Old contracts with a trial period
+--------------------------------------
+
+The system only checks for the current contract. So if an old contract
+is added (with a trial period already expired) is added, we can get a
+notification.
+
+First, an expired contract with an trial period:
+
+    >>> employee3.invokeFactory('Contract', 'contract')
+    'contract'
+    >>> employee3.contract.setStartdate(DateTime(2009, 1, 1))
+    >>> employee3.contract.setIsFixedDuration(True)
+    >>> employee3.contract.setDuration(12)
+    >>> employee3.contract.setTrialPeriod(2)
+
+There is no notification sent as there is no current contract:
+
+    >>> checkers.trial_period_ending_checker(portal, None)
+
+    >>> IContractAdapter(employee3).current_contract()
+
+Now if we add a contract without an end date (which should be the
+current one):
+
+    >>> employee3.invokeFactory('Contract', 'contract1')
+    'contract1'
+    >>> employee3.contract1.setStartdate(DateTime(2010, 1, 1))
+    >>> employee3.contract1.setIsFixedDuration(False)
+    >>> employee3.contract1.setTrialPeriod(2)
+
+We get a notification as we have a current contract:
+
+    >>> checkers.trial_period_ending_checker(portal, None)
+    title_trial_near_ending
+    <ZopeTwoPageTemplateFile at >
+    {'date': 'Mar 01, 2010', 'link_href': 'http://nohost/plone/wl/emp3', 'link_text': u'title_go_to_employee'}
+
+    >>> IContractAdapter(employee3).current_contract()
+    <Contract at /plone/wl/emp3/contract1>
+
+2.4 - Regression tests
+----------------------
+
+2.4.1 - Considering letters for trial period ending
+---------------------------------------------------
+
+One bug appeared when a change letter was added to the contract. In
+this case, the checker was considering the letter as a contract, but
+the adapter was getting the trial period or the contract itself
+(because it excludes letter when computing the trial period).
+
+    >>> employee3.invokeFactory('Letter', 'letter')
+    'letter'
+    >>> employee3.letter.setStartdate(DateTime(2010, 3, 1))
+    >>> employee3.letter.setIsFixedDuration(False)
+
+When the checker was getting the current contract, it did not specify
+the exclude change letters:
+
+    >>> IContractAdapter(employee3).current_contract()
+    <Letter at /plone/wl/emp3/letter>
+
+Where the adapter does is when getting the trial period:
+
+    >>> IContractAdapter(employee3).current_contract(includeChangeLetters=False)
+    <Contract at /plone/wl/emp3/contract1>
+
+So the system was thinking: it's a new contract with a trial period
+expired, let's send a mail and add a notification for this contract.
+Hopefully this is fixed now, so no notification will be sent:
+
+    >>> checkers.trial_period_ending_checker(portal, None)
+
+3 - Contract ending checker
+---------------------------

@@ -1,0 +1,34 @@
+<tal:page metal:use-macro="container/base_email/macros/plonehrm_mail"
+	  i18n:domain="contract">
+
+  <tal:block metal:fill-slot="title">
+    <tal:dummy i18n:translate="title_contract_near_ending"><tal:dummy i18n:name="name"
+    tal:replace="context/officialName" />'s contract is close to end.</tal:dummy>
+  </tal:block>
+
+  <tal:block metal:fill-slot="content">
+
+    <tal:block metal:use-macro="container/base_email/macros/plonehrm_p">
+      <tal:block metal:fill-slot="p_content">
+<tal:dummy i18n:translate="text_contract_near_ending">
+The contract of <tal:dummy i18n:name="name" tal:replace="context/officialName" /> will
+end within <tal:dummy i18n:name="days" tal:replace="options/days" />
+days.
+</tal:dummy>
+<tal:dummy tal:condition="options/deadline_day|nothing" i18n:translate="text_contract_near_ending_day">
+If you do not want to continue with this employee you need to inform him or her
+at least a day before the contract ends.
+</tal:dummy>
+<tal:dummy tal:condition="options/deadline_month|nothing" i18n:translate="text_contract_near_ending_month">
+If you do not want to continue with this employee you need to inform him or her
+at least a month before the contract ends.
+</tal:dummy>
+      </tal:block>
+    </tal:block>
+
+<tal:block tal:define="link_href options/link_href;
+		       link_text options/link_text ">
+  <div metal:use-macro="container/base_email/macros/plonehrm_link" />
+</tal:block>
+  </tal:block>
+</tal:page>

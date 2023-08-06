@@ -1,0 +1,650 @@
+Metadata-Version: 1.1
+Name: plonehrm.contracts
+Version: 3.10
+Summary: Contracts for Plone HRM
+Home-page: https://prettigpersoneel.nl
+Author: Zest Software
+Author-email: info@zestsoftware.nl
+License: GPL
+Description: Contracts for Plone HRM
+        =======================
+        
+        Add contracts to Employees.  See the Products.plonehrm package.
+        
+        
+        History of plonehrm.contracts
+        =============================
+        
+        
+        3.10 (2014-12-08)
+        -----------------
+        
+        - We should start sending the new notifications for contract ending after
+          1 februari 2015, if fired they should receive the letter before 31 december.
+          [jladage]
+        
+        
+        3.9 (2014-07-09)
+        ----------------
+        
+        - Report deadline for reporting when a notification letter must be sent.
+          [maurits]
+        
+        - Do not notify about end of contract when there is already a
+          correspondence about it.
+          [maurits]
+        
+        - Use must_check_end_fixed_contract helper function before checking.
+          [maurits]
+        
+        
+        3.8 (2014-06-26)
+        ----------------
+        
+        - Add checker for end of fixed contract.  A month before the end, you
+          must send a notification letter.  We warn a month before that date
+          and again a week before that date if no correspondence has been
+          added.  Note that if a new contract has been added, the expiry date
+          is automatically later, so the checker will not kick in, which is
+          good.
+          [maurits]
+        
+        
+        3.7 (2013-09-27)
+        ----------------
+        
+        - Make start date field of contracts and letters required.
+          In my copy of the database there are 11 contracts and 4 letters
+          without a start date, out of a bit over 2000.
+          [maurits]
+        
+        - Add methods getContractIsFixedDuration, getContractDuration and
+          getContractExpirydate to get these fields from the contract
+          belonging to a letter.
+          [maurits]
+        
+        - Do not use the isFixedDuration, duration or expirydate fields for
+          change letters.  Change letters are supposed to automatically end
+          when their contract ends or when a new change letter is made.  We
+          explicitly return the defaults.
+          [maurits]
+        
+        
+        3.6 (2013-06-07)
+        ----------------
+        
+        - Register 'edit' action for Contracts, but keep it invisible.  When a
+          validation error occurs, we can then still be redirected to the edit
+          form without getting 'ValueError: No edit action found'.
+          [maurits]
+        
+        - Added post validation for contracts, especially for expiry and start
+          date.
+          [maurits]
+        
+        - Added expirydate field to allow explicitly setting an expiry date.
+          [maurits]
+        
+        
+        3.5 (2013-03-06)
+        ----------------
+        
+        - Added z3c.autoinclude.plugin entry point for plone.
+        
+        
+        3.4.2 (2012-12-10)
+        ------------------
+        
+        - Fixed subscriber + added logging. [vincent]
+        
+        
+        3.4.1 (2011-10-20)
+        ------------------
+        
+        - Merge 3.3.1 and 3.4. [vincent]
+        
+        
+        3.3.1 (2011-05-30)
+        ------------------
+        
+        - Bugfix in get_worklocation that was not working for some
+          letters. [vincent]
+        
+        
+        3.4 (2011-03-31)
+        ----------------
+        
+        - Fixed a bug in trial period checker + added tests for the
+          notification. [vincent]
+        
+        
+        3.3 (2011-03-11)
+        ----------------
+        
+        
+        3.2 (2010-12-15)
+        ----------------
+        
+        - Updated notifications. [vincent]
+        
+        
+        3.1.1 (2010-12-07)
+        ------------------
+        
+        - bugfix in contract object: with copied worklocations, the
+          getPercentage() method was raising an error as it was impossible to
+          cast into float objects. [vincent]
+        
+        
+        3.0.1 (2010-11-24)
+        ------------------
+        
+        - Bugfix in notifications/events/TrialPeriodEndingEvent. It was still
+          using the '@@contracts' view that has been deleted in previous
+          version. [vincent]
+        
+        
+        3.0 (2010-10-22)
+        ----------------
+        
+        - Moved browser package to Products.plonehrm. [vincent]
+        
+        
+        2.10.2 (2010-09-09)
+        -------------------
+        
+        - Updated checkers so they also work when the context is not the
+          portal. [vincent]
+        
+        
+        2.10.1 (2010-08-27)
+        -------------------
+        
+        - added overflow for contract widget/spread table. [vincent]
+        
+        - bugfix in test. [vincent]
+        
+        
+        2.10 (2010-07-21)
+        -----------------
+        
+        - Updated tool to inherit from template_tool from plonehrm. [vincent]
+        
+        - Added message in viewlet when terminating contract to explain that
+          changes can not be undone. [vincent]
+        
+        
+        2.9.3 (2010-07-09)
+        ------------------
+        
+        - hidden sign buttons when user do not have the 'plonehrm: sign
+          documents' permission. [vincent]
+        
+        
+        2.9.2 (2010-04-23)
+        ------------------
+        
+        - Various CSS changes. [laurens]
+        
+        
+        2.9.1 (2010-04-15)
+        ------------------
+        
+        - added custom_filter function in content/tool.py to allow easy
+          patching for external products. [vincent]
+        
+        - bugfix in contract.getPercentage: if no value has been given to
+          HoursPerWeek, we obtained a TypeError. [vincent]
+        
+        
+        2.9 (2010-04-07)
+        ----------------
+        
+        - updated contract_popup to use JQuery. [vincent]
+        
+        - updated contract_history and added some hints on the buttons. [vincent]
+        
+        - updated schema to have a better organizaton in contract edit
+          view. [vincent]
+        
+        - updated Contract so it is a subclass of PloneHRMDocument. [vincent]
+        
+        
+        2.8.3 (2010-03-29)
+        ------------------
+        
+        - bugfix: moved 'contract_popup' javascript to the contract overview
+          page. [vincent]
+        
+        - Added 'Notified persons' to notifications recipients. [vincent]
+        
+        
+        2.8.2 (2010-03-09)
+        ------------------
+        
+        - bugfix: the viewlet did not show the correct date for the start of
+          employment. [vincent]
+        
+        - Changed translation of 'Wage' into 'Salaris'. [vincent]
+        
+        
+        2.8.1 (2010-03-05)
+        ------------------
+        
+        - The viewlet now displays the current contract or the incoming one if
+          no current one if found. [vincent]
+        
+        
+        2.8 (2010-03-03)
+        ----------------
+        
+        - removed the no-wrap on cell showing end employment reason. [vincent]
+        
+        - bugfix: if user does not fill value in hours spread, it's
+          considered as zero. [vincent]
+        
+        - allow contract with 0h/0days. [vincent]
+        
+        - added start date in the viewlet. [vincent]
+        
+        - contract viewlet does not display the 'Add contract' button when the
+          employee has a contract without fixed duration. [vincent]
+        
+        - updated viewlet so it does not display end date for contracts
+          without fixed duration. [vincent]
+        
+        - the contract widget now asks for a duration greater than 0 if
+          'isFixedDuration' has been set. [vincent]
+        
+        - Added isFixedDuration to contracts schema, so we can define
+          contracts without duration. [vincent]
+        
+        
+        2.7.1 (2010-02-24)
+        ------------------
+        
+        - bugfix: in base_contract, the contract adapter was adapting
+          'self.context' instead of parent, which causes errors when creating
+          JobPerformance interview. [vincent]
+        
+        
+        2.7 (2010-02-17)
+        ----------------
+        
+        - refactoring to use the contractAdapter. [vincent]
+        
+        - all users can now spread the hours like Arbo managers. [vincent]
+        
+        - the contract viewlet now displays the way hours are spreaded in the
+          current contract. [vincent]
+        
+        - hours spreading now allows comma when typing float numbers, not only
+          dots. [vincent]
+        
+        - automatic spreading of hours do not anymore round to quarter of
+          hours, but only to two decimals. [vincent]
+        
+        - changed date in the contract settings so we can ahve an employee who
+          started in 1920. [vincent]
+        
+        - added a 'has_hour_spread' property to Contract objects. This should
+          always be checked before accessing the 'hour_spread' object of a
+          contract. If a manager accesses a contract created by a normal user,
+          it will create an empty hour spread property, which will be used to
+          compute absence length. [vincent]
+        
+        
+        2.6.4 (2010-02-08)
+        ------------------
+        
+        - bugfix: display of hours/week for ARBO managers did not work
+          properly. [vincent]
+        
+        
+        2.6.3 (2010-02-04)
+        ------------------
+        
+        - typo fixing. [vincent]
+        
+        
+        2.6.2 (2010-02-03)
+        ------------------
+        
+        - numbers of hours and number of days per week can be floats. [vincent]
+        
+        
+        2.6.1 (2010-01-28)
+        ------------------
+        
+        - bugfix: updated translations in notification + used
+          employee.officialName instead of employee.Title. [vincent]
+        
+        
+        2.6 (2010-01-15)
+        ----------------
+        
+        - Added new notification sent the day after the employee's last
+          contract expiration date. [vincent]
+        
+        - Added new mail notification sent when a trial period is close to
+          end. [vincent]
+        
+        - Updated notification template when a contract is close to expire. [vincent]
+        
+        
+        2.5.2 (2010-01-07)
+        ------------------
+        
+        - The viewlet is now guarded by the 'plonehrm: view contracts viewlet'
+          permission. The several buttons are guarded by 'plonehrm: manage
+          contracts'. The two add buttons are also guarded by 'plonehrm: Add
+          contract'. [vincent]
+        
+        
+        2.5.1 (2009-11-18)
+        ------------------
+        
+        - bugfix release as the previous one's egg was unusable [vincent]
+        
+        
+        2.5 (2009-11-18)
+        ----------------
+        
+        - Updated notifications of contract expiration to make a link to
+          create a new Letter or a new Contract depending on the settings of
+          the worklocation. [vincent]
+        
+        - Updated viewlet so it displays the end date for the last ending
+          contract instead of the current contract [vincent]
+        
+        - Added the possibility for a Letter to have a duration, so it can be
+          used to extend a contract. [vincent]
+        
+        - Added title attribute on the image used to open the contract/letter
+          pop-up so it displays the type of the object and its title. [vincent]
+        
+        - Updated notification for contract expiration so it does not take
+          into account current contract, but the one that ends the last. [vincent]
+        
+        - Updated method to compute contract expiration date. [vincent]
+        
+        
+        2.4 (2009-10-08)
+        ----------------
+        
+        - Hidden Title from edit form and hidden edit tab in contract view. [vincent]
+        
+        
+        2.3.1 (2009-09-18)
+        ------------------
+        
+        - added link to delete contracts in the viewlet and merged 'Start date'
+          and 'Expiration date' columns. [vincent]
+        
+        - bugfix: on IE, when selecting 'hour spread mode', the table to set
+          hour spread did not work. [vincent]
+        
+        
+        2.3 (2009-09-11)
+        ----------------
+        
+        - Changed display in the viewlet to distinct contracts and letters. [vincent]
+        
+        
+        2.2.1 (2009-09-09)
+        ------------------
+        
+        - Corrected bugs in contract viewlet for Arbo manager. The KSS
+          validation of the form now checks values/total amount of time and
+          the way the viewlet is displayed by default is correct. [vincent]
+        
+        - Display number of hours in contract viewlet. [vincent]
+        
+        - Changed next release number (bug fix for deploiment). [vincent]
+        
+        
+        2.2 (2009-09-02)
+        ----------------
+        
+        - Fixed some typo's in dutch translation. [mirella]
+        
+        - Added class to document type to th and to the last td. [mirella]
+        
+        - Updated viewlet to allow Arbo managers to spread hours more
+          efficiently. [vincent]
+        
+        
+        2.1.5 (2009-09-02)
+        ------------------
+        
+        - Fixed error where change letters did not get their template applied.
+          [maurits]
+        
+        - When notifing that a new contract needs to be created, use the new
+          checklist API, with link_url and date.
+          [maurits]
+        
+        
+        2.1.4 (2009-08-19)
+        ------------------
+        
+        - Avoid error during kss refreshing when ending the employment.
+          [maurits]
+        
+        
+        2.1.3 (2009-08-13)
+        ------------------
+        
+        - updated viewlet to display more usefull information. [vincent]
+        
+        - Added a form to end employment in contract viewlet. [vincent]
+        
+        
+        2.1.2 (2009-07-29)
+        ------------------
+        
+        - Updated contracts viewlet to update/hide status message when
+          performing actions. [vincent]
+        
+        - Updated translations [jladage]
+        
+        2.1.1 (2009-07-22)
+        ------------------
+        
+        - Now the default date when adding a contract is end date of the
+          previous contract plus one day. [mark+vincent]
+        
+        - Contracts and letter now use 'Template' objects as templates and do
+          not take into account simple pages. When creating a contract, only
+          Template for which the type is set to contract appears. The same
+          principle is aplied to letter. [vincent]
+        
+        
+        2.1.0 (2009-07-07)
+        ------------------
+        
+        - We take the title of the chosen template usually when creating a
+          contract or change letter, but now we allow to override this again
+          by specifically filling in a title.
+          [maurits+markvl]
+        
+        
+        2.0.9 (2009-06-23)
+        ------------------
+        
+        - Added KSS in the viewlet. Now, it is possible to add contracts and
+          letters form the viewlet. It is also possible to set a start date for
+          the employee from this viewlet. A new pop-up has been created to
+          display the contract. [vincent]
+          
+        - Updated translations [jladage]
+        
+        
+        2.0.8 (2009-06-15)
+        ------------------
+        
+        - Fixed error when removing contracts as this triggered a wrong kss
+          action.
+          [maurits]
+        
+        - Catch AttributeErrors and KeyErrors thrown by brain.getObject().
+          [maurits]
+        
+        
+        2.0.7 (2009-06-02)
+        ------------------
+        
+        - Removed the setting of the viewlets in the plonehrm_properties to
+          the setuphandlers in Products.plonehrm, where we only set the order
+          once.  [maurits+markvl]
+        
+        
+        2.0.6 (2009-05-29)
+        ------------------
+        
+        - Fixed error when substituting with a template that is not in the
+          first portal_contracts tool.  [maurits]
+        
+        
+        2.0.5 (2009-05-29)
+        ------------------
+        
+        - Fixed error where the default value of days per week was a string
+          instead of an integer.
+          [maurits]
+        
+        
+        2.0.4 (2009-05-29)
+        ------------------
+        
+        - Added expiry_date method to Contract.  [maurits]
+        
+        - Add field to store the number of day per week the employee
+          works. [mike + mark]
+        
+        
+        2.0.3 (2009-05-28)
+        ------------------
+        
+        - Added a listTemplates method to the ContractTool, which lists the
+          templates in this tool.  Optionally this lists the templates from a
+          higher level portal_contracts tool as well.  This is done by trying
+          to call getUseHigherLevelTool on the current tool.  This method
+          is not available by default, but can be implemented by third party
+          products.  Default is False.  If you always want this to be True,
+          add a python script getUseHigherLevelTool in the
+          portal_skins/custom folder that just returns True.
+          [maurits]
+        
+        - The ContractTool is no longer a unique object, which means you can
+          add this tool for example inside a WorkLocation (from the ZMI or
+          with some custom python code) so you can have contract templates
+          specific for this WorkLocation.  [maurits]
+        
+        - ContractTool: really make sure the tool is not indexed.
+          [maurits]
+        
+        
+        2.0.2 (2009-05-26)
+        ------------------
+        
+        - The contract's title does not anymore appear in the contract
+          view. This is done in order to simplify contracts
+          printing. [vincent]
+        
+        - Moved the template field of Contracts to the top of the schema.
+          Moved the setTemplate method into a new event handler that is called
+          when the Contract (or Letter) is initialized.  And refactored the
+          doctests.  [maurits+vincent]
+        
+        
+        2.0.1 (2009-05-15)
+        ------------------
+        
+        - Made the title field of Contracts and Letters invisible on the edit
+          form.  Instead we take the title of the chosen template and append
+          1, 2, 3, etc.  [maurits+vincent]
+        
+        - Added a link from the contract page to the employee.
+          [maurits+vincent]
+        
+        - cut and pasted the default methods from letter.py to contract.py
+          in content, and the base_contracts method.[maurits+mike]
+        
+        - When creating a Letter, use the hours and employmentType from the
+          current contract.  [maurits+mike]
+        
+        - Added string property 'currency', with default value '&euro;'.  This
+          is put in the contract viewlet before the wage.  [maurits]
+        
+        - Override Contract.getWage() so it returns the wage with a comma
+          instead of a dot depending on the default language of the portal.
+          Currently we do this only for Dutch, German and French, as we know
+          those languages want a comma here.  There must be some other way.
+          [maurits]
+        
+        - Add remove icon (and link) to delete contracts and letters in the
+          viewlet itself. [vincent + mark]
+        
+        - Allow using a comma in the wage.  Added a isCurrency validator for
+          that (mostly taken from isDecimal).  [maurits]
+        
+        - Removed .mo files from locales.  This means those translations will
+          not be visible in the old Plone 3.0.  [maurits]
+        
+        
+        2.0 (2009-04-16)
+        ----------------
+        
+        - Use collective.autopermission to register permissions.
+          [maurits]
+        
+        - Set end-of-line style as native and set svn:ignore.  [maurits]
+        
+        
+        1.0 (2008-10-02)
+        ----------------
+        
+        - Do not do the hrm notification checks when the checks have been
+          switched off in our control panel.  [maurits]
+        
+        - Using hrm_properties to get the notification warning period.
+          [maurits]
+        
+        - Using group icon for control panel.  [maurits]
+        
+        - Using new function get_employees_for_checking to get on ly the
+          active Employees.  [maurits]
+        
+        
+        1.0 beta 4 (2 September 2008)
+        -----------------------------
+        
+        - Start of recorded history.
+        
+        
+        1.0 beta 3 (26 March 2008)
+        --------------------------
+        
+        - No history recorded.
+        
+        
+        1.0 beta 2 (25 March 2008)
+        --------------------------
+        
+        - No history recorded.
+        
+        
+        1.0 beta 1 (13 December 2007)
+        -----------------------------
+        
+        - No history recorded.
+Keywords: human resource management contracts
+Platform: UNKNOWN
+Classifier: Framework :: Plone
+Classifier: Framework :: Plone :: 3.3
+Classifier: Framework :: Zope2
+Classifier: Framework :: Zope3
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 2.4
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
