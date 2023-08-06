@@ -1,0 +1,164 @@
+* {
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    font-size: 12px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    margin: 0;
+    padding: 0;
+    font-weight: normal;
+}
+
+body {
+/*
+    background: #000;
+*/
+    margin: 1rem auto 0;
+    max-width: 1440px;
+}
+
+header {
+    display: block;
+    padding: 1rem 0.5rem;
+    background: #222;
+    color: #FFF;
+}
+
+page {
+    display: table;
+    width: 100%;
+}
+
+page nav, page content {
+    vertical-align: top;
+}
+
+page nav {
+    display: table-cell;
+    padding: 0.5rem;
+    width: 20%;
+
+    border: 1px solid #222;
+    border-width: 0 0 1px 1px;
+}
+
+page nav ul {
+    padding: 0;
+    margin: 0 0 0 1rem;
+    list-style: none;
+}
+
+page nav ul li {
+}
+
+page content {
+    display: table-cell;
+    width: 80%;
+
+    border: 1px solid #222;
+    border-width: 0 1px 1px 1px;
+    padding: 0.5rem;
+}
+
+page content ul.log-items {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+/*
+    display: table;
+    table-layout: fixed;
+*/
+}
+
+ul.log-items li {
+/*
+    display: table-row;
+*/
+    max-height: 100px;
+    overflow: hidden;
+    transition: opacity 0.5s linear, max-height 0.5s ease-out, border-color 5s linear;
+    max-height: 250px;
+    opacity: 1;
+    font-size: 0;
+
+    cursor: pointer;
+    outline: 0;
+    border-left: 10px solid transparent;
+}
+
+ul.log-items li.hidden {
+    border-color: #007711;
+    max-height: 0px;
+    opacity: 0;
+}
+
+ul.log-items li:nth-child(2n) {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+ul.log-items li:hover {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+ul.log-items li > .wrap {
+    padding: 0.5rem;
+}
+
+ul.log-items li > .wrap > div {
+/*
+    display: table-cell;
+*/
+    font-size: 1rem;
+    display: inline-block;
+    vertical-align: middle;
+    padding: 0.5rem;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+ul.log-items li > .wrap > div.time {
+    width: 10%;
+}
+
+ul.log-items li > .wrap > div.project {
+    width: 10%;
+}
+
+ul.log-items li > .wrap > div.level {
+    font-weight: bold;
+    text-align: center;
+    width: 10%;
+}
+
+ul.log-items li > .wrap > div.module {
+    width: 10%;
+}
+
+ul.log-items li > .wrap > div.msg {
+    vertical-align: top;
+    display: inline-block;
+    width: 60%;
+    unicode-bidi: embed;
+    font-family: monospace;
+    white-space: pre-wrap;
+    font-size: 0.8rem;
+    max-height: 1.5rem;
+    overflow-y: hidden;
+    transition: max-height 0.2s ease-out;
+}
+
+ul.log-items li:hover > .wrap > div.msg {
+    overflow-y: auto;
+    max-height: 10rem;
+    background: #FFFF00;
+}
+
+footer {
+    display: block;
+}

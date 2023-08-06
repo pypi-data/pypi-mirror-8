@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Overwatch</title>
+        <meta http-equiv="Content-type" content="text/html; charset=UTF-8" />
+        <link rel="stylesheet" type="text/css" href="/pkg/main.css" />
+        <script type="text/javascript" src="/pkg/libs/socket.io.min.js"></script>
+        <script type="text/javascript" src="/pkg/libs/jquery.js"></script>
+        <script type="text/javascript" src="/pkg/libs/handlebars.js"></script>
+        <script type="text/javascript" src="/pkg/libs/underscore.js"></script>
+        <script type="text/javascript" src="/pkg/libs/backbone.js"></script>
+        <script type="text/javascript" src="/pkg/libs/moment.min.js"></script>
+        <script type="text/javascript" src="/pkg/main.js"></script>
+        <script id="project-tpl" type="text/x-handlebars-template">
+            <a href="#" style="color: {{ color }} !important">{{ name }} [{{ id }}]</a>
+        </script>
+        <script id="log-item-tpl" type="text/x-handlebars-template">
+            <div class="wrap">
+                <div class="time">
+                    {{ data.time }}
+                </div>
+                <div class="project" style="color: {{ project.color }}">
+                    {{ project.name }}
+                </div>
+                <div class="level" style="color: {{ text_color }}; background: {{ bg_color }}">
+                    {{ data.levelname }}
+                </div>
+                <div class="module">
+                    {{ data.module }}
+                </div>
+                <div class="msg">{{ data.msg }}</div>
+            </div>
+        </script>
+    </head>
+    <body>
+        <header>
+            <h1>Overwatch</h1>
+        </header>
+        <page>
+            <nav>
+                Projects:
+                <ul class="projects">
+                </ul>
+            </nav>
+            <content>
+                Logs go here
+                <ul class="log-items">
+                </ul>
+            </content>
+        </page>
+        <footer>
+            Powered by Overwatch
+        </footer>
+    </body>
+</html>
