@@ -1,0 +1,25 @@
+=========
+ChangeLog
+=========
+
+
+v0.1.3
+======
+
+* Added support for "pdns-config" local variable in zone file comments
+* Added support for sub-domains that begin with an underscore, e.g.
+  "_domainkey" and "_dmarc"
+* Fixed handling of TXT content records
+
+
+v0.1.2
+======
+
+* Removed dependency on external, no longer existing, `powerdnsclient`
+  package
+
+
+v0.1
+====
+
+* First version
