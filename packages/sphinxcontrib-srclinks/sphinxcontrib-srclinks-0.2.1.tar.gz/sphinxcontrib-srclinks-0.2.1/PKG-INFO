@@ -1,0 +1,110 @@
+Metadata-Version: 1.1
+Name: sphinxcontrib-srclinks
+Version: 0.2.1
+Summary: Add source, edit, history, annotate links to GitHub or BitBucket
+Home-page: http://bitbucket.org/westurner/sphinxcontrib-srclinks
+Author: Wes Turner
+Author-email: wes@wrd.nu
+License: BSD (3-clause)
+Download-URL: http://pypi.python.org/pypi/sphinxcontrib-srclinks
+Description: 
+        
+        sphinxcontrib-srclinks
+        ========================
+        Sphinxcontrib-srclinks is a Sphinx extension for
+        adding project links to the sidebar.
+        
+        Usage
+        -------
+        Clone the repo and copy srclinks.html into the docs' ``_templates/``
+        folder:
+        
+        .. code:: bash
+        
+            git clone https://bitbucket.org/westurner/sphinxcontrib-srclinks
+        
+            DOCS="path/to/docs"
+            mkdir -p $DOCS/_templates
+            cp sphinxcontrib-srclinks/sphinxcontrib/srclinks/_templates/srclinks.html \
+                $DOCS/_templates/srclinks.html
+        
+        Configure the ``srclink_`` settings for the desired repo in ``conf.py``:
+        
+        .. code:: python
+        
+            # conf.py
+            srclink_project = 'https://github.com/westurner/sphinxcontrib-srclinks'
+            srclink_project = 'https://bitbucket.org/westurner/sphinxcontrib-srclinks'
+            srclink_project = 'hg@bitbucket.org/westurner/sphinxcontrib-srclinks'
+            srclink_project = 'git@bitbucket.org/westurner/sphinxcontrib-srclinks'
+            srclink_src_path = 'docs/'
+            srclink_branch = 'master'
+            
+        Add ``srclinks.html`` to ``html_sidebars`` in ``conf.py``:
+        
+        .. code:: Python
+        
+            # Custom sidebar templates, maps document names to template names.
+            html_sidebars = {
+                '**': [
+                    'localtoc.html',
+                    'relations.html',
+                    'searchbox.html',
+                    'srclinks.html',
+                    ],
+                'index': [
+                    'globaltoc.html',
+                    'relations.html',
+                    'searchbox.html',
+                    'srclinks.html',
+                    ],
+            }
+            
+        
+        
+        
+        
+        Changelog
+        ===========
+        
+        0.2.1
+        ------
+        * DOC: CHANGELOG.rst
+        
+        0.2.0
+        ------
+        * BUG:  BUG: backwards compatibility with edit_on_github
+        
+        0.1.2
+        ------
+        * BLD: MANIFEST.in
+        
+        0.1.1
+        ------
+        * DOC: LICENSE
+        
+        0.1.0
+        -------
+        * First release as ``sphinxcontrib.srclinks``
+        * ENH: Added BitBucket support (``hg@`` (default) and ``git@``)
+        * TST: Added tests for BitBucket and GitHub support
+        
+        0.0.1
+        ------
+        
+        * https://github.com/astropy/astropy/pull/347
+        
+          - https://gist.github.com/mgedmin/6052926
+        
+            - https://gist.github.com/westurner/d89c1ea1af05c5c514f9
+        
+        
+Platform: any
+Classifier: Development Status :: 4 - Beta
+Classifier: Environment :: Web Environment
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Topic :: Documentation
+Classifier: Topic :: Utilities
