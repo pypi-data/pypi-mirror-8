@@ -1,0 +1,75 @@
+{% load get_by_id %}
+{% load i18n %}
+
+<div class="row-fluid">
+    <div class="span12">
+        <h3>History</h3>
+        <div style="float: right;"><small>{% blocktrans with page_number=history.number num_pages=history.paginator.num_pages %}Page {{ page_number }} of {{ num_pages }}.{% endblocktrans %}</small></div>
+        {% include "boards/pagination.html" with items=history %}
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>{% trans "Date" %}</th>
+                    <th>{% trans "State" %}</th>
+                    <th>{% trans "Code" %}</th>
+                    <th>{% trans "Response" %}</th>
+                    <th>{% trans "NAMELOOKUP" %}</th>
+                    <th>{% trans "CONNECT" %}</th>
+                    <th>{% trans "PRETRANSFER" %}</th>
+                    <th>{% trans "STARTTRANSFER" %}</th>
+                    <th>{% trans "REDIRECT TIME" %}</th>
+                    <th>{% trans "SIZE DOWNLOAD" %}</th>
+                    <th>{% trans "SPEED DOWNLOAD" %}</th>
+                    <th>{% trans "REDIRECT COUNT" %}</th>
+                    <th>{% trans "CONNECTS COUNT" %}</th>
+                    <th>{% trans "ARP" %}</th>
+                    <th>{% trans "AGENT" %}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in history %}
+                <tr class="probe_{{ item.id }}">
+                    <td>{{ item.created|date:"Y-m-d H:i" }}</td>
+                    <td class="{% if item.response_state > 1%}with-error-msg{% endif %}">
+                        <span class="label {% if item.response_state == 2 %}label-warning{% elif item.response_state == 3 %}label-important{% elif item.response_state == 4 %}label-success{% elif item.response_state == 5 %}label-inverse{% endif %}">
+                            {% if item.response_state == 1 %}{% trans "OK" %}{% elif item.response_state == 2 %}{% trans "Performance" %}{% elif item.response_state == 3 %}{% trans "Serice is working incorrectly" %}{% elif item.response_state == 4 %}{% trans "Wordchecks errors" %}{% else %}{% trans "Agent fail" %}{% endif %}
+                        </span>
+                    </td>
+                    <td>{{ item.response_code }}</td>
+                    <td>{{ item.response_time|floatformat:2 }}</td>
+                    <td>{{ item.namelookup_time|floatformat:2 }}</td>
+                    <td>{{ item.connect_time|floatformat:2 }}</td>
+                    <td>{{ item.pretransfer_time|floatformat:2 }}</td>
+                    <td>{{ item.starttransfer_time|floatformat:2 }}</td>
+                    <td>{{ item.redirect_time|floatformat:2 }}</td>
+                    <td>{% if item.size_download %}{{ item.size_download }} B{% endif %}</td>
+                    <td>{% if item.speed_download %}{{ item.speed_download }} B/s{% endif %}</td>
+                    <td>{% if item.redirect_count != None %}{{ item.redirect_count }}{% endif %}</td>
+                    <td>{{ item.num_connects|default:"" }}</td>
+                    <td>{{ params|get_by_id:item.request_params_id }}</td>
+                    <td>{{ agents|get_by_id:item.agent_id }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% include "boards/pagination.html" with items=history %}
+    </div>
+</div>
+
+<script language="javascript" type="text/javascript">
+    $(document).ready(function() {
+        $('td.with-error-msg span.label').click(function () {
+            var span = $(this);
+            var probe_id = $(this).parent('td').parent('tr').attr('class').split('_')[1];
+            $.get(
+                '/get-error-msg/' + probe_id,
+                function(response) {
+                    if (response.trim().length) {
+                        jAlert(response.trim(), 'Info');
+                    }
+                }
+            );
+            return false;
+        });
+    });
+</script>
