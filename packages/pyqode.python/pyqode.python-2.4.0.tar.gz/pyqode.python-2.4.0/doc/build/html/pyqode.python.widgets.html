@@ -1,0 +1,278 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>pyqode.python.widgets package &mdash; pyqode.python 2.4.dev documentation</title>
+    
+    <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '2.4.dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="pyqode.python 2.4.dev documentation" href="index.html" />
+    <link rel="up" title="pyqode.python package" href="pyqode.python.html" />
+    <link rel="next" title="Examples" href="examples.html" />
+    <link rel="prev" title="pyqode.python.panels package" href="pyqode.python.panels.html" />
+<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
+<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Nobile:regular,italic,bold,bolditalic&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
+<!--[if lte IE 6]>
+<link rel="stylesheet" href="_static/ie6.css" type="text/css" media="screen" charset="utf-8" />
+<![endif]-->
+
+  </head>
+  <body>
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="examples.html" title="Examples"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="pyqode.python.panels.html" title="pyqode.python.panels package"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">pyqode.python 2.4.dev documentation</a> &raquo;</li>
+          <li><a href="pyqode.python.html" accesskey="U">pyqode.python package</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="pyqode-python-widgets-package">
+<h1>pyqode.python.widgets package<a class="headerlink" href="#pyqode-python-widgets-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-pyqode.python.widgets">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-pyqode.python.widgets" title="Permalink to this headline">¶</a></h2>
+<p>This packages contains the available python widgets:</p>
+<blockquote>
+<div><ul class="simple">
+<li>PyCodeEdit</li>
+<li>PyInteractiveConsole</li>
+</ul>
+</div></blockquote>
+<div class="section" id="pycodeeditbase">
+<h3>PyCodeEditBase<a class="headerlink" href="#pycodeeditbase" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="pyqode.python.widgets.PyCodeEditBase">
+<em class="property">class </em><tt class="descclassname">pyqode.python.widgets.</tt><tt class="descname">PyCodeEditBase</tt><big>(</big><em>parent=None</em>, <em>create_default_actions=True</em>, <em>color_scheme='qt'</em><big>)</big><a class="headerlink" href="#pyqode.python.widgets.PyCodeEditBase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">pyqode.core.api.code_edit.CodeEdit</span></tt></p>
+<p>Base class for creating a python code editor widget. The base class
+takes care of setting up the syntax highlighter.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This code editor widget use PEP 0263 to detect file encoding.
+If the opened file does not respects the PEP 0263,
+<a class="reference external" href="http://python.readthedocs.org/en/v2.7.2/library/locale.html#locale.getpreferredencoding" title="(in Python v2.7)"><tt class="xref py py-func docutils literal"><span class="pre">locale.getpreferredencoding()</span></tt></a> is used as the default
+encoding.</p>
+</div>
+<dl class="method">
+<dt id="pyqode.python.widgets.PyCodeEditBase.setPlainText">
+<tt class="descname">setPlainText</tt><big>(</big><em>txt</em>, <em>mimetype='text/x-python'</em>, <em>encoding='utf-8'</em><big>)</big><a class="headerlink" href="#pyqode.python.widgets.PyCodeEditBase.setPlainText" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extends QCodeEdit.setPlainText to allow user to setPlainText without
+mimetype (since the python syntax highlighter does not use it).</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="pycodeedit">
+<h3>PyCodeEdit<a class="headerlink" href="#pycodeedit" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="pyqode.python.widgets.PyCodeEdit">
+<em class="property">class </em><tt class="descclassname">pyqode.python.widgets.</tt><tt class="descname">PyCodeEdit</tt><big>(</big><em>parent=None</em>, <em>server_script='/home/colin/Desktop/pyqode/python/pyqode/python/backend/server.pyc'</em>, <em>interpreter='/usr/bin/python2'</em>, <em>args=None</em>, <em>create_default_actions=True</em>, <em>color_scheme='qt'</em><big>)</big><a class="headerlink" href="#pyqode.python.widgets.PyCodeEdit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">pyqode.python.widgets.code_edit.PyCodeEditBase</span></tt></p>
+<p>Extends PyCodeEditBase with a set of hardcoded modes and panels specifics
+to a python code editor widget.</p>
+<dl class="method">
+<dt id="pyqode.python.widgets.PyCodeEdit.clone">
+<tt class="descname">clone</tt><big>(</big><big>)</big><a class="headerlink" href="#pyqode.python.widgets.PyCodeEdit.clone" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pyqode.python.widgets.PyCodeEdit.DARK_STYLE">
+<tt class="descname">DARK_STYLE</tt><em class="property"> = 0</em><a class="headerlink" href="#pyqode.python.widgets.PyCodeEdit.DARK_STYLE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pyqode.python.widgets.PyCodeEdit.LIGHT_STYLE">
+<tt class="descname">LIGHT_STYLE</tt><em class="property"> = 1</em><a class="headerlink" href="#pyqode.python.widgets.PyCodeEdit.LIGHT_STYLE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pyqode.python.widgets.PyCodeEdit.mimetypes">
+<tt class="descname">mimetypes</tt><em class="property"> = ['text/x-python']</em><a class="headerlink" href="#pyqode.python.widgets.PyCodeEdit.mimetypes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="pyinteractiveconsole">
+<h3>PyInteractiveConsole<a class="headerlink" href="#pyinteractiveconsole" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="pyqode.python.widgets.PyInteractiveConsole">
+<em class="property">class </em><tt class="descclassname">pyqode.python.widgets.</tt><tt class="descname">PyInteractiveConsole</tt><big>(</big><em>parent=None</em><big>)</big><a class="headerlink" href="#pyqode.python.widgets.PyInteractiveConsole" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">pyqode.core.widgets.interactive.InteractiveConsole</span></tt></p>
+<p>Extends the InteractiveConcole to highlight python traceback. If the user
+press on a filename in a traceback, the signal open_file_requested is
+emitted with the file path to open and the line where the user want to go.</p>
+<dl class="class">
+<dt id="pyqode.python.widgets.PyInteractiveConsole.UserData">
+<em class="property">class </em><tt class="descname">UserData</tt><big>(</big><em>filename</em>, <em>line</em>, <em>start</em>, <em>end</em><big>)</big><a class="headerlink" href="#pyqode.python.widgets.PyInteractiveConsole.UserData" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">PyQt4.QtGui.QTextBlockUserData</span></tt></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyqode.python.widgets.PyInteractiveConsole.apply_color_scheme">
+<tt class="descclassname">PyInteractiveConsole.</tt><tt class="descname">apply_color_scheme</tt><big>(</big><em>color_scheme</em><big>)</big><a class="headerlink" href="#pyqode.python.widgets.PyInteractiveConsole.apply_color_scheme" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyqode.python.widgets.PyInteractiveConsole.leaveEvent">
+<tt class="descclassname">PyInteractiveConsole.</tt><tt class="descname">leaveEvent</tt><big>(</big><em>e</em><big>)</big><a class="headerlink" href="#pyqode.python.widgets.PyInteractiveConsole.leaveEvent" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyqode.python.widgets.PyInteractiveConsole.mouseMoveEvent">
+<tt class="descclassname">PyInteractiveConsole.</tt><tt class="descname">mouseMoveEvent</tt><big>(</big><em>e</em><big>)</big><a class="headerlink" href="#pyqode.python.widgets.PyInteractiveConsole.mouseMoveEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extends mouseMoveEvent to display a pointing hand cursor when the
+mouse cursor is over a file location</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyqode.python.widgets.PyInteractiveConsole.mousePressEvent">
+<tt class="descclassname">PyInteractiveConsole.</tt><tt class="descname">mousePressEvent</tt><big>(</big><em>e</em><big>)</big><a class="headerlink" href="#pyqode.python.widgets.PyInteractiveConsole.mousePressEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Emits open_file_requested if the press event occured  over
+a file location string.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pyqode.python.widgets.PyInteractiveConsole.open_file_requested">
+<tt class="descclassname">PyInteractiveConsole.</tt><tt class="descname">open_file_requested</tt><a class="headerlink" href="#pyqode.python.widgets.PyInteractiveConsole.open_file_requested" title="Permalink to this definition">¶</a></dt>
+<dd><p>Signal emitted when the user pressed on a traceback file location.
+Client code should open the requested file in the editor.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="pyoutlinetreewidget">
+<h3>PyOutlineTreeWidget<a class="headerlink" href="#pyoutlinetreewidget" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="pyqode.python.widgets.PyOutlineTreeWidget">
+<em class="property">class </em><tt class="descclassname">pyqode.python.widgets.</tt><tt class="descname">PyOutlineTreeWidget</tt><big>(</big><em>parent=None</em><big>)</big><a class="headerlink" href="#pyqode.python.widgets.PyOutlineTreeWidget" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">PyQt4.QtGui.QTreeWidget</span></tt></p>
+<p>Displays the outline of a PyCodeEdit. The treeview is fully synced with
+the fold panel.</p>
+<p>To use the widget, you just have to set the active editor using
+<a class="reference internal" href="#pyqode.python.widgets.PyOutlineTreeWidget.set_editor" title="pyqode.python.widgets.PyOutlineTreeWidget.set_editor"><tt class="xref py py-func docutils literal"><span class="pre">PyOutlineTreeWidget.set_editor()</span></tt></a>.</p>
+<dl class="method">
+<dt id="pyqode.python.widgets.PyOutlineTreeWidget.set_editor">
+<tt class="descname">set_editor</tt><big>(</big><em>editor</em><big>)</big><a class="headerlink" href="#pyqode.python.widgets.PyOutlineTreeWidget.set_editor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the current editor. The widget display the structure of that
+editor.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>editor</strong> &#8211; PyCodeEdit</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">pyqode.python.widgets package</a><ul>
+<li><a class="reference internal" href="#module-pyqode.python.widgets">Module contents</a><ul>
+<li><a class="reference internal" href="#pycodeeditbase">PyCodeEditBase</a></li>
+<li><a class="reference internal" href="#pycodeedit">PyCodeEdit</a></li>
+<li><a class="reference internal" href="#pyinteractiveconsole">PyInteractiveConsole</a></li>
+<li><a class="reference internal" href="#pyoutlinetreewidget">PyOutlineTreeWidget</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="pyqode.python.panels.html"
+                        title="previous chapter">pyqode.python.panels package</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="examples.html"
+                        title="next chapter">Examples</a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="examples.html" title="Examples"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="pyqode.python.panels.html" title="pyqode.python.panels package"
+             >previous</a> |</li>
+        <li><a href="index.html">pyqode.python 2.4.dev documentation</a> &raquo;</li>
+          <li><a href="pyqode.python.html" >pyqode.python package</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013-2014, Colin Duquesnoy.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

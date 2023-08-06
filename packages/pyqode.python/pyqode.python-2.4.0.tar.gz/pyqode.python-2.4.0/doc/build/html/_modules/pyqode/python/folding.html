@@ -1,0 +1,184 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>pyqode.python.folding &mdash; pyqode.python 2.4.dev documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/pyramid.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '2.4.dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="pyqode.python 2.4.dev documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" />
+<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
+<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Nobile:regular,italic,bold,bolditalic&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
+<!--[if lte IE 6]>
+<link rel="stylesheet" href="../../../_static/ie6.css" type="text/css" media="screen" charset="utf-8" />
+<![endif]-->
+
+  </head>
+  <body>
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">pyqode.python 2.4.dev documentation</a> &raquo;</li>
+          <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for pyqode.python.folding</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module contains the python code fold detector.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">pyqode.core.api</span> <span class="kn">import</span> <span class="n">IndentFoldDetector</span><span class="p">,</span> <span class="n">TextBlockHelper</span><span class="p">,</span> <span class="n">TextHelper</span>
+
+
+<div class="viewcode-block" id="PythonFoldDetector"><a class="viewcode-back" href="../../../pyqode.python.html#pyqode.python.folding.PythonFoldDetector">[docs]</a><span class="k">class</span> <span class="nc">PythonFoldDetector</span><span class="p">(</span><span class="n">IndentFoldDetector</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Python specific fold detector.</span>
+
+<span class="sd">    Python is an indent based language so we use indentation for detecting</span>
+<span class="sd">    the outline but we discard regions with higher indentation if they do not</span>
+<span class="sd">    follow a trailing &#39;:&#39;. That way, only the real logical blocks are</span>
+<span class="sd">    displayed.</span>
+
+<span class="sd">    We also add some trickery to make import regions and docstring appear with</span>
+<span class="sd">    an higher fold level than they should be (in order to make them foldable).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c">#: regex which identifies a single line docstring</span>
+    <span class="n">_single_line_docstring</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">r&#39;&quot;&quot;&quot;.*&quot;&quot;&quot;&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_strip_comments</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prev_block</span><span class="p">):</span>
+        <span class="n">txt</span> <span class="o">=</span> <span class="n">prev_block</span><span class="o">.</span><span class="n">text</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">if</span> <span class="n">prev_block</span> <span class="k">else</span> <span class="s">&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">txt</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&#39;#&#39;</span><span class="p">)</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">txt</span> <span class="o">=</span> <span class="n">txt</span><span class="p">[:</span><span class="n">txt</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&#39;#&#39;</span><span class="p">)]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">txt</span>
+
+    <span class="k">def</span> <span class="nf">_handle_docstrings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">lvl</span><span class="p">,</span> <span class="n">prev_block</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">block</span><span class="o">.</span><span class="n">docstring</span><span class="p">:</span>
+            <span class="n">is_start</span> <span class="o">=</span> <span class="n">block</span><span class="o">.</span><span class="n">text</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&#39;&quot;&quot;&quot;&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">is_start</span><span class="p">:</span>
+                <span class="n">TextBlockHelper</span><span class="o">.</span><span class="n">get_fold_lvl</span><span class="p">(</span><span class="n">prev_block</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">pblock</span> <span class="o">=</span> <span class="n">block</span><span class="o">.</span><span class="n">previous</span><span class="p">()</span>
+                <span class="k">while</span> <span class="n">pblock</span><span class="o">.</span><span class="n">isValid</span><span class="p">()</span> <span class="ow">and</span> <span class="n">pblock</span><span class="o">.</span><span class="n">text</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">==</span> <span class="s">&#39;&#39;</span><span class="p">:</span>
+                    <span class="n">pblock</span> <span class="o">=</span> <span class="n">pblock</span><span class="o">.</span><span class="n">previous</span><span class="p">()</span>
+                <span class="n">is_start</span> <span class="o">=</span> <span class="n">pblock</span><span class="o">.</span><span class="n">text</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&#39;&quot;&quot;&quot;&#39;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">is_start</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">TextBlockHelper</span><span class="o">.</span><span class="n">get_fold_lvl</span><span class="p">(</span><span class="n">pblock</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">TextBlockHelper</span><span class="o">.</span><span class="n">get_fold_lvl</span><span class="p">(</span><span class="n">pblock</span><span class="p">)</span>
+        <span class="c"># fix end of docstring</span>
+        <span class="k">elif</span> <span class="n">prev_block</span> <span class="ow">and</span> <span class="n">prev_block</span><span class="o">.</span><span class="n">text</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s">&#39;&quot;&quot;&quot;&#39;</span><span class="p">):</span>
+            <span class="n">single_line</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_single_line_docstring</span><span class="o">.</span><span class="n">match</span><span class="p">(</span>
+                <span class="n">prev_block</span><span class="o">.</span><span class="n">text</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+            <span class="k">if</span> <span class="n">single_line</span><span class="p">:</span>
+                <span class="n">TextBlockHelper</span><span class="o">.</span><span class="n">set_fold_lvl</span><span class="p">(</span><span class="n">prev_block</span><span class="p">,</span> <span class="n">lvl</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">TextBlockHelper</span><span class="o">.</span><span class="n">set_fold_lvl</span><span class="p">(</span>
+                    <span class="n">prev_block</span><span class="p">,</span> <span class="n">TextBlockHelper</span><span class="o">.</span><span class="n">get_fold_lvl</span><span class="p">(</span>
+                        <span class="n">prev_block</span><span class="o">.</span><span class="n">previous</span><span class="p">()))</span>
+        <span class="k">return</span> <span class="n">lvl</span>
+
+    <span class="k">def</span> <span class="nf">_handle_imports</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">lvl</span><span class="p">,</span> <span class="n">prev_block</span><span class="p">):</span>
+        <span class="n">txt</span> <span class="o">=</span> <span class="n">block</span><span class="o">.</span><span class="n">text</span><span class="p">()</span>
+        <span class="n">indent</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">txt</span><span class="p">)</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">txt</span><span class="o">.</span><span class="n">lstrip</span><span class="p">())</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="n">block</span><span class="p">,</span> <span class="s">&#39;import_stmt&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">prev_block</span> <span class="ow">and</span>
+                <span class="s">&#39;import &#39;</span> <span class="ow">in</span> <span class="n">prev_block</span><span class="o">.</span><span class="n">text</span><span class="p">()</span> <span class="ow">and</span> <span class="n">indent</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="k">return</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">lvl</span>
+
+<div class="viewcode-block" id="PythonFoldDetector.detect_fold_level"><a class="viewcode-back" href="../../../pyqode.python.html#pyqode.python.folding.PythonFoldDetector.detect_fold_level">[docs]</a>    <span class="k">def</span> <span class="nf">detect_fold_level</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prev_block</span><span class="p">,</span> <span class="n">block</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Perfoms fold level detection for current block (take previous block</span>
+<span class="sd">        into account).</span>
+
+<span class="sd">        :param prev_block: previous block, None if `block` is the first block.</span>
+<span class="sd">        :param block: block to analyse.</span>
+<span class="sd">        :return: block fold level</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># Python is an indent based language so use indentation for folding</span>
+        <span class="c"># makes sense but we restrict new regions to indentation after a &#39;:&#39;,</span>
+        <span class="c"># that way only the real logical blocks are displayed.</span>
+        <span class="n">lvl</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">PythonFoldDetector</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">detect_fold_level</span><span class="p">(</span>
+            <span class="n">prev_block</span><span class="p">,</span> <span class="n">block</span><span class="p">)</span>
+        <span class="c"># cancel false indentation, indentation can only happen if there is</span>
+        <span class="c"># &#39;:&#39; on the previous line</span>
+        <span class="n">prev_lvl</span> <span class="o">=</span> <span class="n">TextBlockHelper</span><span class="o">.</span><span class="n">get_fold_lvl</span><span class="p">(</span><span class="n">prev_block</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">prev_block</span> <span class="ow">and</span> <span class="n">lvl</span> <span class="o">&gt;</span> <span class="n">prev_lvl</span> <span class="ow">and</span> <span class="ow">not</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_strip_comments</span><span class="p">(</span><span class="n">prev_block</span><span class="p">)</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s">&#39;:&#39;</span><span class="p">)):</span>
+            <span class="n">lvl</span> <span class="o">=</span> <span class="n">prev_lvl</span>
+        <span class="n">lvl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_docstrings</span><span class="p">(</span><span class="n">block</span><span class="p">,</span> <span class="n">lvl</span><span class="p">,</span> <span class="n">prev_block</span><span class="p">)</span>
+        <span class="n">lvl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_imports</span><span class="p">(</span><span class="n">block</span><span class="p">,</span> <span class="n">lvl</span><span class="p">,</span> <span class="n">prev_block</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">lvl</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">pyqode.python 2.4.dev documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013-2014, Colin Duquesnoy.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

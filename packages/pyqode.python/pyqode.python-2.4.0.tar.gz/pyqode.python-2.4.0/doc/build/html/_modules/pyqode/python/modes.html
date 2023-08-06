@@ -1,0 +1,140 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>pyqode.python.modes &mdash; pyqode.python 2.4.dev documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/pyramid.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '2.4.dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="pyqode.python 2.4.dev documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" />
+<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
+<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Nobile:regular,italic,bold,bolditalic&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
+<!--[if lte IE 6]>
+<link rel="stylesheet" href="../../../_static/ie6.css" type="text/css" media="screen" charset="utf-8" />
+<![endif]-->
+
+  </head>
+  <body>
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">pyqode.python 2.4.dev documentation</a> &raquo;</li>
+          <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for pyqode.python.modes</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This package contains a series of python specific modes (calltips,</span>
+<span class="sd">autoindent, code linting,...).</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">.autocomplete</span> <span class="kn">import</span> <span class="n">PyAutoCompleteMode</span>
+<span class="kn">from</span> <span class="nn">.autoindent</span> <span class="kn">import</span> <span class="n">PyAutoIndentMode</span>
+<span class="kn">from</span> <span class="nn">.calltips</span> <span class="kn">import</span> <span class="n">CalltipsMode</span>
+<span class="kn">from</span> <span class="nn">.comments</span> <span class="kn">import</span> <span class="n">CommentsMode</span>
+<span class="kn">from</span> <span class="nn">.document_analyser</span> <span class="kn">import</span> <span class="n">DocumentAnalyserMode</span>
+<span class="kn">from</span> <span class="nn">.frosted_checker</span> <span class="kn">import</span> <span class="n">FrostedCheckerMode</span>
+<span class="kn">from</span> <span class="nn">.goto_assignements</span> <span class="kn">import</span> <span class="n">Assignment</span>
+<span class="kn">from</span> <span class="nn">.goto_assignements</span> <span class="kn">import</span> <span class="n">GoToAssignmentsMode</span>
+<span class="kn">from</span> <span class="nn">.indenter</span> <span class="kn">import</span> <span class="n">PyIndenterMode</span>
+<span class="kn">from</span> <span class="nn">.sh</span> <span class="kn">import</span> <span class="n">PythonSH</span>
+<span class="kn">from</span> <span class="nn">.pep8_checker</span> <span class="kn">import</span> <span class="n">PEP8CheckerMode</span>
+
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="c"># load pyqode.python resources (code completion icons)</span>
+    <span class="kn">from</span> <span class="nn">pyqode.python._forms</span> <span class="kn">import</span> <span class="n">pyqode_python_icons_rc</span>  <span class="c"># DO NOT REMOVE!!!</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="c"># PyQt/PySide might not be available for the interpreter that run the</span>
+    <span class="c"># backend</span>
+    <span class="k">pass</span>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s">&#39;Assignment&#39;</span><span class="p">,</span>
+    <span class="s">&#39;CalltipsMode&#39;</span><span class="p">,</span>
+    <span class="s">&#39;CommentsMode&#39;</span><span class="p">,</span>
+    <span class="s">&#39;DocumentAnalyserMode&#39;</span><span class="p">,</span>
+    <span class="s">&#39;FrostedCheckerMode&#39;</span><span class="p">,</span>
+    <span class="s">&#39;GoToAssignmentsMode&#39;</span><span class="p">,</span>
+    <span class="s">&#39;PEP8CheckerMode&#39;</span><span class="p">,</span>
+    <span class="s">&#39;PyAutoCompleteMode&#39;</span><span class="p">,</span>
+    <span class="s">&#39;PyAutoIndentMode&#39;</span><span class="p">,</span>
+    <span class="s">&#39;PyIndenterMode&#39;</span><span class="p">,</span>
+    <span class="s">&#39;PythonSH&#39;</span><span class="p">,</span>
+<span class="p">]</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">pyqode.python 2.4.dev documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013-2014, Colin Duquesnoy.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

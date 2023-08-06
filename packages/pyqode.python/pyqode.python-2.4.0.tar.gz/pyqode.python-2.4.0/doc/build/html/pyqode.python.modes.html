@@ -1,0 +1,499 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>pyqode.python.modes package &mdash; pyqode.python 2.4.dev documentation</title>
+    
+    <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '2.4.dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="pyqode.python 2.4.dev documentation" href="index.html" />
+    <link rel="up" title="pyqode.python package" href="pyqode.python.html" />
+    <link rel="next" title="pyqode.python.panels package" href="pyqode.python.panels.html" />
+    <link rel="prev" title="pyqode.python.managers package" href="pyqode.python.managers.html" />
+<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
+<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Nobile:regular,italic,bold,bolditalic&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
+<!--[if lte IE 6]>
+<link rel="stylesheet" href="_static/ie6.css" type="text/css" media="screen" charset="utf-8" />
+<![endif]-->
+
+  </head>
+  <body>
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="pyqode.python.panels.html" title="pyqode.python.panels package"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="pyqode.python.managers.html" title="pyqode.python.managers package"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">pyqode.python 2.4.dev documentation</a> &raquo;</li>
+          <li><a href="pyqode.python.html" accesskey="U">pyqode.python package</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="pyqode-python-modes-package">
+<h1>pyqode.python.modes package<a class="headerlink" href="#pyqode-python-modes-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-pyqode.python.modes">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-pyqode.python.modes" title="Permalink to this headline">¶</a></h2>
+<p>This package contains a series of python specific modes (calltips,
+autoindent, code linting,...).</p>
+</div>
+<div class="section" id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="assignment">
+<h3>Assignment<a class="headerlink" href="#assignment" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="pyqode.python.modes.Assignment">
+<em class="property">class </em><tt class="descclassname">pyqode.python.modes.</tt><tt class="descname">Assignment</tt><big>(</big><em>path</em>, <em>line</em>, <em>column</em>, <em>full_name</em><big>)</big><a class="headerlink" href="#pyqode.python.modes.Assignment" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>Defines an assignment. Used by <a class="reference internal" href="#pyqode.python.modes.GoToAssignmentsMode" title="pyqode.python.modes.GoToAssignmentsMode"><tt class="xref py py-class docutils literal"><span class="pre">GoToAssignmentsMode</span></tt></a>.</p>
+<dl class="attribute">
+<dt id="pyqode.python.modes.Assignment.column">
+<tt class="descname">column</tt><em class="property"> = None</em><a class="headerlink" href="#pyqode.python.modes.Assignment.column" title="Permalink to this definition">¶</a></dt>
+<dd><p>Column number</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pyqode.python.modes.Assignment.full_name">
+<tt class="descname">full_name</tt><em class="property"> = None</em><a class="headerlink" href="#pyqode.python.modes.Assignment.full_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Assignement full name</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pyqode.python.modes.Assignment.line">
+<tt class="descname">line</tt><em class="property"> = None</em><a class="headerlink" href="#pyqode.python.modes.Assignment.line" title="Permalink to this definition">¶</a></dt>
+<dd><p>Line number</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pyqode.python.modes.Assignment.module_path">
+<tt class="descname">module_path</tt><em class="property"> = None</em><a class="headerlink" href="#pyqode.python.modes.Assignment.module_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>File path of the module where the assignment can be found</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="calltipsmode">
+<h3>CalltipsMode<a class="headerlink" href="#calltipsmode" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="pyqode.python.modes.CalltipsMode">
+<em class="property">class </em><tt class="descclassname">pyqode.python.modes.</tt><tt class="descname">CalltipsMode</tt><a class="headerlink" href="#pyqode.python.modes.CalltipsMode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">pyqode.core.api.mode.Mode</span></tt>, <tt class="xref py py-class docutils literal"><span class="pre">PyQt4.QtCore.QObject</span></tt></p>
+<p>Shows function calltips.</p>
+<p>This mode shows function/method call tips in a QToolTip using
+<tt class="xref py py-meth docutils literal"><span class="pre">jedi.Script.call_signatures()</span></tt>.</p>
+<dl class="method">
+<dt id="pyqode.python.modes.CalltipsMode.on_state_changed">
+<tt class="descname">on_state_changed</tt><big>(</big><em>state</em><big>)</big><a class="headerlink" href="#pyqode.python.modes.CalltipsMode.on_state_changed" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pyqode.python.modes.CalltipsMode.tooltipDisplayRequested">
+<tt class="descname">tooltipDisplayRequested</tt><a class="headerlink" href="#pyqode.python.modes.CalltipsMode.tooltipDisplayRequested" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pyqode.python.modes.CalltipsMode.tooltipHideRequested">
+<tt class="descname">tooltipHideRequested</tt><a class="headerlink" href="#pyqode.python.modes.CalltipsMode.tooltipHideRequested" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="commentsmode">
+<h3>CommentsMode<a class="headerlink" href="#commentsmode" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="pyqode.python.modes.CommentsMode">
+<em class="property">class </em><tt class="descclassname">pyqode.python.modes.</tt><tt class="descname">CommentsMode</tt><a class="headerlink" href="#pyqode.python.modes.CommentsMode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">pyqode.core.api.mode.Mode</span></tt></p>
+<p>Comments/uncomments a set of lines using Ctrl+/.</p>
+<dl class="method">
+<dt id="pyqode.python.modes.CommentsMode.check_selection">
+<tt class="descname">check_selection</tt><big>(</big><em>cursor</em><big>)</big><a class="headerlink" href="#pyqode.python.modes.CommentsMode.check_selection" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyqode.python.modes.CommentsMode.comment">
+<tt class="descname">comment</tt><big>(</big><big>)</big><a class="headerlink" href="#pyqode.python.modes.CommentsMode.comment" title="Permalink to this definition">¶</a></dt>
+<dd><p>Comments/Uncomments the selected lines or the current lines if there
+is no selection.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyqode.python.modes.CommentsMode.on_key_pressed">
+<tt class="descname">on_key_pressed</tt><big>(</big><em>key_event</em><big>)</big><a class="headerlink" href="#pyqode.python.modes.CommentsMode.on_key_pressed" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyqode.python.modes.CommentsMode.on_state_changed">
+<tt class="descname">on_state_changed</tt><big>(</big><em>state</em><big>)</big><a class="headerlink" href="#pyqode.python.modes.CommentsMode.on_state_changed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called when the mode is activated/deactivated</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="documentanalysermode">
+<h3>DocumentAnalyserMode<a class="headerlink" href="#documentanalysermode" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="pyqode.python.modes.DocumentAnalyserMode">
+<em class="property">class </em><tt class="descclassname">pyqode.python.modes.</tt><tt class="descname">DocumentAnalyserMode</tt><big>(</big><em>delay=1000</em><big>)</big><a class="headerlink" href="#pyqode.python.modes.DocumentAnalyserMode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">pyqode.core.api.mode.Mode</span></tt>, <tt class="xref py py-class docutils literal"><span class="pre">PyQt4.QtCore.QObject</span></tt></p>
+<p>Analyses the document outline as a tree of statements.</p>
+<p>This mode analyses the structure of a document (a tree of
+<tt class="xref py py-class docutils literal"><span class="pre">pyqode.python.backend.workers.Definition</span></tt>.</p>
+<p><a class="reference internal" href="#pyqode.python.modes.DocumentAnalyserMode.document_changed" title="pyqode.python.modes.DocumentAnalyserMode.document_changed"><tt class="xref py py-attr docutils literal"><span class="pre">pyqode.python.modes.DocumentAnalyserMode.document_changed</span></tt></a>
+is emitted whenever the document structure changed.</p>
+<p>To keep good performances, the analysis task is run when the application is
+idle for more than 1 second (by default).</p>
+<dl class="method">
+<dt id="pyqode.python.modes.DocumentAnalyserMode.on_state_changed">
+<tt class="descname">on_state_changed</tt><big>(</big><em>state</em><big>)</big><a class="headerlink" href="#pyqode.python.modes.DocumentAnalyserMode.on_state_changed" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyqode.python.modes.DocumentAnalyserMode.to_tree_widget_items">
+<tt class="descname">to_tree_widget_items</tt><big>(</big><em>to_collapse=None</em><big>)</big><a class="headerlink" href="#pyqode.python.modes.DocumentAnalyserMode.to_tree_widget_items" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the results as a list of top level QTreeWidgetItem.</p>
+<p>This is a convenience function that you can use to update a document
+tree widget wheneve the document changed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pyqode.python.modes.DocumentAnalyserMode.document_changed">
+<tt class="descname">document_changed</tt><a class="headerlink" href="#pyqode.python.modes.DocumentAnalyserMode.document_changed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Signal emitted when the document structure changed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pyqode.python.modes.DocumentAnalyserMode.flattened_results">
+<tt class="descname">flattened_results</tt><a class="headerlink" href="#pyqode.python.modes.DocumentAnalyserMode.flattened_results" title="Permalink to this definition">¶</a></dt>
+<dd><p>Flattens the document structure tree as a simple sequential list.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pyqode.python.modes.DocumentAnalyserMode.results">
+<tt class="descname">results</tt><em class="property"> = None</em><a class="headerlink" href="#pyqode.python.modes.DocumentAnalyserMode.results" title="Permalink to this definition">¶</a></dt>
+<dd><p>The list of results (elements might have children; this is actually
+a tree).</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="frostedcheckermode">
+<h3>FrostedCheckerMode<a class="headerlink" href="#frostedcheckermode" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="pyqode.python.modes.FrostedCheckerMode">
+<em class="property">class </em><tt class="descclassname">pyqode.python.modes.</tt><tt class="descname">FrostedCheckerMode</tt><a class="headerlink" href="#pyqode.python.modes.FrostedCheckerMode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">pyqode.core.modes.checker.CheckerMode</span></tt></p>
+<p>Runs pyflakes on you code while you&#8217;re typing</p>
+<p>This checker mode runs pyflakes on the fly to check your python syntax.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="gotoassignmentsmode">
+<h3>GoToAssignmentsMode<a class="headerlink" href="#gotoassignmentsmode" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="pyqode.python.modes.GoToAssignmentsMode">
+<em class="property">class </em><tt class="descclassname">pyqode.python.modes.</tt><tt class="descname">GoToAssignmentsMode</tt><a class="headerlink" href="#pyqode.python.modes.GoToAssignmentsMode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">pyqode.core.modes.wordclick.WordClickMode</span></tt></p>
+<p>Goes to the assignments (using jedi.Script.goto_assignments) when the user
+execute the shortcut or click word. If there are more than one assignments,
+an input dialog is used to ask the user to choose the desired assignment.</p>
+<p>This mode will emit the <a class="reference internal" href="#pyqode.python.modes.GoToAssignmentsMode.out_of_doc" title="pyqode.python.modes.GoToAssignmentsMode.out_of_doc"><tt class="xref py py-attr docutils literal"><span class="pre">out_of_doc</span></tt></a> signal if the definition can
+not be reached in the current document. IDE will typically connects a slot
+that open a new editor tab and goes to the definition position.</p>
+<dl class="method">
+<dt id="pyqode.python.modes.GoToAssignmentsMode.on_state_changed">
+<tt class="descname">on_state_changed</tt><big>(</big><em>state</em><big>)</big><a class="headerlink" href="#pyqode.python.modes.GoToAssignmentsMode.on_state_changed" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyqode.python.modes.GoToAssignmentsMode.request_goto">
+<tt class="descname">request_goto</tt><big>(</big><big>)</big><a class="headerlink" href="#pyqode.python.modes.GoToAssignmentsMode.request_goto" title="Permalink to this definition">¶</a></dt>
+<dd><p>Request a goto action for the word under the text cursor.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pyqode.python.modes.GoToAssignmentsMode.no_results_found">
+<tt class="descname">no_results_found</tt><a class="headerlink" href="#pyqode.python.modes.GoToAssignmentsMode.no_results_found" title="Permalink to this definition">¶</a></dt>
+<dd><p>Signal emitted when no results could be found.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pyqode.python.modes.GoToAssignmentsMode.out_of_doc">
+<tt class="descname">out_of_doc</tt><a class="headerlink" href="#pyqode.python.modes.GoToAssignmentsMode.out_of_doc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Signal emitted when the definition cannot be reached in the current
+document</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pyqode.python.modes.GoToAssignmentsMode.shortcut">
+<tt class="descname">shortcut</tt><em class="property"> = 'Alt+F2'</em><a class="headerlink" href="#pyqode.python.modes.GoToAssignmentsMode.shortcut" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="pep8checkermode">
+<h3>PEP8CheckerMode<a class="headerlink" href="#pep8checkermode" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="pyqode.python.modes.PEP8CheckerMode">
+<em class="property">class </em><tt class="descclassname">pyqode.python.modes.</tt><tt class="descname">PEP8CheckerMode</tt><a class="headerlink" href="#pyqode.python.modes.PEP8CheckerMode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">pyqode.core.modes.checker.CheckerMode</span></tt></p>
+<p>This checker mode runs pep8.py on the fly to check your python style.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="pyautocompletemode">
+<h3>PyAutoCompleteMode<a class="headerlink" href="#pyautocompletemode" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="pyqode.python.modes.PyAutoCompleteMode">
+<em class="property">class </em><tt class="descclassname">pyqode.python.modes.</tt><tt class="descname">PyAutoCompleteMode</tt><a class="headerlink" href="#pyqode.python.modes.PyAutoCompleteMode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">pyqode.core.modes.autocomplete.AutoCompleteMode</span></tt></p>
+<p>Auto complete parentheses and method definitions.</p>
+<p>Extends <a class="reference external" href="https://pythonhosted.org/pyqode.core/pyqode.core.modes.html#pyqode.core.modes.AutoCompleteMode" title="(in pyqode.core v2.4.dev)"><tt class="xref py py-class docutils literal"><span class="pre">pyqode.core.modes.AutoCompleteMode</span></tt></a> to add
+support for method/function call:</p>
+<blockquote>
+<div><ul class="simple">
+<li>function completion adds &#8221;):&#8221; to the function definition.</li>
+<li>method completion adds &#8220;self):&#8221; to the method definition.</li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+</div>
+<div class="section" id="pyautoindentmode">
+<h3>PyAutoIndentMode<a class="headerlink" href="#pyautoindentmode" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="pyqode.python.modes.PyAutoIndentMode">
+<em class="property">class </em><tt class="descclassname">pyqode.python.modes.</tt><tt class="descname">PyAutoIndentMode</tt><a class="headerlink" href="#pyqode.python.modes.PyAutoIndentMode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">pyqode.core.modes.autoindent.AutoIndentMode</span></tt></p>
+<p>Automatically indents text, respecting the PEP8 conventions.</p>
+<p>Customised <a class="reference external" href="https://pythonhosted.org/pyqode.core/pyqode.core.modes.html#pyqode.core.modes.AutoIndentMode" title="(in pyqode.core v2.4.dev)"><tt class="xref py py-class docutils literal"><span class="pre">pyqode.core.modes.AutoIndentMode</span></tt></a> for python
+that tries its best to follow the pep8 indentation guidelines.</p>
+<dl class="method">
+<dt id="pyqode.python.modes.PyAutoIndentMode.on_install">
+<tt class="descname">on_install</tt><big>(</big><em>editor</em><big>)</big><a class="headerlink" href="#pyqode.python.modes.PyAutoIndentMode.on_install" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="pyindentermode">
+<h3>PyIndenterMode<a class="headerlink" href="#pyindentermode" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="pyqode.python.modes.PyIndenterMode">
+<em class="property">class </em><tt class="descclassname">pyqode.python.modes.</tt><tt class="descname">PyIndenterMode</tt><a class="headerlink" href="#pyqode.python.modes.PyIndenterMode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">pyqode.core.modes.indenter.IndenterMode</span></tt></p>
+<p>Extends the core indenter to add the ability to always indent the whole
+line instead of inserting a tab at the cursor position. This behaviour can
+be turned off at runtime by setting <a class="reference internal" href="#pyqode.python.modes.PyIndenterMode.tab_always_indent" title="pyqode.python.modes.PyIndenterMode.tab_always_indent"><tt class="xref py py-attr docutils literal"><span class="pre">tab_always_indent</span></tt></a> to False.</p>
+<dl class="method">
+<dt id="pyqode.python.modes.PyIndenterMode.clone_settings">
+<tt class="descname">clone_settings</tt><big>(</big><em>original</em><big>)</big><a class="headerlink" href="#pyqode.python.modes.PyIndenterMode.clone_settings" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyqode.python.modes.PyIndenterMode.indent">
+<tt class="descname">indent</tt><big>(</big><big>)</big><a class="headerlink" href="#pyqode.python.modes.PyIndenterMode.indent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Performs an indentation</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyqode.python.modes.PyIndenterMode.unindent">
+<tt class="descname">unindent</tt><big>(</big><big>)</big><a class="headerlink" href="#pyqode.python.modes.PyIndenterMode.unindent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Performs an un-indentation</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pyqode.python.modes.PyIndenterMode.tab_always_indent">
+<tt class="descname">tab_always_indent</tt><a class="headerlink" href="#pyqode.python.modes.PyIndenterMode.tab_always_indent" title="Permalink to this definition">¶</a></dt>
+<dd><p>When this flag is set to True, any call to indent will indent the whole
+line instead of inserting a tab at the cursor position.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="pythonsh">
+<h3>PythonSH<a class="headerlink" href="#pythonsh" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="pyqode.python.modes.PythonSH">
+<em class="property">class </em><tt class="descclassname">pyqode.python.modes.</tt><tt class="descname">PythonSH</tt><big>(</big><em>parent</em>, <em>color_scheme=None</em><big>)</big><a class="headerlink" href="#pyqode.python.modes.PythonSH" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">pyqode.core.api.syntax_highlighter.SyntaxHighlighter</span></tt></p>
+<p>Highlights python syntax in the editor.</p>
+<dl class="method">
+<dt id="pyqode.python.modes.PythonSH.highlight_block">
+<tt class="descname">highlight_block</tt><big>(</big><em>text</em>, <em>block</em><big>)</big><a class="headerlink" href="#pyqode.python.modes.PythonSH.highlight_block" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyqode.python.modes.PythonSH.rehighlight">
+<tt class="descname">rehighlight</tt><big>(</big><big>)</big><a class="headerlink" href="#pyqode.python.modes.PythonSH.rehighlight" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pyqode.python.modes.PythonSH.ASPROG">
+<tt class="descname">ASPROG</tt><em class="property"> = &lt;_sre.SRE_Pattern object at 0x7fe12454dbb0&gt;</em><a class="headerlink" href="#pyqode.python.modes.PythonSH.ASPROG" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pyqode.python.modes.PythonSH.IDPROG">
+<tt class="descname">IDPROG</tt><em class="property"> = &lt;_sre.SRE_Pattern object at 0x7fe1245305e0&gt;</em><a class="headerlink" href="#pyqode.python.modes.PythonSH.IDPROG" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pyqode.python.modes.PythonSH.INSIDE_DQ3STRING">
+<tt class="descname">INSIDE_DQ3STRING</tt><em class="property"> = 2</em><a class="headerlink" href="#pyqode.python.modes.PythonSH.INSIDE_DQ3STRING" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pyqode.python.modes.PythonSH.INSIDE_DQSTRING">
+<tt class="descname">INSIDE_DQSTRING</tt><em class="property"> = 4</em><a class="headerlink" href="#pyqode.python.modes.PythonSH.INSIDE_DQSTRING" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pyqode.python.modes.PythonSH.INSIDE_SQ3STRING">
+<tt class="descname">INSIDE_SQ3STRING</tt><em class="property"> = 1</em><a class="headerlink" href="#pyqode.python.modes.PythonSH.INSIDE_SQ3STRING" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pyqode.python.modes.PythonSH.INSIDE_SQSTRING">
+<tt class="descname">INSIDE_SQSTRING</tt><em class="property"> = 3</em><a class="headerlink" href="#pyqode.python.modes.PythonSH.INSIDE_SQSTRING" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pyqode.python.modes.PythonSH.NORMAL">
+<tt class="descname">NORMAL</tt><em class="property"> = 0</em><a class="headerlink" href="#pyqode.python.modes.PythonSH.NORMAL" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pyqode.python.modes.PythonSH.OECOMMENT">
+<tt class="descname">OECOMMENT</tt><em class="property"> = &lt;_sre.SRE_Pattern object at 0x7fe1244ab030&gt;</em><a class="headerlink" href="#pyqode.python.modes.PythonSH.OECOMMENT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pyqode.python.modes.PythonSH.PROG">
+<tt class="descname">PROG</tt><em class="property"> = &lt;_sre.SRE_Pattern object at 0x2669d40&gt;</em><a class="headerlink" href="#pyqode.python.modes.PythonSH.PROG" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pyqode.python.modes.PythonSH.mimetype">
+<tt class="descname">mimetype</tt><em class="property"> = 'text/x-python'</em><a class="headerlink" href="#pyqode.python.modes.PythonSH.mimetype" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">pyqode.python.modes package</a><ul>
+<li><a class="reference internal" href="#module-pyqode.python.modes">Module contents</a></li>
+<li><a class="reference internal" href="#classes">Classes</a><ul>
+<li><a class="reference internal" href="#assignment">Assignment</a></li>
+<li><a class="reference internal" href="#calltipsmode">CalltipsMode</a></li>
+<li><a class="reference internal" href="#commentsmode">CommentsMode</a></li>
+<li><a class="reference internal" href="#documentanalysermode">DocumentAnalyserMode</a></li>
+<li><a class="reference internal" href="#frostedcheckermode">FrostedCheckerMode</a></li>
+<li><a class="reference internal" href="#gotoassignmentsmode">GoToAssignmentsMode</a></li>
+<li><a class="reference internal" href="#pep8checkermode">PEP8CheckerMode</a></li>
+<li><a class="reference internal" href="#pyautocompletemode">PyAutoCompleteMode</a></li>
+<li><a class="reference internal" href="#pyautoindentmode">PyAutoIndentMode</a></li>
+<li><a class="reference internal" href="#pyindentermode">PyIndenterMode</a></li>
+<li><a class="reference internal" href="#pythonsh">PythonSH</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="pyqode.python.managers.html"
+                        title="previous chapter">pyqode.python.managers package</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="pyqode.python.panels.html"
+                        title="next chapter">pyqode.python.panels package</a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="pyqode.python.panels.html" title="pyqode.python.panels package"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="pyqode.python.managers.html" title="pyqode.python.managers package"
+             >previous</a> |</li>
+        <li><a href="index.html">pyqode.python 2.4.dev documentation</a> &raquo;</li>
+          <li><a href="pyqode.python.html" >pyqode.python package</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013-2014, Colin Duquesnoy.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

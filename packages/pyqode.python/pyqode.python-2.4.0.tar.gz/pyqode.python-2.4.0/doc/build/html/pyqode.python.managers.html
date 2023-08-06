@@ -1,0 +1,186 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>pyqode.python.managers package &mdash; pyqode.python 2.4.dev documentation</title>
+    
+    <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '2.4.dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="pyqode.python 2.4.dev documentation" href="index.html" />
+    <link rel="up" title="pyqode.python package" href="pyqode.python.html" />
+    <link rel="next" title="pyqode.python.modes package" href="pyqode.python.modes.html" />
+    <link rel="prev" title="pyqode.python.backend package" href="pyqode.python.backend.html" />
+<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
+<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Nobile:regular,italic,bold,bolditalic&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
+<!--[if lte IE 6]>
+<link rel="stylesheet" href="_static/ie6.css" type="text/css" media="screen" charset="utf-8" />
+<![endif]-->
+
+  </head>
+  <body>
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="pyqode.python.modes.html" title="pyqode.python.modes package"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="pyqode.python.backend.html" title="pyqode.python.backend package"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">pyqode.python 2.4.dev documentation</a> &raquo;</li>
+          <li><a href="pyqode.python.html" accesskey="U">pyqode.python package</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="pyqode-python-managers-package">
+<h1>pyqode.python.managers package<a class="headerlink" href="#pyqode-python-managers-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-pyqode.python.managers">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-pyqode.python.managers" title="Permalink to this headline">¶</a></h2>
+<p>This module contains some python specific managers.</p>
+</div>
+<div class="section" id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="pyfilemanager">
+<h3>PyFileManager<a class="headerlink" href="#pyfilemanager" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="pyqode.python.managers.PyFileManager">
+<em class="property">class </em><tt class="descclassname">pyqode.python.managers.</tt><tt class="descname">PyFileManager</tt><big>(</big><em>editor</em>, <em>replace_tabs_by_spaces=True</em><big>)</big><a class="headerlink" href="#pyqode.python.managers.PyFileManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">pyqode.core.managers.file.FileManager</span></tt></p>
+<p>Extends file manager to override detect_encoding. With python, we can
+detect encoding by reading the two first lines of a file and extracting its
+encoding tag.</p>
+<dl class="method">
+<dt id="pyqode.python.managers.PyFileManager.clone_settings">
+<tt class="descname">clone_settings</tt><big>(</big><em>original</em><big>)</big><a class="headerlink" href="#pyqode.python.managers.PyFileManager.clone_settings" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyqode.python.managers.PyFileManager.detect_encoding">
+<tt class="descname">detect_encoding</tt><big>(</big><em>path</em><big>)</big><a class="headerlink" href="#pyqode.python.managers.PyFileManager.detect_encoding" title="Permalink to this definition">¶</a></dt>
+<dd><p>For the implementation of encoding definitions in Python, look at:
+- <a class="reference external" href="http://www.python.org/dev/peps/pep-0263/">http://www.python.org/dev/peps/pep-0263/</a></p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">code taken and adapted from
+<tt class="docutils literal"><span class="pre">`jedi.common.source_to_unicode.detect_encoding`</span></tt></p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyqode.python.managers.PyFileManager.open">
+<tt class="descname">open</tt><big>(</big><em>path</em>, <em>encoding=None</em>, <em>use_cached_encoding=True</em><big>)</big><a class="headerlink" href="#pyqode.python.managers.PyFileManager.open" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pyqode.python.managers.PyFileManager.fold_docstrings">
+<tt class="descname">fold_docstrings</tt><em class="property"> = True</em><a class="headerlink" href="#pyqode.python.managers.PyFileManager.fold_docstrings" title="Permalink to this definition">¶</a></dt>
+<dd><p>True to fold docstring on open</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pyqode.python.managers.PyFileManager.fold_imports">
+<tt class="descname">fold_imports</tt><em class="property"> = True</em><a class="headerlink" href="#pyqode.python.managers.PyFileManager.fold_imports" title="Permalink to this definition">¶</a></dt>
+<dd><p>True to fold import statements on open.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">pyqode.python.managers package</a><ul>
+<li><a class="reference internal" href="#module-pyqode.python.managers">Module contents</a></li>
+<li><a class="reference internal" href="#classes">Classes</a><ul>
+<li><a class="reference internal" href="#pyfilemanager">PyFileManager</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="pyqode.python.backend.html"
+                        title="previous chapter">pyqode.python.backend package</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="pyqode.python.modes.html"
+                        title="next chapter">pyqode.python.modes package</a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="pyqode.python.modes.html" title="pyqode.python.modes package"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="pyqode.python.backend.html" title="pyqode.python.backend package"
+             >previous</a> |</li>
+        <li><a href="index.html">pyqode.python 2.4.dev documentation</a> &raquo;</li>
+          <li><a href="pyqode.python.html" >pyqode.python package</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013-2014, Colin Duquesnoy.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>
