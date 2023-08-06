@@ -1,0 +1,35 @@
+<table class="table table-bordered">
+	    {% for column in columns %}
+	      <tr {% if column.episode_category %} ng-show="episode.location[0].category == '{{column.episode_category}}'"{% endif %}>
+		    <td>
+		      <h5>{{ column.title }}</h5>
+              {% if column.batch_template %}
+              {% with cix=forloop.counter0 %}{% with column_name=column.name %}
+              {% include column.detail_template_path %}
+              {% endwith %}{% endwith %}
+              {% else %}
+		      <ul ng-mouseenter="mouseEnter({{ forloop.counter0 }})" ng-mouseleave="mouseLeave()">
+			    <li ng-repeat="item in episode.{{column.name}}"
+				    ng-click="selectItem({{ forloop.counter0 }}, $index)"
+				    ng-dblclick="editItem({{ forloop.counter0 }}, $index)"
+				    ng-class="{selected: cix == {{ forloop.counter0 }} && iix == $index}">
+				    {% include column.detail_template_path %}
+			    </li>
+
+
+			    {% if not column.single %}
+			      <li ng-click="selectItem({{ forloop.counter0 }}, episode.{{column.name}}.length)"
+				      ng-dblclick="editItem({{ forloop.counter0 }}, episode.{{column.name}}.length)"
+				      ng-class="{selected: cix == {{ forloop.counter0 }} && iix == episode.{{column.name}}.length}">
+				      <span ng-show="!profile.readonly && ((cix == {{ forloop.counter0 }}) || (mouseCix == {{ forloop.counter0 }}))">
+					    Add
+				      </span>
+				      &nbsp;
+			      </li>
+			    {% endif %}
+		      </ul>
+              {% endif %}
+		    </td>
+	      </tr>
+	    {% endfor %}
+      </table>
