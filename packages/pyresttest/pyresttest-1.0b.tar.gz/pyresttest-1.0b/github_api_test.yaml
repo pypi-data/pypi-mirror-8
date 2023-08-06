@@ -1,0 +1,23 @@
+# Simple tests to verify things work against a live REST service that returns JSON.. I picked github
+---
+- config: 
+  - testset: "Simple github.com API Test"
+- test:
+  - name: "Test with successful validations"
+  - url: "/search/users?q=jewzaam"
+  - group: "Successful"
+  - validators: # operator is applied as: <actual> <operator> <expected>
+     - {query: "total_count",     operator: "eq",     expected: 1}
+     - {query: "total_count",     operator: "ge",     expected: 1}
+     - {query: "total_count",     operator: "gt",     expected: 0}
+     - {query: "total_count",                         expected: 1} # default operator of "eq"
+     - {query: "items",           operator: "count",  expected: 1}
+     - {query: "items/0/login",                       expected: "jewzaam"}
+     - {query: "items/0/id",      operator: "gt",     expected: 0}
+     - {query: "does_not_exist",  operator: "empty",  expected: ""} # have to put in expected or it fails..
+- test:
+  - name: "Test with validations that will fail"
+  - url: "/search/users?q=someonethatdoesnotexist"
+  - group: "Failure"
+  - validators:
+     - {query: "total_count", operator: "eq", expected: 0}
