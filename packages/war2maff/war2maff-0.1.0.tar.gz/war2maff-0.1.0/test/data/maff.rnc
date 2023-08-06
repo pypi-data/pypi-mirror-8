@@ -1,0 +1,24 @@
+namespace MAF = "http://maf.mozdev.org/metadata/rdf#"
+namespace RDF = "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+
+start =
+  element RDF:RDF {
+    element RDF:Description {
+      attribute RDF:about { xsd:NMTOKEN },
+      element MAF:originalurl {
+        attribute RDF:resource { xsd:anyURI }
+      }+,
+      element MAF:title {
+        attribute RDF:resource { text }
+      }+,
+      element MAF:archivetime {
+        attribute RDF:resource { text }
+      },
+      element MAF:indexfilename {
+        attribute RDF:resource { xsd:NCName }
+      },
+      element MAF:charset {
+        attribute RDF:resource { xsd:NCName }
+      }+
+    }+
+  }
