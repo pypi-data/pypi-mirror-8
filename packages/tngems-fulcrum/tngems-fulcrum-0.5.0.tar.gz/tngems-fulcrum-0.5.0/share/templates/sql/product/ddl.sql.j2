@@ -1,0 +1,172 @@
+-- vim: syntax=sql
+-----------------------------------------------------------------------
+--
+--  PRODUCT DATA DEFINITION LANGUAGE (DDL)
+--
+--  This file specifies the Data Definition Language (DDL) statements
+--  to create a product catalog schema. It stores all information 
+--  related to the specification of product (good or services), their
+--  pricing (abstract base model) and their descriptions.
+--
+-----------------------------------------------------------------------
+{% if with_drop %}
+DROP TABLE IF EXISTS
+    {{ schema_common }}.supplierratingtypes CASCADE;
+DROP TABLE IF EXISTS
+    {{ schema_entities }}.products CASCADE;
+DROP TABLE IF EXISTS
+    {{ schema_entities }}.goods CASCADE;
+DROP TABLE IF EXISTS
+    {{ schema_entities }}.services CASCADE;
+DROP TABLE IF EXISTS
+    {{ schema_entities }}.reorderguidelines CASCADE;
+{% endif %}
+
+
+-----------------------------------------------------------------------
+--  SUPPLIER RATING TYPE
+--
+--  Specifies a rating type for product suppliers.
+--
+--  Columns:
+--      codename: a name identiying the SUPPLIER RATING TYPE.
+--      weight: specifies the weight of the rating; ascending.
+--
+-----------------------------------------------------------------------
+
+
+-----------------------------------------------------------------------
+--  PRODUCT
+--
+--  Specifies a product that is bought or sold by an enterprise.
+--
+--  Columns:
+--      product_id: a surrogate primary key.
+--      product_type: indicates the product type; (G)ood, (S)ervice,
+--          or (P)art.
+--      manufacturer_id: a reference to the {{ schema_entities }}.party
+--          table identifying the manufacturer, if applicable.
+--
+-----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS {{ schema_entities }}.products(
+    product_id int8 NOT NULL
+        DEFAULT nextval('{{ TNGEMS_OBJECT_SEQUENCE }}'),
+    product_type varchar(1) NOT NULL,
+    manufacturer_id int8 NOT NULL
+        DEFAULT {{ TNGEMS_UNSPECIFIED_PARTY_ID }},
+    uom varchar NOT NULL,
+    CONSTRAINT products_pk
+        PRIMARY KEY (product_id),
+    CONSTRAINT products_product_type_valid
+        CHECK (product_type IN ('G','S','P')),
+    CONSTRAINT products_unitsofmeasure_fk1
+        FOREIGN KEY (uom)
+        REFERENCES {{ schema_common }}.unitsofmeasure (codename)
+        ON UPDATE NO ACTION ON DELETE NO ACTION
+        DEFERRABLE INITIALLY IMMEDIATE
+);
+
+
+-----------------------------------------------------------------------
+--  GOOD
+--
+--  Represents a PRODUCT of type Good.
+--
+--  A FINISHED GOOD is a product that is ready to be shipped, and some
+--  work may have been performed to get the product to its current state. 
+--  A RAW MATERIAL is a component used in making a product in which no 
+--  work on it has been performed by the enterprise and it is the lowest 
+--  level component that makes up a product. A RAW MATERIAL may be sold 
+--  as a good or used in another good. A SUBASSEMBLY good is a product 
+--  that is in a state of partial completion and is not generally sold 
+--  to a customer or purchased from a supplier. If the enterprise 
+--  purchased the subassembly from a supplier, it would be considered 
+--  a RAW MATERIAL because the enterprise did not perform any additional 
+--  work on the product (Livingston 2001: 100).
+--  
+--  Columns:
+--      product_id: a reference to the {{ schema_entities }}.products
+--          table, identityfing the product.
+--      good_type: specifies the type of good; (R)aw material, 
+--          (S)ubassembly or (F)inished.
+--
+-----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS {{ schema_entities }}.goods(
+    product_id int8 NOT NULL,
+    good_type varchar(1) NOT NULL,
+    CONSTRAINT goods_pk
+        PRIMARY KEY (product_id),
+    CONSTRAINT goods_products_fk1
+        FOREIGN KEY (product_id)
+        REFERENCES {{ schema_entities }}.products (product_id)
+        ON UPDATE CASCADE ON DELETE CASCADE
+        DEFERRABLE INITIALLY IMMEDIATE,
+    CONSTRAINT goods_good_type_valid
+        CHECK (good_type in ('R','S','F'))
+);
+
+
+-----------------------------------------------------------------------
+--  SERVICE
+--
+--  Represents a PRODUCT of subtype service.
+--
+--  Columns:
+--      product_id: a reference to the {{ schema_entities }}.products
+--          table, identityfing the product.
+--
+-----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS {{ schema_entities }}.services(
+    product_id int8 NOT NULL,
+    CONSTRAINT services_pk
+        PRIMARY KEY (product_id),
+    CONSTRAINT services_products_fk1
+        FOREIGN KEY (product_id)
+        REFERENCES {{ schema_entities }}.products (product_id)
+        ON UPDATE CASCADE ON DELETE CASCADE
+        DEFERRABLE INITIALLY IMMEDIATE
+);
+
+
+-----------------------------------------------------------------------
+--  REORDER GUIDELINE
+--
+--  Specifies a default reorder guideline for PRODUCTs of subtype GOOD.
+--
+--  Columns:
+--      product_id: a reference to the {{ schema_entities }}.goods
+--          table, identifying the product for which a reorder
+--          guideline is specified.
+--      checksum: a checksum of the selection specification(s).
+--      during: specifies the period during which the reorder
+--          guideline is applicable.
+--      reorder_quantity: specifies the amount of the product to
+--          reorder in it's default unit of measurement.
+--      reorder_level: specifies the minimal stock level for 
+--          reordering.
+--
+-----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS {{ schema_entities }}.reorderguidelines(
+    id serial NOT NULL,
+    checksum varchar(64) NOT NULL,
+    product_id int8 NOT NULL,
+    during public.transaction_time NOT NULL,
+    reorder_quantity int NOT NULL,
+    reorder_level int NOT NULL,
+    CONSTRAINT reorderguidelines_pk
+        PRIMARY KEY (product_id, checksum, during),
+    CONSTRAINT reorderguidelines_during_excl
+        EXCLUDE USING GIST (product_id WITH =, checksum WITH =, during WITH &&),
+    CONSTRAINT reorderguidelines_during_adj
+        EXCLUDE USING GIST (product_id WITH =, reorder_quantity WITH =,
+            checksum WITH =, reorder_level WITH =, during WITH -|-),
+    CONSTRAINT reorderguidelines_goods_fk1
+        FOREIGN KEY (product_id)
+        REFERENCES {{ schema_entities }}.goods (product_id)
+        ON UPDATE NO ACTION ON DELETE NO ACTION
+        DEFERRABLE INITIALLY IMMEDIATE,
+    CONSTRAINT reorderguidelines_reorder_quantity_gt_zero
+        CHECK (reorder_quantity > 0),
+    CONSTRAINT reorderguidelines_reorder_level_gt_zero
+        CHECK (reorder_level > 0)
+);

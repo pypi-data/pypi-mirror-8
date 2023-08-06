@@ -1,0 +1,63 @@
+-----------------------------------------------------------------------
+--
+--  CONTACT VIRTUAL RELATIONS
+--
+-----------------------------------------------------------------------
+DROP VIEW IF EXISTS public.phonenumbers CASCADE;
+DROP VIEW IF EXISTS public.emailaddresses CASCADE;
+
+
+-----------------------------------------------------------------------
+--  BEGIN PUBLIC.PHONENUMBERS
+-----------------------------------------------------------------------
+CREATE VIEW public.phonenumbers AS
+    SELECT
+        R1.mechanism_type,
+        R1.mechanism_id,
+        COALESCE(R2.applications, ARRAY[]::text[]) AS applications,
+        R1.phonenumber,
+        R1.line_type,
+        R1.is_valid,
+        R1.is_suspended,
+        R1.is_blocked
+    FROM {{ schema_entities }}.phonenumbers R1
+    LEFT OUTER JOIN (
+        SELECT mechanism_type, mechanism_id, array_agg(application_type) AS applications
+        FROM {{ schema_entities }}.contactmechanismapplications
+        GROUP BY mechanism_type, mechanism_id
+    ) R2 ON
+        R1.mechanism_type = R2.mechanism_type AND
+        R1.mechanism_id = R2.mechanism_id;
+
+
+-----------------------------------------------------------------------
+--  END PUBLIC.PHONENUMBERS
+-----------------------------------------------------------------------
+
+
+
+-----------------------------------------------------------------------
+--  BEGIN PUBLIC.EMAILADDRESSES
+-----------------------------------------------------------------------
+CREATE VIEW public.emailaddresses AS
+    SELECT
+        R1.mechanism_type,
+        R1.mechanism_id,
+        COALESCE(R2.applications, ARRAY[]::text[]) AS applications,
+        R1.email_address,
+        R1.is_valid,
+        R1.is_suspended,
+        R1.is_blocked
+    FROM {{ schema_entities }}.emailaddresses R1
+    LEFT OUTER JOIN (
+        SELECT mechanism_type, mechanism_id, array_agg(application_type) AS applications
+        FROM {{ schema_entities }}.contactmechanismapplications
+        GROUP BY mechanism_type, mechanism_id
+    ) R2 ON
+        R1.mechanism_type = R2.mechanism_type AND
+        R1.mechanism_id = R2.mechanism_id;
+
+
+-----------------------------------------------------------------------
+--  END PUBLIC.EMAILADDRESSES
+-----------------------------------------------------------------------

@@ -1,0 +1,108 @@
+{% import "templates/sql/temporal.sql" as temporal %}
+-- vim: syntax=sql
+-----------------------------------------------------------------------
+--
+--  PARTY DATA DEFINITION LANGUAGE (DDL)
+--
+--  The PARTY schema specifies a datamodel to store details about
+--  entities with whom an organization transacts, such as 
+--  classifications, contact mechanisms and commnunication events.
+--
+--  The PARTY entity is the base entity for all other entities 
+--  involving natural persons or legal entities.
+--
+-----------------------------------------------------------------------
+{% if with_drop %}
+DROP TABLE IF EXISTS
+    {{ schema_entities }}.party CASCADE;
+{% endif %}
+
+
+-----------------------------------------------------------------------
+--  PARTY
+--
+--  Represents an entity with whom an organization transacts, e.g. a
+--  natural person or legal entity.
+--
+--  Columns:
+--      party_id: a surrogate primary key.
+--      subtype: a discriminator column, distuinguishing between
+--          NATURAL PERSONs and LEGAL ENTITYs.
+--      identifier: a mnemmonic identifier.
+--
+-----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS {{ schema_entities }}.party(
+    party_id int8 NOT NULL
+        DEFAULT nextval('{{ TNGEMS_OBJECT_SEQUENCE }}'),
+    subtype varchar(1) NOT NULL,
+    CONSTRAINT party_pk
+        PRIMARY KEY (party_id)
+);
+
+
+{{ temporal.table_mutations(schema_entities, "party",
+    [("party_id","int8")], schema_state=schema_state,
+    with_drop=with_drop) }}
+
+
+{% macro party_attr(nspname, colname, coltype, attname, with_drop=False) -%}
+--  States that a PARTY identified by `party_id` had it's
+--  Attribute {{ attname }} set to `{{ colname }}` in the period 
+--  `transaction_time`.
+{% if with_drop %}DROP TABLE IF EXISTS
+    {{ nspname }}.party_{{ colname }} CASCADE;
+{% endif %}
+CREATE TABLE IF NOT EXISTS {{ nspname }}.party_{{ colname }}(
+    mutation_timestamp public.mutation_timestamp NOT NULL,
+    party_id int8 NOT NULL,
+    transaction_time public.transaction_time NOT NULL,
+    {{ colname }} {{ coltype }} NOT NULL,
+    CONSTRAINT party_{{ colname }}_pk
+        PRIMARY KEY (mutation_timestamp, party_id),
+    CONSTRAINT party_{{ colname }}_partys_mutations_fk1
+        FOREIGN KEY (mutation_timestamp, party_id)
+        REFERENCES {{ schema_state }}.party_mutations (
+            mutation_timestamp, party_id)
+        ON UPDATE NO ACTION ON DELETE NO ACTION
+        DEFERRABLE INITIALLY IMMEDIATE,
+    CONSTRAINT party_{{ colname }}_mutation_timestamp
+        CHECK (mutation_timestamp = lower(transaction_time)),
+    CONSTRAINT party_{{ colname }}_transaction_time_excl
+        EXCLUDE USING GIST (party_id WITH =, transaction_time WITH &&),
+    CONSTRAINT party_{{ colname }}_transaction_time_adj
+        EXCLUDE USING GIST (
+            party_id WITH =,
+            ({{ colname }}{% if coltype=="boolean" %}::int::smallint{% endif %}) WITH =,
+            transaction_time WITH -|-
+    ),
+    CONSTRAINT party_{{ colname }}_timestamp_eq_lower_tt
+        CHECK (mutation_timestamp = lower(transaction_time))
+);
+
+
+-- Update the existing transaction time before inserting.
+CREATE OR REPLACE FUNCTION {{ nspname }}.party_{{ colname }}__mutate()
+RETURNS TRIGGER AS
+$$
+BEGIN
+    UPDATE {{ nspname }}.party_{{ colname }} SET
+        transaction_time = tstzrange(lower(transaction_time),
+            public.get_session_mutation_timestamp())
+    WHERE
+        party_id = NEW.party_id AND
+        transaction_time @> public.get_session_mutation_timestamp();
+    RETURN NEW;
+END;
+$$ LANGUAGE PLPGSQL SECURITY DEFINER;
+
+
+DROP TRIGGER IF EXISTS end_transaction_time
+    ON {{ nspname }}.party_{{ colname }} CASCADE;
+CREATE TRIGGER end_transaction_time 
+    BEFORE INSERT ON {{ nspname }}.party_{{ colname }}
+    FOR EACH ROW EXECUTE PROCEDURE 
+    {{ nspname }}.party_{{ colname }}__mutate();
+{% endmacro -%}
+
+{{ party_attr(schema_state, "preferred_language", "varchar(3)",
+    "Preferred language", with_drop=with_drop) }}

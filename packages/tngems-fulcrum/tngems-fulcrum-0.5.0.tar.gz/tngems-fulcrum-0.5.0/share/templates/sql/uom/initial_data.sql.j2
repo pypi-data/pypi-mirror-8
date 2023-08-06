@@ -1,0 +1,31 @@
+-- vim: syntax=sql
+-----------------------------------------------------------------------
+--
+--  UNIT OF MEASUREMENT INITIAL DATA
+--
+-----------------------------------------------------------------------
+
+--  The SI system has seven base quantities:
+--
+--  Length (l)
+--  Mass (m)
+--  Time (t)
+--  Electric current
+--  Temperature
+--  Amount of substance
+--  Luminous intensity
+--  
+WITH initial_data(quantity, codename, display_name) AS (
+    VALUES
+        ('l', 'meter', 'UOM_SI_METER'),
+        ('m', 'gram', 'UOM_SI_GRAM'),
+        ('m', 'kilogram', 'UOM_SI_KILOGRAM')
+)
+INSERT INTO {{ schema_common }}.unitsofmeasure
+    (quantity, codename, display_name)
+SELECT quantity, codename, display_name
+FROM initial_data
+WHERE codename NOT IN (
+    SELECT codename
+    FROM {{ schema_common }}.unitsofmeasure
+);

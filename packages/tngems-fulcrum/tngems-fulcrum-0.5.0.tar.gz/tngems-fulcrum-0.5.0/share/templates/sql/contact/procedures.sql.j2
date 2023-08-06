@@ -1,0 +1,129 @@
+-----------------------------------------------------------------------
+--
+--  CONTACT MECHANISM PROCEDURES
+--
+-----------------------------------------------------------------------
+
+
+-----------------------------------------------------------------------
+--  Idempotently set the applications for a contact mechanism.
+--
+--  Args:
+--      varchar: the mechanism type.
+--      int8: the mechanism id.
+--      varchar[]: the applications.
+--
+--  Returns:
+--      int
+--
+-----------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION public.contact_set_mechanism_applications(
+    varchar, int8, varchar[])
+RETURNS int8 AS
+$$
+    WITH insert_applications(mechanism_type, mechanism_id, application_type) AS (
+        INSERT INTO {{ schema_entities }}.contactmechanismapplications
+            (mechanism_type, mechanism_id, application_type)
+        SELECT $1, $2, application_type
+        FROM unnest($3) application_type
+        WHERE ($1, $2, application_type) NOT IN (
+            SELECT mechanism_type, mechanism_id, application_type
+            FROM {{ schema_entities }}.contactmechanismapplications L1
+            WHERE
+                L1.mechanism_type = $1 AND
+                L1.mechanism_id = $2 AND
+                L1.application_type = application_type AND
+                L1.during @> CURRENT_TIMESTAMP
+        )
+        RETURNING mechanism_type, mechanism_id, application_type
+    )
+    SELECT COUNT(*) FROM insert_applications;
+$$ LANGUAGE SQL SECURITY DEFINER;
+
+
+-----------------------------------------------------------------------
+--  Idempotently set the applications for a contact mechanism.
+--
+--  Args:
+--      {{ schema_entities }}.contactmechanisms: the contact mechanism.
+--      varchar[]: the applications.
+--
+--  Returns:
+--      int
+--
+-----------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION public.contact_set_mechanism_applications(
+    {{ schema_entities }}.contactmechanisms, varchar[])
+RETURNS int8 AS
+$$
+    SELECT * FROM public.contact_set_mechanism_applications(
+        $1.mechanism_type, $1.mechanism_id, $2);
+$$ LANGUAGE SQL SECURITY DEFINER;
+
+
+-----------------------------------------------------------------------
+--  Idempotently get or create a phonenumber.
+--
+--  Args:
+--      varchar: the phonenumber.
+--      varchar[]: applications of the phonenumber.
+--
+--  Returns:
+--      record(varchar, int)
+--
+-----------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION public.contact_get_or_create_phonenumber(
+    varchar, varchar[] DEFAULT ARRAY[]::varchar[])
+RETURNS {{ schema_entities }}.contactmechanisms AS
+$$
+DECLARE
+    result {{ schema_entities }}.contactmechanisms;
+BEGIN
+    SELECT mechanism_type, mechanism_id INTO result
+    FROM {{ schema_entities }}.phonenumbers
+    WHERE phonenumber = $1;
+    IF NOT FOUND THEN
+        INSERT INTO {{ schema_entities }}.contactmechanisms (mechanism_type, mechanism_id)
+        VALUES ('phonenumber', nextval('{{ schema_entities }}.phonenumbers_mechanism_id_seq'))
+        RETURNING mechanism_type, mechanism_id INTO result;
+        INSERT INTO {{ schema_entities }}.phonenumbers (mechanism_id, phonenumber)
+        VALUES (result.mechanism_id, $1);
+    END IF;
+    PERFORM public.contact_set_mechanism_applications(result, $2);
+    RETURN result;
+END;
+$$ LANGUAGE PLPGSQL SECURITY DEFINER;
+
+
+-----------------------------------------------------------------------
+--  Idempotently get or create a email_address.
+--
+--  Args:
+--      varchar: the email_address.
+--      varchar[]: applications of the email_address.
+--
+--  Returns:
+--      record(varchar, int)
+--
+-----------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION public.contact_get_or_create_emailaddress(
+    varchar, varchar[] DEFAULT ARRAY[]::varchar[])
+RETURNS {{ schema_entities }}.contactmechanisms AS
+$$
+DECLARE
+    result {{ schema_entities }}.contactmechanisms;
+BEGIN
+    SELECT mechanism_type, mechanism_id INTO result
+    FROM {{ schema_entities }}.emailaddresses
+    WHERE email_address = $1;
+    IF NOT FOUND THEN
+        INSERT INTO {{ schema_entities }}.contactmechanisms (mechanism_type, mechanism_id)
+        VALUES ('email', nextval('{{ schema_entities }}.emailaddresses_mechanism_id_seq'))
+        RETURNING mechanism_type, mechanism_id INTO result;
+        INSERT INTO {{ schema_entities }}.emailaddresses (mechanism_id, email_address)
+        VALUES (result.mechanism_id, $1);
+    END IF;
+    PERFORM public.contact_set_mechanism_applications(result, $2);
+    RETURN result;
+END;
+$$ LANGUAGE PLPGSQL SECURITY DEFINER;

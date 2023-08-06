@@ -1,0 +1,31 @@
+-- vim: syntax=sql
+-----------------------------------------------------------------------
+--
+--  VALUE ADDED TAX MODULE STORED PROCEDURES
+--
+-----------------------------------------------------------------------
+
+
+-----------------------------------------------------------------------
+--  Back-calculates the Value Added Tax (VAT) from a specified amount.
+--  Return a `decimal(19, 6)` indicating the VAT amount.
+--
+--  Args:
+--      varchar(2): An ISO 3166-1 Alpha 2 country code identiying the
+--          country whose VAT policy is to be applied.
+--      varchar: identifies the VAT rate to apply.
+--      decimal(19,6): specifies the monetary amount.
+--
+--  Returns:
+--      decimal(19,6)
+--
+-----------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION {{ schema_common }}.calculate_vat_amount(
+    varchar(2), varchar, decimal(19,6))
+RETURNS decimal(19,6) AS
+$$
+BEGIN
+    -- stub
+    RETURN '0.0'::decimal;
+END;
+$$ LANGUAGE PLPGSQL SECURITY DEFINER;
