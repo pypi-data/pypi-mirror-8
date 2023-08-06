@@ -1,0 +1,449 @@
+#!/usr/bin/env python
+
+import sys
+import yaml
+from optparse import OptionParser
+import boto.ec2
+import boto.elasticache
+import boto.ec2.elb
+import boto.iam
+import boto.rds
+
+
+class Config:
+
+    config = None
+    env = None
+
+    def __init__(self, access, secret, region='eu-west-1'):
+        self.aws_access = access
+        self.aws_secret = secret
+        self.region = region
+
+    def set_config_from_file(self, fp, env):
+        self.config = yaml.load(open(fp).read())[env]
+        self.env = env
+
+
+class EC2:
+
+    conn_ec2 = None
+    config = None
+    endpoint = None
+    valid_config = None
+
+    def __init__(self, config):
+        self.config = config
+        if self.config.aws_access is not None and self.config.aws_secret is not None:
+            self.conn_ec2 = boto.ec2.connect_to_region(
+                region_name=self.config.region,
+                aws_access_key_id=self.config.aws_access,
+                aws_secret_access_key=self.config.aws_secret)
+            try:
+                self.config.config['ec2']
+                self.valid_config = True
+            except KeyError:
+                self.valid_config = False
+        else:
+            print "[ERROR] No AWS credentials"
+            sys.exit(1)
+
+    def create(self):
+        if self.valid_config:
+            conf = self.config.config['ec2']
+            for i in conf:
+                print i
+                userdata = None
+                try:
+                    userdata = conf[i]['userdata']
+                except KeyError:
+                    pass
+                reservation = self.conn_ec2.run_instances(conf[i]['ami'],
+                                            key_name=conf[i]['key_name'],
+                                            instance_type=conf[i]['instance_type'],
+                                            security_groups=conf[i]['security_groups'],
+                                            instance_initiated_shutdown_behavior='terminate',
+                                            user_data=userdata)
+
+                instance = reservation.instances[0]
+
+                print "Sleeping 5s while EC2 wakes up..."
+                time.sleep(5)
+
+                status = instance.update()
+                while status != 'running':
+                    time.sleep(10)
+                    print "Sleeping for 10 more seconds (not ready yet...)"
+                    status = instance.update()
+
+                # Set the tags for the instance when 'running'
+                if status == 'running':
+                    for tag in conf[i]['tags']:
+                        instance.add_tag(str(tag), str(conf[i]['tags'][tag]))
+                        print "[EC2] Set Instance Tag to %s:%s" % (str(tag), str(conf[i]['tags'][tag]))
+
+                print instance.id
+                try:
+                    if 'elb' in conf[i]:
+                        # TODO - currently cannot deal with multiple ELB's
+                        elb = ELB(self.config)
+                        elb.add_instances(self.config.config['elb']['name'], [str(instance.id)])
+                except:
+                    pass
+
+    def get_all_security_groups(self):
+        return self.conn_ec2.get_all_security_groups()
+
+    def get_all_instances_by_env(self):
+        instances = []
+        for s in self.conn_ec2.get_all_instances():
+            try:
+                if str(s.instances[0].tags['Env']) == self.config.env and str(s.instances[0]._state) == 'running(16)':
+                    instances.append(s.instances[0])
+            except:
+                pass
+        return instances
+
+    def delete(self):
+        if self.valid_config:
+            # GET LIST OF SERVERS FOR AN ENV
+            instances = self.get_all_instances_by_env()
+
+            # GET LIST OF SERVER ROLE TAG:Name to verify before deleting
+            valid_servers = []
+            for i in self.config.config['ec2']:
+                valid_servers.append(self.config.config['ec2'][i]['tags']['Name'])
+
+            # CHECK THE ENV IS NOT PROD AND IS A VALID SERVER
+            if self.config.env != 'prod' and len(instances) > 0:
+                for i in instances:
+                    if str(i.tags['Name']) in valid_servers:
+                        i.terminate()
+                        print "\nDeleting EC2's [%s]: %s" % (self.config.env, i)
+            else:
+                print "\nNo EC2's to delete:", self.config.env
+
+
+class Elasticache:
+
+    conn_ec = None
+    config = None
+    endpoint = None
+    valid_config = None
+
+    def __init__(self, config):
+        self.config = config
+        if self.config.aws_access is not None and self.config.aws_secret is not None:
+            self.conn_ec = boto.elasticache.connect_to_region(
+                region_name=self.config.region,
+                aws_access_key_id=self.config.aws_access,
+                aws_secret_access_key=self.config.aws_secret)
+            try:
+                self.config.config['elasticache']
+                self.valid_config = True
+            except KeyError:
+                self.valid_config = False
+
+        else:
+            print "[ERROR] No AWS credentials"
+            sys.exit(1)
+
+    def create(self):
+        if self.valid_config:
+            conf = self.config.config['elasticache']
+            self.conn_ec.create_cache_cluster(
+                conf['cache_cluster_id'],
+                num_cache_nodes=conf['num_cache_nodes'],
+                cache_node_type=conf['cache_node_type'],
+                engine=conf['engine'],
+                engine_version=conf['engine_version'],
+                security_group_ids=conf['security_group_ids'])
+            print "Elasticache Built"
+
+    def get_cache_endpoint(self, ec_id):
+        ec = self.get_ec_instance(ec_id)
+        return ec['ConfigurationEndpoint']['Address']
+
+    def get_ec_instance(self, ec_id):
+        ec = self.conn_ec.describe_cache_clusters()
+        for cache in ec["DescribeCacheClustersResponse"]["DescribeCacheClustersResult"]["CacheClusters"]:
+            if str(cache['CacheClusterId']) == ec_id:
+                return cache
+
+    def get_ec_status(self, ec_id):
+        ec = self.get_ec_instance(ec_id)
+        if str(ec['CacheClusterStatus']) == "available":
+            return True
+        else:
+            return False
+
+    def delete(self):
+        if self.valid_config:
+            cache = self.get_ec_instance(self.config.config['elasticache']['cache_cluster_id'])
+            if self.config.env != 'live' and cache is not None:
+                if str(cache['CacheClusterStatus']) == 'available':
+                    self.conn_ec.delete_cache_cluster(self.config.config['elasticache']['cache_cluster_id'])
+                    print "\nDeleting Elasticache:", self.config.config['elasticache']['cache_cluster_id']
+                else:
+                    print "\nElasticache being deleted:", self.config.config['elasticache']['cache_cluster_id']
+            else:
+                print "\nNo Elasticache to delete:", self.config.config['elasticache']['cache_cluster_id']
+
+
+class ELB:
+
+    conn_elb = None
+    config = None
+    endpoint = None
+    valid_config = None
+
+    def __init__(self, config):
+        self.config = config
+        if self.config.aws_access is not None and self.config.aws_secret is not None:
+            self.conn_elb = boto.ec2.elb.connect_to_region(
+                region_name=self.config.region,
+                aws_access_key_id=self.config.aws_access,
+                aws_secret_access_key=self.config.aws_secret)
+            try:
+                self.config.config['elb']
+                self.valid_config = True
+            except KeyError:
+                self.valid_config = False
+        else:
+            print "[ERROR] No AWS credentials"
+            sys.exit(1)
+
+    def create(self):
+        if self.valid_config:
+            conf = self.config.config['elb']
+            listeners = []
+            for i in conf['listeners']:
+                listeners.append(conf['listeners'][i])
+
+            lb = self.conn_elb.create_load_balancer(conf['name'],
+                                               ['eu-west-1a', 'eu-west-1b'],
+                                               listeners=listeners,
+                                               security_groups=conf['security_groups'].keys())
+
+            lb.enable_cross_zone_load_balancing()
+            print
+            print "ELB Built", lb.dns_name
+            print
+
+    def get_lb_by_name(self, name):
+        try:
+            return self.conn_elb.get_all_load_balancers([name])[0]
+        except:
+            return None
+
+    def add_instances(self, name, instances):
+        self.get_lb_by_name(name).register_instances(instances)
+        print "Added to LB [%s]:" % name, instances
+
+    def delete(self):
+        if self.valid_config:
+            if self.config.env != 'live' and self.get_lb_by_name(self.config.config['elb']['name']) is not None:
+                self.conn_elb.delete_load_balancer(self.config.config['elb']['name'])
+                print "\nDeleting ELB:", self.config.config['elb']['name']
+            else:
+                print "\nNo ELB to delete:", self.config.config['elb']['name']
+
+
+class IAM:
+
+    conn_iam = None
+    config = None
+    endpoint = None
+
+    def __init__(self, config):
+        self.config = config
+        if self.config.aws_access is not None and self.config.aws_secret is not None:
+            self.conn_iam = boto.iam.connect_to_region(
+                region_name=self.config.region,
+                aws_access_key_id=self.config.aws_access,
+                aws_secret_access_key=self.config.aws_secret)
+        else:
+            print "[ERROR] No AWS credentials"
+            sys.exit(1)
+
+    def list(self):
+        print self.conn_iam.get_all_server_certs()['list_server_certificates_response']['list_server_certificates_result']['server_certificate_metadata_list']
+
+
+class RDS:
+
+    conn_rds = None
+    config = None
+    endpoint = None
+    valid_config = None
+
+    def __init__(self, config):
+        self.config = config
+        if self.config.aws_access is not None and self.config.aws_secret is not None:
+            self.conn_rds = boto.rds.connect_to_region(
+                region_name=self.config.region,
+                aws_access_key_id=self.config.aws_access,
+                aws_secret_access_key=self.config.aws_secret)
+            try:
+                self.config.config['elb']
+                self.valid_config = True
+            except KeyError:
+                self.valid_config = False
+
+        else:
+            print "[ERROR] No AWS credentials"
+            sys.exit(1)
+
+    def create(self):
+        if self.valid_config:
+            conf = self.config.config['rds']
+            try:
+                self.conn_rds.create_dbinstance(
+                    id=conf['id'],
+                    db_name=conf['db_name'],
+                    allocated_storage=conf['allocated_storage'],
+                    instance_class=conf['instance_class'],
+                    master_username=conf['master_username'],
+                    master_password=conf['master_password'],
+                    port=conf['port'],
+                    engine=conf['engine'],
+                    engine_version=conf['engine_version'],
+                    auto_minor_version_upgrade=conf['auto_minor_version_upgrade'],
+                    multi_az=conf['multi_az'],
+                    backup_retention_period=conf['backup_retention_period'])
+                print "RDS Built"
+            except Exception, e:
+                print '[ERROR]:', e
+
+    def get_db_instance(self, db_id):
+        for db in self.conn_rds.get_all_dbinstances():
+            if db.id == db_id:
+                return db
+
+    def get_db_status(self, db_id):
+        db = self.get_db_instance(db_id)
+        if str(db.status) == "available":
+            return True
+        else:
+            return False
+
+    def delete(self):
+        if self.valid_config:
+            db = self.get_db_instance(self.config.config['rds']['id'])
+            if self.config.env != 'live' and db is not None:
+                if db.status == "available":
+                    self.conn_rds.delete_dbinstance(db.id, skip_final_snapshot=True)
+                    print "Deleting RDS:", self.config.config['rds']['id']
+                else:
+                    print "\nRDS being deleted:", self.config.config['rds']['id']
+            else:
+                print "\nNo RDS to delete:", self.config.config['rds']['id']
+
+
+
+def ec2(mode, config):
+    x = EC2(config)
+    if mode == 'create':
+        x.create()
+    elif mode == 'delete':
+        x.delete()
+
+
+def elb(mode, config):
+    x = ELB(config)
+    if mode == 'create':
+        x.create()
+    elif mode == 'delete':
+        x.delete()
+
+
+def rds(mode, config):
+    x = RDS(config)
+    if mode == 'create':
+        x.create()
+    elif mode == 'delete':
+        x.delete()
+
+
+def elasticache(mode, config):
+    x = Elasticache(config)
+    if mode == 'create':
+        x.create()
+    elif mode == 'delete':
+        x.delete()
+
+
+# Helpers
+def write_tag_files( conf):
+    c = ""
+    txt = """-   content: %s
+    path: /etc/tags/%s
+    permissions: '0644'\n"""
+    for i in conf['tags']:
+        c += txt % (conf['tags'][i], i)
+    return c[:-1]
+
+
+def main():
+    parser = OptionParser()
+    parser.add_option('-a', '--access', dest='aws_access', default=None,
+                      help='AWS Access key')
+    parser.add_option('-s', '--secret', dest='aws_secret', default=None,
+                      help='AWS Secret key')
+    parser.add_option('-m', '--mode', dest='mode', default=None,
+                      help='Mode [create or delete]')
+    parser.add_option('-e', '--env', dest='env', default=None,
+                      help='Set the environment')
+    parser.add_option('-i', '--item', dest='item', default=None,
+                      help='Set the AWS service item you want create/delete [ec2,elb,elasticache,rds]')
+    parser.add_option('-c', '--config', dest='config', default='config.yml',
+                      help='Override the default config.yml file')
+
+    (options, args) = parser.parse_args()
+
+    """
+    Required parameters
+    """
+    if options.aws_access == None:
+        print "\n[ERROR] Please specify an AWS Access key `-a`"
+        print sys.exit(1)
+    if options.aws_secret == None:
+        print "\n[ERROR] Please specify an AWS Secret key `-s`"
+        print sys.exit(1)
+    if options.mode == None or options.mode not in ['create', 'delete']:
+        print "\n[ERROR] Please specify a valid mode e.g. `-m create`"
+        print sys.exit(1)
+    if options.env == None:
+        print "\n[ERROR] Please specify an environment `-e`"
+        print sys.exit(1)
+    """
+    Based on whether an AWS service item was specified, build everything or just one item
+    """
+
+    # CONFIG SETUP
+    config = Config(options.aws_access, options.aws_secret)
+    config.set_config_from_file(options.config, options.env)
+
+    # BUILD
+    if options.item != None:
+        if options.item in ['ec2', 'elb', 'elasticache', 'rds']:
+            if options.item == 'ec2':
+                ec2(options.mode, config)
+            elif options.item == 'elb':
+                elb(options.mode, config)
+            elif options.item == 'elasticache':
+                elasticache(options.mode, config)
+            elif options.item == 'rds':
+                rds(options.mode, config)
+        else:
+            print "\n[ERROR] Please enter a valid item [ec2,elb,elasticache,rds]"
+    else:
+        print "\n--- APPLYING TO ENTIRE ENV: %s ---\n" % options.env
+        rds(options.mode, config)
+        elasticache(options.mode, config)
+        elb(options.mode, config)
+        ec2(options.mode, config)
+
+
+if __name__ == "__main__":
+    main()
