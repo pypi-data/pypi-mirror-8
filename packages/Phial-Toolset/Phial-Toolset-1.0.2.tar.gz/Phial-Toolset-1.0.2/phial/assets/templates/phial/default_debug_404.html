@@ -1,0 +1,106 @@
+{% strip %}
+<!doctype html>
+<!--[if IE 9]><html class="lt-ie10" lang="en" > <![endif]-->
+<!--[if IE 10]><html class="ie10" lang="en" > <![endif]-->
+<html class="no-js" lang="en" data-useragent="Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; Trident/6.0)">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="{{url_for('static', filename='phial/img/favicon.ico')}}" />
+    <link rel="shortcut icon" href="{{url_for('static', filename='phial/img/favicon.ico')}}" />
+    <title>Phial :: Error 404</title>
+    <link type="text/css" rel="stylesheet" href="{{url_for('static', filename='phial/css/foundation.min.css')}}" />
+    <style>
+      .spacer-20 {
+        position: relative;
+        top: 20px;
+      }
+      .button.small {
+        padding-top: 0.500rem;
+        padding-right: 1.75rem;
+        padding-bottom: 0.4500rem;
+        padding-left: 1.75rem;
+        font-size: 0.8125rem;
+      }
+      pre {
+        display: inline;
+      }
+      header {
+        background-color: #929045;
+        margin-bottom: 40px;
+      }
+      header h1,h4 {
+        color: #FFFFFF;
+      }
+    </style>
+    <script type="text/javascript" src="{{url_for('static', filename='phial/js/vendor/modernizr.js')}}"></script>
+  </head>
+  <body>
+    <nav class="top-bar hide-for-small" data-topbar>
+      <ul class="title-area">
+	<li class="name">
+	  <h1><a href="/">Phial {{phial_version}}</a></h1>
+	</li>
+      </ul>
+      <section class="top-bar-section">
+	<ul class="right">
+	  <li class="divider"></li>
+	  <li class="has-form">
+            <a href="https://github.com/0xbaadf00d/phial" class="small button">Fork on Github</a>
+	  </li>
+	</ul>
+      </section>
+    </nav>
+    <header>
+      <div class="row">
+	<div class="large-12 columns">
+	  <img src="{{url_for('static', filename='phial/img/phial.png')}}" style="float:left;width:80px;margin-top:16px;margin-right:10px;margin-bottom:5px;"/>
+	  <h1>Action not Found</h1>
+	  <h4><pre>for request "{{method}} {{path}}"</pre></h4>
+	</div>
+      </div>
+    </header>
+    <div class="row">
+      <div class="large-12 columns">
+	<div class="panel">
+	  <table style="width:100%">
+	    <thead>
+	      <tr>
+		<th>Rule</th>
+		<th>Methods</th>
+		<th>Endpoint</th>
+	      </tr>
+	    </thead>
+	    <tbody>
+	      {% for r in lst_route %}
+	        <tr>
+		  <td>{{r.rule}}</td>
+		  <td>{{', '.join(r.methods)}}</td>
+		  <td>{% if r.endpoint %}{{r.endpoint}}{% else %}&mdash;{% endif %}</td>
+		</tr>
+	      {% endfor %}
+	    </tbody>
+	  </table>
+	</div>
+      </div>
+      <div class="large-12 columns spacer-20">
+	You are seeing this error page because you have <pre>FLASK_DEBUG = True</pre> in your Phial settings file. Think to change that to <pre>False</pre> in production!
+      </div>
+    </div>
+    <footer class="row" style="margin-top:80px;">
+      <div class="large-12 columns">
+	<hr />
+	<div class="row">
+          <div class="large-6 columns">
+          </div>
+          <div class="large-6 columns">
+            <ul class="inline-list right">
+              <li><i>Licensed under MIT License</i></li>
+            </ul>
+          </div>
+	</div>
+      </div>
+    </footer>
+  </body>
+</html>
+{% endstrip %}

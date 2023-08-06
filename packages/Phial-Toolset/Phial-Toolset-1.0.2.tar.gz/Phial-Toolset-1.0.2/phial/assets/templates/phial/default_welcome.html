@@ -1,0 +1,93 @@
+{% strip %}
+<!doctype html>
+<!--[if IE 9]><html class="lt-ie10" lang="en" > <![endif]-->
+<!--[if IE 10]><html class="ie10" lang="en" > <![endif]-->
+<html class="no-js" lang="en" data-useragent="">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="{{url_for('static', filename='phial/img/favicon.ico')}}" />
+    <link rel="shortcut icon" href="{{url_for('static', filename='phial/img/favicon.ico')}}" />
+    <title>Welcome to Phial</title>
+    <link type="text/css" rel="stylesheet" href="{{url_for('static', filename='phial/css/foundation.min.css')}}" />
+    <style>
+      .button.small {
+        padding-top: 0.500rem;
+        padding-right: 1.75rem;
+        padding-bottom: 0.4500rem;
+        padding-left: 1.75rem;
+        font-size: 0.8125rem;
+      }
+      header {
+        background-color: #074E68;
+        margin-bottom: 40px;
+      }
+      header h1,h4 {
+        color: #FFFFFF;
+      }
+      h5 {
+        color: #008CBA;
+      }
+      p {
+        padding-left: 21px;
+      }
+    </style>
+    <script type="text/javascript" src="{{url_for('static', filename='phial/js/vendor/modernizr.js')}}"></script>
+  </head>
+  <body>
+    <nav class="top-bar hide-for-small" data-topbar>
+      <ul class="title-area">
+	<li class="name">
+	  <h1><a href="/">Phial {{phial_version}}</a></h1>
+	</li>
+      </ul>
+      <section class="top-bar-section">
+	<ul class="right">
+	  <li class="divider"></li>
+	  <li class="has-form">
+            <a href="https://github.com/0xbaadf00d/phial" class="small button">Fork on Github</a>
+	  </li>
+	</ul>
+      </section>
+    </nav>
+    <header>
+      <div class="row">
+	<div class="large-12 columns">
+	  <img src="{{url_for('static', filename='phial/img/phial.png')}}" style="float:left;width:80px;margin-top:16px;margin-right:10px;margin-bottom:5px;"/>
+	  <h1>Welcome to Phial!</h1>
+	  <h4>Your new application is ready.</h4>
+	</div>
+      </div>
+    </header>
+    <div class="row">
+      <div class="large-12 columns">
+	<h1>What's next?</h1>
+	<br/><br/><br/>
+	<h5>1. Edit settings.py to configure your project</h5>
+	<p>View and edit all properties of your application. Remember to read the README file on Github project homepage to get some help.</p>
+	<br/>
+	<h5>2. Create your controllers and models</h5>
+	<p>Well done! You can now start to create the controllers and models for your application.</p>
+	<br/>
+	<h5>3. Edit routes.py to replace this page</h5>
+	<p>You are seeing this page because you are running your application without any routes defined.</p>
+      </div>
+    </div>
+    <footer class="row" style="margin-top:40px;">
+      <div class="large-12 columns">
+	<hr />
+	<div class="row">
+          <div class="large-6 columns">
+	    {% datetime '%Y-%m-%d' %}
+          </div>
+          <div class="large-6 columns">
+            <ul class="inline-list right">
+              <li><i>Licensed under MIT License</i></li>
+            </ul>
+          </div>
+	</div>
+      </div>
+    </footer>
+  </body>
+</html>
+{% endstrip %}
