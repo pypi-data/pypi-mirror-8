@@ -1,0 +1,38 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:plone="http://namespaces.plone.org/plone"
+    i18n_domain="collective.ruleactions.pythonscript">
+
+    <include package="plone.contentrules" />
+    <include package="plone.contentrules" file="meta.zcml" />
+
+    <adapter
+        factory=".pythonscript.PythonScriptExecutor"
+        />
+
+    <browser:page
+        for="plone.app.contentrules.browser.interfaces.IRuleActionAdding"
+        name="collective.ruleactions.pythonscript"
+        class=".pythonscript.PythonScriptAddForm"
+        permission="cmf.ManagePortal"
+        />
+
+    <browser:page
+        for="collective.ruleactions.pythonscript.IPythonScriptAction"
+        name="edit"
+        class=".pythonscript.PythonScriptEditForm"
+        permission="cmf.ManagePortal"
+        />
+
+    <plone:ruleAction
+        name="collective.ruleactions.pythonscript"
+        title="PythonScript action"
+        description="Execute a PythonScript on the triggering object"
+        for="*"
+        event="zope.component.interfaces.IObjectEvent"
+        addview="collective.ruleactions.pythonscript"
+        editview="edit"
+        />
+
+</configure>
