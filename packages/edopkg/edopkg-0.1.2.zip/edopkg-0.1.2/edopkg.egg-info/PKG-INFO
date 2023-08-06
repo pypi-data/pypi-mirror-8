@@ -1,0 +1,113 @@
+Metadata-Version: 1.0
+Name: edopkg
+Version: 0.1.2
+Summary: Easydo Package Syncer
+Home-page: http://everydo.com/
+Author: xiehaiyang
+Author-email: service@everydo.com
+License: UNKNOWN
+Description: ========================
+        edopkg: 易度软件包同步
+        ========================
+        
+        安装
+        ==========
+        ::
+            pip install edopkg
+        
+        使用方法
+        ===========
+        需要配置服务器连接信息才能使用，详细见最后一节。
+        如果没有配置，会自动交互配置。
+        
+        另外，必须拥有软件包的开发权限，才能进行软件包的同步操作。
+        
+        clone: 复制一个软件包
+        -----------------------
+        从线上下载一个名为zopen.plans的软件包::
+        
+          edopkg clone zopen.plans
+        
+        执行后将会在当前文件夹下创建zopen.plans文件夹，并下载软件包数据
+        
+        pull: 下载
+        -------------------------------
+        
+        更新整个软件包::
+        
+         edopkg pull
+        
+        更新全部表单::
+        
+           edopkg pull forms
+        
+        仅仅更新一个表单定义::
+        
+          edopkg pull forms/plans.yaml
+        
+        push: 上传
+        ---------------------
+        
+        提交整个软件包：
+        
+          edopkg push
+        
+        提交全部表单::
+        
+          edopkg push forms
+        
+        仅仅提交一个表单定义::
+        
+          edopkg push forms\plans.yaml
+        
+        server 设置当前服务器配置
+        ----------------------------
+        把当前服务器设置为test配置::
+        
+          edopkg server test
+        
+        配置文件
+        ===============
+        
+        配置文件位于 ~/.edopkgrc. 
+        首次使用会自动进行配置
+        
+        格式：
+        ----------
+        配置文件的一个具体例子, 配置了测试服务器(test)和正式服务器(production)，当前使用test服务器::
+        
+            [edopkg]
+            server=test
+        
+            [test]
+            oc_api = https://oc-api.everydo.cn	
+            account = zopen	
+            instance = default	
+            username = xxx	
+            password = xxx	
+            client_id = test	
+            client_secret = 022127e182a934dea7d69s10697s8ac2	
+        
+            [production]
+            oc_api = https://oc-api.easydo.cn	
+            account = zopen	
+            instance = default	
+            username = xxx	
+            password = xxx	
+            client_id = test	
+            client_secret = 022127e182a934dea7d69s10697s8ac2	
+        
+        字段的含义：
+        
+        - oc_api: oc服务地址
+        - account: 公司(子域名)名称
+        - instance: 站点实例名称，默认为'default'
+        - username: 用户名
+        - password: 密码
+        - client_id:应用的ID
+        - client_secret:应用的密钥
+        
+        更多具体的信息，可参照：
+        https://zopen.everydo.cn/platform/docs/auth/开放API概览.rst/@zopen.cms:view
+        
+Platform: UNKNOWN
