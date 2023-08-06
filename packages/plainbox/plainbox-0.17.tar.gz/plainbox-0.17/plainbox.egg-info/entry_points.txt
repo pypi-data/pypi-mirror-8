@@ -1,0 +1,25 @@
+[plainbox.unit]
+template = plainbox.impl.unit.template:TemplateUnit
+category = plainbox.impl.unit.category:CategoryUnit
+test plan = plainbox.impl.unit.testplan:TestPlanUnit
+job = plainbox.impl.unit.job:JobDefinition
+unit = plainbox.impl.unit.unit:Unit
+
+[plainbox.buildsystem]
+go = plainbox.impl.buildsystems:GoBuildSystem
+make = plainbox.impl.buildsystems:MakefileBuildSystem
+autotools = plainbox.impl.buildsystems:AutotoolsBuildSystem
+
+[console_scripts]
+plainbox-trusted-launcher-1 = plainbox.impl.secure.launcher1:main
+stubbox = plainbox.impl.box:stubbox_main
+plainbox = plainbox.public:main
+
+[plainbox.exporter]
+xml = plainbox.impl.exporter.xml:XMLSessionStateExporter [xml]
+text = plainbox.impl.exporter.text:TextSessionStateExporter
+html = plainbox.impl.exporter.html:HTMLSessionStateExporter [xml]
+json = plainbox.impl.exporter.json:JSONSessionStateExporter
+rfc822 = plainbox.impl.exporter.rfc822:RFC822SessionStateExporter
+xlsx = plainbox.impl.exporter.xlsx:XLSXSessionStateExporter [xlsx]
+
