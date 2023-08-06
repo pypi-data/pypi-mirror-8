@@ -1,0 +1,102 @@
+Metadata-Version: 1.1
+Name: batterystaple
+Version: 0.1.0dev1
+Summary: Small library for generating XKCD style passphrases
+Home-page: https://github.com/chucksmash/batterystaple
+Author: Chuck Bassett
+Author-email: iamchuckb@gmail.com
+License: MIT
+Description: # (correcthorse)batterystaple
+        
+        Small library for generating XKCD style passphrases. (http://xkcd.com/936/)
+        Word list sourced from: https://github.com/atebits/Words
+        
+        In addition to generating a passphrase, by default the `generate` function logs some
+        basic analysis of the difficulty of cracking the password based on the number of candidate
+        words used in generating the passphrase.
+        
+        ## Usage Examples
+        
+        Calling `generate` with no arguments:
+        
+        ```python
+        In [0]: from batterystaple import generate
+        
+        In [1]: generate()
+        Generating passphrase of length 4 from 274907 candidate words...
+        Passphrase generated.
+        Number of possible passphrases with given length and constraints: 5,711,408,111,099,032,105,201
+        Time required to try all combinations at speed of 1 billion attempts/second: 5,711,408,111,099s
+        For the sake of comparison, here are several other lengths of time:
+        Seconds in one year: 31,557,600s
+        Seconds since UNIX epoch (Jan 1, 1970 12:00:00am): 1,416,230,980s
+        Seconds since humans emerged as a distinct species: 6,311,520,000,000s
+        Seconds since the universe formed: 435,494,880,000,000,000s
+        Out[1]: 'nonviable_gratification_workbench_subdwarfs'
+        ```
+        
+        Limiting candidate words to between 4 and 8 characters each:
+        
+        ```python
+        In [0]: from batterystaple import generate
+        In [1]: generate(min_length=4,max_length=8)
+        Eliminating all words less than 4 characters in length...
+        1435 words removed from list of candidates.
+        Eliminating all words greater than 8 characters in length...
+        158943 words removed from list of candidates.
+        Generating passphrase of length 4 from 114529 candidate words...
+        Passphrase generated.
+        Number of possible passphrases with given length and constraints: 172,052,851,568,492,369,281
+        Time required to try all combinations at speed of 1 billion attempts/second: 172,052,851,568s
+        For the sake of comparison, here are several other lengths of time:
+        Seconds in one year: 31,557,600s
+        Seconds since UNIX epoch (Jan 1, 1970 12:00:00am): 1,416,230,980s
+        Seconds since humans emerged as a distinct species: 6,311,520,000,000s
+        Seconds since the universe formed: 435,494,880,000,000,000s
+        Out[1]: 'visards_gentlest_inmost_imbued'
+        ```
+        
+        Generating a passphrase consisting of 5 words with no underscores
+        in the returned string:
+        
+        ```python
+        In [0]: from batterystaple import generate
+        
+        In [1]: generate(num_words=5,with_underscores=False)
+        Generating passphrase of length 5 from 274907 candidate words...
+        Passphrase generated.
+        Number of possible passphrases with given length and constraints: 1,570,106,069,597,901,618,944,491,307
+        Time required to try all combinations at speed of 1 billion attempts/second: 1,570,106,069,597,901,568s
+        For the sake of comparison, here are several other lengths of time:
+        Seconds in one year: 31,557,600s
+        Seconds since UNIX epoch (Jan 1, 1970 12:00:00am): 1,416,230,980s
+        Seconds since humans emerged as a distinct species: 6,311,520,000,000s
+        Seconds since the universe formed: 435,494,880,000,000,000s
+        Out[1]: 'headwaysmaterialisehandstandssjambokingalpinists'
+        ```
+        
+        And finally, limiting log output:
+        
+        ```python
+        In [0]: import logging
+        
+        In [1]: from batterystaple import generate
+        
+        In [2]: generate(log_level=logging.WARN)
+        Out[2]: 'cherisher_knobbiness_yardages_teinded'
+        
+        In [3]: generate(log_level=logging.ERROR)
+        Out[3]: 'eider_scarabaeoid_heartsome_unsleeping'
+        
+        ```
+Keywords: passwords passphrases
+Platform: UNKNOWN
+Classifier: Development Status :: 3 - Alpha
+Classifier: Environment :: Console
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Natural Language :: English
+Classifier: Operating System :: Mac OS :: MaxOS X
+Classifier: Operating System :: Microsoft :: Windows
+Classifier: Operating System :: POSIX
+Classifier: Programming Language :: Python :: 2.7
