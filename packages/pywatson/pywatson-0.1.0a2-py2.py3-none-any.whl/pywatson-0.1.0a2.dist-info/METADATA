@@ -1,0 +1,67 @@
+Metadata-Version: 2.0
+Name: pywatson
+Version: 0.1.0a2
+Summary: A Python adapter for IBM Watson's question and answer API
+Home-page: https://github.com/sherlocke/pywatson
+Author: Spencer Elliott
+Author-email: me@elliottsj.com
+License: MIT
+Keywords: ibm watson
+Platform: UNKNOWN
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: Topic :: Text Processing :: Linguistic
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.2
+Classifier: Programming Language :: Python :: 3.3
+Classifier: Programming Language :: Python :: 3.4
+Requires-Dist: enum34
+Requires-Dist: inflection
+Requires-Dist: requests
+Provides-Extra: dev
+Requires-Dist: Sphinx; extra == 'dev'
+Requires-Dist: sphinx-rtd-theme; extra == 'dev'
+Provides-Extra: test
+Requires-Dist: pytest; extra == 'test'
+
+PyWatson |Travis CI| |Code Health| |Documentation Status|
+=========================================================
+
+A Python adapter for IBM Watson's question and answer API
+
+Installation
+------------
+
+Install the package from PyPI:
+
+.. code:: shell
+
+    pip install pywatson
+
+Usage
+-----
+
+.. code:: python
+
+    from pywatson import Watson
+
+    # Create a Watson instance with your URL and credentials
+    # pywatson will use the endpoint `url + '/question'`
+    watson = Watson(url='https://watson-wdc01.ihost.com/instance/507/deepqa/v1', username='someuser', password='zyXHLz3sCoPt6G')
+
+See also
+--------
+
+-  `IBM Watson Developer Cloud API Reference <http://www.ibm.com/smarterplanet/us/en/ibmwatson/developercloud/apis/#!/Question_Answer>`__
+
+.. |Travis CI| image:: http://img.shields.io/travis/sherlocke/pywatson.svg?style=flat
+   :target: https://travis-ci.org/sherlocke/pywatson
+.. |Code Health| image:: https://landscape.io/github/sherlocke/pywatson/master/landscape.png?style=flat
+   :target: https://landscape.io/github/sherlocke/pywatson/master
+.. |Documentation Status| image:: https://readthedocs.org/projects/pywatson/badge/?version=latest
+   :target: https://readthedocs.org/projects/pywatson/?badge=latest
+
+
