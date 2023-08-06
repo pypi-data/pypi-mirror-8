@@ -1,0 +1,59 @@
+Metadata-Version: 1.1
+Name: djrillcelery
+Version: 0.1
+Summary: Mandrill transactional email for Django in conjunction with Celery
+Home-page: https://github.com/jayfk/DjrillCelery/
+Author: Jannis Gebauer <ja.geb@me.com>
+Author-email: ja.geb@me.com
+License: BSD License
+Description: DjrillCelery
+        ===============================================
+        
+        DjrillCelery extends the `Djrill <https://github.com/brack3t/Djrill>`_ package with a backend that sends mail with celery tasks.
+        
+        **Prerequisites**
+        
+        * Install Djrill: https://djrill.readthedocs.org/en/latest/
+        * Install Celery: https://pypi.python.org/pypi/djrill
+        
+        Quickstart
+        ------------
+        
+        1. Install DjrillCelery from PyPI:
+        
+           .. code-block:: console
+        
+                $ pip install djrillcelery
+        
+        
+        2. Edit your project's ``settings.py``:
+        
+           .. code-block:: python
+        
+                INSTALLED_APPS = (
+                    ...
+                    "djrillcelery"
+                )
+        
+                EMAIL_BACKEND = "djrillcelery.mail.backends.djrill.DjrillCeleryBackend"
+        
+        
+        3. Now, for every mail that is sent a new task is created.
+        
+        
+        
+Keywords: django,mailchimp,mandrill,email,email backend,djrill
+Platform: UNKNOWN
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: Implementation :: PyPy
+Classifier: Programming Language :: Python :: Implementation :: CPython
+Classifier: Programming Language :: Python :: 2.6
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.2
+Classifier: Programming Language :: Python :: 3.3
+Classifier: Programming Language :: Python :: 3.4
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: Framework :: Django
+Classifier: Environment :: Web Environment
