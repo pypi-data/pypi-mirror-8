@@ -1,0 +1,66 @@
+#!/usr/bin/env python -OO
+# -*- coding: utf-8 -*-
+"""
+  eventlogging-stream-processor
+  -----------------------------
+  Transform raw log stream to JSON event stream
+
+  usage: eventlogging-stream-processor [-h] [--sid SID] format input output
+
+  positional arguments:
+    format      Format string
+    input       URI of raw input stream
+    output      URI of output stream
+
+  optional arguments:
+    -h, --help  show this help message and exit
+    --sid SID   set input socket identity
+
+  formatters:
+     %h         Client IP
+     %j         JSON object
+     %l         Hostname of origin
+     %n         Sequence ID
+     %q         Query-string-encoded JSON
+     %t         Timestamp in NCSA format.
+
+  :copyright: (c) 2012 by Ori Livneh <ori@wikimedia.org>
+  :license: GNU General Public Licence 2.0 or later
+
+"""
+from __future__ import unicode_literals
+
+import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
+
+import argparse
+import logging
+
+from eventlogging import (capsule_uuid, iter_unicode, json, LogParser,
+                          pub_socket, sub_socket, validate)
+
+
+logging.basicConfig(level=logging.DEBUG, stream=sys.stderr)
+
+ap = argparse.ArgumentParser(description='Raw log -> JSON stream',
+                             fromfile_prefix_chars='@')
+ap.add_argument('format', help='Format string')
+ap.add_argument('input', help='URI of raw input stream')
+ap.add_argument('output', help='URI of output stream')
+ap.add_argument('--sid', help='set input socket identity')
+args = ap.parse_args()
+
+parser = LogParser(args.format)
+pub = pub_socket(args.output)
+logging.info('Publishing JSON events on %s.', args.output)
+
+for raw_event in iter_unicode(sub_socket(args.input, identity=args.sid)):
+    try:
+        event = parser.parse(raw_event)
+        validate(event)
+        event['uuid'] = capsule_uuid(event)
+    except Exception as e:
+        logging.error('Unable to decode: %s (%s)', raw_event, e)
+    else:
+        pub.send_unicode(json.dumps(event) + '\n')

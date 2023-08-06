@@ -1,0 +1,55 @@
+#!/usr/bin/env python -OO
+# -*- coding: utf-8 -*-
+"""
+  eventlogging-forwarder
+  ----------------------
+  UDP -> ZeroMQ socket forwarding. Reads line-oriented input from UDP socket
+  and writes it to a ZeroMQ TCP PUB socket bound to the same port number.
+
+  Because ZeroMQ is message-oriented, we cannot simply use recv_into to read
+  bytes from the UDP socket into the ZMQ socket. We use socket.makefile() to
+  facilitate reading and writing whole lines.
+
+  usage: eventlogging-udp-zmq-forwarder [-h] port
+
+  positional arguments:
+    port        Port to forward
+
+  optional arguments:
+    -h, --help  show this help message and exit
+
+  :copyright: (c) 2012 by Ori Livneh <ori@wikimedia.org>
+  :license: GNU General Public Licence 2.0 or later
+
+"""
+from __future__ import unicode_literals
+
+import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
+
+import argparse
+import logging
+
+from eventlogging import iter_unicode, pub_socket, udp_socket
+
+
+ap = argparse.ArgumentParser(description='ZeroMQ UDP => PUB Device',
+                             fromfile_prefix_chars='@')
+ap.add_argument('port', type=int, help='Port to forward')
+ap.add_argument('--count', action='store_true',
+                help='Prepend an autoincrementing ID to each message')
+args = ap.parse_args()
+
+logging.basicConfig(stream=sys.stderr, level=logging.DEBUG,
+                    format='%(asctime)s %(message)s')
+
+logging.info('Forwarding udp:%d => tcp:%d...', args.port, args.port)
+sock_out = pub_socket(args.port)
+sock_in = udp_socket('0.0.0.0', args.port)
+
+f = iter_unicode(sock_in)
+if args.count:
+    f = (str(id) + '\t' + msg for id, msg in enumerate(f))
+for line in f:
+    sock_out.send_string(line)
