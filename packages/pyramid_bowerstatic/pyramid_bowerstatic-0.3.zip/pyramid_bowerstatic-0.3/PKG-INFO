@@ -1,0 +1,62 @@
+Metadata-Version: 1.0
+Name: pyramid_bowerstatic
+Version: 0.3
+Summary: BowerStatic integration for Pyramid
+Home-page: https://github.com/mrijken/pyramid_bowerstatic
+Author: Marc Rijken
+Author-email: marc@rijken.org
+License: BSD
+Description: pyramid_bowerstatic: BowerStatic integration for Pyramid
+        ========================================================
+        
+        pyramid_bowerstatic integrates BowerStatic_ into Pyramid_.
+        
+        When you create a pyramid app, make sure to include pyramid_bowerstatic::
+        
+            config.include('pyramid_bowerstatic')
+        
+        Resources can be added to the bowerstatic repository by::
+        
+            components = pyramid_bowerstatic.create_components('myapp', os.path.join(os.path.dirname(__file__), 'bower_components'))
+        
+        
+        And resources can be used in views by::
+        
+            request.include(components, 'jquery')
+        
+        
+        Resource can also be inserted in the view/template directly by using::
+        
+           request.get_bowerstatic_url('myapp', 'jquery', 'jquery.js')
+        
+        
+        .. _BowerStatic: http://bowerstatic.readthedocs.org
+        
+        .. _Pyramid: http://docs.pylonsproject.org/projects/pyramid
+        
+        
+        CHANGES
+        *******
+        
+        0.3 (2014-11-19)
+        ================
+        
+        - BowerStatic 0.7 has changed the API for tweens, which is
+          changed in version 0.3 of pyramid_bowerstatic.
+        
+        
+        0.2 (2014-11-13)
+        ================
+        
+        - With the release of bowestatic 0.6 it can be used as tweens.
+          As a consequence bower.wrap is not needed anymore. Which
+          makes it pyramid_bowerstatic easier to use.
+        
+        
+        0.1 (2014-11-08)
+        ================
+        
+        - Initial public release.
+        
+Keywords: pyramid bowerstatic bower
+Platform: UNKNOWN
