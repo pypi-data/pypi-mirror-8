@@ -1,0 +1,269 @@
+<!-- -*- mode:jinja2 -*- -->
+{% extends "base.html" %}
+
+{% block pagetitle %}
+<i class="fa fa-cog"></i> <span class="ds-primary-title">{{config['DASHBOARD_APPNAME']}}</span> <span class="ds-secondary-title">{{title}}</span>
+{% endblock %}
+
+{% block content %}
+
+<div class="container">
+
+  <div>
+    {% include "snippets/breadcrumbs.html" %}
+  </div>
+
+
+  <div class="row">
+    <div class="col-md-8 col-md-offset-2">
+
+      <div class="">
+        <br/>
+        <br/>
+
+      <form class="form-horizontal">
+        <fieldset>
+
+          <!-- Form Name -->
+          <!-- <legend>Form Name</legend> -->
+
+
+          <!-- Default Auto-Refresh Period -->
+          <div class="form-group">
+            <label class="col-md-4 control-label" for="selectRefresh">Default Refresh Period</label>
+            <div class="col-md-6">
+              <select id="selectRefresh" name="selectRefresh" class="form-control"
+                      onchange="dsSetPref('refresh', this.value)">
+                {% for item in config['DASHBOARD_REFRESH_INTERVALS'] %}
+                <option value="{{item[1]}}"
+                        {% if item[1] == ctx.get_int('refresh', config['DEFAULT_REFRESH_INTERVAL']) %}
+                  selected
+                        {% endif %}
+                        >{{item[0]}}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-md-2">
+              <button class="btn btn-default"
+                      id="ds-reset-auto-refresh-button"
+                      data-toggle="tooltip"
+                      title="Reset to Default">
+                <i class="fa fa-angle-double-down"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Time Zone -->
+          <div class="form-group">
+            <label class="col-md-4 control-label" for="selectTimeZone">Display Time Zone</label>
+            <div class="col-md-6">
+              <input type="hidden" id="selectTimeZone" name="selectTimeZone" class="form-control"
+                      onchange="dsSetPref('timezone', this.value)">
+              </input>
+            </div>
+            <div class="col-md-2">
+              <button class="btn btn-default"
+                      id="ds-reset-time-zone-button"
+                      data-toggle="tooltip"
+                      title="Reset to Default">
+                <i class="fa fa-angle-double-down"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Graphite URL -->
+          <div class="form-group">
+            <label class="col-md-4 control-label" for="textGraphiteURL">Graphite URL</label>
+            <div class="col-md-6">
+              <input type="text" id="textGraphiteURL" name="textGraphiteURL" class="form-control"
+                     value="{{ctx.get_str('graphite_url', config.get('GRAPHITE_URL'))}}"
+                     onchange="dsSetPref('graphite_url', this.value)">
+              </input>
+            </div>
+            <div class="col-md-2">
+              <button class="btn btn-default"
+                      id="ds-reset-graphite-url-button"
+                      data-toggle="tooltip"
+                      title="Reset to Default">
+                <i class="fa fa-angle-double-down"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Graphite Auth Settings -->
+          <div class="form-group">
+            <label class="col-md-4 control-label" for="textGraphiteURL">Graphite HTTP Authentication</label>
+            <div class="col-md-6">
+              <input type="text" id="textGraphiteAUTH" name="textGraphiteAUTH" class="form-control"
+                     value="{{ctx.get_str('graphite_auth', config.get('GRAPHITE_AUTH'))}}"
+                     onchange="dsSetPref('graphite_auth', this.value)">
+              </input>
+            </div>
+            <div class="col-md-2">
+              <button class="btn btn-default"
+                      id="ds-reset-graphite-url-button"
+                      data-toggle="tooltip"
+                      title="Reset to Default">
+                <i class="fa fa-angle-double-down"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Chart Style -->
+          <div class="form-group">
+            <label class="col-md-4 control-label" for="chartRadios">Default Chart Style</label>
+            <div class="col-md-4">
+              <div class="radio">
+                <label for="chartRadios-0">
+                  <!-- Static -->
+                  <input type="radio" name="chartRadios" id="chartRadios-0" value="static" {% if not ctx.prefs.interactive %} checked="checked"{% endif %} onclick="dsSetPref('interactive', 'false')">
+                    Static
+                </label>
+	          </div>
+              <div class="radio">
+                <label for="chartRadios-1">
+                  <!-- Interactive -->
+                  <input type="radio" name="chartRadios" id="chartRadios-1" value="interactive" {% if ctx.prefs.interactive %} checked="checked"{% endif %} onclick="dsSetPref('interactive', 'true')">
+                    Interactive
+                </label>
+	          </div>
+            </div>
+          </div>
+
+          <!-- Chart Renderer -->
+          <div class="form-group">
+            <label class="col-md-4 control-label" for="chartRenderRadios">Interactive Chart Renderer</label>
+            <div class="col-md-8">
+              <div class="radio">
+                <label for="chartRenderRadios-0">
+                  <!-- Static -->
+                  <input type="radio" name="chartRenderRadios" id="chartRenderRadios-0" value="static" {% if ctx.prefs.renderer=='nvd3' %} checked="checked"{% endif %} onclick="dsSetPref('renderer', 'nvd3')">
+                    nvd3
+                </label>
+                <p><small><a href="http://nvd3.org/" target="_blank">nvd3</a>
+                renders interactive charts
+                using <a href="http://d3js.org/"
+                target="_blank">D3.js</a> and SVG. It supports
+                particularly nice interactive features on stacked area
+                charts, but can bog down the browser when there are a
+                large number of charts or a long time period being
+                rendered.</small></p>
+	          </div>
+              <div class="radio">
+                <label for="chartRenderRadios-1">
+                  <!-- Interactive -->
+                  <input type="radio" name="chartRenderRadios" id="chartRenderRadios-1" value="interactive" {% if ctx.prefs.renderer=='flot' %} checked="checked"{% endif %} onclick="dsSetPref('renderer', 'flot')">
+                    flot
+                </label>
+                <p><small><a href="http://www.flotcharts.org/"
+                target="_blank">flot</a> renders interactive charts
+                using HTML canvas. It does not support stream graphs,
+                but can be a better choice for rendering large numbers
+                of graphs or lengthy time periods.</small></p>
+	          </div>
+            </div>
+          </div>
+
+
+          <!-- Theme -->
+          <div class="form-group">
+            <label class="col-md-4 control-label" for="themeRadios">Theme</label>
+            <div class="col-md-8">
+
+              <div class="radio">
+                <label for="themeRadios-snow">
+                  <input type="radio" name="themeRadios" id="themeRadios-snow" {% if ctx.prefs.theme=='snow' %} checked="checked" {% endif %} onclick="dsSetPref('theme', 'snow')" value="Snow">
+                    Snow
+                </label>
+              </div>
+
+              <div class="radio">
+                <label for="themeRadios-light">
+                  <input type="radio" name="themeRadios" id="themeRadios-light" {% if ctx.prefs.theme=='light' %} checked="checked" {% endif %} onclick="dsSetPref('theme', 'light')" value="Light">
+                    Light
+                </label>
+              </div>
+
+              <div class="radio">
+                <label for="themeRadios-dark">
+                  <input type="radio" name="themeRadios" id="themeRadios-dark" {% if ctx.prefs.theme=='dark' %} checked="checked" {% endif %} onclick="dsSetPref('theme', 'dark')" value="Dark">
+                    Dark
+                </label>
+              </div>
+
+              <div class="radio">
+                <label for="themeRadios-solarized-light">
+                  <input type="radio" name="themeRadios" id="themeRadios-solarized-light" {% if ctx.prefs.theme=='solarized-light' %} checked="checked" {% endif %} onclick="dsSetPref('theme', 'solarized-light')" value="Solarized Light">
+                    Solarized Light
+                </label>
+              </div>
+
+              <div class="radio">
+                <label for="themeRadios-solarized-dark">
+                  <input type="radio" name="themeRadios" id="themeRadios-solarized-dark" {% if ctx.prefs.theme=='solarized-dark' %} checked="checked" {% endif %} onclick="dsSetPref('theme', 'solarized-dark')" value="Solarized Dark">
+                    Solarized Dark
+                </label>
+              </div>
+
+            </div>
+          </div>
+        </fieldset>
+      </form>
+
+      </div>
+    </div>
+  </div>
+
+
+  <div class="row">
+  </div>
+
+</div> <!-- container -->
+
+<script>
+ dsSetPref = function(key, value) {
+   window.location = URI(window.location)
+         .query('')
+         .setQuery(key, value)
+         .href()
+ }
+
+ $('#selectRefresh').select2()
+
+ $('#selectTimeZone').attr('value', ds.config.DISPLAY_TIMEZONE)
+
+ $('#selectTimeZone').select2({
+   data: moment.tz.names().map(function(name) {
+     return {
+       id: name,
+       text: name
+     }
+   })
+ })
+
+ $("[data-toggle=tooltip]").tooltip({
+   animation:false,
+   container: 'body',
+   delay: { show:300, hide:100}
+ })
+
+ $(document).on('click', '#ds-reset-auto-refresh-button', function(e) {
+   $('#selectRefresh').select2('val', '{{config['DEFAULT_REFRESH_INTERVAL']}}', true)
+   return false
+ })
+
+ $(document).on('click', '#ds-reset-time-zone-button', function(e) {
+   $('#selectTimeZone').select2('val', '{{config['DISPLAY_TIMEZONE']}}', true)
+   return false
+ })
+
+ $(document).on('click', '#ds-reset-graphite-url-button', function(e) {
+   var e = $('#textGraphiteURL')[0]
+   e.value = '{{config['GRAPHITE_URL']}}'
+   dsSetPref('graphite_url', e.value)
+   return false
+ })
+
+</script>
+
+{% endblock %}
