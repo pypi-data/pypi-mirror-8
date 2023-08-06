@@ -1,0 +1,75 @@
+Metadata-Version: 1.1
+Name: slapos.extension.strip
+Version: 0.1
+Summary: zc.buildout extension to strip binaries.
+Home-page: http://git.erp5.org/gitweb/slapos.extension.strip
+Author: Kazuhiko Shiozaki
+Author-email: kazuhiko@nexedi.com
+License: BSD
+Description: Buildout Extension to strip binaries
+        ====================================
+        
+        slapos.extension.strip is a buildout extension that finds shared
+        libraries, binary executables and static libraries, and calls strip(1)
+        against them to reduce the size. It is triggered at the end of the
+        buildout process.
+        
+        Usage
+        -----
+        
+        Add ``slapos.extension.strip`` in ``[buildout]`` section's ``extensions`` option like :
+        
+        ::
+        
+          [buildout]
+          extensions = slapos.extension.strip
+        
+        Requirements
+        ------------
+        
+        The following programs are required. If any of them is missing, this
+        extension does nothing.
+        
+        - ``file``
+        - ``find``
+        - ``strip``
+        
+        Supported Options
+        -----------------
+        
+        ``file-binary``
+        
+          Path to ``file`` program. Defaults to 'file' which should work on
+          any system that has the make program available in the system
+          ``PATH``.
+        
+        ``find-binary``
+        
+          Path to ``find`` program. Defaults to 'find' which should work on
+          any system that has the make program available in the system
+          ``PATH``.
+        
+        ``strip-binary``
+        
+          Path to ``strip`` program. Defaults to 'strip' which should work on
+          any system that has the make program available in the system
+          ``PATH``.
+        
+        Changes
+        =======
+        
+        0.1 (2014-10-22)
+        ------------------
+        
+         * Initial release.
+        
+        
+        Download
+        ***********************
+        
+Keywords: buildout extension strip
+Platform: UNKNOWN
+Classifier: Framework :: Buildout :: Extension
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Programming Language :: Python
+Classifier: Topic :: Software Development :: Build Tools
