@@ -1,0 +1,3 @@
+# Bubbler
+
+Simple event framework.
