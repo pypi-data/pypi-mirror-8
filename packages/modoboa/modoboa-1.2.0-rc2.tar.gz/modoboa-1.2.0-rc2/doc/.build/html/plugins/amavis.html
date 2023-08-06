@@ -1,0 +1,436 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Amavisd-new frontend &mdash; Modoboa 1.2.0-rc1 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.2.0-rc1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="Modoboa 1.2.0-rc1 documentation" href="../index.html" />
+    <link rel="next" title="Graphical statistics" href="statistics.html" />
+    <link rel="prev" title="Postfix relay domains support" href="postfix_relay_domains.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="statistics.html" title="Graphical statistics"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="postfix_relay_domains.html" title="Postfix relay domains support"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">Modoboa 1.2.0-rc1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="amavisd-new-frontend">
+<span id="amavis-frontend"></span><h1>Amavisd-new frontend<a class="headerlink" href="#amavisd-new-frontend" title="Permalink to this headline">¶</a></h1>
+<p>This plugin provides a simple management frontend for <a class="reference external" href="http://www.amavis.org">amavisd-new</a>. The supported features are:</p>
+<ul class="simple">
+<li>SQL quarantine management : available to administrators or users,
+possibility to delete or release messages</li>
+<li>Per domain customization (using policies): specify how amavisd-new
+will handle traffic</li>
+</ul>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The per-domain policies feature only works for new
+installations. Currently, you can&#8217;t use modoboa with an existing
+database (ie. with data in <tt class="docutils literal"><span class="pre">users</span></tt> and <tt class="docutils literal"><span class="pre">policies</span></tt> tables).</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This plugin requires amavisd-new version <strong>2.7.0</strong> or higher. If
+you&#8217;re planning to use the <a class="reference internal" href="#selfservice"><em>Self-service mode</em></a>, you&#8217;ll need version
+<strong>2.8.0</strong>.</p>
+</div>
+<div class="section" id="quick-amavis-setup">
+<h2>Quick Amavis setup<a class="headerlink" href="#quick-amavis-setup" title="Permalink to this headline">¶</a></h2>
+<p>By default, amavis doesn&#8217;t use a database. To configure this
+behaviour, you first need to create a dedicated database. This step is a
+bit manual since no <em>ready-to-use</em> SQL schema is provided by
+amavis. The information is located inside README files, one for <a class="reference external" href="http://www.amavis.org/README.sql-mysql.txt">MySQL</a> and one for <a class="reference external" href="http://www.amavis.org/README.sql-pg.txt">PostgreSQL</a>.</p>
+<p>Then, you must tell amavis to use this database for lookups and
+quarantined messages storing. Here is a working configuration sample:</p>
+<div class="highlight-python"><div class="highlight"><pre>@lookup_sql_dsn =
+  ([&#39;DBI:&lt;driver&gt;:database=&lt;database&gt;;host=&lt;dbhost&gt;;port=&lt;dbport&gt;&#39;, &#39;&lt;dbuser&gt;&#39;, &#39;&lt;password&gt;]&#39;]);
+
+@storage_sql_dsn =
+  ([&#39;DBI:&lt;driver&gt;:database=&lt;database&gt;;host=&lt;dbhost&gt;;port=&lt;dbport&gt;&#39;, &#39;&lt;dbuser&gt;&#39;, &#39;&lt;password&gt;]&#39;]);
+
+# PostgreSQL users NEED this parameter!
+# MySQL users only need this parameter is email addresses are stored
+# using the VARBINARY type.
+$sql_allow_8bit_address = 1;
+
+$virus_quarantine_method = &#39;sql:&#39;;
+$spam_quarantine_method = &#39;sql:&#39;;
+$banned_files_quarantine_method = &#39;sql:&#39;;
+$bad_header_quarantine_method = &#39;sql:&#39;;
+
+$virus_quarantine_to = &#39;virus-quarantine&#39;;
+$banned_quarantine_to = &#39;banned-quarantine&#39;;
+$bad_header_quarantine_to = &#39;bad-header-quarantine&#39;;
+$spam_quarantine_to = &#39;spam-quarantine&#39;;
+</pre></div>
+</div>
+<p>Replace values between <tt class="docutils literal"><span class="pre">&lt;&gt;</span></tt> by yours. To know how to configure
+amavis to allow quarantined messages release, read this <a class="reference internal" href="#amavis-release"><em>section</em></a>.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Amavis configuration allows for separate lookup and storage
+databases but Modoboa doesn&#8217;t support it yet.</p>
+</div>
+</div>
+<div class="section" id="connect-modoboa-and-amavis">
+<h2>Connect Modoboa and Amavis<a class="headerlink" href="#connect-modoboa-and-amavis" title="Permalink to this headline">¶</a></h2>
+<p>You must tell to Modoboa where it can find the amavis
+database. Inside <tt class="file docutils literal"><span class="pre">settings.py</span></tt>, add a new connection to the
+<tt class="docutils literal"><span class="pre">DATABASES</span></tt> variable like this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">DATABASES</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="c"># Stuff before</span>
+  <span class="c">#</span>
+  <span class="s">&quot;amavis&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s">&quot;ENGINE&quot;</span> <span class="p">:</span> <span class="s">&quot;&lt;your value&gt;&quot;</span><span class="p">,</span>
+    <span class="s">&quot;HOST&quot;</span> <span class="p">:</span> <span class="s">&quot;&lt;your value&gt;&quot;</span><span class="p">,</span>
+    <span class="s">&quot;NAME&quot;</span> <span class="p">:</span> <span class="s">&quot;&lt;your value&gt;&quot;</span><span class="p">,</span>
+    <span class="s">&quot;USER&quot;</span> <span class="p">:</span> <span class="s">&quot;&lt;your value&gt;&quot;</span><span class="p">,</span>
+    <span class="s">&quot;PASSWORD&quot;</span> <span class="p">:</span> <span class="s">&quot;&lt;your value&gt;&quot;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Replace values between <tt class="docutils literal"><span class="pre">&lt;&gt;</span></tt> with yours.</p>
+<div class="section" id="cleanup">
+<h3>Cleanup<a class="headerlink" href="#cleanup" title="Permalink to this headline">¶</a></h3>
+<p>Storing quarantined messages to a database can quickly become a
+perfomance killer. Modoboa provides a simple script to periodically
+purge the quarantine database. To use it, add the following line
+inside root&#8217;s crontab:</p>
+<div class="highlight-python"><div class="highlight"><pre>0 0 * * * &lt;modoboa_site&gt;/manage.py qcleanup
+#
+# Or like this if you use a virtual environment:
+# 0 0 * * * &lt;virtualenv path/bin/python&gt; &lt;modoboa_site&gt;/manage.py qcleanup
+</pre></div>
+</div>
+<p>Replace <tt class="docutils literal"><span class="pre">modoboa_site</span></tt> with the path of your Modoboa instance.</p>
+<p>By default, messages older than 14 days are automatically purged. You
+can modify this value by changing the <tt class="docutils literal"><span class="pre">MAX_MESSAGES_AGE</span></tt> parameter
+in the online panel.</p>
+</div>
+</div>
+<div class="section" id="release-messages">
+<span id="amavis-release"></span><h2>Release messages<a class="headerlink" href="#release-messages" title="Permalink to this headline">¶</a></h2>
+<p>To release messages, first take a look at <a class="reference external" href="http://www.ijs.si/software/amavisd/amavisd-new-docs.html#quar-release">this page</a>. It
+explains how to configure amavisd-new to listen somewhere for the
+AM.PDP protocol. This protocol is used to send requests.</p>
+<p>Below is an example of a working configuration:</p>
+<div class="highlight-python"><div class="highlight"><pre>$interface_policy{&#39;SOCK&#39;} = &#39;AM.PDP-SOCK&#39;;
+$interface_policy{&#39;9998&#39;} = &#39;AM.PDP-INET&#39;;
+
+$policy_bank{&#39;AM.PDP-SOCK&#39;} = {
+  protocol =&gt; &#39;AM.PDP&#39;,
+  auth_required_release =&gt; 0,
+};
+$policy_bank{&#39;AM.PDP-INET&#39;} = {
+  protocol =&gt; &#39;AM.PDP&#39;,
+  inet_acl =&gt; [qw( 127.0.0.1 [::1] )],
+};
+</pre></div>
+</div>
+<p>Don&#8217;t forget to update the <tt class="docutils literal"><span class="pre">inet_acl</span></tt> list if you plan to release from
+the network.</p>
+<p>Once amavisd-new is configured, just tell Modoboa where it can find
+the <em>release server</em> by modifying the following parameters in the
+online panel:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="31%" />
+<col width="31%" />
+<col width="38%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Name</th>
+<th class="head">Description</th>
+<th class="head">Default value</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Amavis connection
+mode</td>
+<td>Mode used to access
+the PDP server</td>
+<td>unix</td>
+</tr>
+<tr class="row-odd"><td>PDP server address</td>
+<td>PDP server address
+(if inet mode)</td>
+<td>localhost</td>
+</tr>
+<tr class="row-even"><td>PDP server port</td>
+<td>PDP server port (if
+inet mode) 9998</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>PDP server socket</td>
+<td>Path to the PDP
+server socket (if
+unix mode)</td>
+<td>/var/amavis/amavisd.sock</td>
+</tr>
+</tbody>
+</table>
+<div class="section" id="deferred-release">
+<h3>Deferred release<a class="headerlink" href="#deferred-release" title="Permalink to this headline">¶</a></h3>
+<p>By default, simple users are not allowed to release messages
+themselves. They are only allowed to send release requests to
+administrators.</p>
+<p>As administrators are not always available or logged into Modoboa, a
+notification tool is available. It sends reminder e-mails to every
+administrators or domain administrators. To use it, add the following
+example line to root&#8217;s crontab:</p>
+<div class="highlight-python"><div class="highlight"><pre>0 12 * * * &lt;modoboa_site&gt;/manage.py amnotify --baseurl=&#39;&lt;modoboa_url&gt;&#39;
+#
+# Or like this if you use a virtual environment:
+# 0 12 * * * &lt;virtualenv path/bin/python&gt; &lt;modoboa_site&gt;/manage.py amnotify --baseurl=&#39;&lt;modoboa_url&gt;&#39;
+</pre></div>
+</div>
+<p>You are free to change the frequency.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If you want to let users release their messages alone (not
+recommended), go to the admin panel.</p>
+</div>
+<p>The following parameters are available to let you customize this
+feature:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="31%" />
+<col width="31%" />
+<col width="38%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Name</th>
+<th class="head">Description</th>
+<th class="head">Default value</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Check requests
+interval</td>
+<td>Interval between two
+release requests
+checks</td>
+<td>30</td>
+</tr>
+<tr class="row-odd"><td>Allow direct release</td>
+<td>Allow users to
+directly release
+their messages</td>
+<td>no</td>
+</tr>
+<tr class="row-even"><td>Notifications sender</td>
+<td>The e-mail address
+used to send
+notitications</td>
+<td><a class="reference external" href="mailto:notification&#37;&#52;&#48;modoboa&#46;org">notification<span>&#64;</span>modoboa<span>&#46;</span>org</a></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="self-service-mode">
+<span id="selfservice"></span><h2>Self-service mode<a class="headerlink" href="#self-service-mode" title="Permalink to this headline">¶</a></h2>
+<p>The <em>self-service</em> mode lets users act on quarantined messages without
+beeing authenticated. They can:</p>
+<ul class="simple">
+<li>View messages</li>
+<li>Remove messages</li>
+<li>Release messages (or send release requests)</li>
+</ul>
+<p>To access a specific message, they only need the following information:</p>
+<ul class="simple">
+<li>Message&#8217;s unique identifier</li>
+<li>Message&#8217;s secret identifier</li>
+</ul>
+<p>This information is controlled by <em>amavis</em>, which is in charge of
+notifying users when new messages are put into quarantine. Each
+notification (one per message) must embark a direct link containing
+the required identifiers.</p>
+<p>To activate this feature, go the administration panel and set the
+<strong>Enable self-service mode</strong> parameter to yes.</p>
+<p>The last step is to customize the notification messages amavis
+sends. The most important is to embark a direct link. Take a look at
+the <a class="reference external" href="http://amavis.org/README.customize.txt">README.customize</a> file to
+learn what you&#8217;re allowed to do.</p>
+<p>Here is a link example:</p>
+<div class="highlight-python"><div class="highlight"><pre>http://&lt;modoboa_url&gt;/quarantine/%i/?rcpt=%R&amp;secret_id=[:secret_id]
+</pre></div>
+</div>
+</div>
+<div class="section" id="manual-spamassassin-learning">
+<span id="sa-manual-learning"></span><h2>Manual SpamAssassin learning<a class="headerlink" href="#manual-spamassassin-learning" title="Permalink to this headline">¶</a></h2>
+<p>It is possible to manually train <a class="reference external" href="http://spamassassin.apache.org/">SpamAssassin</a> using the quarantine&#8217;s content. By
+train, we mean:</p>
+<ul class="simple">
+<li>Mark message(s) as spam (false negative(s))</li>
+<li>Mark message(s) as non-spam (false positive(s))</li>
+</ul>
+<p>This feature is available to all users (from super administrators to
+simple users) but not enabled by default.</p>
+<div class="section" id="spamassassin-configuration">
+<h3>SpamAssassin configuration<a class="headerlink" href="#spamassassin-configuration" title="Permalink to this headline">¶</a></h3>
+<p>For better performance and to enable the per-user level, SpamAssassin
+must store bayes information into a SQL database.</p>
+<p>Create a new database and a new user/password (using your favorite
+database server) and edit the default configuration file
+(<tt class="file docutils literal"><span class="pre">/etc/spamassassin/local.cf</span></tt>) to add the following lines
+inside:</p>
+<div class="highlight-perl"><div class="highlight"><pre><span class="n">bayes_store_module</span>    <span class="nn">Mail::SpamAssassin::BayesStore::</span><span class="sr">&lt;Driver&gt;</span>
+<span class="n">bayes_sql_dsn</span>         <span class="sr">&lt;DSN&gt;</span>
+<span class="n">bayes_sql_username</span>    <span class="o">&lt;</span><span class="n">db</span> <span class="n">username</span><span class="o">&gt;</span>
+<span class="n">bayes_sql_password</span>    <span class="o">&lt;</span><span class="n">db</span> <span class="n">password</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>Replace values between <tt class="docutils literal"><span class="pre">&lt;&gt;</span></tt> by yours. Possible values for <tt class="docutils literal"><span class="pre">Driver</span></tt>
+are <tt class="docutils literal"><span class="pre">PgSQL</span></tt> or <tt class="docutils literal"><span class="pre">MySQL</span></tt> (non exhaustive list). The syntax for
+<tt class="docutils literal"><span class="pre">DSN</span></tt> depends on the driver you choose. Please consult the official
+documentation.</p>
+</div>
+<div class="section" id="enable-the-feature-through-modoboa">
+<h3>Enable the feature through Modoboa<a class="headerlink" href="#enable-the-feature-through-modoboa" title="Permalink to this headline">¶</a></h3>
+<p>Manual learning is disabled by default. You can activate it through
+the administration panel (<em>Modoboa &gt; Paremeters &gt; Amavis</em>). There two
+learning levels:</p>
+<ol class="arabic simple">
+<li>Global: available to administrators only. A single (global) bayes
+database is shared between everyone.</li>
+<li>Per domain: available to administrators and domain
+administrators. Each domain can have a dedicated database.</li>
+<li>Per user: each user can create its own database to customize the
+way SpamAssassin will detect spam.</li>
+</ol>
+<p>The domain and user levels are not activated by default, dedicated
+parameters are available through the panel.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Domain and user databases are only created the first time someone
+calls the learning feature through the quarantine.</p>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">A bayes database needs to reach pre-defined thresholds before it
+can be used by SpamAssassin. The default values are <strong>200</strong> spams
+and <strong>200</strong> hams.</p>
+</div>
+<p>You will find other paramaters related to this feature. You won&#8217;t need
+to change them most of the time, unless SpamAssassin is hosted on a
+different machine than Modoboa. (in this case, <tt class="docutils literal"><span class="pre">spamc</span></tt> will be used
+instead of <tt class="docutils literal"><span class="pre">sa-learn</span></tt>).</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Amavisd-new frontend</a><ul>
+<li><a class="reference internal" href="#quick-amavis-setup">Quick Amavis setup</a></li>
+<li><a class="reference internal" href="#connect-modoboa-and-amavis">Connect Modoboa and Amavis</a><ul>
+<li><a class="reference internal" href="#cleanup">Cleanup</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#release-messages">Release messages</a><ul>
+<li><a class="reference internal" href="#deferred-release">Deferred release</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#self-service-mode">Self-service mode</a></li>
+<li><a class="reference internal" href="#manual-spamassassin-learning">Manual SpamAssassin learning</a><ul>
+<li><a class="reference internal" href="#spamassassin-configuration">SpamAssassin configuration</a></li>
+<li><a class="reference internal" href="#enable-the-feature-through-modoboa">Enable the feature through Modoboa</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="postfix_relay_domains.html"
+                        title="previous chapter">Postfix relay domains support</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="statistics.html"
+                        title="next chapter">Graphical statistics</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/plugins/amavis.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="statistics.html" title="Graphical statistics"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="postfix_relay_domains.html" title="Postfix relay domains support"
+             >previous</a> |</li>
+        <li><a href="../index.html">Modoboa 1.2.0-rc1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Antoine Nguyen.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,140 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Postfix relay domains support &mdash; Modoboa 1.2.0-rc1 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.2.0-rc1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="Modoboa 1.2.0-rc1 documentation" href="../index.html" />
+    <link rel="next" title="Amavisd-new frontend" href="amavis.html" />
+    <link rel="prev" title="Per-admin limits" href="limits.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="amavis.html" title="Amavisd-new frontend"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="limits.html" title="Per-admin limits"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">Modoboa 1.2.0-rc1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="postfix-relay-domains-support">
+<h1>Postfix relay domains support<a class="headerlink" href="#postfix-relay-domains-support" title="Permalink to this headline">¶</a></h1>
+<p>This plugin adds the support for relay domains using postfix. You can
+use it when the MTA managed by Modoboa is not the final destination of
+one or several domains.</p>
+<p>If activated, two new objects will be available from the <em>Domains</em>
+listing page: <em>relay domain</em> and <em>relay domain alias</em>.</p>
+<p>The extension is compatible with the <em>amavis</em> and <em>limits</em>
+ones. Resellers will be able to create both new objects.</p>
+<p>Replace &lt;driver&gt; by the name of the database you use.To tell Postfix this feature exists, you must generate two new map
+files and then update your configuration.</p>
+<p>To generate the map files, run the following command:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ modoboa-admin.py postfix_maps --categories relaydomains --dbtype &lt;the database you use&gt; &lt;path&gt;
+</pre></div>
+</div>
+<p>Replace values between <tt class="docutils literal"><span class="pre">&lt;&gt;</span></tt> by yours.</p>
+<p>Edit the <tt class="file docutils literal"><span class="pre">/etc/postfix/main.cf</span></tt> file and copy the following
+lines inside:</p>
+<div class="highlight-python"><div class="highlight"><pre>relay_domains = &lt;driver&gt;:/etc/postfix/sql-relaydomains.cf
+transport_maps =
+    &lt;driver&gt;:/etc/postfix/sql-relaydomains-transport.cf
+    &lt;driver&gt;:/etc/postfix/sql-relaydomain-aliases-transport.cf
+
+smtpd_recipient_restrictions =
+    permit_mynetworks
+    reject_unauth_destination
+    check_recipient_access
+        &lt;driver&gt;:/etc/postfix/sql-relay-recipient-verification.cf
+</pre></div>
+</div>
+<p>Replace <tt class="docutils literal"><span class="pre">&lt;driver&gt;</span></tt> by the name of the database you use.</p>
+<p>Reload postfix.</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="limits.html"
+                        title="previous chapter">Per-admin limits</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="amavis.html"
+                        title="next chapter">Amavisd-new frontend</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/plugins/postfix_relay_domains.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="amavis.html" title="Amavisd-new frontend"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="limits.html" title="Per-admin limits"
+             >previous</a> |</li>
+        <li><a href="../index.html">Modoboa 1.2.0-rc1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Antoine Nguyen.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

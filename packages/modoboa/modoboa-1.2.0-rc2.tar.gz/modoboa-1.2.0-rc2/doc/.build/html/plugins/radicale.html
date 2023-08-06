@@ -1,0 +1,155 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Radicale frontend &mdash; Modoboa 1.2.0-rc1 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.2.0-rc1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="Modoboa 1.2.0-rc1 documentation" href="../index.html" />
+    <link rel="next" title="Postifx auto-reply messages" href="postfix_autoreply.html" />
+    <link rel="prev" title="Graphical statistics" href="statistics.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="postfix_autoreply.html" title="Postifx auto-reply messages"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="statistics.html" title="Graphical statistics"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">Modoboa 1.2.0-rc1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="radicale-frontend">
+<h1>Radicale frontend<a class="headerlink" href="#radicale-frontend" title="Permalink to this headline">¶</a></h1>
+<p>This plugin provides a simple management frontend for <a class="reference external" href="http://radicale.org/">Radicale</a>, a complete CalDAV (calendar) and CardDAV
+(contact) server solution.</p>
+<p>Features currently supported are:</p>
+<ul class="simple">
+<li>Private calendar creation (available for simple users)</li>
+<li>Rights management for private calendars</li>
+<li>Shared calendar creation by domain (available for domain administrators)</li>
+</ul>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This plugin requires Radicale 0.9 or higher.</p>
+</div>
+<div class="section" id="setup">
+<h2>Setup<a class="headerlink" href="#setup" title="Permalink to this headline">¶</a></h2>
+<p>Once <a class="reference external" href="http://radicale.org/user_documentation/">Radicale is installed</a> on your server, you must
+tell Modoboa where it can find the file used to store rules.</p>
+<p>Go to the <em>Modoboa &gt; Parameters &gt; Radicale</em> panel and fill the
+<strong>Radicale rights file path</strong> setting (an absolute path is required).</p>
+<p>When the configuration is done, Modoboa will completly handles the
+file&#8217;s content. It means every manual modification you could made on
+this file would be overriden.</p>
+<p>To do so, a new cron job must be created. You can use the following
+example:</p>
+<div class="highlight-python"><div class="highlight"><pre>*/2 * * * * &lt;modoboa_site&gt;/manage.py generate_rights
+#
+# Or like this if you use a virtual environment:
+# */2 * * * * &lt;virtualenv path/bin/python&gt; &lt;modoboa_site&gt;/manage.py generate_rights
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">In some cases, the modifications you make on Modoboa may not be
+applied to the rights file. In order to force the generation,
+manually run the <tt class="docutils literal"><span class="pre">generate_rights</span></tt> command using the <tt class="docutils literal"><span class="pre">--force</span></tt>
+option.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Radicale frontend</a><ul>
+<li><a class="reference internal" href="#setup">Setup</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="statistics.html"
+                        title="previous chapter">Graphical statistics</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="postfix_autoreply.html"
+                        title="next chapter">Postifx auto-reply messages</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/plugins/radicale.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="postfix_autoreply.html" title="Postifx auto-reply messages"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="statistics.html" title="Graphical statistics"
+             >previous</a> |</li>
+        <li><a href="../index.html">Modoboa 1.2.0-rc1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Antoine Nguyen.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

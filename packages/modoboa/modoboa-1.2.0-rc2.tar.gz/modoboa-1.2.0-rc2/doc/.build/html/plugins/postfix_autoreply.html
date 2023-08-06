@@ -1,0 +1,151 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Postifx auto-reply messages &mdash; Modoboa 1.2.0-rc1 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.2.0-rc1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="Modoboa 1.2.0-rc1 documentation" href="../index.html" />
+    <link rel="next" title="Sieve filters" href="sievefilters.html" />
+    <link rel="prev" title="Radicale frontend" href="radicale.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="sievefilters.html" title="Sieve filters"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="radicale.html" title="Radicale frontend"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">Modoboa 1.2.0-rc1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="postifx-auto-reply-messages">
+<span id="postfix-ar"></span><h1>Postifx auto-reply messages<a class="headerlink" href="#postifx-auto-reply-messages" title="Permalink to this headline">¶</a></h1>
+<p>This plugin let users define an auto-reply message (<em>vacation</em>). It is
+based on Postfix capabilities.</p>
+<p>The user that executes the autoreply script needs to access
+<tt class="file docutils literal"><span class="pre">settings.py</span></tt>. You must apply proper permissions on this file. For
+example, if <tt class="file docutils literal"><span class="pre">settings.py</span></tt> belongs to <tt class="docutils literal"><span class="pre">www-data:www-data</span></tt>, you can add
+the <tt class="docutils literal"><span class="pre">vmail</span></tt> user to the <tt class="docutils literal"><span class="pre">www-data</span></tt> group and set the read permission
+for the group.</p>
+<p>To make Postfix use this feature, you need to update your
+configuration files as follows:</p>
+<p><tt class="docutils literal"><span class="pre">/etc/postfix/main.cf</span></tt>:</p>
+<div class="highlight-python"><div class="highlight"><pre>transport_maps = &lt;driver&gt;:/etc/postfix/sql-autoreplies-transport.cf
+virtual_alias_maps = &lt;driver&gt;:/etc/postfix/sql-aliases.cf
+        &lt;driver&gt;:/etc/postfix/sql-domain-aliases-mailboxes.cf,
+        &lt;driver&gt;:/etc/postfix/sql-autoreplies.cf,
+        &lt;driver&gt;:/etc/postfix/sql-catchall-aliases.cf
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The order used to define alias maps is important, please respect it</p>
+</div>
+<p><tt class="docutils literal"><span class="pre">/etc/postfix/master.cf</span></tt>:</p>
+<div class="highlight-python"><div class="highlight"><pre>autoreply unix        -       n       n       -       -       pipe
+          flags= user=vmail:&lt;group&gt; argv=python &lt;modoboa_site&gt;/manage.py autoreply $sender $mailbox
+</pre></div>
+</div>
+<p>Replace <tt class="docutils literal"><span class="pre">&lt;driver&gt;</span></tt> by the name of the database you
+use. <tt class="docutils literal"><span class="pre">&lt;modoboa_site&gt;</span></tt> is the path of your Modoboa instance.</p>
+<p>Then, create the requested map files:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ modoboa-admin.py postfix_maps mapfiles --categories autoreply
+</pre></div>
+</div>
+<p><cite>mapfiles</cite> is the directory where the files will be stored. Answer the
+few questions and you&#8217;re done.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Auto-reply messages are just sent one time per sender for a
+pre-defined time period. By default, this period is equal to 1 day
+(86400s), you can adjust this value by modifying the <strong>Automatic
+reply timeout</strong> parameter available in the online panel.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="radicale.html"
+                        title="previous chapter">Radicale frontend</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="sievefilters.html"
+                        title="next chapter">Sieve filters</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/plugins/postfix_autoreply.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="sievefilters.html" title="Sieve filters"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="radicale.html" title="Radicale frontend"
+             >previous</a> |</li>
+        <li><a href="../index.html">Modoboa 1.2.0-rc1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Antoine Nguyen.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>
