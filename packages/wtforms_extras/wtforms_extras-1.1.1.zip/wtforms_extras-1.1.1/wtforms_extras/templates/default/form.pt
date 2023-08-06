@@ -1,0 +1,14 @@
+<div class="form-wrapper">
+  <tal:errors tal:condition="python: form.errors">
+    <div class="alert alert-danger" role="alert">There are errors on this form</div>
+  </tal:errors>
+
+  <tal:fieldsets tal:repeat="fieldset fieldsets">
+    <fieldset tal:omit-tag="python: not fieldset.name">
+      <legend tal:condition="python: fieldset.name">${fieldset.name}</legend>
+      <tal:fields tal:repeat="field fieldset">
+      ${python: render(field)}
+      </tal:fields>
+    </fieldset>
+  </tal:fieldsets>
+</div>
