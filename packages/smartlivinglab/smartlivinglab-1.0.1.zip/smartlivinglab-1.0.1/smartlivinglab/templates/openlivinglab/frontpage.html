@@ -1,0 +1,61 @@
+{% extends "openlivinglab/base.html" %}
+{% block title %}Open Living LAB Eibar{% endblock %}
+{% block heading1 %}Open Living LAB Eibar{% endblock %}
+{% block content-data %}
+<div class="row">
+  <div class="col-lg-8 col-md-7 col-sm-6">
+<img src="{{STATIC_URL}}/img/logo.jpg" class="img-polaroid" />
+    <p>
+      Open Living LAB Eibar hiru enpresaren ekimena da: CodeSyntax, Zermik Ingenieria eta IK4-Tekniker. Proiektuak Gipuzkoako Foru Aldundiaren Informazio Gizartearen Zuzendaritzaren babesa dauka.
+    </p>
+    <p>
+      Proiektu honen helburua da living lab ireki bat sortzea, software librearen eta jakintza irekiaren oinarriak jarraituko dituena.
+    </p>
+    <p>
+      Hainbat smart city esperientzia ezarri ditugu eta jasotako datuetara sarrera librea dago proiektuaren <a href="/api">API</a>ari esker.
+    </p>
+    <p>
+      Webgunea eta honek darabilen APIa sortzeko paketea GNU-GPL lizentziapean askatu ditugu, eta hemen ikus daitezke.
+
+      <ul>
+        <li>
+          <a href="https://github.com/codesyntax/openlivinglab">Webgunea</a>
+        </li>
+        <li>
+          <a href="https://pypi.python.org/pypi/smartlivinglab/1.0">APIaren kudeaketa kodea</a>
+        </li>
+      </ul>
+      
+    </p>
+
+  </div>
+  <div class="col-lg-4 col-md-5 col-sm-6">
+
+    {% if last_value %}
+    <div class="row">
+           <div class="panel panel-warning">
+                <div class="panel-heading">
+                  <h3 class="panel-title">Adb. sentsorea</h3>
+                </div>
+                <div class="panel-body">
+                  <h1>{{last_value.value}} ºC</h1>
+                  <p>Azken irakurketa: {{last_value.date}}</p>
+                </div>
+              </div>
+    </div>
+    {% endif %}
+    <div class="row">
+           <div class="panel panel-default">
+                <div class="panel-heading">
+                  <h3 class="panel-title">Adb. gehiago</h3>
+                </div>
+                <div class="panel-body">
+                  <ul>
+                    <li><a href="/samples">Gehiago</a></li>
+                    <li><a href="http://193.144.237.228/OpenLivingLab/">Kanpoko adibidea</a></li>
+                  </ul>
+                </div>
+              </div>
+    </div>  </div>
+</div>
+{% endblock %}

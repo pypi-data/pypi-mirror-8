@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../favicon.ico">
+
+    <title>{% block title %}Open Living LAB Eibar{% endblock %}</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="http://bootswatch.com/sandstone/bootstrap.min.css" type="text/css" />
+
+    <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
+    <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+    <script src="../../assets/js/ie-emulation-modes-warning.js"></script>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    {% block headextrajs %}
+    {% endblock %}
+  </head>
+
+  <body>
+    <div class="container">
+    {% block navbar %}
+       <div class="bs-component">
+              <div class="navbar navbar-inverse">
+                <div class="navbar-header">
+                  <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                  </button>
+                  <a class="navbar-brand" href="/">Open Living LAB Eibar</a>
+                </div>
+                <div class="navbar-collapse collapse navbar-responsive-collapse">
+                  <ul class="nav navbar-nav">
+                    {% block navbarli %}                    
+                    <li class="active"><a href="/">Home</a></li>
+                    <li><a href="/api">API</a></li>
+                    <li><a href="/samples">Samples</a></li>
+                    {% endblock %}
+                  </ul>
+                </div>
+              </div>
+            </div>
+    {% endblock %}
+    {% block content %}
+
+
+       {% block breadcrumbs %}
+        {% endblock %}
+
+      <div id="content">
+        <div class="content-main">
+          <div class="page-header">
+            <h1>{% block heading1 %}{% endblock %}</h1>
+            {% block body1 %}{% endblock %}
+          </div>
+          {% block content-data %}{% endblock %}
+        </div>
+      </div>
+    {% endblock %}
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <!-- <script src="../../assets/js/ie10-viewport-bug-workaround.js"></script> -->
+    {% block extrajs %}{% endblock %}
+    {% block footer %}
+      <footer>
+      <div class="row">
+          <div class="col-lg-12">
+            <div class="page-header">
+              
+            </div>
+          </div>
+        </div>
+        <div class="panel panel-success">
+                <div class="panel-heading">
+                  <h3 class="panel-title"></h3>
+                </div>
+                <div class="panel-body">
+                <div class="row">
+                  <br /><br /><br />
+                  </div>
+                <div class="row"><div class="col-lg-9">
+                  <a href="http://www.codesyntax.com"><img src="{{STATIC_URL}}/img/codesyntax.png" width="200px" /></a>&nbsp;&nbsp;&nbsp;
+                  <a href="http://www.zermik.com"><img src="{{STATIC_URL}}/img/zermik.png" width="200px" /></a>&nbsp;&nbsp;&nbsp;
+                  <a href="http://www.tekniker.es"><img src="{{STATIC_URL}}/img/tekniker.gif" width="200px" /></a>
+                </div>
+                <div class="col-lg-3">
+                <p class="text-right"><a href="http://www.gipuzkoa.eus"><img src="{{STATIC_URL}}/img/Gipuzkoaberria.png" width="200px" /></a></p>
+                </div>
+                </div>
+              </div>
+
+      </footer>
+
+    {% endblock %}
+    </div><!-- /.container -->
+  </body>
+</html>
