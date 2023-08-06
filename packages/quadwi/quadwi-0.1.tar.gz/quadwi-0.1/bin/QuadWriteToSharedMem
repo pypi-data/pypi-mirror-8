@@ -1,0 +1,14 @@
+#!/usr/bin/env python
+from quadwi import QuadSharedMemWriter
+import time
+
+def main():
+    # write data to shared memory at this rate
+    WRITE_FREQ = 25
+    quadSharedMemWriter = QuadSharedMemWriter()
+    while(True):
+        quadSharedMemWriter.update()
+        time.sleep(1.0/WRITE_FREQ)
+
+if __name__ == '__main__':
+    main()
