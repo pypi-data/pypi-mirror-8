@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Your Modern Continous Integration server">
+    <meta name="author" content="Florian Mounier, Kozea">
+    <link rel="shortcut icon" href="{{ static_url('images/favicon.png') }}">
+    {% block css %}{% end %}
+    <link rel="stylesheet" href="{{ static_url('lumen-bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ static_url('base.css') }}">
+
+    <title>YMCI server</title>
+  </head>
+
+  <body data-page="{{ handler.__class__.__name__ }}">
+    <header class="navbar navbar-default">
+      <nav class="container">
+        <div class="nav navbar-header">
+          <a class="navbar-brand" href="/">YMCI</a>
+        </div>
+        <ul class="nav navbar-nav">
+          <li><a href="{{ reverse_url('ProjectList') }}">Project list</a></li>
+          <li><a href="{{ reverse_url('ProjectAdd') }}">New project</a></li>
+          {% if globals().get('project', None) %}
+            <li><a href="{{ reverse_url('ProjectView', project.project_id) }}">View {{ project.name }}</a></li>
+            <li><a href="{{ reverse_url('ProjectBuild', project.project_id) }}">Build {{ project.name }}</a></li>
+            <li><a href="{{ reverse_url('ProjectEdit', project.project_id) }}">Edit {{ project.name }}</a></li>
+            <li><a href="{{ reverse_url('ProjectDelete', project.project_id) }}">Delete {{ project.name }}</a></li>
+          {% end %}
+           {% if globals().get('build', None) and build.status == 'RUNNING' %}
+             <li><a href="{{ reverse_url('ProjectBuildStop', project.project_id, build.build_id) }}">Stop</a></li>
+           {% end %}
+          {% block nav %}{% end %}
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+          {% if current_user %}
+            <li><a href="{{ reverse_url('Admin') }}">Admin</a></li>
+            <li><a href="{{ reverse_url('AuthLogout') }}">Logout</a></li>
+            <li><a href="{{ reverse_url('RightsList') }}">Rights</a></li>
+          {% else %}
+            <li><a href="{{ reverse_url('AuthLogin') }}">Login</a></li>
+          {% end %}
+        </ul>
+      </nav>
+    </header>
+
+    <aside class="messages row">
+      <div class="col-md-offset-3 col-md-6">
+        {% for level, message in handler.get_flash_messages().items() %}
+          {% if message %}
+            <div class="alert alert-{{ level }}" role="{{ level }}">{{ message }}</div>
+          {% end %}
+        {% end %}
+      </div>
+    </aside>
+
+    <main class="container">
+      {% block main %}{% end %}
+    </main>
+
+    <script src="{{ static_url('deps.min.js') }}"></script>
+    <script src="{{ static_url('blocks.js') }}"></script>
+    <script src="{{ static_url('main.js') }}"></script>
+    <script src="{{ static_url('graph.js') }}"></script>
+    <script src="{{ static_url('browse.js') }}"></script>
+    {% block js %}{% end %}
+  </body>
+</html>
