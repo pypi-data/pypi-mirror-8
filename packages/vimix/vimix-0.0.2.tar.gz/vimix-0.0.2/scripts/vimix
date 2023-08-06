@@ -1,0 +1,25 @@
+#!/usr/bin/env python
+
+import argparse
+import sys
+import os
+from pathlib import Path
+
+vimix_dir = str(Path(__file__).resolve().parent.parent)
+sys.path.append(vimix_dir)
+
+from vimix.vimix import vimix
+
+def main():
+    description = 'Mak minimum environment for Vim script'
+    parser = argparse.ArgumentParser(description=description)
+    parser.add_argument('project', help='Project name for Vim script.')
+    parser.add_argument('-p', '--prefix', required=False, default='vim-', help='Prefix for project name.\n(default is "vim-")')
+    parser.add_argument('-s', '--suffix', required=False, default='', help='Suffix for project name.\n(default is None)')
+
+    args = parser.parse_args()
+
+    vimix(args.project, args.prefix, args.suffix)
+
+if __name__ == '__main__':
+    main()
