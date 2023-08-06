@@ -1,0 +1,84 @@
+#!/usr/bin/env python
+
+import os, sys, argparse, httplib2, traceback
+from oauth2client import client
+from apiclient.discovery import build
+
+# Declare command-line flags.
+parser = argparse.ArgumentParser(description="Uploads and publish a new APK for an existing app")
+parser.add_argument('--email', '-e', dest='email', required=True, help='The service account email')
+parser.add_argument('--key', '-k', dest='key', required=True, help='The key filepath')
+parser.add_argument('--package', '-p', dest='package', required=True, help='The package name. Example: com.android.sample')
+parser.add_argument('--track', '-t', dest='track', required=False, default='production', help='The package name. Example: com.android.sample')
+parser.add_argument('apk', help='The APK filepath')
+
+def main():
+
+    # Parse command line arguments
+    args         = parser.parse_args()
+    serviceEmail = args.email
+    packageName  = args.package
+    apkFilepath  = args.apk
+    trackName    = args.track
+    keyFilepath  = args.key
+
+    # Check if key file exists
+    if not os.path.isfile(keyFilepath):
+        sys.stderr.write('"%s" does not exists or is not a valid file' % keyFilepath)
+        sys.exit(1)
+
+    # Check if apk file exists
+    if not os.path.isfile(apkFilepath):
+        sys.stderr.write('"%s" does not exists or is not a valid file' % apkFilepath)
+        sys.exit(1)
+
+    # Load the key in PKCS 12 format that you downloaded from the Google APIs console when you created your Service account.
+    with open(keyFilepath, 'rb') as f:
+        key = f.read()
+
+    # Create an httplib2.Http object to handle our HTTP requests and authorize it
+    # with the Credentials. Note that the first parameter, service_account_name,
+    # is the Email address created for the Service account. It must be the email
+    # address associated with the key that was created.
+    credentials = client.SignedJwtAssertionCredentials(serviceEmail, key, scope='https://www.googleapis.com/auth/androidpublisher')
+    http = httplib2.Http()
+    http = credentials.authorize(http)
+
+    # Create android publisher service
+    service = build('androidpublisher', 'v2', http=http)
+
+    # Create edit request
+    editRequest  = service.edits().insert(body={}, packageName=packageName)
+    editResponse = editRequest.execute()
+    editId       = editResponse['id']
+
+    # Upload APK
+    uploadResponse = service.edits().apks().upload(
+        editId=editId, packageName=packageName, media_body=apkFilepath
+    ).execute()
+
+    print 'Version code %d has been uploaded' % uploadResponse['versionCode']
+
+    # Assign APK to track
+    trackResponse = service.edits().tracks().update(
+        editId=editId, track=trackName, packageName=packageName,
+        body={u'versionCodes': [uploadResponse['versionCode']]}
+    ).execute()
+
+    print 'Track %s is set for version code(s) %s' % (trackResponse['track'], str(trackResponse['versionCodes']))
+
+    # Commit
+    commitResponse = service.edits().commit(
+        editId=editId, packageName=packageName
+    ).execute()
+
+    print 'Edit "%s" has been committed' % (commitResponse['id'])
+
+
+if __name__ == '__main__':
+
+    try:
+        main()
+    except Exception, err:
+        traceback.print_exc()
+        exit(1)
