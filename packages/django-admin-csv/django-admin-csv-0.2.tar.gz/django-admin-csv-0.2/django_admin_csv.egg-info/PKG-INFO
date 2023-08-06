@@ -1,0 +1,33 @@
+Metadata-Version: 1.1
+Name: django-admin-csv
+Version: 0.2
+Summary: Adds a "download csv" option to your ModelAdmin.
+Home-page: https://github.com/bendavis78/django-admin-csv
+Author: Ben Davis
+Author-email: bendavis78@gmail.com
+License: MIT
+Download-URL: https://github.com/bendavis78/django-admin-csv/tarball/0.2
+Description: ==================
+         django-admin-csv 
+        ==================
+        
+        Adds a "download csv" option to your ModelAdmin. Simply add "admin_csv" to your
+        INSTALLED_APPS, and have your ModelAdmin extend CSVMixin like so:
+        
+        .. code:: python
+        
+            from admin_csv import CSVMixin
+        
+            class MyModelAdmin(CSVMixin, admin.ModelAdmin):
+                list_display = ['foo', 'bar', 'baz']
+                csv_fields = list_display + ['qux']
+        
+Keywords: django,admin,csv
+Platform: UNKNOWN
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 2
+Classifier: Programming Language :: Python :: 3
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
