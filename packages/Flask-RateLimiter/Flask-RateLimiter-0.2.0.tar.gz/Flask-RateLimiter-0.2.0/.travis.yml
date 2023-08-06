@@ -1,0 +1,37 @@
+# -*- coding: utf-8 -*-
+#
+# This file is part of Flask-RateLimiter
+# Copyright (C) 2014 CERN.
+#
+# Flask-RateLimiter is free software; you can redistribute it and/or
+# modify it under the terms of the Revised BSD License; see LICENSE
+# file for more details.
+
+# Travis CI file, that integrates with coveralls for reporting test coverage.
+
+language: python
+
+python:
+  - "2.6"
+  - "2.7"
+  - "3.3"
+  - "3.4"
+
+services:
+  - redis
+
+install:
+  - pip install --upgrade pip  --use-mirrors
+  - pip install pep257 coveralls --use-mirrors
+  - pip install -e .[docs]
+
+script:
+  - pep257 flask_ratelimiter
+  - "sphinx-build -qnNW docs docs/_build/html"
+  - coverage run --source=flask_ratelimiter setup.py test
+
+after_success:
+  - coveralls
+
+notifications:
+  email: false
