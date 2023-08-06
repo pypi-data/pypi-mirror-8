@@ -1,0 +1,109 @@
+{% extends "django_microsip_puntos\base.html" %}
+{% block title %}Generar lote de tarjetas{% endblock %}
+
+<!-- CSS Code -->
+{% block style_css %}{% endblock %}
+
+<!-- JavaScript Code -->
+{% block js_code %}
+{% endblock %}
+
+{% block breadcrumb %}
+  {{ block.super }} 
+  <li> Herramientas </li> 
+  <li class='active'> Generar tarjetas </li> 
+{% endblock %}
+
+{% block content %}
+{% if msg %}
+<div class="alert alert-success fade in">
+    <button type="button" class="close" data-dismiss="alert">×</button>
+    <strong>Bien hecho!!</strong> {{ msg }}
+</div>
+<div class="page-header">
+  <h1>Generar lote de tarjetas <small></small></h1>
+</div>
+{% endif %}
+{%if errors %}
+<div class="alert alert-warning fade in">
+<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+<strong>:/ Configuracion de aplicacion invalida</strong>
+
+{% for error in errors %}
+  <br>
+  {{ error }}
+{% endfor %}
+</div>
+{% endif %}
+{{ form.errors }}
+<form method="post" id='formulario'class="form-horizontal" action="" width="300px"  enctype='multipart/form-data'>{% csrf_token %}
+  <div  class="row">
+    <div class="span" >
+      <label>Tipo de tarjetas</label>
+      <div class="input-prepend input-append">
+        {{ form.tipo_tarjeta}}
+      </div>
+    </div>
+  </div>
+  <fieldset  id='div_valor_puntos'>
+    <legend>Valor de cada punto($)</legend>
+    <div class="span2">
+      <label>Valor</label>
+      <div>
+        {{ form.valor_puntos }}
+      </div>
+    </div>
+    <div class="span3 ">  
+      <label>Heredar del tipo de cliente</label>
+      <div>
+        {{ form.hereda_valorpuntos }}
+      </div>
+    </div>
+  </fieldset>
+  
+  <fieldset  id='div_valor_puntos'>
+    <legend>Puntos y/o dinero extra</legend>
+    <div class="span" >
+      <label>Puntos extra</label>
+      <div class="input-prepend input-append">
+        {{ form.puntos }}
+      </div>
+    </div>
+    <div class="span" >
+      <label>Dinero Electronico extra</label>
+      <div class="input-prepend input-append">
+        {{ form.dinero_electronico }}
+      </div>
+    </div>
+  </fieldset>
+  <hr>
+  <div  class="row">
+    <div class="span" >
+      <label>Prefijo</label>
+      <div class="input-prepend input-append">
+        {{ form.prefijo }}
+      </div>
+    </div>
+    <div class="span" >
+      <label>Iniciar en</label>
+      <div class="input-prepend input-append">
+        {{ form.iniciar_en }}
+      </div>
+    </div>
+    <div class="span" >
+      <label>Cantidad</label>
+      <div class="input-prepend input-append">
+        {{ form.cantidad }}
+      </div>
+    </div>
+    <div class="span" >
+      <label>.</label>
+      <div class="input-prepend input-append">
+        <input type="submit" class="btn" onclick="this.disabled=true,this.form.submit(), this.value='Generando tarjetas...';" value="Generar tarjetas" />
+      </div>
+    </div>
+  </div>
+</form>
+
+
+{% endblock %}

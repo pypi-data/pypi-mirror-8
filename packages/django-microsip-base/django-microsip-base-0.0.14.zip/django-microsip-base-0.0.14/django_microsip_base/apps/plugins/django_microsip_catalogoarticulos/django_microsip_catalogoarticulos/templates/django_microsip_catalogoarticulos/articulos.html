@@ -1,0 +1,106 @@
+{% extends "django_microsip_catalogoarticulos\base.html" %}
+{% block title %}Articulos{% endblock %}
+
+<!-- CSS Code -->
+{% block style_css %}
+<style type="text/css">
+  .Articulo{
+    height: 400px;
+    text-align: center;
+    margin: 1em;
+    border-radius:10px;
+    box-shadow: 10px 10px 20px 8px #999999;
+    padding:1em;
+  }
+  .tag1{
+    float: left;
+    background-color: gray;
+    border-radius: 5px;
+    margin: 5px;
+    padding: 3px;
+  }
+</style>  
+
+{% endblock %}
+
+{% block js_code %}
+{% endblock %}
+
+{% block breadcrumb %}{{ block.super }} {% endblock %}
+{% block content %}
+
+<!-- Paginacion -->
+<div class="row center">
+  <ul class="pager">
+    {% if articulos_precios.has_previous %}
+    <li><a href="?page={{ articulos_precios.previous_page_number }}">«</a></li>
+    {% else %}
+    <li class="disabled"><a href="#">«</a></li>
+    {% endif %}
+    <li class="disabled">Pagina {{ articulos_precios.number }} de {{ articulos_precios.paginator.num_pages }}.</li>
+    {% if articulos_precios.has_next %}
+    <li><a href="?page={{ articulos_precios.next_page_number }}">»</a></li>
+    {% else %}
+    <li class="disabled"><a href="#">»</a></li>
+    {% endif %}
+  </ul>
+</div>
+
+<!-- Muestra los Articulos -->
+{% for articulo_precio in articulos_precios %}
+<div class="col-md-3 col-xs-12 col-sm-6" style="height:450px;">
+    <div class="Articulo">
+    <div><a href="/catalogo/articulo/{{articulo_precio.articulo.id}}/">
+    {% if articulo_precio.articulo.imagen != None and articulo_precio.articulo.imagen != '' %}  
+    <img src='{{MEDIA_URL}}{{articulo_precio.articulo.imagen}}' style="height: 130px; width: 150px; margin-top:.5em; margin-bottom:.5em; border-radius:5px;"/> </a></div>
+    {% else %}
+    <img src='{{MEDIA_URL}}articulos/noimagen.jpg' style="height: 130px; width: 150px; margin-top:.5em; margin-bottom:.5em; border-radius:5px;"/> </a></div>
+    {% endif %}
+    <div ><b>{{ articulo_precio.articulo.nombre }} </b></div>
+    {% if articulo_precio.articulo.nota_ventas %}   
+    <div >{{articulo_precio.articulo.nota_ventas|slice:":50" }}...</div> 
+    {% endif %}
+    {% if articulo_precio.descuento != '0' %}
+    <div style="float:left; text-align:left; margin:1em;">Antes:<br>Desc.<br><b>Ahora:</b> </div>
+    <div style="text-align:left; margin:1em;">$ {{ articulo_precio.original }} <br>$ {{ articulo_precio.ahorro }}<br> <b>$ {{ articulo_precio.actual }}</b> </div>
+    {% else %}
+    <div style="text-align:center; margin:1em;">$ {{ articulo_precio.original }} </div>
+    {% endif %}
+    <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#articulo_{{articulo_precio.articulo.id}}">Ver Mas...</button>
+  </div><br style="clear:both">
+</div>
+{% endfor %}
+<br style="clear:both">
+
+<!-- Crea los modals -->
+{% for articulo_precio in articulos_precios %}
+<div class="modal fade" id="articulo_{{articulo_precio.articulo.id}}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content" style="min-height:300px;">
+
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h3><b>{{articulo_precio.articulo.nombre}}</b></h3>
+      </div>
+
+      <div class="modal-body" style="text-align:justify;">
+
+        <div  style = "margin:1em;float: left;">
+          {% if articulo_precio.articulo.imagen != None and articulo_precio.articulo.imagen != '' %}  
+          <img src='{{MEDIA_URL}}{{articulo_precio.articulo.imagen}}' style="height: 130px; width: 150px; margin-top:.5em; margin-bottom:.5em; border-radius:5px; clear:both;"/> </a>
+        </div>
+        {% else %}
+        <img src='{{MEDIA_URL}}articulos/noimagen.jpg' style="height: 130px; width: 150px; margin-top:.5em; margin-bottom:.5em; border-radius:5px; clear:both;"/> </a>
+      </div>
+      {% endif %}
+
+      {% if articulo_precio.articulo.nota_ventas %}   
+      <div style="margin:1em;" >{{articulo_precio.articulo.nota_ventas}}</div>
+      {% endif %}
+    </div>         
+  </div>
+</div> 
+</div>
+{% endfor %}
+    <br style="clear:both">
+    {% endblock %}

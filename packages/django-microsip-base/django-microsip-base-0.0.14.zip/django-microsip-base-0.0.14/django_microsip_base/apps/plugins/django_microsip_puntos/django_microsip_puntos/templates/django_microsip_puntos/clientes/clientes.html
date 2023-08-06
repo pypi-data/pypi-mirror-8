@@ -1,0 +1,58 @@
+{% extends "django_microsip_puntos\base.html" %}
+{% block title %}Puntos{% endblock %}
+
+<!-- CSS Code -->
+{% block style_css %}{% endblock %}
+
+<!-- JavaScript Code -->
+{% block js_code %}
+{% endblock %}
+{% block breadcrumb %}
+  {{ block.super }} 
+  <li class='active'>Clientes</li>
+{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>Clientes <small></small></h1>
+</div>
+<div class="row">
+  <form method="GET" action="" enctype='multipart/form-data'>{% csrf_token %}
+    {{ form.errors }}
+    {{ form.cliente }}
+    {{ form.nombre }}
+    {{ form.clave }}
+    <button type="submit" class="btn"><i class="glyphicon glyphicon-download-alt"></i> Buscar</button>
+  </form>
+</div>
+<div class="row center">
+  <ul class="pager">
+    {% if page_obj.has_previous %}
+    <li><a href="?page={{ page_obj.previous_page_number }}">«</a></li>
+    {% else %}
+    <li class="disabled"><a href="#">«</a></li>
+    {% endif %}
+    <li class="disabled">Pagina {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}.</li>
+    {% if page_obj.has_next %}
+    <li><a href="?page={{ page_obj.next_page_number }}">»</a></li>
+    {% else %}
+    <li class="disabled"><a href="#">»</a></li>
+    {% endif %}
+  </ul>
+</div>
+<table class="table tableCell table-hover">
+<tbody>
+<tr>
+  <th><input type="checkbox" name="pagos_all" value=""></th>
+  <th>Nombre</th>
+</tr>
+  {% for cliente in clientes %}
+  <tr>
+    <td>
+      <input type="checkbox" name="clientes" value="{{ cliente.id }}">
+    </td>
+    <td> <a href="/puntos/cliente/{{ cliente.id }}/"> {{ cliente.nombre }} </a></td>
+  </tr>
+  {% endfor %}
+</tbody>
+</table>
+{% endblock %}

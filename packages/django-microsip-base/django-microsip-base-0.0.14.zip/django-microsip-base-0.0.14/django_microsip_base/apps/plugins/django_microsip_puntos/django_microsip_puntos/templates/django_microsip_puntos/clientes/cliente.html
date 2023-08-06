@@ -1,0 +1,67 @@
+{% extends "django_microsip_puntos\base.html" %}
+{% block title %}enlace liquida{% endblock %}
+
+<!-- CSS Code -->
+{% block style_css %}{% endblock %}
+
+<!-- JavaScript Code -->
+{% block js_code %}
+{% include 'autocomplete_light/static.html' %}
+{% endblock %}
+{% block breadcrumb %}
+  {{ block.super }} 
+  <li><a href="/puntos/clientes/"> Clientes </a></li> 
+  <li class='active'> {{ cliente_nombre }}</li> 
+{% endblock %}
+
+{% block content %}
+<form method="post" class="form-horizontal" action="" width="300px"  enctype='multipart/form-data'>{% csrf_token %}
+  {{ form.errors }}
+	<div class="page-header">
+	  <h1>Cliente <small>{{ cliente_nombre }} </small> <button type="submit" class="btn"><i class="glyphicon glyphicon-download-alt"></i> Guardar</button>  </h1>
+	</div>
+	<!-- Nav tabs -->
+	<ul class="nav nav-tabs" role="tablist">
+	  <li class="active"><a href="#home" role="tab" data-toggle="tab">General</a></li>
+	  <!-- <li><a href="#settings" role="tab" data-toggle="tab">Settings</a></li> -->
+	</ul>
+	<!-- Tab panes -->
+	<div class="tab-content">
+	  	<div class="tab-pane active" id="home">
+	  		<div id='datos_puntos' class="row">
+			  	<div class="col-md-2 col-xs-2 col-sm-4">
+			  		<label>Cobrar y Abonar con</label>
+		  		    <div class="input-prepend input-append">
+		  		      {{ form.tipo_tarjeta }}
+		  		    </div>
+			  	</div>
+			  	<div class="col-md-4 col-xs-6 col-sm-4">
+			  		<label>Permitir aplicar descuentos</label>
+		  		    <div class="input-prepend input-append">
+		  		      {{ form.aplicar_descuento_sin_tarjeta }}
+		  		    </div>
+		  		    <label>valor de cada punto ($)  {% if tipo_cliente %} Heredar de  {{ tipo_cliente }} { form.hereda_valorpuntos } {% endif %} </label>
+		  		    <div class="input-prepend input-append" style='clear:both;' >
+		  		      {{ form.valor_puntos }}
+		  		    </div>
+			  	</div>
+		  	</div>
+		  	<div class="row">
+			  	<div class="col-md-2 col-xs-2 col-sm-4">
+			  		<label >Fecha de corte</label>
+			  		<div class="input-prepend input-append" style='clear:both;' >
+			  		    <span class="add-on"><i class="icon-calendar"></i> </span>
+			  		    {{ form.fecha_corte }}
+			  		</div>
+			  	</div>
+			  	<div class="col-md-3 col-xs-4 col-sm-4">
+			  		<label>Dar puntos a</label>
+		  		    <div class="input-prepend input-append" >
+		  		      {{ form.hereda_puntos_a }}
+		  		    </div>
+			  	</div>
+		  	</div>
+		</div><!-- end panel-home -->
+	</div>
+</form>
+{% endblock %}

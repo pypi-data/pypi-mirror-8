@@ -1,0 +1,100 @@
+{% extends "django_microsip_puntos\base.html" %}
+{% block title %}enlace liquida{% endblock %}
+
+<!-- CSS Code -->
+{% block style_css %}{% endblock %}
+
+<!-- JavaScript Code -->
+{% block js_code %}
+{% include 'autocomplete_light/static.html' %}
+{% endblock %}
+
+{% block breadcrumb %}
+  {{ block.super }} 
+  <li> Herramientas </li> 
+  <li class='active'> Preferencias </li> 
+{% endblock %}
+{% block content %}
+{% if msg %}
+<div class="alert alert-success fade in">
+    <button type="button" class="close" data-dismiss="alert">×</button>
+    <strong>Bien hecho!!</strong> {{ msg }}
+</div>
+{% endif %}
+<form method="post" class="form-horizontal" action="" enctype='multipart/form-data'>{% csrf_token %}
+{{ form.errors }}
+<div class="page-header">
+  <h1>Preferencias <small></small> <button type="submit" class="btn"><i class="glyphicon glyphicon-download-alt"></i> Guardar</button>  </h1>
+</div>
+<ul class="nav nav-tabs" role="tablist">
+	  <li class="active"><a href="#home" role="tab" data-toggle="tab">General</a></li>
+	  <li><a href="#generacion_tarjetas" role="tab" data-toggle="tab">Generar Tarjetas</a></li>
+	</ul>
+</div>
+<!-- Tab panes -->
+<div class="tab-content">
+	<div class="tab-pane active" id="home" style="padding-bottom: 0;">
+	    <fieldset>
+	      <legend>fecha de corte</legend> 
+	          {{ form.corte_dia }}{{ form.corte_mes }}{{ form.corte_anio }}  
+	    </fieldset>
+	    <fieldset>
+	      <legend>Valores por defecto (en articulos) </legend>
+	        <div class="span3">
+	          <label>Puntos</label>
+	          <div class="input-prepend input-append">
+	            {{ form.articulo_puntos }}
+	          </div>
+	        </div>
+	        <div class="span3">
+	          <label>Dinero electronico</label>
+	          <div class="input-prepend input-append">
+	            {{ form.articulo_dinero_electronico }}
+	          </div>
+	        </div>
+	        <div class="span3">
+	          <label>Enlace con microsip  .</label>{{ form.triggers_activos }}
+	        </div>
+	    </fieldset>
+
+  	</div>
+  	<div class="tab-pane" id="generacion_tarjetas" style="padding-bottom: 0;">
+		<fieldset>
+	      	<legend>Deficiones generales</legend> 
+	      	
+	      	<div class="span3">
+	          <label>Condicion de pago CONTADO</label>
+	          <div class="input-prepend input-append">
+	            {{ form.condicion_de_pago_contado }}
+	          </div>
+	        </div>
+	      	<div class="span3">
+	          <label>Cajero</label>
+	          <div class="input-prepend input-append">
+	            {{ form.cajero_general }}
+	          </div>
+	        </div>
+	       	<div class="span3">
+	          <label>Caja</label>
+	          <div class="input-prepend input-append">
+	            {{ form.caja_general }}
+	          </div>
+	        </div>   
+	        <div class="span3">
+	          <label>Cliente eventual</label>
+	          <div class="input-prepend input-append">
+	            {{ form.cliente_eventual_pv }}
+	          </div>
+	        </div>  
+			<div class="span3">
+	          <label>Articulo General</label>
+	          <div class="input-prepend input-append">
+	            {{ form.articulo_general }}
+	          </div>
+	        </div>  
+	    </fieldset>
+	    
+  	</div>
+</div>
+</form>
+{% endblock %}

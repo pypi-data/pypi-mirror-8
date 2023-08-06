@@ -1,0 +1,28 @@
+{% extends "django_microsip_puntos\base.html" %}
+{% block title %}enlace liquida{% endblock %}
+
+<!-- CSS Code -->
+{% block style_css %}{% endblock %}
+
+<!-- JavaScript Code -->
+{% block js_code %}
+{% endblock %}
+
+{% block breadcrumb %} {{ block.super }} {% endblock %}
+{% block content %}
+{%if errors %}
+<div class="alert alert-warning fade in">
+<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+<strong>:/ es nesesario realizar una configuracion</strong>
+
+{% for error in errors %}
+  <br>
+  {{ error }}
+{% endfor %}
+</div>
+{% endif %}
+  
+<div class="page-header">
+  <h1>Aplicacion Puntos <small>manejo de puntos y dinero electronico</small></h1>
+</div>
+{% endblock %}
