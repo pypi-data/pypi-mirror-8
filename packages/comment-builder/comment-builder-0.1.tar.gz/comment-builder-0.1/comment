@@ -1,0 +1,24 @@
+#!/usr/bin/env python
+
+import argparse
+import comment
+
+############################### Parse arguments ################################
+parser    = argparse.ArgumentParser(description='Generates fixed-width comments.')
+
+parser.add_argument('-d', '--debug', help="Debug mode", action='store_true')
+languages = parser.add_mutually_exclusive_group()
+languages.add_argument('-j', '--java', help="/* Use Java notation  */", action='store_true')
+languages.add_argument('-x', '--xml',  help="<!-- Use XML notation -->", action='store_true') 
+
+parser.add_argument('message', type=str, nargs='?',
+					default='Use -h for help!', 
+					help='Message to be displayed (e.g, "fuggedaboudit")')
+parser.add_argument('width', type=int, default=80, nargs='?',
+                   help='Total line width (hashes + message)')
+args = parser.parse_args()
+
+if args.debug:
+	print args
+    
+comment.print_comment(args.message, args.width, args.java, args.xml)  
