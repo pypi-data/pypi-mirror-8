@@ -1,0 +1,54 @@
+{% load widget_extras %}
+{% load i18n %}
+{% load object_extras %}
+<script type="text/javascript">
+    var resource, objGPWidget{{widget.id}};
+
+      {# Manager creation #}
+      var widgetOptions = Ext.applyIf({
+          mapPanel: objGPWidgetMapPanel{{widget.id}},
+          proxyURL: '{% url "geoprisma:proxyurl" %}'
+      },
+
+         {{ widget.printOptions }}
+
+      );
+    
+    objGPWidget{{widget.id}} =
+          new org.GeoPrisma.ApplyFilter.Manager(widgetOptions);  
+    {% for widgetresource in widget.resources %}
+        {% assignDatastoreByType "wfs" widgetresource.datastores.all as wfsresourceDatastore %}
+        
+        {% assignDatastoreByType "wms" widgetresource.datastores.all as wmsresourceDatastore %}
+        
+        {% assignWidgetOptionByName "serviceName" wfsresourceDatastore.options as serviceNameOption %}
+        {% assignServicebyId serviceNameOption.value as widgetService %}
+        
+        {% if wfsresourceDatastore != "" and wmsresourceDatastore != "" %}
+            
+            resource = {
+               name: '{{widgetresource.id}}',
+               title: {{widgetresource.name}},
+               options: {% printWidgetOptions widgetresource.options %},
+               wfsDescribeFeatureTypeResponseText : <xsl:value-of select="php:functionString('org_geoprisma_locale_Locale::getText', string($wfsDescribeFeatureType), 'nodomain', 'JS')" />,
+               wfsLayerName: '{{wfsresourceDatastore.layers}}',
+               wfsServiceName: '{{widgetService}}',
+               wmsGetStylesResponseText : <xsl:value-of select="php:functionString('org_geoprisma_locale_Locale::getText', string($getWMSStyles), 'nodomain', 'JS')" />,
+               wmsLayerName: '{{wmsresourceDatastore.layers}}',
+               fields: {}
+           };
+           
+           {% for resourcefield in resource.resourcefield_set.all %}
+                resource.fields['{{resourcefield.field.name}}'] = Ext.applyIf({
+                    title: "{{resourcefield.field.title}}"
+                },
+                {% printWidgetOptions resourcefield.options %});
+            {% endfor %}     
+            
+            objGPWidget{{widget.id}}.manageResource(resource);
+            objGPWidget{{widget.type}}DrawComponents.push(
+                objGPWidget{{widget.id}}.getDrawComponent()
+            );
+        {% endif %}    
+    {% endfor %}    
+</script>

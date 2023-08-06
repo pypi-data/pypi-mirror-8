@@ -1,0 +1,22 @@
+{% load i18n %}
+{% load object_extras %}
+<script type="text/javascript">
+    objWidgetOptions ={
+  
+    {% with projectionList=widget|args:"projections"|call:"getOption"  %}
+        "projections": [
+        {% for projection in projectionList %}
+            {"label":"{% trans projection %}",
+            "displayprojection":"{{ widget|args:projection|call:"getDisplayProjectionfromTxt" }}",
+             "format":"{{ widget|args:projection|call:"getFormatfromTxt" }}",
+             "projection": "{{projection}}"}{% if not forloop.last %},{% endif %}
+            {% endfor %}],
+       "defaultprojection": "{{widget|args:"defaultprojection"|call:"getOption"}}"
+        
+    {%endwith%}
+    };
+  
+    objGPWidget{{widget.id}} = new OpenLayers.Control.MultiProjectionMousePosition();
+    objGPWidget{{widget.id}}.widgetOptions = objWidgetOptions;
+    oMap.addControl(objGPWidget{{widget.id}});
+</script>

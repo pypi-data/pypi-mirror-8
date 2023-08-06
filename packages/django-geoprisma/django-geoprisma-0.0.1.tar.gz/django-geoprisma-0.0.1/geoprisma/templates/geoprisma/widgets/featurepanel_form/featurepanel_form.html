@@ -1,0 +1,92 @@
+{% load widget_extras %}
+{% load i18n %}
+{% load object_extras %}
+<script type="text/javascript">
+    var objItems = {};
+    var aResources = [];
+
+    var objWidgetOptions = {{widget.printOptions}};
+    
+    {%with titleOption=widget|args:"title"|call:"getOption"  %}   
+        {% if titleOption != "" %}
+            objWidgetOptions['windowoptions']['title'] = "{{titleOption.value}}";
+        {% endif %}
+    {%endwith%}
+   
+    {%with fieldsOption=widget|args:"fields"|call:"getOption"  %}   
+        {% for fieldOption in fieldsOption %}
+                objWidgetOptions['fields'][{{ forloop.counter0 - 1 }}]['fieldLabel'] = {{fieldOption.value}};
+        {% endfor %}
+    {%endwith%}
+    
+    {% for resource in widget.resources %}
+      {# Use the DataStoreName to validate that the resource has a valid service type #}
+      {% assignDatastoreByType "services" resource.datastores.all as resourceDatastore %}
+           var objFields = [];
+           var szDisplayField = 'text';
+           var szValueField = 'value';
+           var objDisplayValueFields = [szValueField,szDisplayField];
+           var objStore, szDefaultValue;
+           
+           
+           {%with datastorefieldOptions=resourceDatastore|args:"fields"|call:"getOption"  %}  
+           {% for datastorefieldOption in datastorefieldOptions %}
+           
+               {% assignWidgetOptionByName  "text"  datastorefieldOption as datastoretextOption %}
+           
+               objStore = null;
+               szDefaultValue = null;
+               objData = [];
+           
+               objData.push(['{{datastorefieldOption.value}}',{{datastoretextOption.value}}]);
+               
+               {% if datastorefieldOption.value != "" %} 
+                    objStore = new Ext.data.SimpleStore({ 
+                       fields: objDisplayValueFields, data : objData });
+                    szDefaultValue = objStore.data.items[0].data.value;
+                {% endif %}
+                
+                var fieldOptions = [];
+                {% if datastorefieldOption.value != "" %}
+                    fieldOptions = [ store: objStore, value: szDefaultValue, valueField: szValueField, displayField: szDisplayField];  
+                {% endif %}
+                
+                objFields.push({
+                    fieldOptions
+                    name : '{{datastorefieldOption.id}}',
+                    fieldLabel: {{datastoretextOption.value}}
+                }); 
+                
+           {% endfor %}
+           {%endwith%}
+      
+    {% endfor %}
+    
+    objItems = [];
+
+    {%with fieldOptions=widget|args:"field"|call:"getOption"  %} 
+        {% for field in fieldOptions %} 
+           objField = objGP{{widget.type}}GetFieldByName('{{field}}', objFields);
+           
+           if(objField){
+              {# add the options defined in the <field> node of the widget. #}
+               objWidgetFieldOptions = {% printWidgetOptions field %};
+               
+               {% if field.label %}
+                    objWidgetFieldOptions['fieldLabel'] = {{field.label}};
+                {% endif %}   
+               objField = OpenLayers.Util.extend(objField, objWidgetFieldOptions);
+               objItems.push(objField);  
+        {% endfor %}
+    {%endwith%}
+
+      objWidgetOptions['mappanelid'] = 'gp{{mapName}}';
+      objWidgetOptions['items'] = objItems;
+      objGPWidget{{widget.name}} = new org.GeoPrisma.FeaturePanel.Form(objWidgetOptions);
+    
+    {%with featurepanelsOptions=widget|args:"featurepanels"|call:"getOption"  %}     
+        {% for featurepanel in featurepanelsOptions %} 
+             objGPWidget{{featurepanel.value}}.setFeaturePanel(objGPWidget{{widget.name}});  
+        {% endfor %}
+    {%endwith%}
+</script>

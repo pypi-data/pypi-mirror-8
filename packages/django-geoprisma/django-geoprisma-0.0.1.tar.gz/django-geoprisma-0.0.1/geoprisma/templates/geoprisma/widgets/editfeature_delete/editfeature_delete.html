@@ -1,0 +1,101 @@
+{% load widget_extras %}
+{% load i18n %}
+{% load object_extras %}
+<script type="text/javascript">
+    oMap = objGPWidget{{mapName}};
+
+    {# widget OPTIONS object used to create the widget class #}
+    var objWidgetOptions;
+
+    {% for resource in widget.resources %}
+      {#Use the DataStoreName to validate that the resource has a valid service type #}
+      {% with resourceDatastore=resource|args:"featureserver"|call:"getDatastoreByType" %}
+      
+      {# If a DataStoreName was returned, that means the resource has a valid service type. #}
+      {% if resourceDatastore %}
+        
+        {%with widgetTextOption=widget|args:"text"|call:"getOption"  %} 
+          
+          {%with featurecontroloptionsOption=widget|args:"featurecontroloptions"|call:"getOption"  %}
+         
+            {# DataStoreText #}
+            
+            {% with datastoreTextOption=appSession|args:resourceDatastore|args:"text"|call:"getObjectOption" %}
+            
+            {% with initViewUrlFieldOption=resource|args:"initViewUrlField"|call:"getOption" %}
+            
+            {# get resource 'iconClsDelete' option, if any #}
+
+            {%with iconClsDeleteOption=resource|args:"iconClsDelete"|call:"getOption"  %} 
+           
+              {# get resource 'tooltipTextDelete' option, i18n supported #}
+             
+              {%with tooltipTextDeleteOption=resource|args:"tooltipTextDelete"|call:"getOption"  %} 
+              
+              objWidgetOptions = {{widget.printOptions}};
+      
+              objWidgetOptions['resource'] = '{{resource.id}}';
+              objWidgetOptions['id'] = '{{widget.id}}{{resource.id}}';
+      
+              {# tooltip text of the button #}
+              var strTooltipText =
+                {# if resource had a tooltipTextDelete option, then use it #}
+                {% if tooltipTextDeleteOption %}
+                  "{% trans tooltipTextDeleteOption %}";
+                {% else %}
+                  {# check the 'text' property in : 1) the widget options/text 2) the datastore params/text if none was provided, use the resource name instead #}
+                    {% if widgetTextOption %}
+                      '{{widgetTextOption}}'
+                    {% else %}
+                        {% if datastoreTextOption %}
+                          "{{datastoreTextOption}}"
+                        {% else %}
+                          '{{resource.id}}'
+                        {% endif %}
+                    {% endif %};
+                    {% if featurecontroloptionsOption %}
+                      strTooltipText += " - " + "{% trans "Multiple selection (drag box)" %}";
+                    {% else %}
+                      strTooltipText += " - " + "{% trans "Single selection (point)" %}";
+                    {% endif %}
+                  strTooltipText = "{% trans "Delete features" %}" + " - "+ strTooltipText;
+                {% endif %}
+            
+            {%endwith%}
+          
+          {# Widget object creation  #}
+          var objGPWidget{{widget.id}} = new OpenLayers.Control.EditFeature_Delete(objWidgetOptions);
+  
+          {# GeoExt.Action object for the geoexttoolbar #}
+          action = new GeoExt.Action({
+            id: '{{widget.id}}{{resource.id}}',
+            {% if iconClsDeleteOption %}
+            iconCls: '{{iconClsDeleteOption}}',
+            {% else %}
+            iconCls: 'editfeature_delete',
+            {% endif %}
+            control: objGPWidget{{widget.id}},
+            map: oMap,
+            // button options
+            toggleGroup: oMap.id,
+            allowDepress: false,
+            tooltip: strTooltipText,
+            // check item options
+            group: oMap.id
+          });
+  
+          {# Push action in goEditFeatureActions['resource'] array  #}
+          if (!goEditFeatureActions['{{resource.id}}'])
+          {
+              goEditFeatureActions['{{resource.id}}'] = [];
+          }
+          goEditFeatureActions['{{resource.id}}'].push(action);
+          {%endwith%}
+        {%endwith%}
+        {%endwith%}
+        {%endwith%}
+        {%endwith%}
+      {% endif %}
+      {% endwith %}
+    {% endfor %}
+  </script>

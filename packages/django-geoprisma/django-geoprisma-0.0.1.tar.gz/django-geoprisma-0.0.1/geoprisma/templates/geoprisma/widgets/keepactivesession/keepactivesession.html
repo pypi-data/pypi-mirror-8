@@ -1,0 +1,17 @@
+{% load object_extras %}
+<script type="text/javascript">
+    oMap = objGPWidget{{mapName}};
+
+    var objWidgetOptions = {};
+
+    {# Default Settings  #}
+    objWidgetOptions['url'] = 'franckc/';
+    objWidgetOptions['map'] = oMap;
+
+    configOptions = {{widget.printOptions}};
+    
+    
+    Ext.apply(objWidgetOptions, configOptions);
+    
+    var objGPWidget{{widget.id}} = new org.GeoPrisma.KeepActiveSession(objWidgetOptions);    
+</script>

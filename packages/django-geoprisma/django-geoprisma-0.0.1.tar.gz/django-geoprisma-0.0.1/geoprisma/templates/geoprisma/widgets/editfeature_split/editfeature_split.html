@@ -1,0 +1,78 @@
+{% load i18n %}
+{% get_current_language as locale %}
+{% load object_extras %}
+<script type="text/javascript">
+    oMap = objGPWidget{{mapName}};
+
+    var options, defaultOptions, action;
+
+    defaultOptions = {{widget.printOptions}};
+
+    {# splitWindow option, used below #}
+    
+    {% for resource in widget.resources %}
+      {% with splitWindowOption=resource|args:"splitWindow"|call:"getOption"  %}
+
+      {# Use the DataStoreName to validate that the resource has a valid service type #}
+      {% with resourceDatastore=resource|args:"featureserver"|call:"getDatastoreByType" %}
+
+      {% if resourceDatastore %}
+        {# get resource 'iconClsSplit' option, if any #}
+        {# get resource 'tooltipTextSplit' option, i18n supported #}
+        
+        {% with iconClsSplitOption=resource|args:"iconClsSplit"|call:"getOption" tooltipTextSplitOption=resource|args:"tooltipTextSplit"|call:"getOption" %}
+
+        var actionId = Ext.id();
+        var options = Ext.applyIf({
+            'resource': '{{resource.id}}',
+            'id': actionId
+        }, defaultOptions);
+        
+        {% if splitWindowOption %}
+            delete options.splitWindow;
+            if (window.{{splitWindowOption}}) {
+                options.splitWindow = window.{{splitWindowOption}};
+            }
+        {% endif %}
+
+        {# Widget object creation  #}
+        var objGPWidget{{widget.id}}{{resource.id}} = new OpenLayers.Control.EditFeature_Split(options);
+
+        {# GeoExt.Action object for the geoexttoolbar #}
+        action = new GeoExt.Action({
+          id: actionId,
+          {% if iconClsSplitOption %}
+          iconCls: '{{iconClsSplitOption}}',
+          {% else %}
+          iconCls: 'editfeature_split',
+          {% endif %}
+          control: objGPWidget{{widget.id}}{{resource.id}},
+          map: oMap,
+          // button options
+          toggleGroup: oMap.id,
+          allowDepress: false,
+          {% if tooltipTextSplitOption %}
+          tooltip: "{% trans tooltipTextSplitOption %}",
+          {% else %}
+              {% if locale == "fr" %}
+          tooltip: "Outil de division de g&#233;om&#233;trie",
+              {% else %}
+          tooltip: "Geometry splitting widget",
+              {% endif %}
+          {% endif %}
+          // check item options
+          group: oMap.id
+        });
+        {% endwith %}
+
+        {# Push action in goEditFeatureActions['resource'] array  #}
+        if (!goEditFeatureActions['{{resource.id}}'])
+        {
+            goEditFeatureActions['{{resource.id}}'] = [];
+        }
+        goEditFeatureActions['{{resource.id}}'].push(action);
+      {% endif %}
+      {% endwith %}
+      {% endwith %}
+    {% endfor %}
+  </script>

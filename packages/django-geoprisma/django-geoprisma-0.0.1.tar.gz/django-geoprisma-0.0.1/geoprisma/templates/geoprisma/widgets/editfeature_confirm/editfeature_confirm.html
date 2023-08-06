@@ -1,0 +1,34 @@
+{% load widget_extras %}
+{% load object_extras %}
+{% load i18n %}
+<script type="text/javascript">
+    {% for resource in widget.resources %}
+    {% with widgetsWithResource=appSession|args:resource|call:"getWidgetsByResource" %}
+    {% for widgetWithResource in widgetsWithResource %}
+    {% if widgetWithResource.type.name.lower == "editfeature_create" or widgetWithResource.type.name.lower == "editfeature_update" %}
+            {%with featurepanelOption=widgetWithResource|args:"featurepanel"|call:"getOption"  %}   
+            {% if not featurepanelOption %}
+                var objGPWidget{{widget.id}}{{resource.id}};
+                objGPWidget{{mapName}}.events.on({"printallwidgetexecutions": function(event) {
+                    objGPWidget{{widget.id}}{{resource.id}} = new org.GeoPrisma.EditFeature.Confirm({
+                        "editFeature": objGPWidget{{widgetWithResource.id}}{{resource.id}}
+                    });
+                }});
+            {% endif %}
+            {% endwith %}
+    {% elif widgetWithResource.type.name.lower == "editfeature_copy" or widgetWithResource.type.name.lower == "editfeature_drag" %}
+            {% with toggleEditOption=widgetWithResource|args:"toggleEdit"|call:"getOption" %}
+            {% if not toggleEditOption %}
+                var objGPWidget{{widget.id}}{{resource.id}};
+                objGPWidget{{mapName}}.events.on({"printallwidgetexecutions": function(event) {
+                    objGPWidget{{widget.id}}{{resource.id}} = new org.GeoPrisma.EditFeature.Confirm({
+                        "editFeature": objGPWidget{{widgetWithResource.id}}{{resource.id}}
+                    });
+                }});
+            {% endif %}
+            {% endwith %}  
+    {% endif %}      
+  {% endfor %}
+  {% endwith %}
+  {% endfor %}
+</script>

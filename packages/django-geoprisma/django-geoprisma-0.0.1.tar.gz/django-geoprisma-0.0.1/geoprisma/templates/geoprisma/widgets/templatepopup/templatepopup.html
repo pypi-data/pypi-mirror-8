@@ -1,0 +1,117 @@
+{% load object_extras %}
+{% load i18n %}
+<script type="text/javascript">
+    var templates = [];
+    var layers = [];
+    var osmresource = [];
+    var resourceParams = [];
+    var hasTemplate = false;
+    
+    {% with serviceNameOption=widget|args:"serviceName"|call:"getOption" %}
+  
+    {# Loop through all resources #}
+    {% for resource in resources %}   
+    
+    {% with resourceTemplate=resource|args:"templatepopup"|call:"getOption" %}
+      
+    {% with resourceDatastore=resource|args:"wms"|call:"getDatastoreByType" %}
+      {% if  resourceDatastore.service.id == serviceNameOption  %}
+        {% if resourceTemplate %}
+          var templatePopupLayers = objGPWidget{{mapName}}.getLayersByResource('{{resource.id}}', 'wms');
+          var templatePopup = "{{resourceTemplate|escapejs}}";
+          
+          osmresource.push('{{resource.id}}');
+          resourceParams.push("&osmresource[]={{resource.id}}");
+
+          var tmplLayer;
+          var tmplLayerName = '';
+
+          for(var i = 0; i < templatePopupLayers.length; i++)
+          {
+              {% if resourceDatastore.layers != "" %}
+                  tmplLayer = templatePopupLayers[i];
+                  tmplLayerName = '{{resourceDatastore.layers}}';
+                  layers.push(tmplLayer);
+              {% endif %}
+          }
+
+          if(templatePopupLayers && tmplLayerName && templatePopup)
+          {
+              hasTemplate = true;
+              templates[tmplLayerName] = templatePopup;
+          }
+        {% endif %}
+       {% endif %}
+      {% endwith %}
+      {% endwith %} 
+    {% endfor %}
+     var configOptions = {{ widget.printOptions }};
+
+    var defaultConfigOptions = {
+        autoDetectLayer: false,
+        allowDepress: false,
+        mode: 'wms'
+    };
+
+    if(hasTemplate)
+    {
+        templates['default'] = 'No Template available';
+
+        configOptions = Ext.applyIf(configOptions, defaultConfigOptions);
+        configOptions = Ext.applyIf({
+        
+          {% with iconClsOption=widget|args:"iconCls"|call:"getOption" %}
+            {% if iconClsOption %}
+              iconCls: '{{iconClsOption}}',
+            {% else %}
+              text: '{{ widget|args:"title"|call:"getOption"|default:"" }}',
+            {% endif %}
+          {% endwith %}  
+            
+            {% with templateService=appSession|args:serviceNameOption|call:"getServiceById" %}
+            mode: '{{templateService.type.name.lower|default:"wms"}}',
+            {% endwith %}
+            map: objGPWidget{{mapName}},
+            tpl: templates,
+            layers: layers,
+            url: baseUrl + 'proxy.php?osmservice={{serviceNameOption}}'+resourceParams.join(''),
+
+            toggleGroup: objGPWidget{{mapName}}.id,
+            tooltip: '{{ widget|args:"title"|call:"getOption"|default:"" }}',
+            group: objGPWidget{{mapName}}.id
+        }, configOptions);
+
+        var customBubble = new GeoExt.TemplatePopup(configOptions);
+
+        
+        {% with autoEnableOption=widget|args:"autoEnable"|call:"getOption" %}
+            {% if autoEnableOption %}
+              // Do not add the button if autoEnable
+            {% else %}
+              var objGPWidget{{widget.type.name.lower}}GeoExtToolbarOptions = customBubble;
+            {% endif %}
+          {% endwith %}   
+
+        
+        {% with controlLayerOption=widget|args:"controlLayer"|call:"getOption" %}
+          {% if controlLayerOption %}
+          customBubble.control.events.on({
+              scope: this,
+              activate: function(){
+                  var layers = objGPWidget{{mapName}}.getLayersByName(tmplLayerName);
+                  for(var i=0; i < layers.length; i++) {
+                      layers[i].setVisibility(true);
+                  }
+              },
+              deactivate: function(){
+                  var layers = objGPWidget{{mapName}}.getLayersByName(tmplLayerName);
+                  for(var i=0; i < layers.length; i++) {
+                      layers[i].setVisibility(false);
+                  }
+              }
+          });
+        {% endif %}
+        {% endwith %}
+      {% endwith %}
+    }
+  </script>

@@ -1,0 +1,46 @@
+<script type="text/javascript">
+      if(org.GeoPrisma.MeasureTool) {
+        org.GeoPrisma.MeasureTool.prototype.getNewStyleMapObject = function() {
+          return new OpenLayers.StyleMap({
+            "default": new OpenLayers.Style(null, {
+              rules: [new OpenLayers.Rule({
+                symbolizer: {
+                  "Point": {
+                    pointRadius: 4,
+                    graphicName: "square",
+                    fillColor: "white",
+                    fillOpacity: 1,
+                    strokeWidth: 1,
+                    strokeOpacity: 1,
+                    strokeColor: "#CC3434"
+                  },
+                  "Line": {
+                    strokeWidth: 3,
+                    strokeOpacity: 1,
+                    strokeColor: "#CC3434",
+                    strokeDashstyle: "dash"
+                  },
+                  "Polygon": {
+                    strokeWidth: 2,
+                    strokeOpacity: 1,
+                    strokeColor: "#CC3434",
+                    fillColor: "white",
+                    fillOpacity: 0.3
+                  }
+                }
+              })]
+            })
+          });
+        };
+      }
+
+      OpenLayers.Feature.Vector.style['default'] = OpenLayers.Util.applyDefaults({
+        // put all custom properties here
+        //fillColor: "#00FF80"
+        strokeWidth: 5,
+        cursor: "pointer",
+        graphicName: "square",
+        strokeOpacity:0.5,
+        fillOpacity:0.2
+      }, OpenLayers.Feature.Vector.style['default']);
+</script>

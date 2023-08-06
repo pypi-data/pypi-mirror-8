@@ -1,0 +1,14 @@
+{% with widgetType="geoextux_shortcutcombo" %}
+if (typeof(objGPWidget{{widgetType}}FormPanel) != 'undefined' && typeof({{container}}) != 'undefined')
+{
+    if({{container}}['ctype']){
+        {{container}}.add(
+            objGPWidget{{widgetType}}FormPanel
+        );
+    } else {
+        {{container}}.items.push(
+            objGPWidget{{widgetType}}FormPanel
+        )
+    }
+}
+{% endwith %}

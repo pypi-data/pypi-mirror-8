@@ -1,0 +1,18 @@
+{% load i18n %}
+<script type="text/javascript">
+     var objGPWidget{{widget.type}}GeoExtToolbarOptions;
+     
+     oMap = objGPWidget{{mapName}};
+     var objGPWidget{{widget.id}}GeoExtToolbarOptions;
+     
+     var objWidgetOptions = {};
+     
+     objWidgetOptions = {{ widget.printOptions }};
+     
+     objWidgetOptions['map'] = oMap;
+     
+     var objGPWidget{{widget.id}} =
+          new GeoExt.ux.form.GeoNamesSearchCombo(objWidgetOptions);
+      objGPWidget{{widget.id}}GeoExtToolbarOptions =
+          objGPWidget{{widget.id}};
+</script>

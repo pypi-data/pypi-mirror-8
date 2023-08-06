@@ -1,0 +1,64 @@
+{% load object_extras %}
+<script type="text/javascript">
+    oMap = objGPWidget{{mapName}};
+    var objGPWidget{{widget.id}}GeoExtToolbarOptions;
+    
+    var objWidgetOptions = {};
+    objWidgetOptions = {{ widget.printOptions }};
+    objWidgetOptions['map'] = oMap;
+    {# Bind 'vectorlayer' widget START #}
+    
+    {% with vectorLayer=widget|args:"vectorlayer"|call:"getOption" %}
+        
+    {%if vectorLayer %}
+        {% with vectorLayerWidget=appSession|args:vectorLayer|call:"getWidgetByName" %}
+        {% if vectorLayerWidget %}
+        if (window.objGPWidget{{vectorLayer}}) {
+            objWidgetOptions.layers = [window.objGPWidget{{vectorLayer}}];
+        } else {
+            objWidgetOptions['cosmetic'] = true;
+        }
+        {% else %}
+        objWidgetOptions['cosmetic'] = true;
+        {% endif %}
+        {% endwith %}
+    {% else %}
+    objWidgetOptions['cosmetic'] = true;
+    {% endif %}
+    {% endwith %}
+    {# Bind 'vectorlayer' widget END #}
+    
+    {# "printallwidgetexecutions" callback method for this widget #}
+    var onPrintAllWidgetExecutions = function(event) {
+        var layer, i, iLen;
+        for (i=0, iLen=this.layers.length; i < iLen; i++) {
+            layer = this.layers[i];
+            this.map.setLayerIndex(layer, this.map.layers.length);
+        }
+    };
+    {# Widget object creation #}
+    var objGPWidget{{widget.id}} =
+    {% if appSession|args:widget.id|call:"isInToolbar" %}
+        new GeoExt.ux.FeatureEditingControler(objWidgetOptions);
+    objGPWidget{{widget.id}}GeoExtToolbarOptions =
+        objGPWidget{{widget.id}}.actions;
+    {# move cosmetic layer to top after "printallwidgetexecutions" #}
+    if (objWidgetOptions['cosmetic'] === true) {
+        objGPWidget{{mapName}}.events.on({
+            "printallwidgetexecutions": onPrintAllWidgetExecutions,
+            scope: objGPWidget{{widget.id}}
+        });
+    }
+    {% else %}
+        new GeoExt.ux.form.RedLiningPanel(objWidgetOptions);
+    {# move cosmetic layer to top after "printallwidgetexecutions" #}
+    if (objWidgetOptions['cosmetic'] === true) {
+        objGPWidget{{mapName}}.events.on({
+            "printallwidgetexecutions": onPrintAllWidgetExecutions,
+            scope: objGPWidget{{widget.id}}.controler
+        });
+    }
+    {% endif %}
+    
+    objGPWidget{{widget.type.name.lower}}Container = objGPWidget{{widget.id}};
+</script>

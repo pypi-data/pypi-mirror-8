@@ -1,0 +1,72 @@
+{% load object_extras %}
+<script type="text/javascript">
+    
+    {# Manager creation #}
+    var widgetOptions = Ext.applyIf({
+        mapPanel: objGPWidgetMapPanel{{mapName}}
+    },
+    {{ widget.printOptions }}
+    );
+    
+    {% with vectorLayerOption=widget|args:"vectorlayer"|call:"getOption" %}
+    {% with vectorLayerWidget=appSession|args:vectorLayerOption|call:"getWidgetByName" %}
+    {% if vectorLayerWidget %}
+    if (window.objGPWidget{{vectorLayerOption}}) {
+        widgetOptions.highlightLayer =
+            window.objGPWidget{{vectorLayerOption}};
+    }
+    delete widgetOptions.vectorlayer;
+    {% endif %}
+    {% endwith %}
+    {% endwith %}
+    objGPWidget{{widget.id}} = new org.GeoPrisma.InitialView.Manager(widgetOptions);
+    
+    {# localView #}
+    {% with localViewIndex=widget|args:request|call:"getLocalViewIndex" %}
+    {% with localViewString=widget|args:localViewIndex|call:"getlocalViewString" %}
+    
+    {# if a localView string was found, use it #}
+      {% if localViewString %}
+        objGPWidget{{widget.id}}.createLocalView({{localViewIndex}}-1);          
+      {# no valid localView found, browse resources #}
+      {% else %}
+        {% for resource in resources %}
+          {# Use the DataStoreName to validate that the resource has a valid service type, either 'featureserver' or 'wfs' #}
+          {% with fsDatastore=resource|args:"featureserver"|call:"getDatastoreByType" wfsDatastore=resource|args:"wfs"|call:"getDatastoreByType" %}
+          {% with initViewUrlFieldOption=resource|args:"initViewUrlField"|call:"getOption" %}
+          {% if fsDatastore.layers != "" and initViewUrlFieldOption %}        
+            {# DataStore is FeatureServer #}
+              {% with featuresString=widget|args:fsDatastore|args:viewId|call:"getFeature" %}              
+              {% if featuresString %}
+                objGPWidget{{widget.id}}.createView({
+                featuresString: "{{featuresString|escapejs }}",
+                defaultSRID: '{{resource|args:"defaultSRID"|call:"getOption"|default:""}}',
+                resourceName: '{{resource.id}}',
+                serviceType: '{{fsDatastore.service.type.name.lower}}'
+                });
+              {% endif %}
+              {% endwith %}   
+          {% elif wfsDatastore.layers != "" and initViewUrlFieldOption %}
+            {# DataStore is WFS #}
+            {% with urlFieldValue=viewId %}       
+              {% if urlFieldValue != "" %}
+              objGPWidget{{widget.id}}.createAsyncView({
+                filterProperty: '{{initViewUrlFieldOption}}',
+                filterValue: '{{urlFieldValue}}',
+                layerName: '{{wfsDatastore.layers}}',
+                resourceName: '{{resource.id}}',
+                serviceName:  '{{wfsDatastore.service.name}}',
+                serviceType: '{{wfsDatastore.service.type.name.lower}}',
+                url: baseUrl + 'proxy.php'
+              });
+            {% endif %}
+            {% endwith %}
+          {% endif %}
+          {% endwith %}{% endwith %}
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+    {% endwith %}
+    {# set map center #}
+    objGPWidget{{widget.id}}.setCenter();
+</script>

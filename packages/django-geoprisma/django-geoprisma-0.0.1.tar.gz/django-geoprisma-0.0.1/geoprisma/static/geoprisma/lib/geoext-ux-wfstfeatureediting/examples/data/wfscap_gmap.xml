@@ -1,0 +1,156 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<WFS_Capabilities
+version='1.0.0' updateSequence='0'
+ xmlns='http://www.opengis.net/wfs'
+ xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+ xmlns:ogc='http://www.opengis.net/ogc'
+ xsi:schemaLocation='http://www.opengis.net/wfs
+ http://schemas.opengis.net/wfs/1.0.0/WFS-capabilities.xsd' >
+ <Service>
+  <Name>DEMOWFS</Name>
+  <Title>GMap WMS Demo Server</Title>
+  <OnlineResource>http://dev8.mapgears.com/cgi-bin/tinyows-trunk?</OnlineResource>
+ </Service>
+ <Capability>
+  <Request>
+   <GetCapabilities>
+    <DCPType>
+     <HTTP>
+      <Get onlineResource="http://dev8.mapgears.com/cgi-bin/tinyows-trunk??"/>
+     </HTTP>
+    </DCPType>
+    <DCPType>
+     <HTTP>
+      <Post onlineResource="http://dev8.mapgears.com/cgi-bin/tinyows-trunk?"/>
+     </HTTP>
+    </DCPType>
+   </GetCapabilities>
+   <DescribeFeatureType>
+     <SchemaDescriptionLanguage>
+        <XMLSCHEMA/>
+     </SchemaDescriptionLanguage>
+    <DCPType>
+     <HTTP>
+      <Get onlineResource="http://dev8.mapgears.com/cgi-bin/tinyows-trunk??"/>
+     </HTTP>
+    </DCPType>
+    <DCPType>
+     <HTTP>
+      <Post onlineResource="http://dev8.mapgears.com/cgi-bin/tinyows-trunk?"/>
+     </HTTP>
+    </DCPType>
+   </DescribeFeatureType>
+   <GetFeature>
+<ResultFormat>
+<GML2/>
+</ResultFormat>
+    <DCPType>
+     <HTTP>
+      <Get onlineResource="http://dev8.mapgears.com/cgi-bin/tinyows-trunk??"/>
+     </HTTP>
+    </DCPType>
+    <DCPType>
+     <HTTP>
+      <Post onlineResource="http://dev8.mapgears.com/cgi-bin/tinyows-trunk?"/>
+     </HTTP>
+    </DCPType>
+   </GetFeature>
+   <Transaction>
+    <DCPType>
+     <HTTP>
+      <Get onlineResource="http://dev8.mapgears.com/cgi-bin/tinyows-trunk??"/>
+     </HTTP>
+    </DCPType>
+    <DCPType>
+     <HTTP>
+      <Post onlineResource="http://dev8.mapgears.com/cgi-bin/tinyows-trunk?"/>
+     </HTTP>
+    </DCPType>
+   </Transaction>
+  </Request>
+ </Capability>
+ <FeatureTypeList>
+  <Operations>
+   <Query/>
+   <Insert/>
+   <Update/>
+   <Delete/>
+  </Operations>
+<FeatureType xmlns:tows="http://localhost">
+ <Name>tows:drainage</Name>
+ <Title>Drainage</Title>
+ <SRS>spatialreferencing.org:900913</SRS>
+ <LatLongBoundingBox minx='-141.002133' miny='44.114653' maxx='-54.439322' maxy='82.794073' />
+</FeatureType>
+<FeatureType xmlns:tows="http://localhost">
+ <Name>tows:road</Name>
+ <Title>Roads</Title>
+ <SRS>spatialreferencing.org:900913</SRS>
+ <LatLongBoundingBox minx='-141.002077' miny='41.683046' maxx='-52.782341' maxy='68.343371' />
+</FeatureType>
+<FeatureType xmlns:tows="http://localhost">
+ <Name>tows:popplace</Name>
+ <Title>Cities</Title>
+ <SRS>spatialreferencing.org:900913</SRS>
+ <LatLongBoundingBox minx='-140.875454' miny='42.053481' maxx='-52.806846' maxy='82.432685' />
+</FeatureType>
+ </FeatureTypeList>
+<ogc:Filter_Capabilities>
+ <ogc:Spatial_Capabilities>
+  <ogc:Spatial_Operators>
+  <ogc:Disjoint/>
+  <ogc:Equals/>
+  <ogc:DWithin/>
+  <ogc:Beyond/>
+  <ogc:Intersect/>
+  <ogc:Touches/>
+  <ogc:Crosses/>
+  <ogc:Within/>
+  <ogc:Contains/>
+  <ogc:Overlaps/>
+  <ogc:BBOX/>
+ </ogc:Spatial_Operators>
+ </ogc:Spatial_Capabilities>
+ <ogc:Scalar_Capabilities>
+  <ogc:Logical_Operators/>
+  <ogc:Comparison_Operators>
+   <ogc:Simple_Comparisons/>
+   <ogc:Between/>
+   <ogc:Like/>
+   <ogc:NullCheck/>
+  </ogc:Comparison_Operators>
+  <ogc:Arithmetic_Operators>
+   <ogc:Simple_Arithmetic/>
+   <ogc:Functions>
+    <ogc:Function_Names>
+     <ogc:Function_Name nArgs='1'>abs</ogc:Function_Name>
+     <ogc:Function_Name nArgs='1'>acos</ogc:Function_Name>
+     <ogc:Function_Name nArgs='1'>asin</ogc:Function_Name>
+     <ogc:Function_Name nArgs='1'>atan</ogc:Function_Name>
+     <ogc:Function_Name nArgs='1'>avg</ogc:Function_Name>
+     <ogc:Function_Name nArgs='1'>cbrt</ogc:Function_Name>
+     <ogc:Function_Name nArgs='1'>ceil</ogc:Function_Name>
+     <ogc:Function_Name nArgs='1'>ceiling</ogc:Function_Name>
+     <ogc:Function_Name nArgs='1'>cos</ogc:Function_Name>
+     <ogc:Function_Name nArgs='1'>cot</ogc:Function_Name>
+     <ogc:Function_Name nArgs='1'>count</ogc:Function_Name>
+     <ogc:Function_Name nArgs='1'>degrees</ogc:Function_Name>
+     <ogc:Function_Name nArgs='1'>exp</ogc:Function_Name>
+     <ogc:Function_Name nArgs='1'>floor</ogc:Function_Name>
+     <ogc:Function_Name nArgs='1'>length</ogc:Function_Name>
+     <ogc:Function_Name nArgs='1'>ln</ogc:Function_Name>
+     <ogc:Function_Name nArgs='1'>log</ogc:Function_Name>
+     <ogc:Function_Name nArgs='1'>min</ogc:Function_Name>
+     <ogc:Function_Name nArgs='1'>max</ogc:Function_Name>
+     <ogc:Function_Name nArgs='1'>radians</ogc:Function_Name>
+     <ogc:Function_Name nArgs='1'>round</ogc:Function_Name>
+     <ogc:Function_Name nArgs='1'>sin</ogc:Function_Name>
+     <ogc:Function_Name nArgs='1'>sqrt</ogc:Function_Name>
+     <ogc:Function_Name nArgs='1'>tan</ogc:Function_Name>
+     <ogc:Function_Name nArgs='1'>trunc</ogc:Function_Name>
+     </ogc:Function_Names>
+     </ogc:Functions>
+  </ogc:Arithmetic_Operators>
+ </ogc:Scalar_Capabilities>
+</ogc:Filter_Capabilities>
+</WFS_Capabilities>

@@ -1,0 +1,19 @@
+<script type="text/javascript">
+  var objGPWidget{{widget.id}};
+
+  Ext.onReady(function() {
+      oMap = objGPWidget{{mapName}};
+
+      var objWidgetOptions = Ext.applyIf(
+        {{ widget.printOptions }},
+        objGPWidget{{widget.type.name.lower}}DefaultOptions
+      );
+
+      objGPWidget{{widget.id}} = 
+          new GeoExt.ux.tree.LayerTreeBuilder(objWidgetOptions);
+
+      objGPWidget{{widget.type.name.lower}}Container.push(
+          objGPWidget{{widget.id}}
+      );
+  });
+</script>

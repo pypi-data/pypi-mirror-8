@@ -1,0 +1,28 @@
+{% load i18n %}
+<script type="text/javascript">
+      oMap = objGPWidget{{mapName}};
+      var objGPWidget{{widget.id}}GeoExtToolbarOptions;
+
+      var objWidgetOptions = {};
+      var objWidgetTitle = '';
+      {% for key,val in widget.options.items %}
+        {% if key == "title" %}
+         objWidgetTitle = "{{val}};
+        {% elif key == "store" %}
+          objWidgetOptions.store = {{val}};
+	{% else %}
+           objWidgetOptions['{{key}}'] = "{{val}}";
+        {% endif %}
+      {% endfor %}
+      objWidgetOptions['map'] = oMap;
+
+     var objGPWidget{{widget.id}} = new GeoExt.ux.ShortcutCombo(objWidgetOptions);
+     objGPWidget{{widget.id}}.title = objWidgetTitle;
+     objGPWidget{{widget.id}}.emptyText = objWidgetTitle;
+          
+      {# FormPanel support  #}
+      objGPWidget{{widgetType}}FormPanel.items.push(objGPWidget{{widget.id}});
+      
+      {# Toolbar support #}
+      objGPWidget{{widgetType}}GeoExtToolbarOptions.push(objGPWidget{{widget.id}});
+</script>

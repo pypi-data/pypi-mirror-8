@@ -1,0 +1,14 @@
+{% load widget_extras %}
+<script type="text/javascript">
+    var widgetOptions = Ext.applyIf({
+        mapPanel: objGPWidgetMapPanel{{mapName}},
+        toggleGroup: objGPWidget{{mapName}}.id
+    },
+    {{ widget.printOptions }}
+    );
+
+    var objGPWidget{{widget.id}} = new org.GeoPrisma.MeasureTool(widgetOptions);    
+
+    {# options for the GeoExtToolbar #}
+    objGPWidget{{widget.id}}GeoExtToolbarOptions = objGPWidget{{widget.id}};    
+</script>

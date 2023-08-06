@@ -1,0 +1,84 @@
+{% load i18n %}
+{% get_current_language as locale %}
+{% load object_extras %}
+<script type="text/javascript">
+    oMap = objGPWidget{{mapName}};
+
+    var options, defaultOptions, action;
+    
+    defaultOptions = {{ widget.printOptions }};
+
+    {%with toggleEditOption=widget|args:"toggleEdit"|call:"getOption"  %} 
+
+      {% for  resource in widget.resources %}
+  
+        {# Use the DataStoreName to validate that the resource has a valid service type #}
+        {% with resourceDatastore=resource|args:"featureserver"|call:"getDatastoreByType" %}
+  
+        {% if resourceDatastore %}
+          {# get resource 'iconClsDrag' option, if any #}
+          {# get resource 'tooltipTextDrag' option, i18n supported #}
+          
+          {%with iconClsDragOption=resource|args:"iconClsDrag"|call:"getOption" tooltipTextDragOption=resource|args:"tooltipTextDrag"|call:"getOption" %} 
+  
+          var actionId = Ext.id();
+          var options = Ext.applyIf({
+              'resource': '{{resource.id}}',
+              'id': actionId
+          }, defaultOptions);
+  
+          {# Widget object creation  #}
+          var objGPWidget{{widget.id}}{{resource.id}} = new OpenLayers.Control.EditFeature_Drag(options);
+  
+          {# GeoExt.Action object for the geoexttoolbar #}
+          action = new GeoExt.Action({
+            id: actionId,
+            {% if iconClsDragOption %}
+            iconCls: '{{iconClsDragOption}}',
+            {% else %}
+            iconCls: 'editfeature_drag',
+            {% endif %}
+            control: objGPWidget{{widget.id}}{{resource.id}},
+            map: oMap,
+            // button options
+            toggleGroup: oMap.id,
+            allowDepress: false,
+            {% if tooltipTextDragOption %}
+            tooltip: "{% trans tooltipTextDragOption %}",
+            {% else %}
+                {% if locale == "fr" %}
+            tooltip: "Outil de d&#233;placement de g&#233;om&#233;trie",
+                {% else %}
+            tooltip: "Geometry draging widget",
+                {% endif %}
+            {% endif %}
+            // check item options
+            group: oMap.id
+          });
+          {% endwith %}
+  
+          {# Push action in goEditFeatureActions['resource'] array  #}
+          if (!goEditFeatureActions['{{resource.id}}'])
+          {
+              goEditFeatureActions['{{resource.id}}'] = [];
+          }
+          goEditFeatureActions['{{resource.id}}'].push(action);
+  
+          {# toggleEdit option management, if set, listen to map event 'printallwidgetexecutions' to set widget 'updateControl' #}
+          {% if toggleEditOption %}
+          {% with editfeatureUpdateWidgets=appSession|args:"editfeature_update"|call:"getWidgetArrayByType" %}
+            {% for editfeatureUpdateWidget in editfeatureUpdateWidgets %}
+            {% if resource.id == editfeatureUpdateWidget.resource.id %}
+              oMap.events.on({"printallwidgetexecutions": function(event) {
+                  objGPWidget{{widget.id}}{{resource.id}}.updateControl = objGPWidget{{editfeatureUpdateWidget.id}}{{resource.id}};
+              }});
+            {% endif %}
+            {% endfor %}
+          {% endwith %}
+          {% endif %}
+  
+        {% endif %}
+        {% endwith %}
+      {% endfor %}
+    {%endwith%}
+  </script>

@@ -1,0 +1,20 @@
+{% load widget_extras %}
+{% load i18n %}
+<script type="text/javascript">
+      Ext.apply(org.GeoPrisma.FeaturePanel.Form.prototype, {
+          i18n_form_button_commit_text:    "{% trans "Commit" %}",            
+          i18n_form_button_commit_tooltip: "{% trans "Commit modifications" %}",            
+          i18n_form_button_cancel_text:    "{% trans "Cancel" %}",            
+          i18n_form_button_cancel_tooltip: "{% trans "Cancel current modifications.  Geometry is reset to original." %}"           
+      });  
+
+    function objGP{{widget.type}}GetFieldByName(szName, objFields){
+          for(var i=0, len=objFields.length; i < len; i++ ){
+              var objField = objFields[i];
+              if(objField['name'] == szName){
+                  return objField;
+              }
+          }
+          return false;
+      };
+</script>

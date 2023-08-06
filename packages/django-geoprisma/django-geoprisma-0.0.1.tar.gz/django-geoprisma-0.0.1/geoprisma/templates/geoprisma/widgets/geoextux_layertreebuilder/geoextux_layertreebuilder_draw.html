@@ -1,0 +1,16 @@
+{% with widgetType="geoextux_layertreebuilder" %}
+if (typeof(objGPWidget{{widgetType}}Container) != 'undefined' && typeof({{container}}) != 'undefined')
+{
+    for (var i=0, len=objGPWidget{{widgetType}}Container.length; i < len; i++) {
+        if({{container}}['ctype']){
+            {{container}}.add(
+                objGPWidget{{widgetType}}Container[i]
+            );
+        } else {
+            {{container}}.items.push(
+                objGPWidget{{widgetType}}Container[i]
+            )
+        }
+    }
+}
+{% endwith %}

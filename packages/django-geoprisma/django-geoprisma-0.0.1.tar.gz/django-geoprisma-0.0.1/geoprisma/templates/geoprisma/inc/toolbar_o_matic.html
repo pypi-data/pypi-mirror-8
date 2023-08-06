@@ -1,0 +1,29 @@
+{% load i18n %}
+var toolbar_items = [];
+    
+    url_accueil = '';
+    
+    var bouton_choixcarte = new Ext.Button({
+                                    id:'btnCarte',
+                                    text:'Accueil',
+                                    iconCls:'choixcarte',
+                                    handler:function () {
+                                            window.location = url_accueil;
+                                        }
+                                });
+    var bouton_deconnexion = new Ext.Button({
+                                    id:'btnDisconnect',
+                                    text:'{% trans "Disconnection" %}',
+                                    handler:function () {
+                                                window.location = '';
+                                            },
+                                    iconCls:'disconnect'
+                                });
+
+    var label_userinfo = new Ext.Toolbar.TextItem({
+                                    id:'lblusername',
+                                    text:'{{user.username}}'
+                                });
+
+  toolbar_items.push('->', label_userinfo, '-', bouton_choixcarte, '-', bouton_deconnexion);
+  geoc_ws='{{wsName}}';

@@ -1,0 +1,40 @@
+{% load object_extras %}
+{% load i18n %}
+<script type="text/javascript">
+
+   var objWidgetOptions = {{ widget.printOptions }};
+
+    objWidgetOptions.map = objGPWidget{{mapName}};
+
+    objWidgetOptions.resources = [];
+    
+    {% for resource in widget.resources %}
+        objWidgetOptions.resources.push('{{resource.id}}');
+    {% endfor %}
+    
+    
+    {% with vectorLayerOption=widget|args:"vectorlayer"|call:"getOption" %}
+    {% with vectorLayerWidget=appSession|args:vectorLayerOption|call:"getWidgetByName" %}
+    {% if vectorLayerWidget %}
+      objWidgetOptions.layer = window.objGPWidget{{vectorLayerOption}} || false; 
+    {% endif %}
+    {% endwith %}
+    {% endwith %}
+   
+    objGPWidget{{widget.id}} = new OpenLayers.ResultVectorLayer(objWidgetOptions);
+    
+     {# Bind this widget to all widgets refering to it in an option #}
+     {% with queryWidgets=appSession|args:"results"|args:widget.id|call:"getWidgetsByOptionValue" %}
+      {% for queryWidget in queryWidgets %}
+          objGPWidget{{queryWidget.id}}.addResult(objGPWidget{{widget.id}});
+          objGPWidget{{widget.id}}.setQuery(objGPWidget{{queryWidget.id}});
+      {% endfor %}
+      {% endwith %}
+      
+      {% with queryWidgets=appSession|args:"result"|args:widget.id|call:"getWidgetsByOptionValue" %}
+      {% for queryWidget in queryWidgets %}
+          objGPWidget{{queryWidget.id}}.addResult(objGPWidget{{widget.id}});
+          objGPWidget{{widget.id}}.setQuery(objGPWidget{{queryWidget.id}});
+      {% endfor %}
+      {% endwith %}
+</script>

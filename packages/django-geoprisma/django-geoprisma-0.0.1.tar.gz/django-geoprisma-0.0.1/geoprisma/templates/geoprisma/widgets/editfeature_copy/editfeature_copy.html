@@ -1,0 +1,107 @@
+{% load i18n %}
+{% get_current_language as locale %}
+{% load object_extras %}
+<script type="text/javascript">
+    oMap = objGPWidget{{mapName}};
+
+    var options, defaultOptions, action;
+
+    defaultOptions = {{widget.printOptions}};
+
+    {%with toggleEditOption=widget|args:"toggleEdit"|call:"getOption"  %}    
+        {% for resource in widget.resources %}
+    
+          {# Use the DataStoreName to validate that the resource has a valid service type #}
+          {% with resourceDatastore=resource|args:"featureserver"|call:"getDatastoreByType" %}
+    
+          {% if resourceDatastore %}
+            {# get resource 'iconClsCopy' option, if any #}
+           
+            {%with iconClsCopyOption=resource|args:"iconClsCopy"|call:"getOption"  %}   
+            
+                {# get resource 'tooltipTextCopy' option, i18n supported #}
+               
+                {%with tooltipTextCopyOption=resource|args:"tooltipTextCopy"|call:"getOption"  %}   
+                    
+                    var actionId = Ext.id();
+                    var options = Ext.applyIf({
+                        'resource': '{{resource.id}}',
+                        'id': actionId,
+                        {# resourceOptions #}
+                        'resourceOptions' : {{ resource.printOptions }}
+                    }, defaultOptions);
+            
+                    {# 'selectorMethod' resource option set as Function  #}
+            
+                    {%with selectorMethodOption=resource|args:"selectorMethod"|call:"getOption"  %}
+                    {% if selectorMethodOption %}
+                      options['resourceOptions'].selectorMethod = {{selectorMethodOption}};
+                    {% endif %}
+                    {%endwith%}
+            
+                    {# attribute cloning management #}
+                    
+                    {%with copyFieldListOption=resource|args:"copyFieldList"|call:"getOption"  %}
+                      {% if copyFieldListOption %}
+                        options.attributes = '{{copyFieldListOption}}'.split(",");
+                      {% else %}
+                        {# add support for resource fields here #}
+                      {% endif %}
+                    {%endwith%}  
+            
+                    {# Widget object creation  #}
+                    var objGPWidget{{widget.id}}{{resource.id}} = new OpenLayers.Control.EditFeature_Copy(options);
+            
+                    {# GeoExt.Action object for the geoexttoolbar #}
+                    action = new GeoExt.Action({
+                      id: actionId,
+                      {% if iconClsCopyOption %}
+                      iconCls: '{{iconClsCopyOption}}',
+                      {% else %}
+                      iconCls: 'editfeature_copy',
+                      {% endif %}
+                      control: objGPWidget{{widget.id}}{{resource.id}},
+                      map: oMap,
+                      // button options
+                      toggleGroup: oMap.id,
+                      allowDepress: false,
+                      {% if tooltipTextCopyOption %}
+                      tooltip: "{% trans tooltipTextCopyOption %}",
+                      {% else %}
+                          {% if locale == "fr" %}
+                      tooltip: "Outil de copie de g&#233;om&#233;trie",
+                          {% else %}
+                      tooltip: "Geometry copying widget",
+                          {% endif %}
+                      {% endif %}
+                      // check item options
+                      group: oMap.id
+                    });
+                    
+                    {# Push action in goEditFeatureActions['resource'] array  #}
+                    if (!goEditFeatureActions['{{resource.id}}'])
+                    {
+                        goEditFeatureActions['{{resource.id}}'] = [];
+                    }
+                    goEditFeatureActions['{{resource.id}}'].push(action);
+            
+                    {# toggleEdit option management, if set, listen to map event 'printallwidgetexecutions' to set widget 'updateControl' #}
+                    {% if toggleEditOption %}
+                    {% with editfeatureUpdateWidgets=appSession|args:"editfeature_update"|call:"getWidgetArrayByType" %}
+                      {% for editfeatureUpdateWidget in editfeatureUpdateWidgets %}
+                        {% if resource.id == editfeatureUpdateWidget.resource.id %}
+                        oMap.events.on({"printallwidgetexecutions": function(event) {
+                            objGPWidget{{widget.id}}{{resource.id}}.updateControl = objGPWidget{{editfeatureUpdateWidget.id}}{{resource.id}};
+                        }});
+                        {% endif %}
+                      {% endfor %}
+                    {% endwith %}
+                    {% endif %}
+                {%endwith%}
+            {%endwith%}
+         
+          {% endif %}
+          {% endwith %}
+        {% endfor %}
+    {%endwith%}
+  </script>

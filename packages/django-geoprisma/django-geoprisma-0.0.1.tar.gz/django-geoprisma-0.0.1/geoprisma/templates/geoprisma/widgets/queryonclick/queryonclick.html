@@ -1,0 +1,112 @@
+{% load object_extras %}
+{% load i18n %}
+<script type="text/javascript">
+    // QueryOnClick
+    var aResources = [];
+    {% for widgetResource in widget.resources %}
+        {% with wmsDatastore=widgetResource|args:"wms"|call:"getDatastoreByType" wfsDatastore=widgetResource|args:"featureserver"|call:"getDatastoreByType" %}
+        oResource = {
+            wms: {'queryLayers': "{{wmsDatastore.layers}}",
+                    'service': "{{wmsDatastore.service.id}}",
+                    'url': baseUrl + 'proxy.php',
+                {% if wmsDatastore.service %}
+                {% with serviceVersion=appSession|args:wmsDatastore.service|args:"version"|call:"getObjectOption" %}
+                {% if serviceVersion %}'version': '{{serviceVersion}}',{% endif %}
+                {% endwith %}
+                {% with serviceInfoFormat=appSession|args:wmsDatastore.service|args:"info_format"|call:"getObjectOption"  %}
+                {% if serviceInfoFormat %}'info_format': '{{serviceInfoFormat}}',{% endif %}
+                {% endwith %}
+                {% endif %}
+                    'dataStoreText': {% if wmsDatastore.text %}{{wmsDatastore.text}}{%else%}''{% endif %}},
+            wfs: {'typename': "{{wfsDatastore.layers}}",
+                    'service': "{{wfsDatastore.service.id}}",
+                    'url': baseUrl + 'proxy.php',
+                    'dataStoreText': {% if wfsDatastore.text %}{{wfsDatastore.text}}{%else%}''{% endif %}},
+            'session_name': 'sessionid',
+            'session_id':     '{{request.COOKIES.sessionid}}',
+            'resource': "{{widgetResource.id}}",
+            'resourceTitle': "{{widgetResource.display_name|default:widgetResource.name}}",
+            {% with resourcePrimaryField=widgetResource|args:"primaryField"|call:"getOption" %}
+            {% if resourcePrimaryField %}'resourcePrimaryField': '{{resourcePrimaryField}}',{% endif %}
+            {% endwith %}
+            'queryable': true
+        };
+        aResources.push(oResource);
+        {% endwith %}
+    {% endfor %}
+    oMap = objGPWidget{{mapName}};
+    strTitle = "{%trans "Click on the map to get information on queryable layers" %}";
+    var strReset = '{{ widget|args:"resetOnDeactivation"|call:"getOption"|default:"" }}';
+    strReset = (strReset == '') ? 'marker' : strReset;
+    
+    var bNoMarker = '{{ widget|args:"noMarker"|call:"getOption"|default:"" }}';
+    bNoMarker = (bNoMarker == 'true') ? true : false;
+    
+    var objMarkerStyle;
+    {% with markerStyleOption=widget|args:"markerStyle"|call:"getOption" %}
+    {% if markerStyleOption %}
+    objMarkerStyle = {{ widget.printOptions }};
+    {% endif %}
+    {% endwith %}
+    objGPWidget{{widget.id}} = new OpenLayers.Control.QueryOnClick({
+        drawMode: '{{drawMode}}',
+        resetOnDeactivation: strReset,
+        markerStyle: objMarkerStyle,
+        renderform: false,
+        title: strTitle,
+        noMarker: bNoMarker,
+        {% with multiKeyOption=widget|args:"multipleKey"|call:"getOption" %}{% if multiKeyOption %}multipleKey: '{{multiKeyOption}}',{% endif %}{% endwith %}
+        {% with altKeyOption=widget|args:"altKey"|call:"getOption" %}{% if altKeyOption %}altKey: '{{altKeyOption}}',{% endif %}{% endwith %}
+        {% with multipleOption=widget|args:"multiple"|call:"getOption" %}{% if multipleOption %}multiple: {{multipleOption}},{% endif %}{% endwith %}
+        {% with toggleOption=widget|args:"toggle"|call:"getOption" %}{% if toggleOption %}toggle: {{toggleOption}},{% endif %}{% endwith %}
+        {% with displayClassOption=widget|args:"displayClass"|call:"getOption" %}{% if displayClassOption %}displayClass: '{{displayClassOption}}',{% endif %}{% endwith %}
+        resources: aResources
+    });
+    
+    {# GeoExt.Action object for the geoexttoolbar START #}
+    aoMenuItems = [];
+    {# Text for the arrow menu #}
+    for (var i=0, len=aResources.length; i < len; i++){
+        oResource = aResources[i];
+
+        if(oResource['wms'].dataStoreText != ''){
+            aoMenuItems.push({'text': oResource['wms'].dataStoreText});
+        } else if (oResource.resourceTitle != ''){
+            aoMenuItems.push({'text': oResource.resourceTitle});
+        } else {
+            aoMenuItems.push({'text': oResource.resource});
+        }
+    }
+    
+    {# get dropDownList #}
+    {% with dropDownListOption=widget|args:"dropDownList"|call:"getOption" %}
+    {% with iconClsOption=widget|args:"iconCls"|call:"getOption" %}
+    
+    objAction = new GeoExt.Action({
+        {% if iconClsOption %}iconCls: '{{iconClsOption}}',{% else %}iconCls: 'queryonclick',{% endif %}
+        control: objGPWidget{{widget.id}},
+        map: oMap,
+        // button options
+        toggleGroup: oMap.id,
+        allowDepress: false,
+        tooltip: strTitle,
+        // check item options
+        {% if dropDownListOption != "false" %}
+        menu: {
+          defaultType: 'tbtext',
+          items: aoMenuItems
+        },
+        {% endif %}
+        group: oMap.id
+    });
+    
+    {# Widget Object creation  #}
+    {% if dropDownListOption == "false" %}
+      objGPWidget{{widget.id}}GeoExtToolbarOptions = objAction;
+    {% else %}
+      objGPWidget{{widget.id}}GeoExtToolbarOptions = new Ext.Toolbar.SplitButton(objAction);
+      objGPWidget{{widget.id}}GeoExtToolbarOptions.arrowTooltip = "{% trans "List of queryable layers" %}";
+    {% endif %}
+   {% endwith %}
+   {% endwith %}
+</script>

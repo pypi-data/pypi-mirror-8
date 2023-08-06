@@ -1,0 +1,47 @@
+{% load object_extras %}
+{% load i18n %}
+{% load staticfiles %}
+{% get_current_language as locale %}
+<link rel="stylesheet" href="{% static "geoprisma/widgets/featurepanel_selector/css/featurepanel_selector.css" %}" type="text/css">
+{% if locale == "fr" %}
+  <link rel="stylesheet" href="{% static "geoprisma/widgets/featurepanel_selector/css/featurepanel_selector_fr.css" %}" type="text/css">
+{% endif %}
+<script src="{% static "geoprisma/widgets/featurepanel_selector/js/Selector.js" %}" type="text/javascript"></script>
+<script type="text/javascript">
+    var nbcolumns = 0;
+    
+    {% with fpsWidgets=appSession|args:widgetType|call:"getWidgetArrayByType" %}
+    {% for widget in fpsWidgets %}
+    nbcolumns = Math.max(nbcolumns, {{ widget.resource.fields|length }});	
+    {% endfor %}
+    {% endwith %}
+    
+    objGPWidget{{widgetType}} = new org.GeoPrisma.FeaturePanel.Selector(
+      {
+        i18n_button_delegate : "{% trans "Consult" %}",
+        i18n_featurepanel_selector_grid_title : "{% trans "Results" %}",
+        i18n_featurepanel_selector_no_context_title : "{% trans "No context defined" %}",
+        i18n_featurepanel_selector_no_context_message : "{% trans "No context was defined for this resource" %}",
+        forceFit: true,
+        enableColumnHide: false,
+        nbcolumns: nbcolumns
+      }
+    );
+
+    {% with ownerWidget=appSession|args:"featurepanel"|call:"getWidgetByOption" %}
+    {% if ownerWidget %}
+    Ext.onReady(function() {
+        if (objGPWidget{{ownerWidget.id}})
+        {
+          objGPWidget{{ownerWidget.id}}.addFeaturePanel(objGPWidget{{widgetType}});
+          objGPWidget{{widgetType}}.addOwner(objGPWidget{{ownerWidget.id}});
+        }
+        else
+        {
+          objGPWidget{{ownerWidget.id}}.addFeaturePanel(objGPWidget{{widgetType}});
+          objGPWidget{{widgetType}}.addOwner(objGPWidget{{ownerWidget.id}});
+        }
+    });
+    {% endif %}
+    {% endwith  %}
+</script>

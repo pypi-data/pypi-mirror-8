@@ -1,0 +1,27 @@
+{% load i18n %}
+<script type="text/javascript">
+  oMap = objGPWidget{{mapName}};
+
+  var objWidgetOptions = {};
+  objWidgetOptions = {{ widget.printOptions }};
+
+  Ext.apply(objWidgetOptions, {handlerOptions: {"single": true}});
+
+  {# creation of the control #}
+      objGPWidget{{widget.id}} = new OpenLayers.Control.Click(objWidgetOptions);
+	      
+      {# options for the GeoExtToolbar #}
+      objGPWidget{{widget.id}}GeoExtToolbarOptions = new GeoExt.Action({
+	iconCls: 'getmouseposition',
+	control: objGPWidget{{widget.id}},
+	map: oMap,
+	// button options
+	toggleGroup: oMap.id,
+	allowDepress: false,
+	{# todo: gettext #}
+	tooltip: '{% trans "Coordinates" %}',
+        // tooltip: '{% trans "Coordinate info box" %}',
+	// check item options
+	group: oMap.id
+	});
+</script>

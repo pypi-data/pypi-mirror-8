@@ -1,0 +1,18 @@
+{% load i18n %}
+{% get_current_language as locale %}
+{% load staticfiles %}
+<script src="{% static "geoprisma/lib/geoext-ux-layertreebuilder/lib/GeoExt.ux/plugins/LayerTreeBuilderNodeAgent.js" %}" type="text/javascript"></script>
+<script src="{% static "geoprisma/lib/geoext-ux-layertreebuilder/lib/GeoExt.ux/LayerTreeBuilder.js" %}" type="text/javascript"></script>  
+<link rel="stylesheet" href="{% static "geoprisma/lib/geoext-ux-layertreebuilder/resources/css/LayerTreeBuilder.css" %}" type="text/css" />
+{% if locale == "fr" %}
+<script src="{% static "geoprisma/lib/geoext-ux-layertreebuilder/resources/lang/fr.js" %}" type="text/javascript"></script>  
+{% endif %}
+<script type="text/javascript">
+    var objGPWidget{{widgetType}}Container = [];
+    var objGPWidget{{widgetType}}DefaultOptions = {
+      autoScroll: true,
+      rootVisible: false,
+      border: false,
+      lines: false
+    };
+</script>

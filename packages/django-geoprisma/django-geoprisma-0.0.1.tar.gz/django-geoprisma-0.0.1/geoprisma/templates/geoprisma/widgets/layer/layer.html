@@ -1,0 +1,222 @@
+{% load i18n %}
+{% load object_extras %}
+<script type="text/javascript">
+    var mapPanel = objGPWidgetMapPanel{{mapName}};
+    var map = mapPanel.map;
+    
+    var strURL = baseUrl + 'proxy.php';
+    var strDjangoURL = baseUrl + 'gp/proxy/';
+    var strURLAliases = "";
+    var boolURLAliasesEnabled = (strURLAliases != '');
+    var objArrayURLAliases, strSeparator;
+    
+    if(boolURLAliasesEnabled) {
+        strSeparator = ' ';
+        objArrayURLAliases = strURLAliases.split(strSeparator);
+    } else {
+        objArrayURLAliases = [strURL];
+    }
+    {% with resource=widget.resource %}
+    {% with resourceNoLayerOption=resource|args:"noLayer"|call:"getOption"  %} 
+    {% if not resourceNoLayerOption %}
+        {# WMS #}
+        {% if widget.datastore.service.type.name.lower == "wms" %}
+            {% if widget.datastore.service.name != "" %}
+                {# options #}
+                {{ widget.getOpenLayersOptions }}
+                objOptions.resources = ['{{resource.id}}'];
+                {# url #}
+                {{ widget.printLayerDjangoURL }}
+                {# params #}
+                {{ widget.getWMSParams }}
+                {# vendor service option #}
+                {% with serviceVendorOption=appSession|args:widget.datastore.service|args:"vendor"|call:"getObjectOption"  %}
+                objOptions.vendor = "{{serviceVendorOption|default:""}}".toLowerCase();
+                {% endwith %}
+                var objLayer = new OpenLayers.Layer.WMS(
+                    "{{resource.display_name|default:resource.name}}",
+                    objArrayURLAliases,
+                    objParams,
+                    objOptions
+                );
+                map.addLayer(objLayer);
+            {% endif %}
+        {# TileCache #}
+        {% elif widget.datastore.service.type.name.lower == "tilecache" %}
+            {% if widget.datastore.service.name != "" %}
+                {# options #}
+                {{ widget.getOpenLayersOptions }}
+                objOptions.resources = ['{{resource.id}}'];
+                {# url #}
+                {{ widget.printLayerDjangoURL }}
+                {% with serviceStaticCacheOption=appSession|args:widget.datastore.service|args:"staticCache"|call:"getObjectOption" %}
+                {% if serviceStaticCacheOption == "true" %}
+                    if (objArrayURLAliases instanceof Array) {
+                        for(var key in objArrayURLAliases) {
+                            objArrayURLAliases[key] =  OpenLayers.Util.urlAppend(objArrayURLAliases[key], "staticCache=");
+                        }
+                    } else {
+                        objArrayURLAliases = OpenLayers.Util.urlAppend(objArrayURLAliases, "staticCache=");
+                    }
+                    objLayer = new OpenLayers.Layer.TileCache(
+                        "{{resource.display_name|default:resource.name}}",
+                        objArrayURLAliases,
+                        "{{widget.datastore.layers}}",
+                        objOptions
+                    );
+                {% else %}
+                    {# params #}
+                    {{ widget.getWMSParams }}
+                    var objLayer = new OpenLayers.Layer.WMS(
+                        "{{resource.display_name|default:resource.name}}",
+                        objArrayURLAliases,
+                        objParams,
+                        objOptions
+                    );
+                {% endif %}
+                {% endwith %}
+                map.addLayer(objLayer);
+            {% endif %}
+        {# FeatureServer #}
+        {% elif widget.datastore.service.type.name.lower == "featureserver" %}
+            {% if widget.datastore.service.name != "" %}
+                {# url #}
+                {{ widget.printLayerURL }}
+                var aszURLArray = strURL.split("?");
+                strURL = aszURLArray[0]+"/{{widget.datastore.layers}}?"+aszURLArray[1];
+                {# options #}
+                {{ widget.getOpenLayersOptions }}
+                objOptions.resources = ['{{resource.id}}'];
+                objOptions.strategies.push (new OpenLayers.Strategy.BBOX());
+                objOptions.protocol = new OpenLayers.Protocol.HTTP({
+                    url: strURL,
+                    params: {
+                        format: "GeoJSON",
+                        service: "WFS",
+                        request: "GetFeatures",
+                        srs: objOptions["projection"] ? objOptions["protocol"] : "",
+                        maxfeatures: objOptions["maxfeatures"]
+                    },
+                    format: new OpenLayers.Format.GeoJSON()
+                });
+                
+                {# STYLEMAP #}
+                {% with stylemapOption=widget|args:"stylemap"|call:"getOption" %}
+                {% if stylemapOption %}
+                    objOptions["styleMap"] = new OpenLayers.StyleMap({});
+                    
+                    {# STYLES #}
+                    
+                {% endif %}
+                {%  endwith %}
+            
+                objLayer = new OpenLayers.Layer.Vector(
+                    "{{resource.display_name|default:resource.name}}",
+                    objOptions
+                );
+                map.addLayer(objLayer);
+            {% endif %}
+        {# WFS #}
+        {% elif widget.datastore.service.type.name.lower == "wfs" %}
+            {% if widget.datastore.service.name != "" %}
+                var objProtocolOptions = {};
+                {# url #}
+                {{ widget.printLayerURL }}
+                var aszURLArray = strURL.split("?");
+                strURL = aszURLArray[0]+"/{{widget.datastore.layers}}?"+aszURLArray[1];
+                {# options #}
+                {{ widget.getOpenLayersOptions }}
+                objOptions.resources = ['{{resource.id}}'];
+                objOptions.strategies.push (new OpenLayers.Strategy.BBOX());
+                objOptions.protocol = new OpenLayers.Protocol.WFS({
+                    url: strURL,
+                    version: objOptions["version"] ? objOptions["version"] : undefined,
+                    srsName: objOptions["projectionString"] ? objOptions["projectionString"] : undefined,
+                    featureType: "{{widget.datastore.layers}}",
+                    featureNS: objOptions["featureNS"] ? objOptions["featureNS"] : undefined,
+                    featurePrefix: objOptions["featurePrefix"] ? objOptions["featurePrefix"] : undefined,
+                    geometryName: objOptions["geometryName"] ? objOptions["geometryName"] : undefined
+                });
+                
+                {# STYLEMAP #}
+                {% with stylemapOption=widget|args:"stylemap"|call:"getOption" %}
+                {% if stylemapOption %}
+                    objOptions["styleMap"] = new OpenLayers.StyleMap({});
+                    
+                    {# STYLES #}
+                    
+                {% endif %}
+                {%  endwith %}
+                
+                objLayer = new OpenLayers.Layer.Vector(
+                    "{{resource.display_name|default:resource.name}}",
+                    objOptions
+                );
+                map.addLayer(objLayer);
+            {% endif %}
+        {# GYMO #}
+        {% elif widget.datastore.service.type.name.lower == "gymo" %}
+            {% if widget.datastore.service.name != "" %}
+                {% with strGYMOProvider=appSession|args:widget.datastore.service|args:"provider"|call:"getObjectOption" %}
+                {% with strGYMOSource=appSession|args:widget.datastore.service|args:"source"|call:"getObjectOption" %}
+                {# options #}
+                {{ widget.getOpenLayersOptions }}
+                objOptions.resources = ['{{resource.id}}'];
+                {% if strGYMOProvider == "google" %}
+                    {% if widget.datastore.layers == "satellite" %}
+                    objOptions['type'] = google.maps.MapTypeId.SATELLITE;
+                    {% elif widget.datastore.layers == "hybrid" %}
+                    objOptions['type'] = google.maps.MapTypeId.HYBRID;
+                    {% elif widget.datastore.layers == "terrain" %}
+                    objOptions['type'] = google.maps.MapTypeId.TERRAIN;
+                    {% elif widget.datastore.layers == "physical" %}
+                    objOptions['type'] = google.maps.MapTypeId.TERRAIN;
+                    {% endif %}
+                    objLayer = new OpenLayers.Layer.Google(
+                        "{{resource.display_name|default:resource.name}}",
+                        objOptions
+                    );
+                {% elif strGYMOProvider == "openstreetmap" %}
+                    strURL = "{{ strGYMOSource }}";
+                    objLayer = new OpenLayers.Layer.OSM(
+                        "{{resource.display_name|default:resource.name}}",
+                        strURL,
+                        objOptions
+                    );
+                {% endif %}
+                {% endwith %}
+                {% endwith %}
+                map.addLayer(objLayer);
+            {% endif %}
+        {# TMS #}
+        {% elif widget.datastore.service.type.name.lower == "tms" %}
+            {% if widget.datastore.service.name != "" %}
+                {# options #}
+                {{ widget.getOpenLayersOptions }}
+                Ext.applyIf(objOptions, {
+                    resources: ['{{resource.id}}'],
+                    layername: "{{widget.datastore.layers}}",
+                    type: "png" {# default value if not set #}
+                });
+                {# url #}
+                {{ widget.printLayerURL }}
+                
+                if (objArrayURLAliases instanceof Array) {
+                    for(var key in objArrayURLAliases) {
+                        objArrayURLAliases[key] =  OpenLayers.Util.urlAppend(objArrayURLAliases[key], "TMSRequest=");
+                    }
+                } else {
+                    objArrayURLAliases = OpenLayers.Util.urlAppend(objArrayURLAliases, "TMSRequest=");
+                }
+                objLayer = new OpenLayers.Layer.TMS(
+                    "{{resource.display_name|default:resource.name}}",
+                    objArrayURLAliases,
+                    objOptions
+                );
+                map.addLayer(objLayer);
+            {% endif %}
+        {% endif %}
+    {% endif %}
+    {% endwith %}
+   {% endwith %}
+</script>

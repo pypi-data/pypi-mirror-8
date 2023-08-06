@@ -1,0 +1,51 @@
+{% load staticfiles %}
+{% load i18n %}
+{% get_current_language as locale %}
+    <script type="text/javascript">
+        var strSessionId = "{{request.COOKIES.sessionid}}";
+    </script>
+       
+    <script src="{% static "geoprisma/lib/extjs/adapter/ext/ext-base.js" %}" type="text/javascript"></script>
+    <script src="{% static "geoprisma/lib/extjs/ext-all.js" %}" type="text/javascript"></script>
+    <script src="{% static "geoprisma/lib/extjs4/ext-all-sandbox.js" %}" type="text/javascript"></script>
+    <script src="{% static "geoprisma/lib/extjs4/ext-ux-all-sandbox.js" %}" type="text/javascript"></script>
+    <script src="{% static "geoprisma/lib/extjs4/ext-lang-sandbox-fr_CA.js" %}" type="text/javascript"></script>
+    <script src="{% static "geoprisma/lib/ext_ux/form/Ext.form.ColorField.js" %}" type="text/javascript"></script>
+    <script src="{% static "geoprisma/lib/ext4_ux/grid/Ext.ux.grid.column.ActionButtonColumn.js" %}" type="text/javascript"></script>
+    <!-- <script src="{% static "geoprisma/lib/mapfish/release/mapfish/MapFish.js" %}" type="text/javascript"></script> -->
+    <script src="{% static "geoprisma/lib/OpenLayers/OpenLayers.js" %}" type="text/javascript"></script>
+    <script src="{% static "geoprisma/lib/GeoExt/script/GeoExt.js" %}" type="text/javascript"></script>
+    <script src="{% static "geoprisma/lib/mapfish/MapFish.js" %}" type="text/javascript"></script>
+    
+    {% if locale == "fr" %}
+    <script type="text/javascript" src="{% static "geoprisma/lib/extjs/src/locale/ext-lang-fr_CA.js" %}" /></script>
+    <script type="text/javascript" src="{% static "geoprisma/lib/ext_ux/locale/lang-fr_CA.js" %}" /></script>
+    <script type="text/javascript">
+        OpenLayers.Lang.setCode("fr");
+    </script> 
+    {% endif %}
+    
+    <script src="{% static "geoprisma/lib/mapfish/mod/openlayers/lib/OpenLayers/Layer/HTTPRequest.js" %}" type="text/javascript"></script>
+    
+    <script type="text/javascript">
+        // Because of a bug in Firefox 2 we need to specify the externals/mapfish-trunk base path.
+        // See https://bugzilla.mozilla.org/show_bug.cgi?id=351282
+        var gMfLocation = "{% static "geoprisma/lib/mapfish/release/mapfish/" %}";
+        {# OpenLayers doesn't set the 'alphaHackNeeded' correctly in IE6, #}
+        {# this causes the 'transparent' WMS layers to use PNG instead of #}
+        {# GIF, so we force the according property ourself to fix that. #}
+        if (Ext.isIE6) {
+          OpenLayers.Util.alphaHackNeeded = true;
+        }
+    </script>
+    
+    {% include "geoprisma/inc/authorized_resources.html" %}
+    <script src="{% static "geoprisma/lib/proj4js-compressed.js" %}"></script>
+    <script src="{% static "geoprisma/lib/defs/EPSG32187.js" %}"></script>
+    <script src="{% static "geoprisma/lib/defs/EPSG32188.js" %}"></script>
+    <script src="{% static "geoprisma/lib/defs/EPSG2959.js" %}"></script>
+    <script src="{% static "geoprisma/lib/defs/EPSG2960.js" %}"></script>
+    
+    <script type="text/javascript" src="{% static "geoprisma/lib/sgilib/help_tooltip_icon.js" %}" ></script>
+    <script type="text/javascript" src="{% static "geoprisma/lib/ext_ux/util/Ext.ux.util.js" %}"  ></script>
+    <script type="text/javascript" src="{% static "geoprisma/lib/ext_ux/grid/Ext.ux.grid.Search.js" %}" ></script>

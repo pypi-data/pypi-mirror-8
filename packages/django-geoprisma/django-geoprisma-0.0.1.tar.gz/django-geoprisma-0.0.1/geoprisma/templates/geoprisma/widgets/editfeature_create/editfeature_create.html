@@ -1,0 +1,106 @@
+{% load i18n %}
+{% load object_extras %}
+<script type="text/javascript">
+    oMap = objGPWidget{{mapName}};
+
+    {# widget OPTIONS object used to create the widget class #}
+    var objWidgetOptions;
+
+    {% with resource=widget.resource %}
+      {# Use the DataStoreName to validate that the resource has a valid service type #}
+      {% with resourceDatastore=resource|args:"featureserver"|call:"getDatastoreByType" %}
+      
+      {# If a resourceDatastore was returned, that means the resource has a valid service type. #}
+      {% if resourceDatastore %}
+        {# get resource 'iconClsCreate' option, if any #}
+       
+        {%with iconClsCreateOption=resource|args:"iconClsCreate"|call:"getOption"  %}    
+          
+          {# get resource 'tooltipTextCreate' option, i18n supported #}
+         
+          {%with tooltipTextCreateOption=resource|args:"tooltipTextCreate"|call:"getOption" %}
+              
+            {%with widgetTextOption=widget|args:"text"|call:"getOption"  %}       
+    
+              {% with datastoreTextOption=appSession|args:resourceDatastore|args:"text"|call:"getObjectOption" %}
+      
+              objWidgetOptions = {{ widget.printOptions }};
+      
+              if(objWidgetOptions['featurepanel']) {
+                  delete objWidgetOptions['featurepanel'];
+              }
+      
+              objWidgetOptions['resource'] = '{{resource.id}}';
+              objWidgetOptions['id'] = '{{widget.id}}{{resource.id}}';
+      
+              {# resourceOptions #}
+              objWidgetOptions['resourceOptions'] = {{ resource.printOptions }};
+      
+              {# 'selectorMethod' resource option set as Function  #}
+              
+              {% with selectorMethodOption=resource|args:"selectorMethod"|call:"getOption"  %}
+              {% if selectorMethodOption %}
+                objWidgetOptions['resourceOptions'].selectorMethod = {{selectorMethodOption}};
+              {% endif %}
+              {%endwith%}
+      
+              {# tooltip text of the button #}
+              var strTooltipText =
+              {# if resource had a tooltipTextCreate option, then use it #}
+              {% if tooltipTextCreateOption %}
+                  '{% trans tooltipTextCreateOption %}';
+                {% else %}
+                  {# check the 'text' property in : 1) the widget options/text 2) the datastore params/text if none was provided, use the resource name instead #}
+                    {% if widgetTextOption  %}
+                      '{{widgetTextOption}}'
+                    {% else %}
+                        {% if datastoreTextOption %}
+                          '{{datastoreTextOption}}'
+                        {% else %}
+                          '{{resource.id}}'
+                      {% endif %}
+                  {% endif %};
+                  
+                  {% with geometrytypeOption=widget|args:"geometrytype"|call:"getOption"  %}
+                    
+                  strTooltipText += " - " + "{% trans geometrytypeOption %}";
+                  strTooltipText = "{% trans "Create new features" %}" + ' - ' + strTooltipText;
+                  {%endwith%}
+              {% endif %}
+              {% endwith %}
+            {%endwith%}
+          {%endwith%}
+          
+          {# Widget object creation  #}
+          var objGPWidget{{widget.id}}{{resource.id}} = new OpenLayers.Control.EditFeature_Create(objWidgetOptions);
+  
+          {# GeoExt.Action object for the geoexttoolbar #}
+          action = new GeoExt.Action({
+            id: '{{widget.id}}{{resource.id}}',
+            {% if iconClsCreateOption %}
+            iconCls: '{{iconClsCreateOption}}',
+            {% else %}
+            iconCls: 'editfeature_create',
+            {% endif %}
+            control: objGPWidget{{widget.id}}{{resource.id}},
+            map: oMap,
+            // button options
+            toggleGroup: oMap.id,
+            allowDepress: false,
+            tooltip: strTooltipText,
+            // check item options
+            group: oMap.id
+          });
+  
+          {# Push action in goEditFeatureActions['resource'] array  #}
+          if (!goEditFeatureActions['{{resource.id}}'])
+          {
+              goEditFeatureActions['{{resource.id}}'] = [];
+          }
+          goEditFeatureActions['{{resource.id}}'].push(action);
+
+        {%endwith%}
+      {% endif %}
+      {% endwith %}
+    {% endwith %}
+  </script>

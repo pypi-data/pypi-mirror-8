@@ -1,0 +1,49 @@
+{% load object_extras %}
+<script type="text/javascript">
+    {# Config options #}
+    var objWidgetOptions = {};
+    objWidgetOptions = {{ widget.printOptions }};
+    
+    
+    {% with  formmethodOption=widget|args:"formmethod"|call:"getOption" %}
+    {% if formmethodOption %}
+        objWidgetOptions.formmethod = {{formmethodOption}};
+    {% endif %}
+    {% endwith %}
+    
+    var objGPWidget{{widget.id}}GeoExtToolbarOptions;
+
+    if(objWidgetOptions['formurl'] != null)
+      objWidgetOptions['formurl'] = baseUrl + objWidgetOptions['formurl'];
+
+    var objGPWidget{{widget.id}} =
+    new OpenLayers.Control.HTWindow({
+        formurl:objWidgetOptions['formurl'],
+        formmethod:objWidgetOptions['formmethod'],
+        id:objWidgetOptions['id'],
+        text:unescape('{{ widget|args:"text"|call:"getOption"|default:"" }}'),
+        windowW:objWidgetOptions['width'],
+        windowH:objWidgetOptions['height'],
+        windowM:objWidgetOptions['modal'],
+        windowC:objWidgetOptions['collapsible'],
+        windowClosable:objWidgetOptions['closable'],
+        windowBorder:objWidgetOptions['border'],
+        menuIcon:objWidgetOptions['iconcls'],
+        windowIcon:objWidgetOptions['windowIconcls'],
+        windowIconVisible:objWidgetOptions['windowIcon'],
+        windowPlain:objWidgetOptions['plain'],
+        windowResizable:objWidgetOptions['resizable'],
+        windowAutoScroll:objWidgetOptions['autoScroll'],
+        windowConstrain:objWidgetOptions['constrain'],
+        windowLayout:objWidgetOptions['layout']
+    });
+    objGPWidget{{widget.id}}GeoExtToolbarOptions = new GeoExt.Action({
+    iconCls: ('{{ widget|args:"iconcls"|call:"getOption"  }}'=='')?'htwindow': '{{ widget|args:"iconcls"|call:"getOption" }}',
+    control: objGPWidget{{widget.id}},
+    {% with textOption=widget|args:"text"|call:"getOption"  %}
+    {% if textOption %}text: unescape('{{textOption}}'),{% endif %}
+    {% endwith %}
+    tooltip: unescape('{{ widget|args:"tooltip"|call:"getOption"|default:"" }}')
+    });
+
+</script>

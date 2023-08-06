@@ -1,0 +1,33 @@
+{% load i18n %}
+{% load object_extras %}
+<script type="text/javascript">
+    objGPWidget{{widget.type.name.lower}}.featureConfigs["{{widget.resource.id}}"] = {
+    "type": "{{widget.type.name.lower}}",
+    "name": "{{widget.resource.name}}",
+    "options":{{widget.printOptions}}
+    };
+
+    {%with methodOption=widget|args:"method"|call:"getOption"  %}   
+        {% if methodOption %}
+            objGPWidget{{widget.type.name.lower}}.featureConfigs["{{widget.resource.id}}"].options.method = {{methodOption}};
+        {% endif %}
+    {%endwith%}
+
+    objGPWidget{{widget.type.name.lower}}.featureConfigs["{{widget.resource.id}}"]['fieldTitlesByName'] = {};
+
+    {# look for resource field titles #}
+    {% for field in widget.fields %}
+    {% if field.title != "" %}
+    objGPWidget{{widget.type.name.lower}}.featureConfigs["{{widget.resource.id}}"]['fieldTitlesByName']['{{field.name}}'] = "{% trans field.title %}";
+    {% endif %}
+    {% endfor %}
+
+    {# titleColumn #}
+    {# resource 'selectorTitle' option OR its 'title' OR its 'name' #}
+    objGPWidget{{widget.type.name.lower}}.featureConfigs["{{widget.resource.id}}"]['titleColumn'] = 
+        {%with selectorTitleOption=widget.resource|args:"selectorTitle"|call:"getOption"  %}
+            {% if selectorTitleOption %}"{% trans selectorTitleOption %}";
+            {% else %}"{{ widget.resource.display_name|default:widget.resource.name }}";
+            {% endif %}
+       {%endwith%}
+</script>

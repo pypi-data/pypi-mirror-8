@@ -1,0 +1,23 @@
+{% load object_extras %}
+<script type="text/javascript">
+    // Find the widget service and resource	
+    var service, resource;
+   
+    {% with widgetResource|args:"livemarker"|call:"getResourceWithDSWidget" %}
+    service = "{{widgetResource.datastore.service.id}}";
+    resource = "{{widgetResource.id}}";
+    {% endwith %}
+    
+ var objGPWidge{{widget.id}} = new OpenLayers.Control.LiveMarker(
+	    {
+	      map: oMap,
+	      icon: "{{widget|args:"icon"|call:"getOption"}}",
+	      selectedicon: "{{widget|args:"selectedicon"|call:"getOption"}}",
+	      rate:{{widget|args:"rate"|call:"getOption"}},
+	      service: service,
+	      resource: resource,
+	      template: "{{widget|args:"template"|call:"getOption"}}"
+	    });
+    objGPWidget{{widget.id}}.init();
+</script>
+ 

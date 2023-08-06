@@ -1,0 +1,17 @@
+{% load widget_extras %}
+{% load i18n %}
+<script type="text/javascript">
+
+    Ext.namespace("GeoExt.data")
+      GeoExt.data.PrintProvider && Ext.apply(GeoExt.data.PrintProvider.prototype, {
+          unsuportedText: "{% trans "Some layers currently visible on the map are not supported by the print service" %}",
+          excludedText: "{% trans "They would be excluded from the document." %}",
+          proceedAnywayText: "{% trans "Do you wish to proceed anyway ?" %}",
+          turnLayersOffText: "{% trans "Please, turn them off first." %}",
+          tileCacheWMSUnsuportedText: "{% trans "TileCache using WMS requests" %}",
+          activeDrawFeatureControlText: "{% trans "There's currently an active drawing control.  Please, turn it off first." %}"
+      });
+
+      var objGPWidget{{widget.type}}GeoExtToolbarOptions;
+      var objGPWidget{{widget.type}}Container = [];
+</script>

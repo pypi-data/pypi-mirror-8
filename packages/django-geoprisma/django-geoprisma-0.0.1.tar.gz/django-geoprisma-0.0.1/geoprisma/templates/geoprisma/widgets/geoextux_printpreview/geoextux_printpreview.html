@@ -1,0 +1,50 @@
+{% load widget_extras %}
+{% load i18n %}
+<script type="text/javascript">
+   oMap = objGPWidget{{mapName}};
+   var objGPWidget{{widget.id}}GeoExtToolbarOptions;
+   <xsl:variable name="mapfishPrintService">
+       <xsl:value-of select="./options/servicename" />
+    </xsl:variable>
+
+    var printCapabilities = <xsl:value-of select="php:functionString('geoextux_printpreview::getPrintCapabilitiesWithProxyURL',$mapfishPrintService)"></xsl:value-of>;
+
+    if (printCapabilities.scales.scale) {
+        var objScale = printCapabilities.scales.scale;
+        printCapabilities.scales = [];
+        printCapabilities.scales.push(objScale);
+    }
+    if (printCapabilities.dpis.dpi) {
+        var objDpi = printCapabilities.dpis.dpi;
+        printCapabilities.dpis = [];
+        printCapabilities.dpis.push(objDpi);
+    }
+    if (printCapabilities.layouts.layout) {
+        var objLayout = printCapabilities.layouts.layout;
+        printCapabilities.layouts = [];
+        printCapabilities.layouts.push(objLayout);
+    }
+
+    var printProvider = new GeoExt.data.PrintProvider({
+        method: "POST",
+        capabilities: printCapabilities,
+        customParams: {
+            mapTitle: "Printing Demo"
+        }
+    });
+    
+    {% assignWidgetByType "mappanel" widgets as mappanelWidget %}
+    {% if widget.type == "mappanel" %}
+        var mapPanel = objGPWidgetMapPanel{{mapName}};
+    {% else %}
+        var mapPanel; 
+    {% endif %}
+    
+    var objGPWidget{{widget.id}} = new GeoExt.ux.PrintPreviewAction({
+            "mapPanel": mapPanel,
+            "printCapabilities": printCapabilities
+    });
+
+    objGPWidget{{widget.id}}GeoExtToolbarOptions =
+        objGPWidget{{widget.id}};
+</script>

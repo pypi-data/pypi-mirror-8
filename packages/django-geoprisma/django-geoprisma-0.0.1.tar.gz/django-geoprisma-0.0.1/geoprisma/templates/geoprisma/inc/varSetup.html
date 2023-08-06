@@ -1,0 +1,19 @@
+{% load i18n %}
+{% get_current_language as locale %}
+{% load staticfiles %}
+<script>
+    var geoc_ws = "{{wsName}}";
+    var user_lang = "{{locale}}";
+    Ext.BLANK_IMAGE_URL = '{% static "geoprisma/images/sample/s.gif" %}';
+    Ext.SSL_SECURE_URL = '{% static "geoprisma/images/sample/s.gif" %}';
+    OpenLayers.IMAGE_RELOAD_ATTEMPTS = 6;
+    OpenLayers.Util.onImageLoadErrorColor = "transparent";
+    GeoExt.WMSLegend.prototype.baseParams = {"FORMAT": "png"};
+  
+    // MapFish recenter i18n patch
+    if (user_lang == "fr") {
+      OpenLayers.Util.extend(OpenLayers.Lang.en, {'mf.recenter.emptyText':'Vide'});
+    } else {
+      OpenLayers.Util.extend(OpenLayers.Lang.en, {'mf.recenter.emptyText':'Empty'});
+    }
+</script>

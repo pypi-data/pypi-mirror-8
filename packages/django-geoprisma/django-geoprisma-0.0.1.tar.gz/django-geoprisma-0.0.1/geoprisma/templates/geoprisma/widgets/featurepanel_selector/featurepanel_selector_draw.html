@@ -1,0 +1,14 @@
+{% with widgetType="featurepanel_selector" %}
+if (window.objGPWidget{{widgetType}} != undefined)
+{
+    if({{container}}['ctype']){
+        {{container}}.add(
+            objGPWidget{{widgetType}}
+        );
+    } else {
+        {{container}}.items.push(
+            objGPWidget{{widgetType}}
+        )
+    }
+}
+{% endwith %}

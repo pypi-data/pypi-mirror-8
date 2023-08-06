@@ -1,0 +1,21 @@
+{% load object_extras %}
+<script type="text/javacript">
+   objGPWidget{{mapName}}.events.on({    
+        "printallwidgetexecutions": function(event) {
+              var motherLayers, childLayers;
+     {% for widgetResource in widget.resources %}
+              motherLayers = this.getLayersByResource('{{widgetResource.id}}');
+              
+               if (motherLayers && motherLayers.length) {
+                   childLayers = this.getLayersByResource('{{ widgetResource|args:"toggleResource"|call:"getOption" }}');
+                   childLayers && Ext.each(motherLayers, function(motherLayer) {
+                       motherLayer.events.on({
+                           "visibilitychanged" : objGPWidgetToggle_onLayerVisibilityChanged,
+                           "scope": {"layers": childLayers}
+                       });
+                   });
+               }
+        }
+     {% endfor %}
+     });
+</script>

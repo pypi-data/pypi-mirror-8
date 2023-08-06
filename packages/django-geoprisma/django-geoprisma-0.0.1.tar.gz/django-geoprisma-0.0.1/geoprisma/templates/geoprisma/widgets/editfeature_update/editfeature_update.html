@@ -1,0 +1,95 @@
+{% load i18n %}
+{% load object_extras %}
+<script type="text/javascript">
+    oMap = objGPWidget{{mapName}};
+
+    {# widget OPTIONS object used to create the widget class #}
+    var objWidgetOptions;
+
+    {% for  resource in widget.resources %}
+    {# Use the DataStoreName to validate that the resource has a valid service type #}
+    {% with resourceDatastore=resource|args:"featureserver"|call:"getDatastoreByType" %} 
+    
+    {% with widgetTextOption=widget|args:"text"|call:"getOption"  %}
+   
+          {# If a DataStoreName was returned, that means the resource has a valid service type. #}
+          {% if resourceDatastore %}
+            {% with datastoreTextOption=appSession|args:resourceDatastore|args:"text"|call:"getObjectOption" %}
+            {# get resource 'iconClsUpdate' option, if any #}
+            {# get resource 'tooltipTextUpdate' option, i18n supported #}
+            {% with iconClsUpdateOption=resource|args:"iconClsUpdate"|call:"getOption"  tooltipTextUpdateOption=resource|args:"tooltipTextUpdate"|call:"getOption" %}
+    
+            objWidgetOptions = {{widget.printOptions}};
+    
+            if(objWidgetOptions['featurepanel']) {
+                delete objWidgetOptions['featurepanel'];
+            }
+    
+            objWidgetOptions['resource'] = '{{resource.id}}';
+            objWidgetOptions['id'] = '{{widget.id}}{{resource.id}}';
+    
+            {# resourceOptions #}
+            objWidgetOptions['resourceOptions'] = {{ resource.printOptions }};
+    
+            {# 'selectorMethod' resource option set as Function  #}
+            
+            {% with selectorMethodOption=resource|args:"selectorMethod"|call:"getOption" %}
+            {% if selectorMethodOption %}
+              objWidgetOptions['resourceOptions'].selectorMethod = {{selectorMethodOption}};
+            {% endif %}
+            {%endwith%}
+    
+            {# tooltip text of the button #}
+            var strTooltipText =
+            {# if resource had a tooltipTextUpdate option, then use it #}
+            {% if tooltipTextUpdateOption %}
+                "{% trans tooltipTextUpdateOption %}";
+            {% else %}
+            {# check the 'text' property in : 1) the widget options/text 2) the datastore params/text if none was provided, use the resource name instead #}
+                {% if widgetTextOption %}
+                    '{{widgetTextOption}}'
+                {% else %}
+                    {% if datastoreTextOption %}
+                        "{{datastoreTextOption}}"
+                    {% else %}
+                        '{{resource.id}}'
+                    {% endif %}
+                {% endif %}
+                strTooltipText = '{% trans "Modify features" %}' + ' - ' + strTooltipText;
+            {% endif %}
+          
+          
+        {# Widget object creation  #}
+        var objGPWidget{{widget.id}}{{resource.id}} = new OpenLayers.Control.EditFeature_Update(objWidgetOptions);
+
+        {# GeoExt.Action object for the geoexttoolbar #}
+        action = new GeoExt.Action({
+          id: '{{widget.id}}{{resource.id}}',
+          {% if iconClsUpdateOption %}
+          iconCls: '{{iconClsUpdateOption}}',
+          {% else %}
+          iconCls: 'editfeature_update',
+          {% endif %}
+          control: objGPWidget{{widget.id}}{{resource.id}},
+          map: oMap,
+          // button options
+          toggleGroup: oMap.id,
+          allowDepress: false,
+          tooltip: strTooltipText,
+          // check item options
+          group: oMap.id
+        });
+
+        {# Push action in goEditFeatureActions['resource'] array  #}
+        if (!goEditFeatureActions['{{resource.id}}'])
+        {
+            goEditFeatureActions['{{resource.id}}'] = [];
+        }
+        goEditFeatureActions['{{resource.id}}'].push(action);
+        {% endwith %}
+        {% endwith %}
+      {% endif %}
+    {%endwith%}
+    {%endwith%}
+    {% endfor %}
+  </script>

@@ -1,0 +1,308 @@
+{% load widget_extras %}
+{% load i18n %}
+{% load object_extras %}
+<script type="text/javascript">
+    oMap = objGPWidget{{mapName}};
+    var objGPWidget{{widget.id}}GeoExtToolbarOptions;
+    
+    var printCapabilities = <xsl:value-of select="php:functionString('geoextprintform::getPrintCapabilitiesWithProxyURL',$mapfishPrintService)"></xsl:value-of>;
+    
+    if (printCapabilities.scales.scale) {
+        var objScale = printCapabilities.scales.scale;
+        printCapabilities.scales = [];
+        printCapabilities.scales.push(objScale);
+    }
+    if (printCapabilities.dpis.dpi) {
+        var objDpi = printCapabilities.dpis.dpi;
+        printCapabilities.dpis = [];
+        printCapabilities.dpis.push(objDpi);
+    }
+    if (printCapabilities.layouts.layout) {
+        var objLayout = printCapabilities.layouts.layout;
+        printCapabilities.layouts = [];
+        printCapabilities.layouts.push(objLayout);
+    }
+    
+    
+    {% with  maptitleOption=widget|args:"noMapTitleField"|call:"getOption" %}       
+        var printProvider = new GeoExt.data.PrintProvider({
+            method: "POST",
+            capabilities: printCapabilities,
+            customParams: {
+                {% if maptitleOption.value == true %}
+                    mapTitle: "Printing Demo"
+                {% endif %}
+            }
+        });
+    {% endwith %}
+
+    
+    {% with  resolutionOption=widget|args:"defaultResolution"|call:"getOption" %}
+        {% if resolutionOption != "" %}
+              var index = printProvider.dpis.find('value', '{{resolutionOption.value}}');
+              if (index != -1) {
+                  printProvider.setDpi(printProvider.dpis.getAt(index));
+              }
+        {% endif %}
+    {% endwith %}
+
+    
+    {% with  LayoutOption=widget|args:"defaultLayout"|call:"getOption" %}
+        {% if LayoutOption != "" %}
+              var index = printProvider.layouts.find('name', '{{LayoutOption.value}}');
+              if (index != -1) {
+                  printProvider.setLayout(printProvider.layouts.getAt(index));
+              }
+        {% endif %}
+    {% endwith %}
+    
+    var printPage = new GeoExt.data.PrintPage({
+            printProvider: printProvider
+        });
+    var printPage{{widget.id}} = printPage;
+    
+    var printPageLayer = new OpenLayers.Layer.Vector(
+            "Print extent", {displayInLayerSwitcher: false}
+        );
+    printPageLayer.addFeatures(printPage.feature);
+    oMap.addLayer(printPageLayer);
+    var printPageLayer{{widget.id}} = printPageLayer;
+    
+    oMap.events.on({
+        "moveend": function(){
+            printPage{{widget.id}}.fit(this, {mode: "screen"});
+        },
+        scope: oMap
+    });
+    
+    oMap.events.on({
+        "printallwidgetexecutions": function(event) {
+            this.map.setLayerIndex(this.layer, this.map.layers.length)
+        }, scope: {
+            layer: printPageLayer,
+            map: oMap
+        }
+    });
+
+    var formPanelItems = [];
+
+    {% if maptitleOption.value == true %}
+        formPanelItems.push({
+            xtype: "textfield",
+            name: "mapTitle",
+    
+            {% with  defaultMapTitleOption=widget|args:"defaultMapTitle"|call:"getOption" %}
+                
+            {% if defaultMapTitleOption != "" %}
+                value: '{{defaultMapTitleOption.value}}',
+            {% else %}
+                value: "",
+            {% endif %}
+            {% endwith %}
+            
+            
+            {% with  mapTitleFieldLabelOption=widget|args:"mapTitleFieldLabel"|call:"getOption" %}
+            
+            var mapTitleFieldLabel = {% printWidgetOptions mapTitleFieldLabelOption %};
+            
+            {% if mapTitleFieldLabel != "" %}
+                var mapTitleFieldLabel = {% printWidgetOptions mapTitleFieldLabelOption %};
+            {% else %}    
+               var mapTitleFieldLabel = "{% trans "Title" %}";
+            {% endif %}
+            {% endwith %}
+                fieldLabel: mapTitleFieldLabel,
+            
+            {% with  mapTitleMaxLengthOption=widget|args:"mapTitleMaxLength"|call:"getOption" %}
+            
+            {% if mapTitleMaxLengthOption != "" %}
+                maxLength: {{mapTitleMaxLengthOption.value}},
+                autoCreate: {tag: 'input', type: 'text', size: '20', autocomplete: 'off', maxlength: '{{mapTitleMaxLengthOption.value}}'},
+            {% endif %}
+            {% endwith %}
+                plugins: new GeoExt.plugins.PrintProviderField({
+                    printProvider: printProvider
+                })
+            });
+    {% endif %}
+    
+    
+    {% with  noCommentOption=widget|args:"noCommentField"|call:"getOption" %}
+    {% if noCommentOption.value != true %}
+        formPanelItems.push({
+            xtype: "textarea",
+            name: "comment",
+                
+            
+            {% with  CommentOption=widget|args:"defaultComment"|call:"getOption" %}
+            {% if CommentOption != "" %}
+                value: '{{CommentOption.value}}',
+            {% else %}
+                value: "",
+            {% endif %}
+            {% endwith %}
+            fieldLabel: "{% trans "Comment" %}",
+            plugins: new GeoExt.plugins.PrintPageField({
+                printPage: printPage
+            })
+        });
+    {% endif %}
+    {% endwith %}
+    
+    
+    {% with  noLayoutOption=widget|args:"noLayoutField"|call:"getOption" %}
+    
+    {% if noLayoutOption.value != true %}
+        formPanelItems.push({
+                xtype: "combo",
+                store: printProvider.layouts,
+                displayField: "name",
+                fieldLabel: "{% trans "Layout" %}",
+                typeAhead: true,
+                mode: "local",
+                triggerAction: "all",
+                plugins: new GeoExt.plugins.PrintProviderField({
+                    printProvider: printProvider
+            })
+        });
+    {% endif %}
+    {% endwith %}
+    
+    
+    {% with  noResolutionOption=widget|args:"noResolutionField"|call:"getOption" %}
+    
+    {% if noResolutionOption.value != true %}
+        formPanelItems.push({
+                xtype: "combo",
+                store: printProvider.dpis,
+                displayField: "name",
+                fieldLabel: "{% trans "Resolution" %}",
+                tpl: '<tpl for="."><div class="x-combo-list-item">{name} dpi</div></tpl>',
+                typeAhead: true,
+                mode: "local",
+                triggerAction: "all",
+                plugins: new GeoExt.plugins.PrintProviderField({
+                    printProvider: printProvider
+                }),
+                // the plugin will work even if we modify a combo value
+                setValue: function(v) {
+                    v = parseInt(v) + " dpi";
+                    Ext.form.ComboBox.prototype.setValue.apply(this, arguments);
+                }
+            });
+    {% endif %}
+    {% endwith %}
+    
+    
+    {% with  noScaleOption=widget|args:"noScaleField"|call:"getOption" %}
+        
+    {% if noScaleOption.value != true %}
+       formPanelItems.push({
+                xtype: "combo",
+                store: printProvider.scales,
+                displayField: "name",
+                fieldLabel: "{% trans "Scale" %}",
+                typeAhead: true,
+                mode: "local",
+                triggerAction: "all",
+                plugins: new GeoExt.plugins.PrintPageField({
+                    printPage: printPage
+            })
+        });
+       
+        formPanelItems.push(new org.GeoPrisma.form.MapScaleLabel({
+            map: objGPWidget{{mapName}},
+                printPage: printPage
+        })); 
+    {% endif %}
+    {% endwith %}
+    
+    
+    {% with  noRotationOption=widget|args:"noRotationField"|call:"getOption" %}
+        
+    {% if noRotationOption.value != true %}
+        formPanelItems.push({
+            xtype: "textfield",
+            name: "rotation",
+            fieldLabel: "{% trans "Rotation" %}",
+            plugins: new GeoExt.plugins.PrintPageField({
+                printPage: printPage
+            })
+        });
+    {% endif %}
+    {% endwith %}
+    
+    var formPanel = new Ext.Panel({
+        
+        {% with  titleOption=widget|args:"title"|call:"getOption" %}
+        {% if titleOption != "" %}
+           title: {{titleOption.value}},
+        {% else %}  
+            title: "{% trans "Print" %}",
+        {% endif %}
+        {% endwith %}
+            border: false,
+            bodyStyle: "padding:5px",
+            labelAlign: "top",
+            defaults: {anchor: "100%"},
+            items: formPanelItems,
+            layout: 'form',
+            buttons: [{
+                text: "{% trans "Create PDF" %}",
+                handler: function() {
+                    printProvider{{widget.id}}.print(GeoExt.MapPanel.guess(), printPage{{widget.id}});
+                }
+            }]
+    });
+    
+    formPanel.addListener(
+        "expand",
+        function(){
+            printPageLayer{{widget.id}}.setVisibility(true);
+        }
+    );
+    formPanel.addListener(
+        "collapse",
+        function(){
+            printPageLayer{{widget.id}}.setVisibility(false);
+        }
+    );
+    
+    printProvider.on("beforeprint", function() {
+        this.el.mask(
+            "{% trans "Generating PDF.  Please wait..." %}",
+            'x-mask-loading'
+        );
+        }, formPanel);
+    printProvider.on("print", function() {
+            this.el.unmask();
+        }, formPanel);
+    printProvider.on("printexception", function() {
+            this.el.unmask();
+        }, formPanel);
+    
+    
+    {% with  ieWindowOpenOption=widget|args:"ieWindowOpen"|call:"getOption" %}
+    
+    {% if noRotationOption.value != true %}
+        Ext.isIE &amp;&amp; printProvider.on("beforedownload", function(printProvider, url) {
+            // Make sure that InternetExplorer don't replace the content tab
+            // with the pdf
+            window.open(url);
+            return false;
+        });
+    {% endif %}     
+    {% endwith %}
+
+    printProvider.on("encodelayer", function(provider, layer, encLayer) {
+            if (layer instanceof  OpenLayers.Layer.WMS &amp;&amp;
+                layer.vendor === "mapserver"
+            ) {
+                encLayer.customParams = encLayer.customParams || {};
+                encLayer.customParams.map_resolution = provider.dpi.get("value");
+            }
+        }, printProvider);
+    
+    objGPWidget{{widget.type}}Container.push(formPanel);
+    
+</script>

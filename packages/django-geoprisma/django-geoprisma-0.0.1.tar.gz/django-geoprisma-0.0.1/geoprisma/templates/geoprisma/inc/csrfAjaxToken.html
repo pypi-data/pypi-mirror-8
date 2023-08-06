@@ -1,0 +1,15 @@
+<script>
+    try {
+      csrfToken = getCookie('csrftoken');
+
+      // Ensure the Django CSRF token is always sent
+      Ext.Ajax.on('beforerequest', function(o,r) {
+        r.headers = Ext.apply({
+          'Accept': 'application/json',
+          'X-CSRFToken': csrfToken
+        }, r.headers || {});
+      });
+    } catch (e) {
+      // console.log('CSRF protection appears to be disabled');
+    }
+</script>

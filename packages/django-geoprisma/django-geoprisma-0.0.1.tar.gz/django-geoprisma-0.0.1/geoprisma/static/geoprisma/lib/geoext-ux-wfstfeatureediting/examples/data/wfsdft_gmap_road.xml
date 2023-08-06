@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<xs:schema targetNamespace='http://localhost' xmlns:tows='http://localhost' xmlns:ogc='http://www.opengis.net/ogc' xmlns:xs='http://www.w3.org/2001/XMLSchema' xmlns='http://www.w3.org/2001/XMLSchema' xmlns:gml='http://www.opengis.net/gml' elementFormDefault='qualified' version='1.0'>
+<xs:import namespace='http://www.opengis.net/gml' schemaLocation='http://schemas.opengis.net/gml/2.1.2/feature.xsd'/>
+<xs:element name='road' type='tows:roadType' substitutionGroup='gml:_Feature' />
+<xs:complexType name='roadType'>
+ <xs:complexContent>
+  <xs:extension base='gml:AbstractFeatureType'>
+   <xs:sequence>
+    <xs:element name ='fnode_' type='double' nillable='true' minOccurs='0' maxOccurs='1'/>
+    <xs:element name ='tnode_' type='double' nillable='true' minOccurs='0' maxOccurs='1'/>
+    <xs:element name ='lpoly_' type='double' nillable='true' minOccurs='0' maxOccurs='1'/>
+    <xs:element name ='rpoly_' type='double' nillable='true' minOccurs='0' maxOccurs='1'/>
+    <xs:element name ='length' type='double' nillable='true' minOccurs='0' maxOccurs='1'/>
+    <xs:element name ='road_' type='double' nillable='true' minOccurs='0' maxOccurs='1'/>
+    <xs:element name ='road_id' type='double' nillable='true' minOccurs='0' maxOccurs='1'/>
+    <xs:element name ='f_code' type='int' nillable='true' minOccurs='0' maxOccurs='1'/>
+    <xs:element name ='name_e' type='string' nillable='true' minOccurs='0' maxOccurs='1'/>
+    <xs:element name ='name_f' type='string' nillable='true' minOccurs='0' maxOccurs='1'/>
+    <xs:element name ='the_geom' type='gml:LineStringPropertyType' nillable='true' minOccurs='0' maxOccurs='1'/>
+   </xs:sequence>
+  </xs:extension>
+ </xs:complexContent>
+</xs:complexType>
+</xs:schema>

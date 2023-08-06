@@ -1,0 +1,101 @@
+{% load i18n %}
+{% load object_extras %}   
+    {# HTWindows items added in a menu for specific workspaces only, which is added to toolbar thereafter #}
+    var newHTWindowItems = [];
+    var htwindowWidgets = {};
+    var htwindowCurrentMenuName = "";
+    {% with htwindowWidgets=appSession|args:"htwindow"|call:"getWidgetArrayByType" %}
+    {% for htwindowWidget in htwindowWidgets %}
+        {% if not appSession|args:htwindowWidget.id|call:"isInToolbar" %}
+        if(objGPWidget{{htwindowWidget.id}}GeoExtToolbarOptions) {
+        
+        {% with menuNameOption=htwindowWidget|args:"menuName"|call:"getOption" %}
+            {% if menuNameOption %}
+                htwindowCurrentMenuName = '{{menuNameOption}}'; 
+            {% else %}
+                htwindowCurrentMenuName = 'Fichier';
+            {% endif %}
+         {% endwith %}   
+        
+        {% with resourceAclNameOption=htwindowWidget|args:"resourceAclName"|call:"getOption" %}
+        
+            {% if resourceAclNameOption %}
+                resourceAclName = '{{resourceAclNameOption}}';
+                
+                {% with authorizedTypeOption=htwindowWidget|args:"authorizedType"|call:"getOption" %}
+                {% if authorizedTypeOption %}
+                authorizedType = '{{authorizedTypeOption}}';
+                {% else %}
+                authorizedType = 'read';
+                {% endif %}
+                {% endwith %} 
+                if(authorizedResources.isAuthorized(resourceAclName, authorizedType)) {
+                    if (!htwindowWidgets[htwindowCurrentMenuName]) {
+                        htwindowWidgets[htwindowCurrentMenuName] = [];
+                    }
+                    htwindowWidgets[htwindowCurrentMenuName].push(new Ext.menu.Item(objGPWidget{{htwindowWidget.id}}GeoExtToolbarOptions));
+                }
+            {% else %}
+                if (!htwindowWidgets[htwindowCurrentMenuName]) {
+                    htwindowWidgets[htwindowCurrentMenuName] = [];
+                }
+                htwindowWidgets[htwindowCurrentMenuName].push(new Ext.menu.Item(objGPWidget{{htwindowWidget.id}}GeoExtToolbarOptions));
+            {% endif %}
+            {% endwith %}
+        }
+        {% endif %}
+    {% endfor %}
+    {% endwith %}
+    {% with extwindowWidgets=appSession|args:"extwindow"|call:"getWidgetArrayByType" %}
+    {% for htwindowWidget in extwindowWidgets %}
+        {% if not appSession|args:htwindowWidget.id|call:"isInToolbar" %}
+        if(objGPWidget{{htwindowWidget.id}}GeoExtToolbarOptions) {
+        {% with  menuNameOption=htwindowWidget|args:"menuName"|call:"getOption" %}
+            {% if menuNameOption %}
+                htwindowCurrentMenuName = '{{menuNameOption}}'; 
+            {% else %}
+                htwindowCurrentMenuName = 'Fichier';
+            {% endif %}
+        {% endwith %}
+        {% with resourceAclNameOption=htwindowWidget|args:"resourceAclName"|call:"getOption" %}
+            {% if resourceAclNameOption %}
+                resourceAclName = '{{resourceAclNameOption}}';
+                {% with authorizedTypeOption=htwindowWidget|args:"authorizedType"|call:"getOption" %}
+                {% if authorizedTypeOption %}
+                authorizedType = '{{authorizedTypeOption}}';
+                {% else %}
+                   authorizedType = 'read';
+                {% endif %}
+                {% endwith %}
+                if(authorizedResources.isAuthorized(resourceAclName, authorizedType)) {
+                    if (!htwindowWidgets[htwindowCurrentMenuName]) {
+                        htwindowWidgets[htwindowCurrentMenuName] = [];
+                    }
+                    htwindowWidgets[htwindowCurrentMenuName].push(new Ext.menu.Item(objGPWidget{{htwindowWidget.id}}GeoExtToolbarOptions));
+                }
+            {% else %}
+                if (!htwindowWidgets[htwindowCurrentMenuName]) {
+                    htwindowWidgets[htwindowCurrentMenuName] = [];
+                }
+                htwindowWidgets[htwindowCurrentMenuName].push(new Ext.menu.Item(objGPWidget{{htwindowWidget.id}}GeoExtToolbarOptions));
+            {% endif %}
+        {% endwith %}
+        }
+        {% endif %}
+    {% endfor %}
+    {% endwith %}
+    {# create menu with collected htwindow widgets if at least one was found and add it to the items array #}
+    for (var key in htwindowWidgets) {
+      htwindowWidgets[key].length && newHTWindowItems.push(
+        new Ext.Button({
+            "iconCls": "geoprisma_htwindow_addons_menu_icon menu_icon_"+key.toLowerCase().replace(/[^a-zA-Z0-9]/g,'_'),
+            "text": key,
+            "menu": new Ext.menu.Menu({items: htwindowWidgets[key]})
+            //"tooltip": "Fichiers cartographiques"
+        })
+        {% if addSeparatorAfter == "true" %},"-"{% endif %}
+      );
+    }
+    
+    {# add the newHTWindowItems to the toolbar at the specified position #}
+    newHTWindowItems.length && {{toolbarItems}}.splice({{position}}, 0, newHTWindowItems);

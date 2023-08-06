@@ -1,0 +1,16 @@
+{% load widget_extras %}
+<script type="text/javascript">
+   oMap = objGPWidget{{mapName}};
+   var objGPWidget{{widget.id}}GeoExtToolbarOptions;
+   
+   var objWidgetOptions = {{ widget.printOptions }};
+   
+   objWidgetOptions['map'] = oMap;
+   
+   {#  Widget object creation  #}
+   
+   var objGPWidget{{widget.id}} =  new org.GeoPrisma.UnselectAll(objWidgetOptions);
+   
+   {# draw in toolbar  #}
+    objGPWidget{{widget.id}}GeoExtToolbarOptions =  objGPWidget{{widget.id}};
+</script>

@@ -1,0 +1,162 @@
+{% load object_extras %}
+{% load static_extras %}
+{% load staticfiles %}
+{% load i18n %}
+{% get_current_language as locale %}
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+    <meta http-equiv="x-ua-compatible" content="IE=9" />
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+    <title>Geoprisma</title>
+    
+    {# Creation de la variable javascript baseUrl pour les widgets #}
+    <script type="text/javascript">
+        var baseUrl = "{{baseUrl}}";
+    </script>
+
+    {# Print des css de base #}
+    {% include "geoprisma/inc/css_base.html" %}
+    
+    {# Print des javascripts de base #}
+    {% include "geoprisma/inc/js_base.html" %}
+
+    {# Print beforeWorkspaceSource #}
+    {% block beforeWorkspaceSource %}
+    <!--[if lt IE 9]><script language="javascript" type="text/javascript" >CSSStyleDeclaration.prototype.setProperty = function(a,b) {return this.setAttribute(a,b);}</script><![endif]-->	
+    {% endblock %}
+    
+    
+    <script src="{% static "geoprisma/lib/EditFeature.js" %}" type="text/javascript"></script>
+    
+    {# Print all widget sources #}
+    {% getJsStatics widgetTypeSet as widget_js %}
+    {% for static_path in widget_js %}
+        <script src="{% static static_path %}" type="text/javascript"></script>
+    {% endfor %}
+    
+    {% getCssStatics widgetTypeSet as widget_css %}
+    {% for static_path in widget_css %}
+        <link rel="stylesheet" type="text/css" href="{% static static_path %}" />
+    {% endfor %}
+    
+    {% for widgetType in widgetTypeSet %}
+        {% with "geoprisma/widgets/"|add:widgetType|add:"/"|add:widgetType|add:"_source.html" as widgetTemplate %}
+        {% if widgetTemplate|template_exists %}    
+            {% include widgetTemplate %}
+        {% endif %}
+        {% endwith %}
+    {% endfor %}
+
+    {# Print all widget executions #}
+    {% include "geoprisma/widgets/api/api.html" %}
+    {% for widget in widgets %}
+        {% with "geoprisma/widgets/"|add:widget.type.name.lower|add:"/"|add:widget.type.name.lower|add:".html" as widgetTemplate %}
+        {% include widgetTemplate %}
+        {% endwith %}
+    {% endfor %}
+    <script type="text/javascript">
+        objGPWidget{{mapName}}.events.triggerEvent("printallwidgetexecutions", {});
+    </script>
+    
+    {# print override Css #}
+    <link rel="stylesheet" type="text/css" href="{{baseUrl}}css/geoc_icons.css" />
+    <link rel="stylesheet" type="text/css" href="{{baseUrl}}css/geoc_cursor.css" />
+    
+    {# 'printWorkspaceSource' calls #}
+    {% block workspaceSource %}
+    <script type="text/javascript">
+        if(GeoExt) {
+          if(GeoExt.ux) {
+                if(GeoExt.ux.FeatureGridResult) {
+                        GeoExt.ux.FeatureGridResult.prototype.maxZoom = 8;
+                }
+          }
+        }
+    </script>  
+    {% endblock %}
+    
+    {# View Port definition  #}
+    {% block viewport %}
+    <script type="text/javascript">
+
+	Ext.BLANK_IMAGE_URL = '{% static "geoprisma/images/sample/s.gif" %}';
+	Ext.SSL_SECURE_URL = '{% static "geoprisma/images/sample/s.gif" %}';
+	{# Get current workspace (fetched from 'ws' parameter in URL) #}
+	var geoc_ws = "{{wsName}}";
+
+	OpenLayers.Feature.Vector.style['default'] = OpenLayers.Util.applyDefaults({
+	    // put all custom properties here
+	    //fillColor: "#00FF80"
+	    strokeWidth: 5,
+	    cursor: "pointer",
+	    graphicName: "square",
+	    strokeOpacity:0.5,
+	    fillOpacity:0.2
+	}, OpenLayers.Feature.Vector.style['default']);
+
+	Ext.onReady(function() {
+	    OpenLayers.IMAGE_RELOAD_ATTEMPTS = 6;
+	    OpenLayers.Util.onImageLoadErrorColor = "transparent";
+
+	    // MapFish recenter i18n patch
+	    if ("{{locale}}" == "fr") {
+        OpenLayers.Util.extend(OpenLayers.Lang.en, {'mf.recenter.emptyText':'Vide'});
+	    } else {
+        OpenLayers.Util.extend(OpenLayers.Lang.en, {'mf.recenter.emptyText':'Empty'});
+	    }
+
+	    GeoExt.WMSLegend.prototype.baseParams = {"FORMAT": "png"};
+
+	    {# center container START #}
+	    var centerContainerOptions = {
+		border: false,
+		id: 'centerContainer',
+		region: 'center',
+		layout: "fit"
+	    };
+
+
+	    {% include "geoprisma/inc/toolbar_o_matic.html" %}
+	    if (toolbar_items) {
+		{% include "geoprisma/inc/toolbar.html" with toolbarItems="toolbar_items" position=0 addSeparatorAfter="true" %}
+		{# create toolbar only if it would have items #}
+		/* if (toolbar_items.length) { 
+		    centerContainerOptions.tbar = new Ext.Toolbar({
+			items: toolbar_items
+		    });
+		}*/
+	    }
+
+	    var oCenterContainer = new Ext.Panel(centerContainerOptions);
+	    {# center container END #}
+	    
+	    {% include "geoprisma/widgets/mappanel/mappanel_draw.html" with container="oCenterContainer" %}
+	    
+	    {% block wsSettings %}{% endblock %}
+
+	    viewport = new Ext.Viewport({
+		id: 'myViewport',
+		layout:'border',
+		items:[oCenterContainer]
+	    });
+
+	    {# various fixes, methods, etc START #}
+
+	    {# Extra map options #}
+	    {% include "geoprisma/inc/extraMapOptions.html" %}
+
+	}); // onReady end
+    </script>
+    
+    <div id="map" />
+    <div id="centerContainer" />
+    <div id="west"></div>
+    <div id="center"></div>
+    <div id="east"></div>
+    <form name="geoclogout"></form>
+    {% endblock viewport %}
+  </head>
+  <body>
+  </body>
+</html>

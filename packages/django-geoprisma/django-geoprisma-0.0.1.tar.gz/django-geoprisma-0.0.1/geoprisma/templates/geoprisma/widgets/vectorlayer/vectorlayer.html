@@ -1,0 +1,19 @@
+{% load object_extras %}
+<script type="text/javascript">
+    {# options #}
+    {{ widget.getOpenLayersOptions }}
+    {% with titleOption=widget|args:"title"|call:"getOption" %}
+    var objGPWidget{{widget.id}} =  new OpenLayers.Layer.Vector("{% if titleOption %}{{titleOption}}{% else %}{{widget.id}}{% endif %}",objOptions);
+    {% endwith %}
+    objGPWidget{{mapName}}.addLayer(objGPWidget{{widget.id}});
+    
+    {# move vector layer to top after "printallwidgetexecutions" #}
+       objGPWidget{{mapName}}.events.on({
+          "printallwidgetexecutions": function(event) {
+              this.map.setLayerIndex(this.layer, this.map.layers.length)
+          }, scope: {
+              layer: objGPWidget{{widget.id}},
+              map: objGPWidget{{mapName}}
+          }
+      });
+</script>

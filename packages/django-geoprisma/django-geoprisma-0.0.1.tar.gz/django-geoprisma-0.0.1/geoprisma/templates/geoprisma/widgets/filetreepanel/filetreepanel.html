@@ -1,0 +1,63 @@
+{% load i18n %}
+{% load object_extras %}
+<script type="text/javascript">
+    Ext.QuickTips.init();
+    Ext.form.Field.prototype.msgTarget = 'side';
+
+    var fileServiceURL = Ext.urlAppend(baseUrl + 'proxy.php', 'osmservice={{widget|args:"servicename"|call:"getOption"}}');
+    var defaultOptions = {
+        url: fileServiceURL,
+        title: '{% trans "Files" %}',
+        id: 'ftp',
+        border: false,
+        rootVisible: false,
+        rootPath: 'root',
+        topMenu: false,
+        readOnly: true,
+        enableDD: false,
+        autoScroll: true,
+        enableProgress: false,
+        openMode: 'download',
+        plugins: [new org.GeoPrisma.FileTreeCascade()]
+    };
+
+    var widgetOptions = Ext.applyIf( {{widget.printOptions}}, defaultOptions);
+
+   
+    {%with enableUploadOption=widget|args:"enableUpload"|call:"getOption"  %}  
+        {%with enableNewFolderOption=widget|args:"enableNewFolder"|call:"getOption"  %}
+        
+            {% if enableUploadOption == "true" or enableNewFolderOption == "true" %}
+              Ext.apply(widgetOptions, {
+                {# readOnly set false to let the Ext.ux.FileTreePanel create  the treeEditor. #}
+                {# The context menu on right click is then blocked by overriding the onContextMenu method. #}
+                  readOnly: false,
+                  onContextMenu: function() {
+                      return false;
+                  },
+                  tbar: new Ext.Toolbar()
+              });
+              {% if enableUploadOption == "true" %}
+              var uploadPanelOptions = {
+                  url: fileServiceURL,
+                  path: 'root'
+              };
+              widgetOptions.plugins.push(new org.GeoPrisma.FileTreeFileUpload({
+                  uploadPanelOptions: uploadPanelOptions
+              }));
+              {% endif %}
+              {% if enableNewFolderOption == "true" %}
+              widgetOptions.plugins.push(new org.GeoPrisma.FileTreeNewFolder());
+              {% endif %}
+            {% endif %}
+        {%endwith%}
+    {%endwith%}
+    {# i18n title support #}
+    {#<xsl:if test="./options/title">#}
+      {#widgetOptions.title = <xsl:for-each select="./options/title"><xsl:call-template name="getText" /></xsl:for-each>;#}
+    {#</xsl:if>#}
+
+    objGPWidget{{widget.type.name.lower}}Container.push(
+        new Ext.ux.FileTreePanel(widgetOptions)
+    );
+</script>

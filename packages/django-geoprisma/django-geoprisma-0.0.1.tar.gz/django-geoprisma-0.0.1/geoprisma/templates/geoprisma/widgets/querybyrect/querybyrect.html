@@ -1,0 +1,120 @@
+{% load widget_extras %}
+{% load i18n %}
+{% load object_extras %}
+<script type="text/javascript">
+    var aResources = [];
+    {% for resource in widget.resources %}
+        
+        {% with serviceNameOption=widget|args:"serviceName"|call:"getOption" %}
+        
+        {% with FSresourceDatastore=resource|args:"featureserver"|call:"getOption" %}
+        
+        {% with wfsresourceDatastore=resource|args:"wfs"|call:"getOption" %}
+        
+        {% if FSresourceDatastore != "" %}
+            {% with "featureserver" as pServiceType %};
+        {% else %}
+            {% with "wfs" as pServiceType %}
+        {% endif %}
+        
+        szParams = OpenLayers.Util.getParameterString({
+                'osmresource': "{{resource.name}}",
+                'osmservice': "{{serviceNameOption.value}}"
+        });
+      {% endwith %}
+      {% endwith %}
+      {% endwith %} 
+        
+        var oProtocol;
+        
+        {% with layerNameOption=widget|args:"layerName"|call:"getOption" %}
+        {% if pServiceType == "featureserver" %}
+            
+            oProtocol = new OpenLayers.Protocol.HTTP({
+                    url: "{% url "geoprisma:proxyurl" %}"+"/"+"{{layerNameOption.value}}"+"?"+szParams,
+                    params: {
+                        format: "GeoJSON",
+                        service: "WFS",
+                        request: "GetFeatures",
+                        srs: oMap.getProjection()
+                    },
+                    format: new OpenLayers.Format.GeoJSON()
+                });
+        {% endif %}
+        {% if pServiceType == "wfs" %}
+            oProtocol = new OpenLayers.Protocol.WFS({
+                url: OpenLayers.Util.urlAppend("{% url "geoprisma:proxyurl" %}", szParams),
+                     featureType: "{{layerNameOption.value}}"
+            });
+        {% endif %}
+        {% endwith %}
+        
+        {% with resourcetitle=resource|args:"title"|call:"getOption" %}
+        
+        aResources.push({
+                'resource': "{{resource.id}}",
+                'resourceTitle': {{resource.name}},
+                'protocol': oProtocol,
+                'queryable': true
+        });
+        {% endwith %}
+    {% endfor %}
+    
+    oMap = objGPWidget{{mapName}};
+
+    strTitle = "{% trans "Draw a box on the map to get information on queryable layers" %}";
+    
+    var strReset = '{{widget|args:"resetOnDeactivation"|call:"getOption" }}';
+    strReset = (strReset == '') ? 'nothing' : strReset;
+    
+    var objMarkerStyle;
+    
+    objMarkerStyle = {{ widget.printOptions }};
+    
+    objGPWidget{{widget.name}} = new OpenLayers.Control.QueryByRect({
+        drawMode: '{{drawMode}}',
+        resetOnDeactivation: strReset,
+        markerStyle: objMarkerStyle,
+        renderform: false,
+        title: strTitle,
+        resources: aResources
+    });
+    
+    {% with dropDownListOption=widget|args:"dropDownList"|call:"getOption" %}
+    
+    aoMenuItems = [];
+    for (var i=0, len=aResources.length; i&lt;len; i++){
+        oResource = aResources[i];
+
+	if (oResource.resourceTitle != ''){
+            aoMenuItems.push({'text': oResource.resourceTitle});
+        } else {
+            aoMenuItems.push({'text': oResource.resource});
+        }
+    }
+
+    objAction = new GeoExt.Action({
+        iconCls: 'querybyrect',
+        control: {{widget.name}},
+        map: oMap,
+    
+        toggleGroup: oMap.id,
+        allowDepress: false,
+        tooltip: strTitle,
+         
+        {% if dropDownListOption.value != "false" %}
+	    menu: {
+              defaultType: 'tbtext',
+	      items: aoMenuItems
+            },
+        {% endif %}
+        group: oMap.id
+    });
+    {% if dropDownListOption.value != "false" %}
+       objGPWidget{{widget.name}}GeoExtToolbarOptions = objAction;
+    {% else %}
+        objGPWidget{{widget.name}}GeoExtToolbarOptions = new Ext.Toolbar.SplitButton(objAction);
+	objGPWidget{{widget.name}}GeoExtToolbarOptions.arrowTooltip = "{% trans "List of queryable layers" %}";
+    {% endif %}
+    {% endwith %}
+</script>

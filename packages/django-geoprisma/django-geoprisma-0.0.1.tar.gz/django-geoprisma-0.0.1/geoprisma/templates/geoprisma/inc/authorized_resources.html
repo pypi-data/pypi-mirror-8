@@ -1,0 +1,15 @@
+<script type="text/javascript">
+var authorizedResources = Object();
+authorizedResources = {
+	authorizedActions: Ext.util.JSON.decode('{{authorizedActions|escapejs}}'),
+	aclNamesArray: Ext.util.JSON.decode('{{authorizedResourcesAclName|escapejs}}'),
+
+	isAuthorized: function(aclName, type)
+	{
+		var that = authorizedResources;
+		return (that.aclNamesArray[aclName] &&
+			that.authorizedActions[that.aclNamesArray[aclName]] &&
+			that.authorizedActions[that.aclNamesArray[aclName]][type])
+	}
+};
+</script>

@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html debug="true">
+  <head>
+    <link href="../../../../../../../ext/resources/css/ext-all.css"
+          rel="stylesheet" type="text/css" />
+    <link href="../../../../../../../ext/examples/shared/examples.css"
+          rel="stylesheet" type="text/css" />
+    <script src="../../../../../../../ext/adapter/ext/ext-base.js"
+            type="text/javascript" ></script>
+    <script src="../../../../../../../ext/ext-all.js"
+            type="text/javascript" ></script>
+    <script src="../../../../../../../openlayers/lib/OpenLayers.js"
+            type="text/javascript" ></script>
+    <script src="../../../../../../../geoext/lib/GeoExt.js"
+            type="text/javascript" ></script>
+    <script src="../../../../lib/OpenLayers/Control/UserFilter.js"
+            type="text/javascript" ></script>
+    <script src="../../../../lib/GeoExt.ux/WFSTFeatureEditing.js"
+            type="text/javascript" ></script>
+    <script src="http://dev.geoext.org/ux/geoext.ux/ux/FeatureEditing/lib/GeoExt.ux/FeatureEditorGrid.js"
+            type="text/javascript"></script>
+    <script type="text/javascript">
+    var DummyMainPanelContainer = Ext.extend(Ext.Panel, {});
+
+    function getNewMap() {
+        return new OpenLayers.Map("map");
+    };
+
+    function getNewWMSLayer() {
+        return new OpenLayer.Layer.WMS("mylayer");
+    };
+
+    function getNewMainPanelContainer() {
+        return new DummyMainPanelContainer({
+            width: 550,
+            height: 450,
+            title: "my main panel container",
+            layout: 'fit',
+            renderTo: "panel",
+            items: []
+        });
+    };
+
+    function getNewToolbar() {
+        return new Ext.Toolbar();
+    };
+
+    function getNewWFSVectorLayer_Road(manager) {
+        var layer, saveStragegy;
+
+        saveStrategy = new OpenLayers.Strategy.Save();
+        layer = new OpenLayers.Layer.Vector("Roads", {
+            protocol: new OpenLayers.Protocol.WFS({
+                featureType: "road",
+                featureNS: "http://localhost",
+                url: "http://dev8.mapgears.com/cgi-bin/tinyows-trunk?",
+                version: "1.0.0"
+            }),
+            strategies: [new OpenLayers.Strategy.Fixed(), saveStrategy],
+            displayInLayerSwitcher: false,
+            visibility: false
+        });
+        layer.wfstFeatureEditing = {
+            "fields": [{"name": "fnode_"}, {"name": "tnode_"},
+                {"name": "lpoly_"}, {"name": "rpoly_"}, {"name": "length"},
+                {"name": "road_"}, {"name": "road_id"}, {"name": "f_code"},
+                {"name": "name_e"}, {"name": "name_f"}, {"name": "the_geom"}],
+            "manager": manager,
+            "saveStrategy": saveStrategy,
+            "drawHandler": OpenLayers.Handler.Path
+        };
+
+        return layer;
+    };
+
+    function getNewVectorFeature_Road() {
+        return new OpenLayers.Feature.Vector(
+            new OpenLayers.Geometry.Point(0,0), {
+                "lpoly_": "1",
+                "rpoly_": "1",
+                "length": "1",
+                "road_": "1",
+                "road_id": "1",
+                "f_code": "1",
+                "name_e": "1",
+                "name_f": "1",
+                "the_geom": "1"
+            }
+        );
+    };
+
+    function test_WFSTFeatureEditingManager_constructor(t) {
+        t.plan(21);
+
+        // Redefining the original class methods for testing purpose seemed to
+        // cause several issues.  That's why we extend it to a dummy constructor
+        // which is local to the test method and manipulate it, thus not
+        // interfering with other test methods.
+        var DummyManager = Ext.extend(GeoExt.ux.WFSTFeatureEditingManager, {});
+        var manager, log = [];
+        DummyManager.prototype.createToolsFromURL = function(url) {
+            log.push(url);
+        };
+
+        // (1) testing GeoExt.ux.WFSTFeatureEditingManager constructor
+        manager = new DummyManager({
+            // Mandatory properties
+            "map": getNewMap(),
+            "toolbar": getNewToolbar(),
+            "mainPanelContainer": getNewMainPanelContainer(),
+            "url": "http://localhost/mywfsserver?",
+            // Optional properties
+            "capabilitiesParams": "capFoo",
+            "describeFeatureTypeParams": "descFoo",
+            "protocolOptions": "protoFoo",
+            "layerOptions": "layerFoo",
+            "geomProperty": "geomFoo",
+            "actionGroup": "groupFoo",
+            "useFilter": "filterFoo",
+            "ignoredAttributes": "ignoredFoo"
+        });
+        t.ok(manager instanceof GeoExt.ux.WFSTFeatureEditingManager,
+            "new  GeoExt.ux.WFSTFeatureEditingManager returns an instance");
+
+        // (4) testing GeoExt.ux.WFSTFeatureEditingManager instance public
+        //     mandatory properties
+        t.ok(manager.map instanceof OpenLayers.Map,
+            "constructor sets map correctly");
+        t.ok(manager.toolbar instanceof Ext.Toolbar,
+            "constructor sets toolbar correctly");
+        t.ok(manager.mainPanelContainer instanceof DummyMainPanelContainer,
+            "constructor sets mainPanelContainer correctly");
+        t.eq(manager.url, "http://localhost/mywfsserver?",
+            "constructor sets url correctly");
+
+        // (8) testing GeoExt.ux.WFSTFeatureEditingManager instance public
+        //     optional properties
+        t.eq(manager.capabilitiesParams, "capFoo",
+            "constructor sets capabilitiesParams correctly");
+        t.eq(manager.describeFeatureTypeParams, "descFoo",
+            "constructor sets describeFeatureTypeParams correctly");
+        t.eq(manager.protocolOptions, "protoFoo",
+            "constructor sets protocolOptions correctly");
+        t.eq(manager.layerOptions, "layerFoo",
+            "constructor sets layerOptions correctly");
+        t.eq(manager.geomProperty, "geomFoo",
+            "constructor sets geomProperty correctly");
+        t.eq(manager.actionGroup, "groupFoo",
+            "constructor sets actionGroup correctly");
+        t.eq(manager.useFilter, "filterFoo",
+            "constructor sets useFilter correctly");
+        t.eq(manager.ignoredAttributes, "ignoredFoo",
+            "constructor sets ignoredAttributes correctly");
+
+        // (6) testing private properties - objects created by initMainTools
+        //     method, called by constructor
+        t.ok(manager.drawMenuButton instanceof Ext.Button,
+            "constructor sets drawMenuButton correctly using initMainTools method");
+        t.ok(manager.editMenuButton instanceof Ext.Button,
+            "constructor sets editMenuButton correctly using initMainTools method");
+        t.eq(manager.toolbar.items.getCount(), 4, "The two buttons were added to the toolbar + 2 separators");
+        t.ok(manager.featureGridContainer instanceof Ext.TabPanel,
+            "constructor sets featureGridContainer correctly using initMainTools method");
+        t.ok(manager.featureEditorGridContainer instanceof Ext.Panel,
+            "constructor sets featureEditorGridContainer correctly using initMainTools method");
+        t.ok(manager.mainPanel instanceof Ext.Panel,
+            "constructor sets mainPanel correctly using initMainTools method");
+
+        // (2) testing the createToolsFromURL method called by constructor
+        //     (does nothing for test purpose)
+        t.eq(log.length, 1, "createToolsFromURL called once");
+        t.eq(log[0], "http://localhost/mywfsserver?",
+            "createToolsFromURL called with correct url");
+    }
+
+    function test_WFSTFeatureEditingManager_events(t) {
+        t.plan(3);
+
+        var DummyManager = Ext.extend(GeoExt.ux.WFSTFeatureEditingManager, {});
+        var manager, log, callback;
+        DummyManager.prototype.createToolsFromURL = function() {};
+
+        manager = new DummyManager({
+            "map": getNewMap(),
+            "toolbar": getNewToolbar(),
+            "mainPanelContainer": getNewMainPanelContainer(),
+            "url": "http://localhost/mywfsserver?"
+        });
+
+        var callback = function() {
+            log = true;
+        };
+
+        // (3) testing events
+        log = false;
+        manager.on("commitstart", callback);
+        manager.fireEvent("commitstart");
+        t.ok(log, "commistart event fired, callback method called");
+        manager.un("commitstart", callback);
+
+        log = false;
+        manager.on("commitsuccess", callback);
+        manager.fireEvent("commitsuccess");
+        t.ok(log, "commitsuccess event fired, callback method called");
+        manager.un("commitsuccess", callback);
+
+        log = false;
+        manager.on("commitfail", callback);
+        manager.fireEvent("commitfail");
+        t.ok(log, "commitfail event fired, callback method called");
+        manager.un("commitfail", callback);
+    }
+
+    function test_WFSTFeatureEditingManager_onWFSCapabilitiesStoreLoad(t) {
+        t.plan(5);
+
+        var DummyManager = Ext.extend(GeoExt.ux.WFSTFeatureEditingManager, {});
+        var manager, log, layer;
+
+        // (4) testing onWFSCapabilitiesStoreLoad method called and records
+        //     returned
+        DummyManager.prototype.onWFSCapabilitiesStoreLoad = function(store, records, options) {
+            t.ok(true, "onWFSCapabilitiesStoreLoad callback method called once");
+            t.eq(records.length, 3, "Three records are in the store.");
+
+            log = true;
+            Ext.each(records, function(record, index) {
+                if (!(record.getLayer() instanceof OpenLayers.Layer.Vector)) {
+                    log = false;
+                    return false;
+                }
+            });
+            t.ok(log, "All records contain an OpenLayers.Layer.Vector layer.");
+
+            log = false;
+            layer = records[0].getLayer();
+            Ext.each(layer.strategies, function(strategy, strategyIndex) {
+                if (strategy instanceof OpenLayers.Strategy.Save &&
+                    strategy.layer === layer)
+                {
+                    log = true;
+                    return false;
+                }
+            });
+            t.ok(log, "vector layers have a OpenLayers.Strategy.Save instance correctly set.");
+        };
+
+        manager = new DummyManager({
+            "map": getNewMap(),
+            "toolbar": getNewToolbar(),
+            "mainPanelContainer": getNewMainPanelContainer(),
+            "url": "../../../../examples/data/wfscap_gmap.xml"
+        });
+
+        // (1) delay call to let store 'load' callback method to be fired
+        t.delay_call(2, function() { 
+            t.ok(true, "waited for 2s"); 
+        });
+    }
+
+    function test_WFSTFeatureEditingManager_afterWFSCapabilitiesStoreLoad(t) {
+        t.plan(7);
+
+        var DummyManager = Ext.extend(GeoExt.ux.WFSTFeatureEditingManager, {});
+        var manager, log, layer;
+
+        // (6) testing layers created after onWFSCapabilitiesStoreLoad method
+        //     called (triggerDescribeFeatureTypes method)
+        DummyManager.prototype.triggerDescribeFeatureTypes = function() {
+            t.ok(true, "triggerDescribeFeatureTypes method called.");
+            t.eq(manager.layers.length, 3, "Three layers were added to layers property");
+
+            layer = manager.layers[0];
+            t.ok(layer.wfstFeatureEditing, "Layer 'wfstFeatureEditing' property correclty set.");
+
+            log = (manager === layer.wfstFeatureEditing.manager);
+            t.ok(log, "Layer has a reference to the manager.");
+
+            log = (layer.wfstFeatureEditing.saveStrategy instanceof OpenLayers.Strategy.Save);
+            t.ok(log, "Layer has a reference to its save strategy.");
+
+            log = (layer.map instanceof OpenLayers.Map);
+            t.ok(log, "Layers were added to the map");
+        };
+
+        manager = new DummyManager({
+            "map": getNewMap(),
+            "toolbar": getNewToolbar(),
+            "mainPanelContainer": getNewMainPanelContainer(),
+            "url": "../../../../examples/data/wfscap_gmap.xml"
+        });
+
+        // (1) delay call to let store 'load' callback method to be fired
+        t.delay_call(2, function() { 
+            t.ok(true, "waited for 2s"); 
+        });
+    }
+
+    function test_WFSTFeatureEditingManager_triggerDescribeFeatureTypes(t) {
+        t.plan(0);
+        // testing this method would require a valid WFS service.  Todo ?
+    }
+
+    function test_WFSTFeatureEditingManager_onDescribeFeatureTypeSuccess(t) {
+        t.plan(5);
+
+        var DummyManager = Ext.extend(GeoExt.ux.WFSTFeatureEditingManager, {});
+        var manager, log, layer;
+
+        // (1) testing one layer (road - LineString) DescribeFeatureType request
+        DummyManager.prototype.triggerDescribeFeatureTypes = function(layers) {
+            // remove other layers
+            layer = this.map.getLayersByName("Cities")[0];
+            this.map.removeLayer(layer);
+            layer.destroy();
+            layer = this.map.getLayersByName("Drainage")[0];
+            this.map.removeLayer(layer);
+            layer.destroy();
+            layer = this.map.getLayersByName("Roads")[0];
+            // keep only 'road' layer
+            this.layers = [layer];
+            t.eq(this.layers.length, 1, "Only one layer kept for test purpose");
+            layer = this.layers[0];
+            // manually trigger the DescribeFeatureType request
+            OpenLayers.loadURL(
+                "../../../../examples/data/wfsdft_gmap_road.xml",
+                {},
+                {layer: layer, manager: this},
+                this.onDescribeFeatureTypeSuccess,
+                this.onDescribeFeatureTypeFailure
+            );
+        };
+
+        // (3) testing layer fields and drawHandler which were read by the
+        //     onDescribeFeatureTypeSuccess method
+        DummyManager.prototype.createEditingTools = function() {
+            layer = this.layers[0];
+            t.ok(layer.wfstFeatureEditing.fields, "fields property set");
+            t.eq(layer.wfstFeatureEditing.fields.length, 11, "Eleven fields were read from 'road' feature type, including the_geom");
+            log = (layer.wfstFeatureEditing.drawHandler === OpenLayers.Handler.Path);
+            t.ok(log, "Handler correctly set to OpenLayers.Handler.Path for the 'road' layer");
+        };
+
+        manager = new DummyManager({
+            "map": getNewMap(),
+            "toolbar": getNewToolbar(),
+            "mainPanelContainer": getNewMainPanelContainer(),
+            "url": "../../../../examples/data/wfscap_gmap.xml"
+        });
+
+        // (1) delay call to let store 'load' callback method to be fired
+        t.delay_call(2, function() { 
+            t.ok(true, "waited for 2s"); 
+        });
+    }
+
+    function test_WFSTFeatureEditingManager_createEditingTools(t) {
+        t.plan(16);
+
+        var DummyManager = Ext.extend(GeoExt.ux.WFSTFeatureEditingManager, {});
+        var manager, log, layer, wfstFE;
+
+        DummyManager.prototype.createToolsFromURL = function() {};
+
+        manager = new DummyManager({
+            "map": getNewMap(),
+            "toolbar": getNewToolbar(),
+            "mainPanelContainer": getNewMainPanelContainer(),
+            "url": "../../../../examples/data/wfscap_gmap.xml"
+        });
+
+        layer = getNewWFSVectorLayer_Road(manager);
+        manager.map.addLayer(layer);
+        manager.layers = [layer];
+        wfstFE = layer.wfstFeatureEditing;
+
+        manager.createEditingTools();
+
+        // (4) testing layer 'draw' control and action
+        log = (wfstFE.drawAction instanceof GeoExt.Action);
+        t.ok(log, "Layer 'draw' action correctly set");
+        log = (wfstFE.drawControl instanceof OpenLayers.Control.DrawFeature);
+        t.ok(log, "Layer 'draw' control correctly set to draw feature");
+        log = (wfstFE.drawControl.handler instanceof OpenLayers.Handler.Path);
+        t.ok(log, "Layer 'draw' control has handler correctly set path");
+        log = (wfstFE.drawControl.map instanceof OpenLayers.Map);
+        t.ok(log, "Layer 'draw' control was added to the map");
+
+        // (2) testing layer 'userFilter' control, because manager has
+        //     'useFilter' set to true by default
+        log = (wfstFE.userFilterControl instanceof OpenLayers.Control.UserFilter);
+        t.ok(log, "Layer 'userFilter' control correctly set");
+        log = (wfstFE.userFilterControl.map instanceof OpenLayers.Map);
+        t.ok(log, "Layer 'userFilter' control was added to the map");
+
+        // (2) testing layer select control for select purpose
+        log = (wfstFE.selectControl instanceof OpenLayers.Control.SelectFeature);
+        t.ok(log, "Layer 'select' control correctly set");
+        log = (wfstFE.selectControl.map instanceof OpenLayers.Map);
+        t.ok(log, "Layer 'select' control was added to the map");
+
+        // (4) testing layer select control for highlight purpose
+        log = (wfstFE.highlightControl instanceof OpenLayers.Control.SelectFeature);
+        t.ok(log, "Layer 'highlight' control correctly set");
+        t.eq(wfstFE.highlightControl.highlightOnly, true, "Highlight control has 'highlightOnly' correctly set to true");
+        t.eq(wfstFE.highlightControl.hover, true, "Highlight control has 'hover' correctly set to true");
+        log = (wfstFE.highlightControl.map instanceof OpenLayers.Map);
+        t.ok(log, "Layer 'highlight' control was added to the map");
+
+        // (2) testing 'edit' action and which control is uses (should be
+        //     userFilter)
+        log = (wfstFE.editAction instanceof GeoExt.Action);
+        t.ok(log, "Layer 'edit' action correctly set");
+        log = (wfstFE.editAction.control instanceof OpenLayers.Control.UserFilter);
+        t.ok(log, "Edit action control correctly set to 'UserFilter' since 'useFilter' property is true by default");
+
+        // (1) testing 'featureGrid'
+        log = (wfstFE.featureGrid instanceof gxp.grid.FeatureGrid);
+        t.ok(log, "Layer gxp.grid.FeatureGrid correctly set");
+
+        // (1) testing that no layer remains in the manager layers array after
+        //     all editing tools were created
+        t.eq(manager.layers.length, 0, "After all tools were created, the layers array is emptied");
+    }
+
+    function test_WFSTFeatureEditingManager_createEditingTools_useFilterFalse(t) {
+        t.plan(8);
+
+        var DummyManager = Ext.extend(GeoExt.ux.WFSTFeatureEditingManager, {});
+        var manager, log, layer, wfstFE, feature;
+
+        DummyManager.prototype.createToolsFromURL = function() {};
+
+        manager = new DummyManager({
+            "map": getNewMap(),
+            "toolbar": getNewToolbar(),
+            "mainPanelContainer": getNewMainPanelContainer(),
+            "url": "../../../../examples/data/wfscap_gmap.xml",
+            "useFilter": false
+        });
+
+        layer = getNewWFSVectorLayer_Road(manager);
+        manager.map.addLayer(layer);
+        manager.layers = [layer];
+        wfstFE = layer.wfstFeatureEditing;
+
+        manager.createEditingTools();
+
+        // (1) testing 'edit' action control, should use 'highlight' control
+        log = (wfstFE.editAction.control instanceof OpenLayers.Control.SelectFeature && wfstFE.editAction.control.highlightOnly === true);
+        t.ok(log, "Edit action control correctly set to 'SelectFeature' since 'useFilter' property is set to false");
+
+        // (3) testing select control activations (hightlight and click),
+        //     should also set layer visibility to true
+        wfstFE.highlightControl.activate();
+        t.eq(wfstFE.highlightControl.active, true, "Select control for highlight purpose activated");
+        t.eq(wfstFE.selectControl.active, true, "Select control for select on click purpose activated");
+        t.eq(layer.visibility, true, "Layer visibility was set to true by select control");
+
+        // (4) testing feature selection, which should create a
+        //     featureEditorGrid object
+        feature = getNewVectorFeature_Road();
+        layer.addFeatures([feature]);
+        t.eq(layer.features.length, 1, "Feature was added");
+        wfstFE.selectControl.select(feature);
+        t.eq(layer.selectedFeatures.length, 1, "Feature was selected");
+        log = (wfstFE.editorGrid instanceof GeoExt.ux.FeatureEditorGrid);
+        t.ok(log, "FeatureEditorGrid ux correctly set.");
+        log = (feature === wfstFE.editorGrid.getStore().feature);
+        t.ok(log, "FeatureEditorGrid ux store has the right feature set");
+    }
+    </script>
+  <body>
+    <div id="map" style="width: 200px; height: 200px;"></div>
+    <div id="panel"></div>
+  </body>
+</html>

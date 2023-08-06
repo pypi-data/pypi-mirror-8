@@ -1,0 +1,13 @@
+{% load staticfiles %}
+{% load i18n %}
+{% get_current_language as locale %}
+<script src="{% static "geoprisma/lib/geoext-ux-zoomto/lib/GeoExt.ux/plugins/ZoomToManager.js" %}" type="text/javascript"></script>
+<script src="{% static "geoprisma/lib/geoext-ux-zoomto/lib/GeoExt.ux/widgets/ZoomTo.js" %}" type="text/javascript"></script>
+<link rel="stylesheet" type="text/css" href="{% static "geoprisma/lib/geoext-ux-zoomto/resources/css/ZoomTo.css" %}" />  
+{% if locale == "fr" %}
+    <script src="{% static "geoprisma/lib/geoext-ux-zoomto/resources/lang/fr.js" %}" type="text/javascript"></script>
+{% endif %}
+<script src="{% static "geoprisma/widgets/geoextux_zoomto/js/org.GeoPrisma.ZoomToPlugin.js" %}" type="text/javascript"></script>
+<script type="text/javascript">
+  var objGPWidget{{widgetType}}GeoExtToolbarOptions;
+</script>

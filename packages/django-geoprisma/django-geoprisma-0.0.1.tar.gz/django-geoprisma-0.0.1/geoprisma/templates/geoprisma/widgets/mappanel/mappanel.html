@@ -1,0 +1,73 @@
+{% load i18n %}
+{% load object_extras %}
+<script type="text/javascript">
+
+    var objGPWidget{{widget.name}};
+    //Ext.onReady(function() {
+    {# Map #}
+    {{ widget.getOpenLayersOptions }}
+    
+    objOptions.controls = [
+        new OpenLayers.Control.PanPanel(),
+        new OpenLayers.Control.ZoomPanel(),
+        
+        {% with zoomBoxNavigation=widget|args:"zoomBoxNavigation"|call:"getOption" %}
+        {% if zoomBoxNavigation == "true" %}
+          new OpenLayers.Control.Navigation()
+        {% else %}
+          new OpenLayers.Control.Navigation({zoomBoxEnabled: false})
+        {% endif %}
+        {% endwith %}
+    ];
+    
+    objGPWidget{{widget.name}} = new OpenLayers.Map( objOptions );
+
+    {# MapPanel #}
+    var objMapPanelOptions = Ext.applyIf(
+      {{ widget.printOptions }},
+      objGPWidget{{widget.type}}DefaultOptions
+    );
+
+    {# center and extent options management #}
+    
+    {% with extentString=widget|args:"extentString"|call:"getOption" %}
+    {% if extentString %}
+      objMapPanelOptions["extent"] = new OpenLayers.Bounds({{extentString}});
+      delete objMapPanelOptions["extentString"];
+    {% endif %}
+    {% endwith %}
+  
+    {% with centerString=widget|args:"centerString"|call:"getOption" %}
+    {% if centerString %}
+      objMapPanelOptions["center"] = new OpenLayers.LonLat({{centerString}});
+      delete objMapPanelOptions["centerString"];
+    {% endif %}
+    {% endwith %}
+
+    {# i18n support for 'title' option #}
+    
+    {% with optionTitle=widget|args:"title"|call:"getOption" %} 
+    {% if optionTitle %}
+      objMapPanelOptions.title = {% trans optionTitle %};
+    {% endif %}
+    {% endwith %}
+
+    objMapPanelOptions['map'] = objGPWidget{{widget.name}};
+    {# GeoExtToolbarSingleton adding as MapPanel 'tbar' property #}
+    if (typeof org.GeoPrisma.GeoExtToolbarSingleton !== "undefined") {
+        objMapPanelOptions.tbar = org.GeoPrisma.GeoExtToolbarSingleton;
+    }
+
+    objGPWidgetMapPanel{{widget.name}} = new GeoExt.MapPanel(objMapPanelOptions);
+
+    {# setMapPanel in API widget #}
+    GeoPrisma.setMapPanel(
+        objGPWidgetMapPanel{{widget.name}}
+    );
+
+    {# Push to container in order to draw later #}
+    objGPWidget{{widget.type}}Container.push(
+        objGPWidgetMapPanel{{widget.name}}
+    );
+    //});
+</script>

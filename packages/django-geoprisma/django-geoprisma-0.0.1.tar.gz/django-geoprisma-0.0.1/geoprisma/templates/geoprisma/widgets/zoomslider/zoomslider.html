@@ -1,0 +1,44 @@
+{% load i18n %}
+{% get_current_language as locale%}
+<script type="text/javascript">
+    oMap = objGPWidget{{mapName}};
+    objGPWidget{{widget.id}} = new GeoExt.ZoomSlider({
+      map: oMap,
+      minValue: 0,
+      vertical: true,
+      height: 100,
+      x: 17,
+      y: 90,
+      plugins: new GeoExt.ZoomSliderTip({
+    {% if  locale == 'fr' %}
+          'template': '<div>Niveau de zoom: {zoom}</div>' +
+                      '<div>R&#233;solution: {resolution}</div>' +
+                      '<div>&#201;chelle: 1 : {scale}</div>'
+    {% endif %}
+      })
+    });
+    objGPWidget{{widget.id}}.initZoomValues = function() {
+      var layer = this.map.baseLayer;
+      if (layer) {
+        if(this.initialConfig.minValue === undefined) {
+          //TODO remove check for getMinZoom when we require OpenLayers 2.12.
+          var minZoom = this.map.getMinZoom ? this.map.getMinZoom() : 0;
+          this.minValue = Math.max(minZoom, layer.minZoomLevel || 0);
+        }
+        if(this.initialConfig.maxValue === undefined) {
+          if(layer.CLASS_NAME == "OpenLayers.Layer.Google"){
+            this.maxValue = layer.minZoomLevel == null ?
+            layer.numZoomLevels - 1 : layer.maxZoomLevel - layer.minZoomLevel;
+          }else{
+            this.maxValue = layer.minZoomLevel == null ?
+              layer.numZoomLevels - 1 : layer.maxZoomLevel;
+          }
+        }
+        // reset the thumb value so it gets repositioned when we call update
+        this.update(true);
+      }
+    };
+    if (typeof(window.objGPWidgetMapPanel{{mapName}}) !== "undefined") {
+        objGPWidgetMapPanel{{mapName}}.add(objGPWidget{{widget.id}});
+    }
+</script>

@@ -1,0 +1,27 @@
+{% load i18n %}
+<script type="text/javascript">
+     Ext.apply(org.GeoPrisma.Shortcut.prototype, {
+            emptyText        : "{% trans "Loading ..." %}",        
+            i18n_please_wait : "{% trans "Please wait..." %}"
+        });
+     
+     {% with shortcutWidget=appSession|args:widgetType|call:"getWidgetByType" %}
+     var nWidgets = {{ shortcutWidget|length }};
+     
+     {% if shortcutWidget|length > 1 %}
+      {% assignWidgetArrayByType widgetType shortcutWidget as lswidgetbytype %};
+      {% if lswidgetbytype|length > 1 %}
+              var objGPWidget{{widgetType}}GeoExtToolbarOptions = []; 
+           {% endif %}       
+      {% endif %}
+     {% endwith %}
+      objGPWidget{{widgetType}}FormPanel = {
+          layout: 'form',
+          title: "{% trans "Shortcut" %}",
+          border: false,
+          labelAlign: 'top',
+          bodyStyle:'padding:5px 5px 0',
+          items: []
+      };
+     
+</script>

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html debug="true">
+  <head>
+    <link href="../../../../../../../ext/resources/css/ext-all.css"
+          rel="stylesheet" type="text/css" />
+    <link href="../../../../../../../ext/examples/shared/examples.css"
+          rel="stylesheet" type="text/css" />
+    <script src="../../../../../../../ext/adapter/ext/ext-base.js"
+            type="text/javascript" ></script>
+    <script src="../../../../../../../ext/ext-all.js"
+            type="text/javascript" ></script>
+    <script src="../../../../../../../openlayers/lib/OpenLayers.js"
+            type="text/javascript" ></script>
+    <script src="../../../../../../../geoext/lib/GeoExt.js"
+            type="text/javascript" ></script>
+    <script src="../../../../lib/OpenLayers/Control/UserFilter.js"
+            type="text/javascript" ></script>
+    <script src="../../../../lib/GeoExt.ux/WFSTFeatureEditing.js"
+            type="text/javascript" ></script>
+    <script type="text/javascript">
+    function test_Control_UserFilter_constructor(t) {
+        t.plan(2);
+        var layer, control;
+        layer = "foo";
+        control = new OpenLayers.Control.UserFilter({
+            layer: layer
+        });
+        t.ok(control instanceof OpenLayers.Control.UserFilter,
+             "new OpenLayers.Control.UserFilter returns an instance");
+        t.eq(control.layer, "foo",
+             "constructor sets layer correctly");
+    }
+
+    function test_Control_UserFilter_toggleHandlers(t) {
+        t.plan(2);
+        var control, log, map;
+        map = new OpenLayers.Map("map");
+        control = new OpenLayers.Control.UserFilter({
+            layer: new OpenLayers.Layer.Vector(
+                "foo", {protocol: new OpenLayers.Protocol()})});
+        map.addControl(control);
+
+        // (1) test activateHandlers
+        control.activateHandlers();
+        log = true;
+        for (var key in control.handlers) {
+            if (log && !control.handlers[key].active) {
+                log = false;
+            }
+        }
+        t.ok(log, "All handlers were activated");
+
+        // (1) test deactivateHandlers
+        control.activate();
+        control.deactivateHandlers();
+        log = true;
+        for (var key in control.handlers) {
+            if (log && control.handlers[key].active) {
+                log = false;
+            }
+        }
+        t.ok(log, "All handlers were deactivated");
+    }
+
+    function test_Control_UserFilter_hasBlankFilter(t) {
+        t.plan(5);
+        var control, log, map;
+        map = new OpenLayers.Map("map");
+        control = new OpenLayers.Control.UserFilter({
+            layer: new OpenLayers.Layer.Vector(
+                "foo", {protocol: new OpenLayers.Protocol()})});
+
+        // (2) test hasBlankFilter property when control is created and added
+        t.ok(!control.hasBlankFilter, "No blank filter applied on creation.");
+
+        map.addControl(control);
+        t.ok(control.hasBlankFilter, "Blank filter when added to the map.");
+
+        // (2) activating and deactivating the control applies a blank filter
+        control.hasBlankFilter = false;
+        control.activate();
+        t.ok(control.hasBlankFilter, "Blank filter applied when activated.");
+        control.hasBlankFilter = false;
+        control.deactivate();
+        t.ok(control.hasBlankFilter, "Blank filter applied when deactivated.");
+
+        // (1) request
+        control.hasBlankFilter = true;
+        control.request(new OpenLayers.Bounds(1,1,1,1), {});
+        t.ok(!control.hasBlankFilter, "User filter when requesting, no blank filter.");
+    }
+
+    function test_Control_UserFilter_applyBlankFilter(t) {
+        t.plan(4);
+        var control, map, layer, log, callback;
+        map = new OpenLayers.Map("map");
+        layer = new OpenLayers.Layer.Vector(
+            "foo", {protocol: new OpenLayers.Protocol()});
+        control = new OpenLayers.Control.UserFilter({layer: layer});
+        
+        // (2) apply blank filter method called and forced called
+        control.hasBlankFilter = "foo";
+        control.applyBlankFilter();
+        t.eq(control.hasBlankFilter, "foo", "Blank filter not applied because it was not set to 'false'");
+
+        control.applyBlankFilter({force: true});
+        t.ok(control.hasBlankFilter, true, "Blank filter applied by force.");
+
+        // (2) layer refresh
+        layer.alwaysInRange = true; // emulates the layer was zoomed
+        callback = function(e) {
+            log = true;
+        };
+        layer.events.on({"refresh": callback});
+
+        layer.setVisibility(false);
+        log = false;
+        control.applyBlankFilter({force: true});
+        t.ok(log, "refresh callback called"); 
+
+        layer.setVisibility(true);
+        log = false;
+        control.applyBlankFilter({force: true});
+        t.ok(log, "refresh callback called"); 
+
+        layer.events.un({"refresh": callback});
+    }
+
+    function test_Control_UserFilter_request(t) {
+        t.plan(1);
+        var control, map, layer, log, callback;
+        map = new OpenLayers.Map("map");
+        layer = new OpenLayers.Layer.Vector(
+            "foo", {protocol: new OpenLayers.Protocol()});
+        control = new OpenLayers.Control.UserFilter({layer: layer});
+
+        // (1) request
+        callback = function(e) {
+            log = true;
+        };
+        control.events.on({"filtermerged": callback});
+        log = false;
+        control.request(new OpenLayers.Bounds(1,1,1,1), {});
+        t.ok(log, "filtermerged callback called"); 
+        layer.events.un({"refresh": callback});
+    }
+    </script>
+  <body>
+    <div id="panel"></div>
+    <div id="map"></div>
+  </body>
+</html>

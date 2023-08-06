@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html debug="true">
+<head>
+
+    <script type="text/javascript" src="http://extjs.cachefly.net/builds/ext-cdn-771.js"></script>
+    <script type="text/javascript" src="http://openlayers.org/api/2.8/OpenLayers.js"></script>
+    <script type="text/javascript" src="../../../../../../trunk/geoext/lib/GeoExt.js"></script>
+    <script type="text/javascript" src="../../../../ux/widgets/form/ShortcutCombo.js"></script>
+
+    <script type="text/javascript">
+        function test_ctor(t) {
+            t.plan(3);
+
+            // set up
+
+            var c;
+
+            var map = new OpenLayers.Map();
+            var layer = new OpenLayers.Layer.OSM("OSM");
+            map.addLayer(layer);
+
+            // test
+
+            c = new GeoExt.ux.ShortcutCombo({
+                map: map,
+                renderTo: 'ShortcutCombo',
+                store: GeoExt.ux.ShortcutCombo.countryStore,
+                bboxField: 'bbox',
+                bboxSrs: 'EPSG:900913'
+            });
+            t.ok(c instanceof GeoExt.ux.ShortcutCombo,
+                    "ctor creates a GeoExt.ux.ShortcutCombo object");
+            t.ok(c instanceof Ext.form.ComboBox,
+                    "ctor creates an Ext.form.ComboBox object");
+            t.ok(c.hasListener("select"),
+                    "ctor registers a \"select\" listener");
+        }
+    </script>
+<body>
+<div id="ShortcutCombo"></div>
+</body>
+</html>

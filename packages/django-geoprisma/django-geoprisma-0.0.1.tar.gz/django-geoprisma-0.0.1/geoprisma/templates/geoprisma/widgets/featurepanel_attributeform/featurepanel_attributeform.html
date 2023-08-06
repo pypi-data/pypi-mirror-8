@@ -1,0 +1,37 @@
+{% load widget_extras %}
+{% load i18n %}
+{% load object_extras %}
+<script type="text/javascript">
+    
+    var objGPWidget{{widget.id}};
+
+    Ext.onReady(function() {
+
+        var objWidgetOptions = {{ widget.printOptions }};
+
+        {# Widget object creation  #}
+        objGPWidget{{widget.name}} = new org.GeoPrisma.FeaturePanel.AttributeFormBuilder(objWidgetOptions);
+        
+        {% for resource in resources %}
+            
+            objGPWidget{{widget.name}}.addResourceFields({
+                'resource': '{{resource.id}}',
+                'fields': {%with fieldsOption=resource|args:"fields"|call:"getOption"  %}
+                            {% printWidgetOptions fieldsOption %}
+                          {%endwith%}  
+                
+                  {# <xsl:for-each select="./../../../../resources/resource[./name = $pResourceName]/fields"><xsl:call-template name="getObjectFromNode"><xsl:with-param name="pNode" select="." /></xsl:call-template></xsl:for-each> #}
+            });
+            
+            if (Ext.isDefined(window.goEditFeatureActions) &amp;&amp;
+               goEditFeatureActions['{{resource.id}}']
+               ) {
+                    Ext.each(goEditFeatureActions['{{resource.id}}'], function(objEditFeatureAction, index) {
+                        if (objEditFeatureAction.control instanceof OpenLayers.Control.EditFeature_Create || objEditFeatureAction.control instanceof OpenLayers.Control.EditFeature_Update) {
+                            objEditFeatureAction.control.setFeaturePanel(
+                                objGPWidget{{widget.id}}
+                    );
+                }
+            });
+        }
+</script>

@@ -1,0 +1,79 @@
+<script type="text/javascript">
+    oMap = objGPWidget{{mapName}};
+    var objGPWidget{{widget.id}}GeoExtToolbarOptions;
+
+    {# Widget object creation #}
+    var action{{widget.id}} = new Ext.Action({
+        text: 'WMSBrowser',
+        handler: function(){
+
+        var objWidgetOptions = {};
+        objWidgetOptions = {{ widget.printOptions }};
+         objWidgetOptions['map'] = oMap;
+
+        var oMyMapPanel;
+        if(window.objGPWidgetMapPanel{{mapName}} != undefined) {
+            oMyMapPanel = objGPWidgetMapPanel{{mapName}};
+        } else {
+            oMyMapPanel = GeoExt.MapPanel.guess();
+        }
+
+        var aServerURLs = [], aszServers = [];
+        if(objWidgetOptions.servers) {
+            aServerURLs = objWidgetOptions.servers;
+        }
+        else if(objWidgetOptions.server) {
+            aServerURLs = [objWidgetOptions.server];
+        }
+        for(var i=0; i&lt;aServerURLs.length; i++)
+        {
+            aszServers.push([aServerURLs[i]]);
+        }
+
+        var oServerStore = new Ext.data.SimpleStore({
+          fields: ['url'],
+          data : aszServers
+        });
+
+        if(!browserWindow) {
+          var myBrowserOptions = Ext.apply(objWidgetOptions, {
+            border: false,
+            region: "east",
+            zoomOnLayerAdded: false,
+            closeOnLayerAdded: false,
+            allowInvalidUrl: true,
+            alertPopupTimeout: 2000,
+            // === proxyHost === uncomment to use the local proxy.php
+            proxyHost: baseUrl + "proxy.php?osmservice=__blank__&osmwidgettype=geoextux_wmsbrowser&osmprocess=proxy&url=",
+            // comment the below line to have a 'textfield' instead of a 
+            // 'combobox'.  oServerStore is in ./store.js
+            serverStore: oServerStore,
+            mapPanelPreviewOptions: {height: 170, collapsed: false},
+            layerStore: oMyMapPanel.layers
+          });
+
+          WMSBrowser = new GeoExt.ux.WMSBrowser(myBrowserOptions);
+
+          browserWindow = new Ext.Window({
+            resizable: true,
+            modal: false,
+            closeAction: 'hide',
+            width: 550,
+            height: 450,
+            title: OpenLayers.i18n("WMSBrowser"),
+            layout: 'fit',
+            items: [WMSBrowser]
+          });
+        }
+
+        browserWindow.show();
+
+      },
+      scope: this,
+      tooltip: OpenLayers.i18n('Add currently selected layers')
+  });
+
+  {# draw in toolbar #}
+  objGPWidget{{widget.id}}GeoExtToolbarOptions =
+      action{{widget.id}};
+</script>

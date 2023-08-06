@@ -1,0 +1,75 @@
+{% load object_extras %}
+<script type="text/javascript">
+    {% with autoloadOption=widget|args:"autoLoad"|call:"getOption" %}
+    {% with projectionOption=widget|args:"projection"|call:"getOption" %}
+    {% with projectionList=widget|args:"projections"|call:"getOption" %}
+    {% if projectionOption or projectionList %}
+      {% if autoloadOption == "true" %}
+      {% endif %}
+      var objArrayProjections = [];
+    {% else %}
+      var objArrayProjections = [['EPSG:4326'],['EPSG:900913']];
+    {% endif %}
+
+    {% if projectionOption %}
+      {% if projectionOption != "EPSG:4326" and autoloadOption == "true" %}
+      </script>
+      <script src="{{baseUrl}}js/defs/{{projectionOption|cut:":"}}.js" type="text/javascript"></script>
+      <script type="text/javascript">
+      {% endif %}
+      if (Proj4js.defs['{{projectionOption}}']) {
+        objArrayProjections.push(['{{projectionOption}}']);
+        } else {
+            alert(
+                "The projection code '" + '{{projectionOption}}' + 
+                "' is not defined\nin the Proj4js library currently loaded. " +
+                "Please,\nadd it first."
+            );
+        }
+    {% endif %}
+
+    {% if projectionList %}
+    {% for projection in projectionList %}
+      {% if projection != "EPSG:4326" and autoloadOption == "true" %}
+      </script>
+      <script src="{{baseUrl}}js/defs/{{projection|cut:":"}}.js" type="text/javascript"></script>
+      <script type="text/javascript">
+      {% endif %}
+      if (Proj4js.defs['{{projection}}']) {
+        objArrayProjections.push(['{{projection}}']);
+        } else {
+            alert(
+                "The projection code '" + '{{projection}}' + 
+                "' is not defined\nin the Proj4js library currently loaded. " +
+                "Please,\nadd it first."
+            );
+        }
+    {% endfor %}
+    {% endif %}
+
+    oMap = objGPWidget{{mapName}};
+    var objGPWidget{{widget.id}}GeoExtToolbarOptions;
+
+    var objWidgetOptions = {};
+    objWidgetOptions = {{ widget.printOptions }};
+    objWidgetOptions['map'] = oMap;
+        
+    {# if at least one projection, then create SimpleStore obj #}
+    if (objArrayProjections.length) {
+        objWidgetOptions['projectionStore'] = new Ext.data.SimpleStore({
+            fields: ['projection'],
+            data : objArrayProjections
+        });
+    }
+    {# Widget object creation #}
+    var objGPWidget{{widget.id}} = new GeoExt.ux.ZoomTo(objWidgetOptions);
+    
+    {# draw in toolbar #}
+    objGPWidget{{widget.id}}GeoExtToolbarOptions = objGPWidget{{widget.id}};
+    
+    {# plugin #}
+    var objGPWidget{{widget.id}}Plugin = new org.GeoPrisma.ZoomToPlugin({zoomTo: objGPWidget{{widget.id}}});    
+    {% endwith %}
+    {% endwith %}
+    {% endwith %}
+</script>

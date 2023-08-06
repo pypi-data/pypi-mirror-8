@@ -1,0 +1,79 @@
+{% load object_extras %}
+{% load i18n %}
+<script type="text/javascript">
+    var aResources = [];
+    
+    {% for resource in widget.resources %}
+
+      {# Resource delegateContext #}
+      {% with resourceDelegateContext=resource|args:"delegateContext"|call:"getOption" %}
+        
+        {% with useResponseFieldsOption=widget|args:"useResponseFields"|call:"getOption" %}
+        {% if useResponseFieldsOption.value == "true" %}
+          aResources.push({
+            {% if resourceDelegateContext %}
+            'delegatecontext': {
+                'enabled': true,
+                'label': "{{resourceDelegateContext}}"
+            },
+            {% endif %}
+            'displayname': "{{resource.display_name|default:resource.name}}",
+            'resource': '{{resource.id}}',
+            'fields': "all"
+          });
+        {% else %}
+          {#xsl:for-each select="../../options/grids/grid[./resourcename = $resourceName]"> #}
+          {# field properties #}
+            var aFields = [];
+            aFields.push( {
+            {% for resourcefield in resource.fields %}
+                {% if resourcefield.name == "id" %}
+                'id': "{{resourcefield.title}}",
+                {% elif resourcefield.name == "label" %}
+                'label': "{{resourcefield.title}}",
+                {% elif resourcefield.name == "type" %}
+                'type': "{{resourcefield.title}}",
+                {% elif resourcefield.name == "width" %}
+                'width': {{resourcefield.title}}
+                {% endif %}
+            {% endfor %}
+            } );
+
+            oResource = {
+              'displayname': '{{resource.display_name|default:resource.name}}',
+            {% if resourceDelegateContext %}
+              'delegatecontext': { 'enabled':  <xsl:value-of select="delegatecontext/enabled" />, 'label': <xsl:for-each select="delegatecontext/label" ><xsl:call-template name="getText" /></xsl:for-each> }  ,
+            {% endif %}
+              'resource': "{{resource.id}}",
+              'fields': aFields
+            };
+
+            aResources.push(oResource);
+          /*</xsl:for-each>*/
+        {% endif %}
+        {% endwith %}
+       {% endwith %}
+    {% endfor %}
+
+    /* objGPWidget{{widget.id}} = new OpenLayers.ResultExtGrid({
+        inWindow: "{{widget|args:"inwindow"|call:"getOption" }}",
+        widgetName: "{{widget.id}}", 
+        resources: aResources,
+        drawMode: "{{drawMode}}"
+    });
+
+    {# Find each widget that contains this result and add it using the addResult function #}
+    {# TODO : test this with multiple query on click  #}
+    {% with widgetsWithResultsOption=appSession|args:"results"|args:widget.id|call:"getWidgetsByOptionValue" %}
+    {% for widgetWithResultsOption in widgetsWithResultsOption %}
+        objGPWidget{{widgetWithResultsOption.id}}.addResult(objGPWidget{{widget.id}});
+        objGPWidget{{widget.id}}.setQuery(objGPWidget{{widgetWithResultsOption.id}});
+    {% endfor %}
+    {% endwith %}
+    {% with widgetsWithResultOption=appSession|args:"result"|args:widget.id|call:"getWidgetsByOptionValue" %}
+    {% for widgetWithResultOption in widgetsWithResultOption %}
+        objGPWidget{{widgetWithResultOption.id}}.addResult(objGPWidget{{widget.id}});
+        objGPWidget{{widget.id}}.setQuery(objGPWidget{{widgetWithResultOption.id}});
+    {% endfor %}
+    {% endwith %}*/
+</script>

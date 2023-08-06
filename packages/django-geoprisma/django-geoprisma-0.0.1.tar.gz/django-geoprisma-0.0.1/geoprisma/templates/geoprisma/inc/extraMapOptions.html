@@ -1,0 +1,32 @@
+     map.addControl(new OpenLayers.Control.ScaleLine);
+
+    {# OpenLayers GeoJSON temp patch #}
+    OpenLayers.Format.GeoJSON.prototype.parseCoords["multipolygon"]=function (array) {
+      var polys = [];
+      var p = null;
+      for (var i = 0, len = array.length; i < len; ++i) {
+        try {
+          p = this.parseCoords.polygon.apply(this, array[i]);
+        } catch (err) {
+          throw err;
+        }
+        polys.push(p);
+      }
+      return new (OpenLayers.Geometry.MultiPolygon)(polys);
+    };
+
+    {# getAbsoluteUrl method #}
+    function getAbsoluteUrl(url) {
+      var a;
+      if (Ext.isIE) {
+        a = document.createElement("<a href='" + url + "'/>");
+        a.style.display = "none";
+        document.body.appendChild(a);
+        a.href = a.href;
+        document.body.removeChild(a);
+      } else {
+        a = document.createElement("a");
+        a.href = url;
+      }
+      return a.href;
+    }

@@ -1,0 +1,98 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+    <title>WFSTFeatureEditing ux</title>
+    <link rel="stylesheet" type="text/css"
+          href="../../../../ext/resources/css/ext-all.css" />
+    <link rel="stylesheet" type="text/css"
+          href="../../../../ext/examples/shared/examples.css" />
+    <link rel="stylesheet" type="text/css"
+          href="../../../../ext/examples/ux/statusbar/css/statusbar.css" />
+    <link rel="stylesheet" type="text/css"
+          href="../resources/css/WFSTFeatureEditing.css" />
+  </head>
+  <body>
+    <h1>WFSTFeatureEditing ux</h1>
+    <p>
+      This widget automatically creates all the tools required to accomplish
+      WFST  editing using GeoExt. See
+      <a href="WFSTFeatureEditing.js">WFSTFeatureEditing.js</a> for the source
+      code of this example.
+    </p>
+    <div id="content"></div>
+    <br />
+    <p>
+      Most of the components are created asynchronously using WFS requests.
+      A GetCapabilities request is used to create the vector layers and
+      a DescribeFeatureType one is used to get the fields and the geometry type.
+      From there, DrawFeature, SelectFeature and many other controls and widgets
+      are automatically created for each layer.
+    </p>
+    <p>
+      Only one layer can be edited at a time in one of the following mode :
+      <b>draw</b> or <b>edit</b>.
+    </p>
+    <p>
+      The 'edit' mode can either use a 'filter' mode or not.  This demo uses the
+      filter mode.  Enabling the 'edit' mode on a layer doesn't show the
+      features yet.  You need to draw a box on the map to get the features
+      first, then click on the feature you wish to edit.  You can also select it
+      from the grid on the left of the window that pops up when you select a
+      feature.  If only one feature was
+      returned by box you drawn, it's automatically selected.  The
+      "Return to selection" button clears the features that were returned by the
+      box and reenable the box selection.
+    </p>
+    <p>
+      While creating vector layers with a WFS protocol, if a WMS layer having
+      the same name present in the map, it will be automatically refreshed upon
+      each modifications and also automatically shown when editing is enabled on
+      its WFS counterpart.  These features are shown in this demo.
+    </p>
+    <p>
+      The widget has an 'ignoreAttributes' property that can be set to a list
+      of fields we don't want to be displayed in both grids.  This feature is
+      shown in this demo some user-specific fields are not shown in both grids.
+    </p>
+    <p>
+      The demo also available in <a href="WFSTFeatureEditingFR.html">French</a>.
+    </p>
+    <h2>External components used</h2>
+    <p>
+      Here's the list of components that are not in GeoExt that are used by this
+      widget.
+    </p>
+    <ul>
+      <li>
+        <b>GeoExt.ux.FeatureEditorGrid</b> from the GeoExt.ux (user extension)
+        library, see the
+        <a target="_blank" href="http://trac.geoext.org/wiki/ux/FeatureEditing">
+          widget wiki page</a>.  It's the grid drawn on the right of the
+          window.
+      </li>
+      <li>
+        <b>gpx.grid.FeatureGrid</b>, from the gpx library.  See the
+        <a target="_blank" href="http://trac.geoext.org/wiki/ux/FeatureEditing">
+          github page</a>.  It's the grid drawn on the left of the window.
+      </li>
+    </ul>
+    <script type="text/javascript"
+            src="../../../../ext/adapter/ext/ext-base.js"></script>
+    <script type="text/javascript"
+            src="../../../../ext/ext-all.js"></script>
+    <script type="text/javascript"
+            src="../../../../ext/examples/ux/statusbar/StatusBar.js"></script>
+    <script type="text/javascript"
+            src="../../../../openlayers/lib/OpenLayers.js"></script>
+    <script type="text/javascript"
+            src="../../../../geoext/lib/GeoExt.js"></script>
+    <script type="text/javascript" src="http://dev.geoext.org/ux/geoext.ux/ux/FeatureEditing/lib/GeoExt.ux/FeatureEditorGrid.js"></script>
+    <script type="text/javascript"
+            src="../lib/OpenLayers/Control/UserFilter.js"></script>
+    <script type="text/javascript"
+            src="../lib/GeoExt.ux/WFSTFeatureEditing.js"></script>
+    <script type="text/javascript" src="WFSTFeatureEditing.js"></script>
+  </body>
+</html>

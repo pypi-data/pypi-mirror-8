@@ -1,0 +1,97 @@
+{% load object_extras %}
+{% load i18n %}
+<script type="text/javascript">
+    Ext.apply(org.GeoPrisma.GeoExtToolbar.prototype, {
+        i18n_zoomfull_tooltip : "{% trans "Zoom to maximum extent" %}",  
+        i18n_zoomin_tooltip   : "{% trans "Zoom in : left click on map or draw a zoom box" %}",  
+        i18n_zoomout_tooltip  : "{% trans "Zoom out : left click on map or draw a zoom box" %}",  
+        i18n_pan_tooltip      : "{% trans "Pan : click left and drag"%}",  
+        i18n_back_tooltip     : "{% trans "Previous view" %}",  
+        i18n_next_tooltip     : "{% trans "Next view" %}"
+    }); 
+
+    org.GeoPrisma.GeoExtToolbarSingleton = new org.GeoPrisma.GeoExtToolbar();
+    objGPWidget{{widgetType}} = org.GeoPrisma.GeoExtToolbarSingleton;
+    {% with widget=appSession|args:widgetType|call:"getWidgetByType" %}
+    Ext.onReady(function() {
+        Ext.QuickTips.init();
+        
+    var searchFunction = function(object) {
+                            return (object == this.objValue || (object.initialConfig.menu != null && this.objValue.menu != null && object.initialConfig.menu == this.objValue.menu))
+                        };
+                        
+    {% with separateEditFeatureWidgetsOption=widget|args:"separateEditFeatureWidgets"|call:"getOption" widgetOptionList=widget|args:"widgets"|call:"getOption"  %}                    
+    var bLastNodeWasSeparator = true;
+    {% for option in widgetOptionList %}
+        {% if option == "__separator__" %}
+            if(!bLastNodeWasSeparator) {
+                    objGPWidget{{widgetType}}.add('-');
+                    bLastNodeWasSeparator = true;
+            }
+        {% elif option == "__editfeature__" %}
+            bLastNodeWasSeparator = false;
+            if (Ext.isDefined(window.goEditFeatureActions)) {
+                for (var resource in goEditFeatureActions) {
+                    var resourceEditActions = goEditFeatureActions[resource];
+                    var createActions = [];
+                    var updateActions = [];
+                    var deleteActions = [];
+                    var splitActions = [];
+                    var dragActions = [];
+                    var copyActions = [];
+                    Ext.each(resourceEditActions, function(resourceEditAction, index){
+                        if (OpenLayers.Control.EditFeature_Create &&
+                            resourceEditAction.control instanceof OpenLayers.Control.EditFeature_Create) {
+                            createActions.push(resourceEditAction);
+                        } else if (OpenLayers.Control.EditFeature_Update &&
+                            resourceEditAction.control instanceof OpenLayers.Control.EditFeature_Update) {
+                            updateActions.push(resourceEditAction);
+                        } else if (OpenLayers.Control.EditFeature_Delete &&
+                            resourceEditAction.control instanceof OpenLayers.Control.EditFeature_Delete) {
+                            deleteActions.push(resourceEditAction);
+                        } else if (OpenLayers.Control.EditFeature_Split &&
+                            resourceEditAction.control instanceof OpenLayers.Control.EditFeature_Split) {
+                            splitActions.push(resourceEditAction);
+                        } else if (OpenLayers.Control.EditFeature_Drag &&
+                            resourceEditAction.control instanceof OpenLayers.Control.EditFeature_Drag) {
+                            dragActions.push(resourceEditAction);
+                        } else if (OpenLayers.Control.EditFeature_Copy &&
+                            resourceEditAction.control instanceof OpenLayers.Control.EditFeature_Copy) {
+                            copyActions.push(resourceEditAction);
+                        }
+                    }, this);
+
+                    var allEditActions = createActions.concat(updateActions,dragActions,copyActions,deleteActions,splitActions);
+                    Ext.each(allEditActions, function(editAction, index) {
+                        objGPWidget{{widgetType}}.add(editAction);
+                    }, this);
+
+                    {% if separateEditFeatureWidgetsOption != "false" %}
+                      objGPWidget{{widgetType}}.add('-');
+                      bLastNodeWasSeparator = true;
+                    {% endif %}
+                }
+            }
+        {% else %}
+            {% with widgetToAdd=appSession|args:option|call:"getWidgetById"  %}
+            if(typeof(objGPWidget{{widgetToAdd.id}}GeoExtToolbarOptions) != "undefined"){
+                objGPWidget{{widgetType}}.add(
+                    objGPWidget{{widgetToAdd.id}}GeoExtToolbarOptions
+                );
+                bLastNodeWasSeparator = false;
+            }
+            
+            if(typeof(objGPWidget{{widgetToAdd.type.name.lower}}GeoExtToolbarOptions) != "undefined" &&
+               objGPWidget{{widgetType}}.items.find(searchFunction , {objValue : objGPWidget{{widgetToAdd.type.name.lower}}GeoExtToolbarOptions}) == null){
+                objGPWidget{{widgetType}}.add(
+                    objGPWidget{{widgetToAdd.type.name.lower}}GeoExtToolbarOptions
+                );
+                bLastNodeWasSeparator = false;
+            }
+            {% endwith %}
+        {% endif %}
+    {% endfor %}
+    {% endwith %}
+    {% endwith %}
+    });
+</script>

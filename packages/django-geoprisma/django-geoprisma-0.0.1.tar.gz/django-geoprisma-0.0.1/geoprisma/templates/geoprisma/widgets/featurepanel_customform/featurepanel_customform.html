@@ -1,0 +1,25 @@
+{% load widget_extras %}
+{% load i18n %}
+{% load object_extras %}
+<script type="text/javascript">
+    Ext.onReady(function() {
+        var objWidgetOptions = {{widget.printOptions}};
+        objWidgetOptions['formURL'] = "{{baseUrl}}" + objWidgetOptions['formURL'];
+        {# Widget object creation  #}
+        objGPWidget{{widget.id}} = new org.GeoPrisma.FeaturePanel.CustomFormBuilder(objWidgetOptions);
+
+        {% for resource in widget.resources %}
+            if (Ext.isDefined(window.goEditFeatureActions) &&
+                goEditFeatureActions['{{resource.id}}']
+              ) {
+                Ext.each(goEditFeatureActions['{{resource.id}}'], function(objEditFeatureAction, index) {
+                    if (objEditFeatureAction.control instanceof OpenLayers.Control.EditFeature_Create || objEditFeatureAction.control instanceof OpenLayers.Control.EditFeature_Update) {
+                        objEditFeatureAction.control.setFeaturePanel(
+                            objGPWidget{{widget.id}}
+                        );
+                    }
+                });
+            }
+        {% endfor %}
+    }); // onReady end
+</script>

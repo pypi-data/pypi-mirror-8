@@ -1,0 +1,118 @@
+{% load widget_extras %}
+{% load i18n %}
+{% load object_extras %}
+<script type="text/javascript">
+    oMap = objGPWidget{{mapName}};
+
+    var objWidgetOptions;
+
+    var objGPWidget{{widget.id}}GeoExtToolbarOptions;
+    
+    {% for resource in widget.resources %}
+        {% with FSresourceDatastore=resource|args:"featureserver"|call:"getDatastoreByType"  %}
+        
+        {% with wfsresourceDatastore=resource|args:"wfs"|call:"getDatastoreByType" %}
+        
+        {% if FSresourceDatastore %}
+            {% with FSresourceDatastore as pDataStoreName %}
+        {% else %}
+            {% with wfsresourceDatastore as pDataStoreName %}
+        {% endif %}
+        
+        {% if pDataStoreName != "" %}
+            {% if FSresourceDatastore %}
+               {% with "featureserver" as pServiceType %};
+            {% else %}
+               {% with "wfs" as pServiceType %}
+            {% endif %}
+            
+            {% with layerNameOption=widget|args:"layerName"|call:"getOption" %}
+            {% with serviceNameOption=widget|args:"serviceName"|call:"getOption" %}
+            
+                objWidgetOptions = {{ widget.printOptions }};
+                objWidgetOptions['resource'] = '{{resource.id}}';
+                objWidgetOptions['id'] = '{{widget.id}}{{resource.id}}';
+                objWidgetOptions['url'] = '{% url "geoprisma:proxyurl" %}';
+                objWidgetOptions['layerName'] = '{{layerNameOption}}';
+                objWidgetOptions['serviceName'] = '{{serviceNameOption}}';
+                objWidgetOptions['resourceName'] = '{{resource.name}}';
+                objWidgetOptions['map'] = oMap;
+                objWidgetOptions['serviceType'] = '{{pServiceType}}';
+            {% endwith %}
+            {% endwith %} 
+            
+            {% with emptyTextOption=widget|args:"emptyText"|call:"getOption" %}
+            {% with datastoreTextOption=appSession|args:pDataStoreName|args:"text"|call:"getObjectOption"%}
+            
+            var strEmptyText = 
+            
+            {% with resourcetitle=resource|args:"title"|call:"getOption" %}
+            
+           {% if emptyTextOption %}
+               {{emptyTextOption}}
+            {% else %}
+               {% if resourcetitle %}
+                   {{resourcetitle}}
+                   {% for field in widget.fields %}
+                       {% + ' (' + field + ')' %}
+                    {% endfor %}
+               {% endif %}
+               
+           {% endif %}
+           {% endwith %}
+           {% endwith %}
+           
+           {% assignWidgetOptionByName  "field"  pDataStoreName.datastoreoption_set.all as datastorefieldOption %}
+           {% assignWidgetOptionByName  "text"  datastorefieldOption as datastorevalueOption %}
+           
+           {% if datastoreTextOption %}
+               {{datastoreTextOption}} + ' ' + "{% trans "shortcut" %}"
+               
+               {% if datastorevalueOption != "" %}
+                   +' '+ "{% trans "by" %}" +' ' + {{datastorevalueOption.value}}
+                   
+               {% endif %}
+            {% else %}
+                '{{resource.name}} ' + "{% trans "shortcut" %}"
+               
+           {% endif %} 
+           
+        {% endif %}
+        
+        objWidgetOptions['emptyTextAfterLoading'] = strEmptyText;
+        
+        var strFieldLabel = "";
+        
+        {% with fieldLabelOption=widget|args:"fieldLabel"|call:"getOption" %}
+            
+        {% if fieldLabelOption %}
+              {{fieldLabelOption}}
+        {% else %}
+           {% if datastoreTextOption %}
+               {{datastoreTextOption}} + ' ' + "{% trans "shortcut" %}"
+            {% else %}
+                '{{resource.name}} ' + "{% trans "shortcut" %}"
+           {% endif %}
+           
+           {% if datastorevalueOption != "" %}
+               +' '+"{% trans "by" %}"+' ' + {{datastorevalueOption.value}}
+           {% endif %}
+        {% endif %}
+        {% endwith %}
+        {% endwith %}
+        objWidgetOptions['fieldLabel'] = strFieldLabel;
+
+          
+        var objGPWidget{{widget.id}} = new org.GeoPrisma.Shortcut(objWidgetOptions);
+        
+        {% if nWidgets > 1 %}
+            objGPWidget{{widget.type.name.lower}}GeoExtToolbarOptions.push(objGPWidget{{widget.id}});
+        {% else %}
+            objGPWidget{{widget.type.name.lower}}GeoExtToolbarOptions = objGPWidget{{widget.id}});
+        {% endif %}    
+        
+        objGPWidget{{widget.type.name.lower}}FormPanel.items.push(objGPWidget{{widget.id}}));
+    {% endwith %}
+    {% endwith %}
+    {% endfor %}    
+</script>

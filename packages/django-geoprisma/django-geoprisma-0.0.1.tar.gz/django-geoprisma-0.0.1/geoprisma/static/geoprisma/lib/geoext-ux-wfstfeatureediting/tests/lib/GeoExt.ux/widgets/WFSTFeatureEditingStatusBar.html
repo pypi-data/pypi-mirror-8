@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html debug="true">
+  <head>
+    <link href="../../../../../../../ext/resources/css/ext-all.css"
+          rel="stylesheet" type="text/css" />
+    <link href="../../../../../../../ext/examples/shared/examples.css"
+          rel="stylesheet" type="text/css" />
+    <script src="../../../../../../../ext/adapter/ext/ext-base.js"
+            type="text/javascript" ></script>
+    <script src="../../../../../../../ext/ext-all.js"
+            type="text/javascript" ></script>
+    <script src="../../../../../../../openlayers/lib/OpenLayers.js"
+            type="text/javascript" ></script>
+    <script src="../../../../../../../geoext/lib/GeoExt.js"
+            type="text/javascript" ></script>
+    <script src="../../../../../../../ext/examples/ux/statusbar/StatusBar.js"
+            type="text/javascript" ></script>
+    <script src="../../../../lib/GeoExt.ux/WFSTFeatureEditing.js"
+            type="text/javascript" ></script>
+    <script type="text/javascript">
+    function test_WFSTFeatureEditingStatusBar_constructor(t) {
+        t.plan(6);
+        
+        var statusBar, dummyManager, log, callback;
+
+        dummyManager = Ext.extend(Ext.util.Observable, {
+            constructor: function(config) {
+                Ext.apply(this, config);
+                arguments.callee.superclass.constructor.call(this, config);
+                this.addEvents(["commitstart", "commitsuccess", "commitfail"]);
+            }
+        });
+
+        // (1) testing GeoExt.ux.WFSTFeatureEditingStatusBar existance
+        t.ok(GeoExt.ux.WFSTFeatureEditingStatusBar,
+             "GeoExt.ux.WFSTFeatureEditingStatusBar constructor exists if Ext.ux.StatusBar is available");
+
+        // callback methods
+        var callback = function() {
+            log = true;
+        };
+        GeoExt.ux.WFSTFeatureEditingStatusBar.prototype.onCommitStart = callback;
+        GeoExt.ux.WFSTFeatureEditingStatusBar.prototype.onCommitSuccess = callback;
+        GeoExt.ux.WFSTFeatureEditingStatusBar.prototype.onCommitFail =
+            callback;
+
+        // (2) testing GeoExt.ux.WFSTFeatureEditingStatusBar constructor
+        statusBar = new GeoExt.ux.WFSTFeatureEditingStatusBar({
+            manager: new dummyManager()});
+        t.ok(statusBar instanceof GeoExt.ux.WFSTFeatureEditingStatusBar,
+            "new  GeoExt.ux.WFSTFeatureEditingStatusBar returns an instance");
+        t.ok(statusBar.manager instanceof dummyManager,
+             "constructor sets manager correctly");
+
+        // (3) testing constructor event listeners
+        var log = false;
+        statusBar.manager.fireEvent("commitstart");
+        t.ok(log, "onCommitStart method called on manager commitstart event fired.");
+
+        var log = false;
+        statusBar.manager.fireEvent("commitsuccess");
+        t.ok(log, "onCommitSuccess method called on manager commitsuccess event fired.");
+
+        var log = false;
+        statusBar.manager.fireEvent("commitfail");
+        t.ok(log, "onCommitFail method called on manager commitfail event fired.");
+    }
+    </script>
+  <body>
+    <div id="panel"></div>
+  </body>
+</html>
