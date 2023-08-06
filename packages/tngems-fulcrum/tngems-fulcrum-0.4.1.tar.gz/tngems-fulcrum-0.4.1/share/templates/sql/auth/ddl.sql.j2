@@ -1,0 +1,130 @@
+-----------------------------------------------------------------------
+--
+--  SOUSOU BASE RELATIONS
+--
+-----------------------------------------------------------------------
+{% if with_drop %}
+DROP TABLE IF EXISTS
+    {{ schema_application }}.principals CASCADE;
+DROP TABLE IF EXISTS
+    {{ schema_application }}.principals_password CASCADE;
+DROP TABLE IF EXISTS
+    {{ schema_application }}.principals_username CASCADE;
+DROP TABLE IF EXISTS
+    {{ schema_application }}.principals_email_address CASCADE;
+DROP TABLE IF EXISTS
+    {{ schema_application }}.principals_is_active CASCADE;
+DROP TABLE IF EXISTS
+    {{ schema_application }}.principals_deleted CASCADE;
+{% endif %}
+
+
+-----------------------------------------------------------------------
+--  PRINCIPAL
+--
+--  Describes an principal of the system. A user or software agent that
+--  can authenticate itself is known as a principal. A principal has a
+--  name that uniquely identifies it.
+--
+--  Columns:
+--      principal_id: specifies the primary key.
+--      principal_type: specifies the user principal_type; discriminating between
+--          human and non-human principals.
+--      date_registered: specifies the date at which the user account
+--          was created.
+--      username: a unique name used to identify the operator.
+--
+--  Other attributes:
+--      display_name: a display name for the application UI (optional).
+--      password: the password of the user.
+--      email_address: e-mail address.
+--
+--  Notes:
+--      -   History of `display_name`, `username` is tracked.
+--
+-----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS {{ schema_application }}.principals(
+    principal_id serial8 NOT NULL,
+    principal_type varchar(4) NOT NULL,
+    date_registered timestamp with time zone NOT NULL
+        DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT principals_pk
+        PRIMARY KEY  (principal_id),
+    CONSTRAINT principal_type_is_valid
+        CHECK (principal_type IN ('auto','user'))
+);
+
+
+-- Handles soft deletes
+CREATE TABLE IF NOT EXISTS {{ schema_application }}.principals_deleted(
+    principal_id int8 NOT NULL,
+    during public.transaction_time NOT NULL
+        DEFAULT tstzrange(CURRENT_TIMESTAMP, 'infinity'),
+    CONSTRAINT principals_deleted_pk
+        PRIMARY KEY (principal_id, during),
+    CONSTRAINT principals_deleted_transaction_time_excl
+        EXCLUDE USING GIST (principal_id WITH =, during WITH &&),
+    CONSTRAINT principals_deleted_transaction_time_adj
+        EXCLUDE USING GIST (principal_id WITH =, during WITH -|-),
+    CONSTRAINT principals_deleted_principals_fk1
+        FOREIGN KEY (principal_id)
+        REFERENCES {{ schema_application }}.principals (principal_id)
+        ON UPDATE NO ACTION ON DELETE NO ACTION
+        DEFERRABLE INITIALLY IMMEDIATE
+);
+
+
+CREATE TABLE IF NOT EXISTS {{ schema_application }}.principals_password(
+    principal_id int8 NOT NULL,
+    password public.string NOT NULL,
+    CONSTRAINT principals_password_pk
+        PRIMARY KEY (principal_id),
+    CONSTRAINT principals_fk
+        FOREIGN KEY (principal_id)
+        REFERENCES {{ schema_application }}.principals (principal_id)
+        ON UPDATE NO ACTION ON DELETE CASCADE
+        DEFERRABLE INITIALLY IMMEDIATE
+);
+
+
+CREATE TABLE IF NOT EXISTS {{ schema_application }}.principals_username(
+    principal_id int8 NOT NULL,
+    username public.string NOT NULL,
+    CONSTRAINT principals_username_pk
+        PRIMARY KEY (principal_id),
+    CONSTRAINT principals_fk
+        FOREIGN KEY (principal_id)
+        REFERENCES {{ schema_application }}.principals (principal_id)
+        ON UPDATE NO ACTION ON DELETE CASCADE
+        DEFERRABLE INITIALLY IMMEDIATE,
+    CONSTRAINT principals_username_ak1
+        UNIQUE (username)
+);
+
+
+CREATE TABLE IF NOT EXISTS {{ schema_application }}.principals_email_address(
+    principal_id int8 NOT NULL,
+    email_address public.string NOT NULL,
+    CONSTRAINT principals_email_address_pk
+        PRIMARY KEY (principal_id),
+    CONSTRAINT principals_fk
+        FOREIGN KEY (principal_id)
+        REFERENCES {{ schema_application }}.principals (principal_id)
+        ON UPDATE NO ACTION ON DELETE CASCADE
+        DEFERRABLE INITIALLY IMMEDIATE,
+    CONSTRAINT principals_email_address_ak1
+        UNIQUE (email_address)
+);
+
+
+CREATE TABLE IF NOT EXISTS {{ schema_application }}.principals_is_active(
+    principal_id int8 NOT NULL,
+    is_active boolean NOT NULL,
+    CONSTRAINT principals_is_active_pk
+        PRIMARY KEY (principal_id),
+    CONSTRAINT principals_fk
+        FOREIGN KEY (principal_id)
+        REFERENCES {{ schema_application }}.principals (principal_id)
+        ON UPDATE NO ACTION ON DELETE CASCADE
+        DEFERRABLE INITIALLY IMMEDIATE
+);
