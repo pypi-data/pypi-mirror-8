@@ -1,0 +1,34 @@
+
+streamcorpus_pipeline:
+  root_path:
+  tmp_dir_path:  tmp
+  reader: from_local_chunks
+
+  log_level: DEBUG
+
+  external_stages_modules:
+  - streamcorpus_basis
+
+  incremental_transforms:
+  - basis
+
+  basis:
+    path_in_third:  /third/basis/basis-tech-2014-02-14/
+
+  output_chunk_max_count: 10000
+
+  batch_transforms: 
+  - multi_token_match_align_labels
+
+  multi_token_match_align_labels:
+    update_labels: true
+    annotator_id: KBP
+    tagger_id: basis
+
+
+  writers: [to_local_chunks]
+
+  to_local_chunks:
+    output_type: otherdir
+    output_path: foo
+    output_name: "%(source)s-%(num)d-%(md5)s"
