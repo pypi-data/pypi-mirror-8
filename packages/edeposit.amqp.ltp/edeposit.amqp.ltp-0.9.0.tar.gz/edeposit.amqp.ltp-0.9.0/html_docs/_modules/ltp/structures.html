@@ -1,0 +1,136 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>ltp.structures &mdash; edeposit.amqp.ltp 0.9.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.9.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="edeposit.amqp.ltp 0.9.0 documentation" href="../../index.html" />
+    <link rel="up" title="ltp" href="../ltp.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">edeposit.amqp.ltp 0.9.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../ltp.html" accesskey="U">ltp</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for ltp.structures</h1><div class="highlight"><pre>
+<span class="c">#!/usr/bin/env python</span>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#</span>
+<span class="c"># Interpreter version: python 2.7</span>
+<span class="c">#</span>
+<span class="c"># Imports =====================================================================</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
+
+
+<span class="c"># Variables ===================================================================</span>
+
+
+<span class="c"># Functions &amp; objects =========================================================</span>
+<div class="viewcode-block" id="ExportRequest"><a class="viewcode-back" href="../../api/ltp.structures.html#ltp.structures.ExportRequest">[docs]</a><span class="k">class</span> <span class="nc">ExportRequest</span><span class="p">():</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">aleph_record</span><span class="p">,</span> <span class="n">book_id</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">b64_data</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">aleph_record</span> <span class="o">=</span> <span class="n">aleph_record</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">book_id</span> <span class="o">=</span> <span class="n">book_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">b64_data</span> <span class="o">=</span> <span class="n">b64_data</span>
+
+</div>
+<div class="viewcode-block" id="ExportResult"><a class="viewcode-back" href="../../api/ltp.structures.html#ltp.structures.ExportResult">[docs]</a><span class="k">class</span> <span class="nc">ExportResult</span><span class="p">():</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">export_id</span><span class="p">,</span> <span class="n">exported</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">export_id</span> <span class="o">=</span> <span class="n">export_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">exported</span> <span class="o">=</span> <span class="n">exported</span>
+
+</div>
+<div class="viewcode-block" id="ExportTrackingRequest"><a class="viewcode-back" href="../../api/ltp.structures.html#ltp.structures.ExportTrackingRequest">[docs]</a><span class="k">class</span> <span class="nc">ExportTrackingRequest</span><span class="p">():</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">book_id</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">book_id</span> <span class="o">=</span> <span class="n">book_id</span>
+
+</div>
+<div class="viewcode-block" id="TrackingStates"><a class="viewcode-back" href="../../api/ltp.structures.html#ltp.structures.TrackingStates">[docs]</a><span class="k">class</span> <span class="nc">TrackingStates</span><span class="p">():</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exported</span><span class="p">,</span> <span class="n">error</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">exported</span> <span class="o">=</span> <span class="n">exported</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">error</span> <span class="o">=</span> <span class="n">error</span>
+
+</div>
+<div class="viewcode-block" id="ExportTrackingResult"><a class="viewcode-back" href="../../api/ltp.structures.html#ltp.structures.ExportTrackingResult">[docs]</a><span class="k">class</span> <span class="nc">ExportTrackingResult</span><span class="p">():</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">book_id</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">book_id</span> <span class="o">=</span> <span class="n">book_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">state</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">edeposit.amqp.ltp 0.9.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../ltp.html" >ltp</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014 E-deposit team.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>
