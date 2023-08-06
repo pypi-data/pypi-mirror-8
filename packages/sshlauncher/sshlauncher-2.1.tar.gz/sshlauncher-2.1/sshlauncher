@@ -1,0 +1,166 @@
+#!/usr/bin/env python
+#
+#    Copyright 2008 Zdravko Bozakov and Michael Bredel
+#
+#    This file is part of SSHLauncher.
+#
+#    SSHLauncher is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 2 of the License, or
+#    (at your option) any later version.
+#
+#    SSHLauncher is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+#
+import ConfigParser
+import code
+import logging
+import os
+import re
+import string
+import sys
+import time
+import threading
+
+from optparse import OptionParser
+
+import sshctrl
+
+__version__="2.1"
+# set empty default password
+DEFAULTPASSWORD=''
+# set default ssh port 22
+DEFAULTPORT=22
+
+
+usage = "usage: %prog [options] configfile"
+ver = "version %s" % __version__
+parser = OptionParser(usage=usage, version=ver)
+parser.add_option("-d", "--debug",
+                  action="store_true",
+                  dest="debug",
+                  default=False,
+                  help="enable debug mode")
+parser.add_option("-e", "--escape",
+                  action="store_true",
+                  dest="escape",
+                  default=False,
+                  help="enable interpretation of backslash escapes in commands")
+parser.add_option("-s", "--simulate",
+                  action="store_true",
+                  dest="simulate",
+                  default=False,
+                  help="simulates the sshlauncher configuration by replacing commands by relevant echos")
+
+(opt, args) = parser.parse_args()
+
+try:
+    configfile = args[0]
+except (IndexError, IOError):
+    print "you must specify a configuration file!\n"
+    raise SystemExit
+
+if opt.debug:
+    sshctrl.DEBUG = opt.debug
+    print "*** DEBUG mode ***"
+if opt.escape:
+    sshctrl.SSHControl.ESCAPE = opt.escape
+    print "*** ESCAPE mode ***"
+if opt.simulate:
+    sshctrl.SSHControl.SIMULATE = opt.simulate
+    print "*** SIMULATE mode ***"
+
+
+# import all bash envionment variables which start with SL_
+defaults={}
+for param in os.environ.keys():
+    if param[:3]=='SL_':
+        defaults[param]=os.environ[param]
+
+if sshctrl.DEBUG and defaults:
+    print "Using environment variables: "
+    for d in defaults:
+        print "\t %s = %s" % (d,defaults[d],)
+
+# parse configuration file
+config = ConfigParser.ConfigParser(defaults)
+if not config.read(configfile):
+    print "no configuration file named %s!\n" % configfile
+    raise SystemExit
+
+# create a list which will store all session threads
+session_list=[]
+
+# parse the configuration file
+for section in config.sections():
+    try:
+        pwd = config.get(section, 'password')
+    except ConfigParser.NoOptionError:
+        pwd = DEFAULTPASSWORD
+
+    try:
+        port = config.get(section, 'port')
+    except ConfigParser.NoOptionError:
+        port = DEFAULTPORT
+
+    try:
+        after = config.get(section, 'after')
+        after = eval(after)
+    except ConfigParser.NoOptionError:
+        after = None
+    except SyntaxError as e:
+        print "Syntax error in config file:\n\t%s" % (e.text)
+        exit(0)
+
+    try:
+        sync = config.get(section, 'sync')
+        sync = eval(sync)
+    except ConfigParser.NoOptionError:
+        sync = None
+    except SyntaxError as e:
+        print "Syntax error in config file:\n\t%s" % (e.text)
+        exit(0)
+
+    #CK: maybe place another separator here (now: space)
+    hosts = config.get(section, 'host').split()
+    try:
+        for i,host in enumerate(hosts):
+            session_list.append(sshctrl.SSHControl(section, host, port,
+                                                  config.get(section, 'user'), pwd,
+                                                  config.get(section, 'command'), after, sync,))
+    except ConfigParser.InterpolationMissingOptionError as e:
+        print "\nERROR:\tvariable not defined\n"
+        print e
+        raise SystemExit
+
+# store list of session threads
+sshctrl.SSHControl.ssh_threads = session_list
+sshctrl.SSHControl.thread_lock = threading.Lock()
+
+
+
+
+
+if __name__ == '__main__':
+    print "SSHLauncher version %s" % __version__
+    print sys.version
+    print "-"*80
+
+    # start all threads in thread list
+    for ssh_thread in session_list:
+        ssh_thread.start()
+
+    while session_list and sshctrl.SSHControl.terminate_threads is False:
+        try:
+            time.sleep(1)
+        except KeyboardInterrupt:
+            print "\n\n Terminating!\n"
+            break
+
+    for sshThread in session_list:
+        sshThread.ssh_disconnect()
