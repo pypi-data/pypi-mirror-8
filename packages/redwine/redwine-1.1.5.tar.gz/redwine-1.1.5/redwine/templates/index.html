@@ -1,0 +1,198 @@
+{% extends "base.html" %}
+
+{% block title %}
+{{currCom}} - RedWine
+{% endblock title %}
+{% load filters %}
+
+{% block styles %}
+{{ block.super }}
+<link href="{{ STATIC_URL }}css/redwine.css" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+
+<nav class="subnavbar">
+    <div class="container">
+        <ul>
+            {%for kom, users in committees.items %}
+                {%ifequal currCom kom %}
+                    <li class="top-menu-link active">
+                        <a class="active" href="/redwine/{{kom}}">{{ kom }}</a>
+                    </li>
+                {%else%}
+                    <li class="top-menu-link">
+                        <a class="" href="/redwine/{{kom}}">{{ kom }}</a>
+                    </li>
+                {%endifequal%}
+            {% endfor %}
+        </ul>
+</div>
+</nav>
+
+<section id="redwine">
+    <div class="container">
+        <!--<div id="nyan" class="nyan"></div>-->
+        <div class="row">
+    {%for kom, users in committees.items %}
+    {%ifequal currCom kom %} 
+    <div class="col-md-12">
+        <div class="page-header">
+        <input type="search" class="search" placeholder="Søk" name="search" id="search">
+        <h2>{{kom}} - Vinstraffer</h2>
+        </div>
+        <div class="page-header" id="accordion">
+          <table class="table searchtable" id="maintable">
+           <thead>
+              <tr class="center">
+                  <th class="left col-md-6"><strong>Navn</strong></th>
+                  <th class="col-sm-2 center headerSortDown"><strong>Antall</strong></th>
+                  <th class="center"><strong>Sist straffet</strong></th>
+                  <th></th>
+              </tr>
+            </thead>
+            <tbody>
+            {%for member, tot, by_kom in users %}
+            <tr data-toggle="collapse" data-target="#{{kom.id}}_{{member.id}}" data-parent="#accordion" class="accordion-toggle center clickable">
+                <td class="nameCell left col-md-6 listname">
+                <a href="/profile/{{member.username}}/" class="glyphicon glyphicon-user frontIcons"></a>
+                {{ member.get_full_name }}
+                </td>
+                <td title="{{ tot }} {% ifequal tot 1 %}straff{%else%}straffer{%endifequal%}"
+                class="col-sm-2 nameCell total">
+                    {% for penalty in member.penalties.all %}
+                        {% if penalty.deleted %}{%else%}
+                            {% ifequal penalty.committee currCom.name %}
+                                {% for penalties in penalty.amount|get_range %}
+                                    <img src="/static/img/{{penalty.item}}.png" alt="{{penalty.item_name}}" class="{{penalty.item}}">
+                                {% endfor %}
+                            {% endifequal %}
+                        {%endif%}
+                    {% endfor %}
+                </td>
+                <td class="nameCell">{{ by_kom.latest.date | date:"d M Y H:i" }}</td>
+                <td><span class="glyphicon glyphicon-chevron-down"></span></td>
+            </tr>
+            <tr>
+        <td colspan="4" class="hiddenRow">
+          <div class="accordian-body collapse elementInfo {% ifequal member.id editedUser %}in{% endifequal %}" id="{{kom.id}}_{{member.id}}">
+
+            <div class="row noMargin">
+              <div class="newCol">
+                <form class="form-inline addNew" role="form" action="." method="post">
+                    {% csrf_token %}
+                    {{ form.non_field_errors }}
+                    <div class="form-group">
+                        <div class="col-xs-10">
+                            <label class="sr-only" for="exampleInputEmail2">Ny Vinstraff</label>
+                            {{ form.reason.errors }}
+                            <input type="text" maxlength="100" class="form-control" id="id_reason" name="reason" placeholder="Begrunnelse på ny vinstraff">
+                        </div>
+                        <div class="addBox col-xs-1">
+                          {{ form.amount.errors }}
+                          <select id="select-control" class="form-control" id="type" name="type" style="width: auto !important;">
+                              <option value="wine.vin">Vin</option>
+                              <option value="beer.øl">Øl</option>
+                          </select>
+                          <select id="select-control" class="form-control" id="amount" name="amount">
+                            {% for num in "123456789"%}<option{%ifequal num wineString %} nosel {% endifequal %}>{{ num }}</option>{%endfor%}
+                        </select>
+                        <input id="id_to" name="to" type="hidden" value="{{ member.id }}">
+                        <input id="committee" name="committee" type="hidden" value="{{ kom }}">
+                        <button type="submit" name="act" class="btn btn-success" title="Ny Vinstraff" value="add">
+                          <span class="glyphicon glyphicon-plus"></span> Ny</button>
+                      </div>
+                  </div>
+
+
+              </div>
+          </div>
+          {%for penalty in member.penalties.all %}
+          {% ifequal penalty.committee currCom.name %}
+          {% ifequal penalty.deleted showDeleted %}
+          <div class="row noMargin">
+              <hr>
+              <div class="col-md-6">
+                <blockquote>
+                  <p class="breakword">{{ penalty.reason }}</p> 
+                  <small>Gitt av <a href="/profile/{{penalty.giver.username}}/"><cite title="Brukerprofil">{{ penalty.giver }}</cite></a></small>
+              </blockquote>
+          </div>
+              
+              <div title="{{ penalty.amount }} {% ifequal penalty.amount 1 %}{{penalty.item_name}}straff{%else%}{{penalty.item_name}}straffer{%endifequal%}" class="col-sm-2 nameCell center noLeftPadd">
+                {% for vin in penalty.amount|get_range %}
+                <img src="/static/img/{{penalty.item}}.png" alt="{{penalty.item_name}}" class="{{penalty.item}}">
+                {% endfor %}
+            </div>
+
+            <div title="Vinstraff gitt {{ penalty.date | date:'d M Y H:i' }}" class="col-sm-2 nameCell minCell">
+              {{penalty.date | date:"d M Y H:i"}}
+          </div>
+
+          <div class="col-sm-2">
+            <span class="rightFloat">
+              {%if penalty.deleted %}
+                  <button type="button" name="act" class="btn" title="Slettet straff" value="">
+                  <span class="glyphicon glyphicon-ban-circle"></span> Slettet</button>
+              {% else %}
+                  <button type="submit" name="act" class="btn btn-danger" title="Slett" value="delete {{ penalty.pk }}">
+                  <span class="glyphicon glyphicon-ban-circle"></span> Slett</button>
+              {% endif %}
+                  </span>
+              </div>
+          </div>
+          {% endifequal %}
+          {% endifequal %}
+          {% endfor %}
+          <div class="row noMargin">
+            <hr>
+            <div class="moreCell">
+
+              {%if showDeleted %}
+              <button type="submit" name="act" class="btn btn-warning" title="Vis Slettede Straffer" value="">
+                 <span class="glyphicon glyphicon-eye-close"></span> Skjul Slettede</button>
+                 {% else %}
+                 <button type="submit" name="act" class="btn btn-warning" title="Vis Slettede Straffer" value="showhidden {{ member.id }}">
+                     <span class="glyphicon glyphicon-trash"></span> Vis Slettede</button>
+                     {% endif %}     
+                     <button type="submit" name="act" class="btn permabutton" title="Annuler alle penalties" value="nuke {{ member.id }}">
+                      <span class="glyphicon glyphicon-fire"></span> Slett Alle</button>
+                  </div>
+              </div>
+          </form>
+      </div> 
+  </div>
+
+          </td>
+      </tr>
+      {%endfor%}
+    </tbody>
+  </table>
+</div>
+</div>
+{% endifequal %}
+{% endfor %}
+{% if error %}
+<div class="page-header">Error: {{errorMessage}}</div>
+{% endif %}
+</div>
+</section>
+{% endblock content %}
+
+{% block js %}
+{{ block.super }}
+<script src="{{ STATIC_URL }}js/jquery.filtertable.min.js"></script>
+<script src="{{ STATIC_URL }}js/jquery.tablesorter.min.js"></script> 
+<script>
+$(document).ready(function() {
+        $("#maintable").tablesorter(); 
+        $('table').filterTable({
+          inputSelector:"#search"
+        });
+        {%if ownDelete %}
+        //$(document.getElementById("nyan")).toggleClass( "goNyan" );
+        {% endif %}
+    });
+</script>
+
+{% endblock %}
