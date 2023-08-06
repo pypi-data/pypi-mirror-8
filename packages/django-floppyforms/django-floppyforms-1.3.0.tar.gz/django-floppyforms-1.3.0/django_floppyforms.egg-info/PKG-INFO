@@ -1,0 +1,147 @@
+Metadata-Version: 1.1
+Name: django-floppyforms
+Version: 1.3.0
+Summary: Full control of form rendering in the templates
+Home-page: https://github.com/gregmuellegger/django-floppyforms
+Author: Bruno Renié
+Author-email: bruno@renie.fr
+License: BSD licence, see LICENSE file
+Description: django-floppyforms
+        ==================
+        
+        .. image:: https://api.travis-ci.org/gregmuellegger/django-floppyforms.png
+           :alt: Build Status
+           :target: https://travis-ci.org/gregmuellegger/django-floppyforms
+        
+        Full control of form rendering in the templates.
+        
+        * Author: Bruno Renié and `contributors`_
+        * Licence: BSD
+        * Requirements: homework -- read `this`_.
+        
+        .. _contributors: https://github.com/gregmuellegger/django-floppyforms/contributors
+        .. _this: http://diveintohtml5.info/forms.html
+        
+        Installation
+        ------------
+        
+        * ``pip install -U django-floppyforms``
+        * Add ``floppyforms`` to your ``INSTALLED_APPS``
+        
+        For extensive documentation see the ``docs`` folder or `read it on
+        readthedocs`_
+        
+        .. _read it on readthedocs: http://django-floppyforms.readthedocs.org/
+        
+        To install the `in-development version`_ of django-floppyforms, run ``pip
+        install django-floppyforms==dev``.
+        
+        .. _in-development version: https://github.com/gregmuellegger/django-floppyforms/tarball/master#egg=django-floppyforms-dev
+        
+        Help
+        ----
+        
+        Ask your questions on the #django-floppyforms IRC channel on freenode.
+        
+        Bugs
+        ----
+        
+        Really? Oh well... Please Report. Or better, fix :)
+        
+        Development
+        -----------
+        
+        Thanks for asking!
+        
+        Get the code::
+        
+            git clone git@github.com:gregmuellegger/django-floppyforms.git
+            cd django-floppyforms
+            virtualenv -p python2 env
+            source env/bin/activate
+            add2virtualenv .
+        
+        Install the development requirements::
+        
+            pip install "tox>=1.8"
+        
+        Run the tests::
+        
+            tox -e py27-16
+        
+        You can see all the supported test configurations with ``tox -l``.
+        
+        
+        Changelog
+        ---------
+        
+        1.3.0
+        ~~~~~
+        
+        * DateInput widget renders hardcoded "%Y-%m-%d" format. We don't allow custom
+          formats there since the "%Y-%m-%d" format is what browsers are submitting
+          with HTML5 date input fields. Thanks to Bojan Mihelac for the patch.
+        
+        * Adding ``supports_microseconds`` attribute to all relevant widget classes.
+          Thanks to Stephen Burrows for the patch.
+        
+        * Using a property for ``Widget.is_hidden`` attribute on widgets to be in
+          conformance with Django 1.7 default widget implementation.
+        
+        * The docs mentioned that the current ``ModelForm`` behaviour in
+          ``floppyforms.__future__`` will become the default in 1.3. This is postpone
+          for one release and will be part of 1.4.
+        
+        1.2.0
+        ~~~~~
+        
+        * Subclasses of ``floppyforms.models.ModelForm`` did not convert widgets of
+          form fields that were automatically created for the existing model fields
+          into the floppyform variants. This is now changed, thanks to a patch by
+          Stephen Burrows.
+        
+          Previously you had to set the widgets your self in a model form. For example
+          you would write::
+        
+            import floppyforms as forms
+        
+            class ProfileForm(forms.ModelForm):
+                class Meta:
+                    model = Profile
+                    widgets = {
+                        'name': forms.TextInput,
+                        'url': forms.URLInput,
+                        ...
+                    }
+        
+          Now this is done automatically. But since this is a kind-of
+          backwardsincompatible change, you need to use a special import::
+        
+            import floppyforms.__future__ as forms
+        
+            class ProfileForm(forms.ModelForm):
+                class Meta:
+                    model = Profile
+        
+          This feature will become the default behaviour in floppyforms 1.4.
+        
+          See the documentation for more information:
+          http://django-floppyforms.readthedocs.org/en/latest/usage.html#modelforms
+        
+        * If you added an attribute with value 1 to the attrs kwargs (e.g. ``{'value':
+          1}``, you would get no attribute value in the rendered html (e.g. ``value``
+          instead of ``value="1"``). That's fixed now, thanks to Viktor Ershov for the
+          report.
+        
+        * All floppyform widget classes now take a ``template_name`` argument in the
+          ``__init__`` and ``render`` method. Thanks to Carl Meyer for the patch.
+        
+Platform: UNKNOWN
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Environment :: Web Environment
+Classifier: Framework :: Django
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Natural Language :: English
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
