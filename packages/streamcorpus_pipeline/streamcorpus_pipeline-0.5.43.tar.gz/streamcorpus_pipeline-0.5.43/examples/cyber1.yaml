@@ -1,0 +1,20 @@
+streamcorpus_pipeline:
+  root_path:
+  tmp_dir_path:  tmp
+  reader: from_local_chunks
+
+  log_level: DEBUG
+
+  incremental_transforms:
+  - title
+
+  output_chunk_max_count: 2000
+
+  batch_transforms: []
+
+  writers: [to_local_chunks]
+
+  to_local_chunks:
+    output_type: otherdir
+    output_path: foo
+    output_name: "%(source)s-%(num)d-%(md5)s"

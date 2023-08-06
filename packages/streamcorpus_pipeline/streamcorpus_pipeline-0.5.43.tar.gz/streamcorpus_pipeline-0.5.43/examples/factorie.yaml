@@ -1,0 +1,28 @@
+
+streamcorpus_pipeline:
+  root_path:
+  tmp_dir_path:  tmp
+  reader: from_local_chunks
+
+  log_level: DEBUG
+
+  incremental_transforms:[]
+
+  output_chunk_max_count: 10000
+
+  batch_transforms: 
+  - factorie
+  - multi_token_match_align_labels
+
+  multi_token_match_align_labels:
+    update_labels: true
+    annotator_id: KBP
+    tagger_id: factorie
+
+
+  writers: [to_local_chunks]
+
+  to_local_chunks:
+    output_type: otherdir
+    output_path: /data/kbp/2009
+    output_name: "%(input_fname)s-factorie"
