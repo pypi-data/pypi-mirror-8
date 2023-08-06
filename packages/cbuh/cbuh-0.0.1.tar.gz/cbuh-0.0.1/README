@@ -1,0 +1,65 @@
+Dada contacts
+=================
+Install Xapian and cbuh. In Arch Linux, I do this. ::
+
+    sudo pacman -S python2-xapian
+    sudo pip2 install cbuh
+
+Save your contacts in ``~/.cbuh/contacts`` with the following format. ::
+
+    [thomas.levine]
+    name = Thomas Levine
+    email = _@thomaslevine.com
+    phone = +1 831 713 1131
+    place = Scarsdale; Ithaca; New York; Oakland, California; Berlin, Germany
+    6birthday = 19900330
+
+    [someone.else]
+    email = someone@dada.pink
+    # ...
+
+Run ``cbuh -h`` to see how to run. (Or look below.) ::
+
+    usage: cbuh [-h] [-s] [-m] [-c path] [-d path] [-p path] [-i]
+                [[search term] [[search term] ...]]
+
+    Query the contact list.
+
+    positional arguments:
+      [search term]         The search terms, if you're running a search
+
+    optional arguments:
+      -h, --help            show this help message and exit
+      -s, --sort            Sort the contacts file by person identifier.
+      -m, --mutt            Export the contact list as a mutt alias file.
+      -c path, --contacts path
+                            The contacts file
+      -d path, --database path
+                            The database directory
+      -p path, --prefixes path
+                            The prefixes file
+      -i, --index           Index the contact list.
+
+    Search the contact list in ~/.cbuh/contacts. The search is an ordinary Xapian
+    query (http://xapian.org/docs/queryparser.html) with whatever prefixed terms
+    you like. I suggest these.
+
+    * id
+    * name
+    * email
+    * phone
+    * place
+
+    If you apply these prefixes, you search within that field only;
+    for example, "name:Francisco" searches for people with names like
+    "Francisco". Searching for simply "Francisco", on the other hand,
+    will also match everyone who lives in San Francisco.
+
+    Prefixes that start with digits 0 to 4 are treated as numeric values,
+    with the digit being the slot. For example, I use ``1want`` to
+    indicate how much I want to see someone, so I can search for people
+    I really want to see with ``want20..``.
+
+    Prefixes that start with digits 5 to 9 are treated as date values,
+    with the digit being the slot. For example, I use ``6born`` to indicate
+    when someone was born.
