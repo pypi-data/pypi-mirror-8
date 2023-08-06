@@ -1,0 +1,16 @@
+<div class="field-wrapper field"
+     tal:attributes="class python: errors and 'field-wrapper field error' or 'field-wrapper field'">
+  <label class="formQuestion" for="%(id)s">${python: field.label.text}</label>
+  <span tal:condition="required" class="required" title="Required"></span>
+  <div class="formHelp">${field.description}</div>
+  <div class="fieldErrorBox" tal:condition="errors">
+    <ul tal:condition="errors">
+      <tal:errors tal:repeat="error errors">
+        <li>${error}</li>
+      </tal:errors>
+    </ul>
+  </div>
+  <div class="placeholder"></div>
+  <div tal:replace="structure python: field(**field_options)" />
+  <div class="clearfix visible-xs"></div>
+</div>
