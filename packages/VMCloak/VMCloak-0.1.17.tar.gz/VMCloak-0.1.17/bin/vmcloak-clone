@@ -1,0 +1,122 @@
+#!/usr/bin/env python
+# Copyright (C) 2014 Jurriaan Bremer.
+# This file is part of VMCloak - http://www.vmcloak.org/.
+# See the file 'docs/LICENSE.txt' for copying permission.
+
+import logging
+import os
+import pwd
+import socket
+import sys
+
+from vmcloak.conf import Configuration, vboxmanage_path
+from vmcloak.constants import VMCLOAK_ROOT
+from vmcloak.misc import read_bird, shared_parameters, register_cuckoo
+from vmcloak.misc import wait_for_host
+from vmcloak.vm import VirtualBox, initialize_vm
+
+logging.basicConfig(level=logging.INFO)
+log = logging.getLogger('vmcloak-clone')
+
+
+def main():
+    parser, defaults, types = shared_parameters()
+    parser.add_argument('--bird', type=str, required=True, help='Name of the bird to clone from.')
+
+    args = parser.parse_args()
+    s = Configuration()
+
+    if args.verbose:
+        log.setLevel(logging.DEBUG)
+
+    if args.recommended_settings:
+        s.from_file(os.path.join(VMCLOAK_ROOT, 'data', 'recommended.ini'))
+
+    s.from_args(args)
+    s.from_defaults(defaults)
+    s.apply_types(types)
+
+    # Not really sure if this is possible in a cleaner way, but if no
+    # arguments have been given on the command line, then show the usage.
+    if len(sys.argv) == 1:
+        parser.print_help()
+        exit(0)
+
+    if s.user:
+        try:
+            user = pwd.getpwnam(s.user)
+            os.setgroups((user.pw_gid,))
+            os.setgid(user.pw_gid)
+            os.setuid(user.pw_uid)
+            os.putenv('HOME', user.pw_dir)
+        except KeyError:
+            sys.exit('Invalid user specified to drop privileges to: %s' %
+                     args.user)
+        except OSError as e:
+            sys.exit('Failed to drop privileges: %s' % e)
+
+    if not s.vmname:
+        log.error('A name for the Virtual Machine is required.')
+        exit(1)
+
+    vboxmanage = vboxmanage_path(s)
+
+    bird = read_bird(s.bird)
+    if not bird:
+        log.critical('Specified bird not found! Please verify its name.')
+        exit(1)
+
+    # Only VirtualBox support at the moment.
+    m = VirtualBox(s.vmname, s.vm_dir, s.data_dir,
+                   vboxmanage=vboxmanage, temp_dir=s.temp_dirpath)
+
+    initialize_vm(m, s, clone=True)
+
+    # Attach the immutable harddisk. A differencing harddisk will
+    # automatically be created by VirtualBox.
+    m.attach_hd(bird['hdd_path'])
+
+    # Now we set the differencing harddisk to not autoreset. That is, the
+    # changes will not be reverted upon a reboot.
+    # log.critical("HOIIII %r", m.vminfo('IDE-0-0'))
+    # m.autoreset_hd(m.vminfo('IDE-0-0'), autoreset=False)
+
+    log.debug('Starting Virtual Machine, waiting for connect back.')
+    m.start_vm(visible=s.vm_visible)
+
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock.bind((s.host_ip, s.host_port))
+    sock.listen(1)
+
+    guest, _ = sock.accept()
+
+    sock.close()
+
+    log.info('Assigning IP address %s (mask %s, gateway %s)',
+             s.hostonly_ip, s.hostonly_mask, s.hostonly_gateway)
+
+    # Send the hostonly IP address, mask, and gateway.
+    guest.send('%s %s %s' % (s.hostonly_ip, s.hostonly_mask,
+                             s.hostonly_gateway))
+
+    # TODO Catch the correct exception.
+    try:
+        guest.close()
+    except:
+        pass
+
+    # Wait for the host to get up and running.
+    wait_for_host(s.hostonly_ip)
+
+    log.debug('Taking a snapshot of the current state.')
+    log.debug(m.snapshot('vmcloak', 'Snapshot created by VM Cloak.'))
+
+    log.debug('Powering off the virtual machine.')
+    log.debug(m.stopvm())
+
+    if s.register_cuckoo:
+        register_cuckoo(hostonly_ip=s.hostonly_ip, tags=s.tags,
+                        vmname=s.vmname, cuckoo_dirpath=s.cuckoo)
+
+if __name__ == '__main__':
+    main()
