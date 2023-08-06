@@ -1,0 +1,53 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      lang="en"
+      metal:use-macro="context/main_template/macros/master"
+      i18n:domain="rg.infocard">
+  <body>
+    <metal:block metal:fill-slot="style_slot">
+      <link rel='stylesheet' tal:attributes="href string:${portal_url}/++resource++rg.infocard/css/infocard.css">
+    </metal:block>
+    <metal:content-title metal:fill-slot="content-title"></metal:content-title>
+    <metal:content-description metal:fill-slot="content-description"></metal:content-description>
+    <metal:main fill-slot="content-core">
+      <metal:content-core define-macro="content-core">
+        <table tal:define="isanon context/@@plone_portal_state/anonymous;
+                           toLocalizedTime nocall: context/@@plone/toLocalizedTime;">
+          <tr>
+            <th i18n:domain="plone" i18n:translate="title">Title</th>
+            <td tal:content="here/title"></td>
+          </tr>
+          <tr>
+            <th>Aggiornata al</th>
+            <td tal:content="python:toLocalizedTime(view.modified, long_format=1)"></td>
+          </tr>
+          <tr tal:condition="not:isanon">
+            <th>Autori</th>
+            <td tal:content="view/authors"></td>
+          </tr>
+          <tr>
+            <th>Cos'è</th>
+            <td tal:content="here/description"></td>
+          </tr>
+          <tr tal:condition="view/locations">
+            <th>Dov'è</th>
+            <td tal:content="view/locations"></td>
+          </tr>
+          <tr tal:condition="view/recipients">
+            <th>A chi si rivolge</th>
+            <td tal:content="view/recipients"></td>
+          </tr>
+          <tal:for repeat="info view/allowed_infos">
+            <tr>
+              <th tal:content="info/arg_title"></th>
+              <td tal:content="structure info/arg_value/output|info/arg_value"></td>
+            </tr>
+          </tal:for>
+        </table>
+      </metal:content-core>
+    </metal:main>
+
+  </body>
+</html>

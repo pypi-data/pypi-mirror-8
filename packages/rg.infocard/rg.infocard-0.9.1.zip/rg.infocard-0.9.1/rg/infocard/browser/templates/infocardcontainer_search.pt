@@ -1,0 +1,69 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      i18n:domain="plone"
+      metal:use-macro="context/main_template/macros/master">
+
+    <metal:block metal:fill-slot="top_slot"
+                 tal:define="foo python:request.set('disable_plone.leftcolumn', 1);
+                             foo python:request.set('disable_plone.rightcolumn', 1);
+                            ">
+    </metal:block>
+    <metal:block metal:fill-slot="style_slot">
+      <link rel='stylesheet' tal:attributes="href string:${portal_url}/++resource++rg.infocard/css/infocardcontainer_search.css">
+    </metal:block>
+    <metal:block metal:fill-slot="javascript_head_slot">
+      <script tal:attributes="src string:${portal_url}/++resource++rg.infocard/scripts/infocardcontainer_search.js"></script>
+    </metal:block>
+
+    <metal:block fill-slot="content-core">
+        <div id="content-core">
+          <div tal:condition="here/introduction" tal:content="structure here/introduction/output">
+            Rich text field for infocard container
+          </div>
+          <div class="visualClear"></div>
+          <metal:block use-macro="context/@@ploneform-macros/titlelessform" />
+          <tal:searching tal:condition="view/searching|nothing">
+            <div class="visualClear"></div>
+            <p i18n:domain="plone"
+               tal:condition="not:view/results"
+               ><strong i18n:translate="description_no_results_found"
+                 >No results were found.</strong></p>
+            <div tal:condition="view/results">
+              <table class="listing collection-listing" summary="Content listing" i18n:attributes="summary" i18n:domain="plone"
+                     data-rg-infocard-datatables="">
+                <thead>
+                    <tr tal:condition="view/table_fields">
+                        <th class="nosort"
+                            i18n:translate=""
+                            tal:repeat="field view/table_fields"
+                            tal:attributes="class string:listing-header-${field/id}"
+                            tal:content="field/label">Field name</th>
+                    </tr>
+                </thead>
+                <tbody>
+                  <tal:block tal:repeat="item view/results">
+                    <tr tal:define="oddrow repeat/item/odd;">
+                      <td><a
+                            data-rg-infocard-overlay=""
+                            href="#"
+                            tal:attributes="href item/url;
+                                            class string:state-${item/review_state};
+                                            title item/description"
+                            tal:content="item/title"
+                            >Item title</a></td>
+                      <td tal:content="item/description">description</td>
+                      <td tal:content="item/locations">locations</td>
+                      <td tal:content="item/recipients">description</td>
+                    </tr>
+                  </tal:block>
+                </tbody>
+              </table>
+            </div>
+          </tal:searching>
+        </div>
+
+    </metal:block>
+
+</html>
