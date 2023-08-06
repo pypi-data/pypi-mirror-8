@@ -1,0 +1,6 @@
+{% load cropping thumbnail %}
+<div class="fotorama" data-nav="thumbs">
+    {% for slide in slide_list %}
+        <a href="{% cropped_thumbnail slide 'cropping' %}"><img src="{% thumbnail slide.image '50x50' %}"></a>
+    {% endfor %}
+</div>
