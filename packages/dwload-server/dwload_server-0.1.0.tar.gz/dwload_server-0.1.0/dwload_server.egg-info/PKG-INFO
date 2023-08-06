@@ -1,0 +1,136 @@
+Metadata-Version: 1.1
+Name: dwload-server
+Version: 0.1.0
+Summary: DWLOAD server implemented in Python
+Home-page: https://github.com/DWLOAD/DwLoadServer
+Author: Jens Diemer
+Author-email: dwload_server@jensdiemer.de
+License: GPL v3+
+Description: DwLoadServer
+        
+        ==================================================================
+        DWLOAD server implemented in Python (OpenSource, GPL v3 or above).
+        ==================================================================
+        
+         It's in unuseable, experimental state and currently nothing more then some tests scripts.
+        
+        -------------
+        current state
+        -------------
+        
+        Currently the server can only send files to the DWLOAD client.
+        
+        ------------
+        installation
+        ------------
+        
+        The is a virtualenv bootstrap file, created with `bootstrap_env <https://github.com/jedie/bootstrap_env>`_, for easy installation.
+        
+        Get the bootstrap file:
+        
+        ::
+        
+            /home/FooBar$ wget https://raw.githubusercontent.com/DWLOAD/DwLoadServer/master/boot_dwload_server.py
+        
+        There are tree types of installation:
+        
+        +------------------+------------------------------------------------------------------------+
+        | option           | desciption                                                             |
+        +==================+========================================================================+
+        | **pypi**         | use `Python Package Index`_ (for all normal user!)                     |
+        +------------------+------------------------------------------------------------------------+
+        | **git_readonly** | use ``git`` to get the sourcecode (for developer without write access) |
+        +------------------+------------------------------------------------------------------------+
+        | **dev**          | use ``git`` with write access                                          |
+        +------------------+------------------------------------------------------------------------+
+        
+        .. _Python Package Index: http://www.python.org/pypi/
+        
+        e.g.:
+        
+        ::
+        
+            /home/FooBar$ python3 boot_dwload_server.py ~/dwload_server_env --install_type pypi
+        
+        This creates a virtualenv in **``~/dwload_server_env``** and used the packages from the **Python Package Index**.
+        
+        startup
+        =======
+        
+        Setup server root directory. This is the directory for the files that are interchange with the client.
+        
+        ::
+        
+            /home/FooBar$ cd ~/dwload_server_env/
+            /home/FooBar/dwload_server_env$ mkdir root
+        
+        You have to put the DWEEB files into the ``root`` dir. e.g. ``dwload-demo-files`` from: `https://github.com/DWLOAD/DWLOAD <https://github.com/DWLOAD/DWLOAD>`_
+        
+        To start the server:
+        
+        ::
+        
+            /home/FooBar$ cd ~/dwload_server_env/
+            /home/FooBar/dwload_server_env$ ./bin/python -m dwload_server.dwload_server --port /dev/ttyUSB0 --root_dir ./root
+        
+        Display CLI help:
+        
+        ::
+        
+            /home/FooBar/dwload_server_env$ ./bin/python -m dwload_server.dwload_server --help
+        
+        ----
+        TODO
+        ----
+        
+        * compare checksum
+        
+        * maybe use a config.ini file?!?
+        
+        -------
+        History
+        -------
+        
+        * 12.11.2014 - send a file works rudimentary
+        
+        * 30.09.2014 - Idea was born: `Forum post 11893 <http://archive.worldofdragon.org/phpBB3/viewtopic.php?f=8&t=4946#p11893>`_
+        
+        -----
+        Links
+        -----
+        
+        * Forum Thread: `http://archive.worldofdragon.org/phpBB3/viewtopic.php?f=8&t=4946 <http://archive.worldofdragon.org/phpBB3/viewtopic.php?f=8&t=4946>`_
+        
+        * About DWLOAD: `http://archive.worldofdragon.org/phpBB3/viewtopic.php?f=5&t=4964 <http://archive.worldofdragon.org/phpBB3/viewtopic.php?f=5&t=4964>`_
+        
+        * DWEEBS application Thread: `http://archive.worldofdragon.org/phpBB3/viewtopic.php?f=5&t=4968 <http://archive.worldofdragon.org/phpBB3/viewtopic.php?f=5&t=4968>`_
+        
+        * Dragon 32/64 DriveWire Adapter: `http://archive.worldofdragon.org/index.php?title=Dragon_32/64_Drivewire_Adapter <http://archive.worldofdragon.org/index.php?title=Dragon_32/64_Drivewire_Adapter>`_
+        
+        * Drivewire for dummies: `http://archive.worldofdragon.org/index.php?title=Drivewire_for_dummies <http://archive.worldofdragon.org/index.php?title=Drivewire_for_dummies>`_
+        
+        * `http://sourceforge.net/p/drivewireserver/wiki/DriveWire_Specification/ <http://sourceforge.net/p/drivewireserver/wiki/DriveWire_Specification/>`_
+        
+        * `http://sourceforge.net/p/drivewireserver/wiki/ <http://sourceforge.net/p/drivewireserver/wiki/>`_
+        
+        Repository on github: `https://github.com/DWLOAD/DwLoadServer <https://github.com/DWLOAD/DwLoadServer>`_
+Keywords: 6809 Dragon CoCo DriveWire
+Platform: UNKNOWN
+Classifier: Development Status :: 4 - Beta
+Classifier: Environment :: MacOS X
+Classifier: Environment :: Win32 (MS Windows)
+Classifier: Environment :: X11 Applications
+Classifier: Environment :: Other Environment
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: Education
+Classifier: License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 2
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: Implementation :: CPython
+Classifier: Programming Language :: Python :: Implementation :: PyPy
+Classifier: Topic :: System :: Emulators
+Classifier: Topic :: Software Development :: Assemblers
+Classifier: Topic :: Software Development :: Testing
+Provides: dwload_server
