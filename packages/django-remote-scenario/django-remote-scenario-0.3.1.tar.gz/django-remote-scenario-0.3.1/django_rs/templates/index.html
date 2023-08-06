@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Django Remote Scenario</title>
+
+    <!--Styles-->
+    <link rel="stylesheet" href="{{STATIC_URL}}css/styles.css">
+    <link rel="stylesheet" href="{{STATIC_URL}}css/bootstrap.min.css">
+
+    <!--JavaScript-->
+    <script src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script src="{{STATIC_URL}}js/script.js"></script>
+    <script src="{{STATIC_URL}}js/bootstrap.min.js"></script>
+
+  </head>
+  <body>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-8 col-md-offset-2">
+        <h1 class="page-header text-center"> Django Remote Scenario </h1>
+      </div>
+    </div>
+
+    {% for app in apps %}
+    <div class="row">
+      <div class="col-md-10 col-md-offset-1">
+        <h2 class="text-capitalize">{{ app.name }}</h3>
+        <h3 class=""> Available Scenarios: </h2>
+        {% if app.scenarios %}
+        <table class="table custom-table table-bordered">
+          <thead>
+            <th class="scenario">Scenario</th> 
+            <th class="actions">Actions</th>
+          </thead>
+          <tbody>
+          {% for scenario in app.scenarios %}
+          <tr>
+            <td>{{ scenario }}</td> 
+            <td>
+              <button class="load-scenario btn btn-primary" type="button" data-scenario={{scenario}} data-app="{{app.name}}">
+                <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
+                Load
+              </button>
+              <button  class="btn btn-primary load-scenario load-scenario-flush" type="button" data-scenario={{scenario}} data-app="{{app.name}}">
+                <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
+                Flush & Load 
+              </button>
+              <button class="load-result btn btn-primary" type="button">
+                <span class="glyphicon" aria-hidden="true"></span>
+              </button>
+            </td>
+          </tr>
+          {% endfor %}
+          </tbody>
+        {% endif %}
+        </table>
+
+        <h3 class=""> Available Mocks: </h2>
+        {% if app.mocks %}
+        <table class="table-stripped table custom-table table-bordered">
+          <thead>
+            <th class="scenario">Mock</th> 
+            <th class="actions">Actions</th>
+          </thead>
+          <tbody>
+          {% for mock in app.mocks %}
+          <tr>
+            <td>{{ mock }}</td> 
+            <td>
+              <a href="/drs/{{app.name}}/mocks/{{mock}}" class="activate-mock btn btn-primary">
+                <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
+                Activate
+              </a>
+              <a href="/drs/{{app.name}}/mocks/{{mock}}?activate=0" class="activate-mock btn btn-danger">
+                <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                Deactivate
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+
+    </body>
+    </html>
