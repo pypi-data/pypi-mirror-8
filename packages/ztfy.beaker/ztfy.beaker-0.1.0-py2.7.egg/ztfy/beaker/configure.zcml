@@ -1,0 +1,29 @@
+<configure
+	xmlns="http://namespaces.zope.org/zope"
+	xmlns:i18n="http://namespaces.zope.org/i18n"
+	i18n_domain="ztfy.beaker">
+
+	<i18n:registerTranslations
+		directory="locales" />
+
+
+	<class class=".session.BeakerSessionUtility">
+		<implements
+			interface="zope.annotation.interfaces.IAttributeAnnotatable" />
+		<require
+			interface="ztfy.beaker.interfaces.IBeakerSessionUtility"
+			permission="zope.View" />
+		<require
+			set_schema="ztfy.beaker.interfaces.IBeakerSessionUtility"
+			permission="zope.ManageServices" />
+	</class>
+
+	<utility
+		name="ZTFY Beaker sessions configurations"
+		component=".session.BeakerSessionConfigurationVocabulary" />
+
+
+	<!-- Sub-packages includes -->
+	<include package=".browser" />
+
+</configure>
