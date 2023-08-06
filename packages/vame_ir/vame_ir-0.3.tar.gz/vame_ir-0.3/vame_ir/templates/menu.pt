@@ -1,0 +1,50 @@
+<html>
+<head>
+		<link rel="stylesheet" href="${request.static_url('vame_ir:static/countdown/flipclock.css')}">
+
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+
+		<script src="${request.static_url('vame_ir:static/countdown/flipclock.js')}"></script>
+
+    <link rel="stylesheet" href="${request.static_url('vame_ir:static/dist/css/bootstrap.min.css')}">
+    <link rel="stylesheet" href="${request.static_url('vame_ir:static/dist/css/bootstrap-rtl.min.css')}">
+
+<!-- Optional theme -->
+<link rel="stylesheet" href="${request.static_url('vame_ir:static/dist/css/bootstrap-theme.min.css')}">
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="${request.static_url('vame_ir:static/dist/js/bootstrap.min.js')}"></script>
+
+
+</head>
+<body dir="rtl">
+<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">vame.ir</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+
+        <li><a href="${request.route_url('home')}">صفحه اصلی</a></li>
+  <li><a href="${request.route_url('course_list')}">فهرست دوره ها</a></li>
+  <li><a href="${request.route_url('exam_list')}">دوره های ثبت نام شده</a></li>
+  <li><a href="${request.route_url('course_add')}">افزودن دوره جدید</a></li>
+  <li><a href="${request.route_url('question_add')}">افزودن سوال جدید</a></li>
+  <li><a href="${request.route_url('question_group_add')}">افزودن گروه سوال جدید</a></li>
+  <li><a href="${request.route_url('score_exam_list')}">تصحیح برگه ها</a></li>
+  <li><a href="${request.route_url('payment')}">اافزایش اعتبار</a></li>
+              </ul>
+            </div>
+        </div>
+    </nav>
+  <div metal:define-slot="content"></div>
+</body>
+</html>

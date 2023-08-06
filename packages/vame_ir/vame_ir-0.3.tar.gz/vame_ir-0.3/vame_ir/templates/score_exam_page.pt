@@ -1,0 +1,30 @@
+
+<html metal:use-macro="load: main.pt">
+
+<div metal:fill-slot="content">
+
+<br>
+برگه آزمون درس  ${exam.user.last_name} - ${exam.course.title} -
+<form name="score" method="post">
+    <table border="1">
+    <tr>
+        <td>سوال</td>
+        <td>پاسخ صحیح</td>
+        <td>پاسخ کاربر</td>
+        <td>درست</td>
+        <td>نادرست</td>
+    </tr>
+    <tr tal:repeat="answer exam.answers">
+        <td> ${answer.question.title} </td>
+        <td> ${answer.question.correct_answer}  </td>
+        <td> ${answer.value} </td>
+        <td> <input type="radio" name="${answer.id}" value="2"> </td>
+        <td> <input type="radio" name="${answer.id}" value="1"> </td>
+        <td> ${answer.find_score()}</td>
+    </tr>
+</table>
+    ثبت نتیجه آزمون: <input type="checkbox" name="scored" value="1"><br>
+    <input type="submit" name="submit" value="ثبت">
+</form>
+</div>
+</html>

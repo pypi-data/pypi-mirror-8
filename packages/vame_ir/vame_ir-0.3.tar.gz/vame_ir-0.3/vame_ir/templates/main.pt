@@ -1,0 +1,39 @@
+<html metal:use-macro="load: menu.pt">
+
+<div metal:fill-slot="content">
+
+
+
+        <div class="container">
+<div class="page-header">
+
+    <br>
+  <br>
+  <div tal:condition="exists:user">
+  <span tal:condition="not:user">
+    شما وارد نشده اید <a href="${request.route_url('login')}">ورود </a> یا <a href="${request.route_url('signup')}">ثبت نام</a>
+  </span></div>
+
+
+
+<div tal:condition="exists:user">
+        <div tal:condition="user">
+سلام آفای/خانم ${user.first_name} ${user.last_name} شما با نام کاربری ${user.login_name} وارد شده اید<br>
+ حساب کاربری شما:${user.account} ریال <a href="${request.route_url('logout')}">خروج</a><br></div></div>
+  <div tal:condition="exists:message">
+  ${message}<br></div>
+    </div>
+  <div metal:define-slot="content"></div>
+    </div>
+
+
+
+
+
+</div>
+</html>
+
+
+
+
+

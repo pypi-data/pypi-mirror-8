@@ -1,0 +1,25 @@
+<html lang="${request.locale_name}">
+  <head>
+    <meta charset="utf-8">
+    <link rel="shortcut icon" href="${request.static_url('vame_ir:static/vame-16x16.png')}">
+    <link rel="stylesheet" type="text/css" media="print" href="${request.static_url('vame_ir:static/certificate_print.css')}" />
+    <link rel="stylesheet" type="text/css" media="screen" href="${request.static_url('vame_ir:static/certificate_screen.css')}" />
+    <link rel="stylesheet" type="text/css" media="screen" href="../static/certificate_screen.css" />
+    <title>certificate</title>
+
+  </head>
+
+  <body>
+  <div id="content" tal:condition="exam">
+      <h1>Training Certificate</h1>
+      <h2>This is to certify that:</h2>
+
+      <span class="username"> ${exam.user.first_name} ${exam.user.last_name}</span>
+      <h2>Has successfully completed the: </h2>
+      <span class="coursename"> ${exam.course.title} </span><br>
+      <h3> Certificate Number: </h3>  VAME-QA-${exam.course.id}-${exam.id} <br>
+      <h3> Issue Date:</h3> ${exam.gdate()}
+  </div>
+  <a class="noprint" href="${request.route_url('home')}">بازگشت</a>
+  </body>
+</html>
