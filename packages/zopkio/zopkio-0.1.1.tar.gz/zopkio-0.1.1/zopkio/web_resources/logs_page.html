@@ -1,0 +1,61 @@
+<!--
+#Copyright 2014 LinkedIn Corp.
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+-->
+<body>
+  <div class="topbar navbar navbar-default navbar-fixed-top">
+    <div class="navbar-inner">
+      <div class="container">
+        <a class="brand navbar-brand" href="{{ report_info.project_url }}">zopkio</a>
+        <ul class="nav navbar-nav">
+          <li><a href="{{ report_info.home_page }}"><span>Summary</span></a></li>
+          <li class="dropdown active">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span>Results</span><b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              {%- for config_name in report_info.config_names %}
+                <li class="dropdown-submenu">
+                  <a href="{{ report_info.resource_dir }}{{ config_name }}/{{ config_name ~ report_info.report_file_sfx }}">{{ config_name }}</a>
+                  <ul class="dropdown-menu">
+                    {%- for test_name in report_info.test_names %}
+                      <li><a href="{{ report_info.resource_dir }}{{ config_name }}/{{ test_name ~ report_info.report_file_sfx }}">{{ test_name }}</a></li>
+                    {%- endfor %}
+                  </ul>
+                </li>
+              {%- endfor %}
+            </ul>
+          </li>
+          <li><a href="#"><span>Diff</span></a></li>
+          <li><a href="{{ report_info.logs_dir }}"><span>Logs</span></a></li>
+        </ul>
+      </div> <!-- container -->
+    </div> <!-- navbar-inner -->
+  </div> <!-- topbar -->
+  <div class="container">
+    <div class="content">
+      {%- for unique_id in machine_logs.keys() %}
+        <div class="row">
+          <div class="span12">
+            <div><h3>{{ unique_id }}</h3></div>
+            {%- for log_name in machine_logs[unique_id] %}
+            {%- endfor %}
+          </div>
+        </div>
+      {%- endfor %}
+    </div> <!-- content -->
+  </div> <!-- container -->
