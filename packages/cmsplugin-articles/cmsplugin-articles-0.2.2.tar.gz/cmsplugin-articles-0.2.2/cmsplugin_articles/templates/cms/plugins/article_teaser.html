@@ -1,0 +1,19 @@
+{% load article_tags i18n %}
+<div class="article">
+  {% block teaser_head %}
+    <time datetime="{{ article|published_at|date:"Y-m-d" }}">{{ article|published_at|date:"d.m.Y" }}</time>
+    <h2>{{ article|teaser_title }}</h2>
+  {% endblock %}
+
+  {% block teaser_body %}
+    {% with article|teaser_image as image %}
+      {% if image %}
+        <img src="{{ image.url }}" />
+      {% endif %}
+    {% endwith %}
+    <p>
+        {% teaser_text article %}
+        <a href="{{ article.get_absolute_url }}">{% trans "More" %}</a>
+    </p>
+  {% endblock %}
+</div>
