@@ -1,0 +1,395 @@
+#!/usr/bin/env python
+
+import os
+import sys
+import glob
+import re
+import shutil
+from datetime import datetime
+
+from systematic.shell import Script, ScriptCommand
+
+VMPATH = os.path.expanduser('~/Documents/Virtual Machines.localized')
+VMX_IGNORED_KEYS = (
+    '.encoding',
+)
+RE_ETHERNET_KEY = re.compile('^ethernet[0-9]+\..*$')
+RE_VMDK_KEYS = (
+    re.compile('^scsi.*\.fileName$'),
+)
+
+class VMError(Exception): pass
+
+
+class VMDataDict(dict):
+
+    def keys(self):
+        return [k for k in sorted(dict.keys(self))]
+
+    def items(self):
+        return [(k,self[k]) for k in self.keys()]
+
+    def values(self):
+        return [self[k] for k in self.keys()]
+
+
+class VMDisk(VMDataDict):
+    def __init__(self, vm, filename):
+        self.vm = vm
+        self.name = os.path.splitext(filename)[0]
+        self.path = os.path.join(self.vm.path, filename)
+        self.__parse_vmdk__(self.path)
+
+    def __repr__(self):
+        return '%s %s' % (self.cid, self.name)
+
+    def __parse_vmdk__(self, path):
+        self.vmdk = path
+
+        try:
+            lines = [x.rstrip() for x in open(self.vmdk, 'r').readlines()]
+        except OSError, (ecode, emsg):
+            raise VMError('Error reading %s: %s' % (self.vmdk, emsg))
+        except IOError, (ecode, emsg):
+            raise VMError('Error reading %s: %s' % (self.vmdk, emsg))
+
+        self.clear()
+        for l in lines:
+            if l == '':
+                continue
+            try:
+                key, value = [x.strip() for x in l.split('=', 1)]
+                value = value.strip('"')
+
+                if value == 'TRUE':
+                    value = True
+
+                if value == 'FALSE':
+                    value = False
+
+            except ValueError:
+                continue
+
+            if key in VMX_IGNORED_KEYS:
+                continue
+            self[key] = value
+
+    @property
+    def cid(self):
+        try:
+            return self['CID']
+        except KeyError:
+            raise VMError('vmdk missing CID: %s' % self.path)
+
+    @property
+    def hw_version(self):
+        try:
+            return self['ddb.virtualHWVersion']
+        except KeyError:
+            return 'UNKNOWN'
+
+class VMInterface(VMDataDict):
+    def __init__(self, vm, name, **kwargs):
+        self.vm = vm
+        self.name = name
+        self.update(**kwargs)
+
+    def __repr__(self):
+        return '%s %s %s' % (
+            self.name,
+            self['generatedAddress'],
+            self['connectionType'],
+        )
+
+
+class VMSnapshot(object):
+    def __init__(self, vm, line=None):
+        self.vm = vm
+        if line:
+            try:
+                date, self.name = line.split(None, 1)
+                self.date = datetime.strptime(date, '%Y-%m-%d').date()
+            except ValueError, emsg:
+                self.date = None
+                self.name = line
+
+    def __repr__(self):
+        if self.date:
+            return '%s %s' % (self.date, self.name)
+        else:
+            return self.name
+
+    def __cmp__(self, other):
+        if self.date != other.date:
+            return cmp(self.date, other.date)
+        return cmp(self.name, other.name)
+
+class VM(VMDataDict):
+    def __init__(self, script, path):
+        self.script = script
+        self.path = path
+
+        vmx_files = glob.glob('%s/*.vmx' % self.path)
+        if len(vmx_files) == 0:
+            raise VMError('Not a VMWare virtual machine: %s' % self.path)
+        if len(vmx_files) > 1:
+            raise VMError('Multiple .vmx files in directory: %s' % self.path)
+        self.__parse_vmx__(vmx_files[0])
+
+    def __cmp__(self, other):
+        return cmp(self.name, other.name)
+
+    def __repr__(self):
+        return '%s (%s)' % (self.name, self.guestos)
+
+    def __parse_vmx__(self, path):
+        self.vmx = path
+
+        try:
+            lines = [x.rstrip() for x in open(self.vmx, 'r').readlines()]
+        except OSError, (ecode, emsg):
+            raise VMError('Error reading %s: %s' % (self.vmx, emsg))
+        except IOError, (ecode, emsg):
+            raise VMError('Error reading %s: %s' % (self.vmx, emsg))
+
+        self.clear()
+        for l in lines:
+            if l == '':
+                continue
+            try:
+                key, value = [x.strip() for x in l.split('=', 1)]
+                value = value.strip('"')
+
+                if value == 'TRUE':
+                    value = True
+
+                if value == 'FALSE':
+                    value = False
+
+            except ValueError:
+                continue
+
+            if key in VMX_IGNORED_KEYS:
+                continue
+            self[key] = value
+
+    @property
+    def name(self):
+        try:
+            return self['displayName']
+        except KeyError:
+            raise VMError('Missing displayName in .vmx file')
+
+    @property
+    def guestos(self):
+        try:
+            return self['guestOS']
+        except KeyError:
+            raise VMError('Missing guestOS in .vmx file')
+
+    @property
+    def memorysize(self):
+        try:
+            return self['memsize']
+        except KeyError:
+            raise VMError('Missing memsize in .vmx file')
+
+    @property
+    def hw_version(self):
+        try:
+            return self['virtualHW.version']
+        except KeyError:
+            raise VMError('Missing virtualHW.version in .vmx file')
+
+    @property
+    def uuid_bios(self):
+        try:
+            return self['uuid.bios']
+        except KeyError:
+            raise VMError('Missing uuid.bios in .vmx file')
+
+    @property
+    def disks(self):
+        disks = []
+        for k in self.keys():
+            for m in RE_VMDK_KEYS:
+                if m.match(k):
+                    disks.append(self[k])
+
+        return [VMDisk(self, filename) for filename in disks]
+
+    @property
+    def interfaces(self):
+        interfaces = {}
+        for k in self.keys():
+            if RE_ETHERNET_KEY.match(k):
+                interface, key = k.split('.', 1)
+
+                if interface not in interfaces:
+                    interfaces[interface] = {}
+
+                interfaces[interface][key] = self[k]
+
+        return [VMInterface(self, k, **interfaces[k]) for k in sorted(interfaces.keys())]
+
+    @property
+    def snapshots(self):
+        snapshots = []
+
+        for line in self.script.check_output(['vmrun', 'listSnapshots', self.vmx]).split('\n')[1:]:
+            if line.strip() == '':
+                continue
+            snapshots.append(VMSnapshot(self, line))
+
+        snapshots.sort()
+        return snapshots
+
+    @property
+    def locked(self):
+        if not self.exists:
+            raise VMError('No such directory: %s' % self.path)
+
+        for name in os.listdir(self.path):
+            if os.path.splitext(name)[1] == '.lck':
+                return True
+
+        return False
+
+    @property
+    def running(self):
+        if self.locked:
+            return True
+        return False
+
+    @property
+    def exists(self):
+        return os.path.isfile(self.vmx)
+
+    def suspend(self):
+        if not self.locked:
+            raise VMError('VM is not running: %s' % self)
+
+        rv = self.script.execute(['vmrun', 'suspend', self.vmx])
+        if rv == 0:
+            lock = '%s.lck' % self.vmx
+            if os.path.isdir(lock):
+                shutil.rmtree(lock)
+        return rv
+
+    def resume(self):
+        if self.locked:
+            raise VMError('VM is running: %s' % self)
+
+        rv = self.script.execute(['vmrun', 'start', self.vmx])
+        return rv
+
+
+class VMListCommand(list, ScriptCommand):
+    def __init__(self, *args, **kwargs):
+        ScriptCommand.__init__(self, *args, **kwargs)
+
+    def match_vmname(self, name):
+        for vm in self:
+            if vm.name == name:
+                return vm
+        return None
+
+    def parse_args(self, args):
+        if not os.path.isdir(VMPATH):
+            self.exit('No such directory: %s' % VMPATH)
+
+        for d in os.listdir(VMPATH):
+            if d.startswith('.'):
+                continue
+            vmpath = os.path.join(VMPATH, d)
+            if glob.glob('%s/*.vmx' % vmpath):
+                self.append(VM(self, vmpath))
+
+        if 'names' in args:
+            self.matches = []
+            if not args.names:
+                args.names = [x.name for x in self]
+            for name in args.names:
+                vm = self.match_vmname(name)
+                if vm:
+                    self.matches.append(vm)
+
+        return args
+
+
+class StatusCommand(VMListCommand):
+    def run(self, args):
+        args = self.parse_args(args)
+
+        for vm in self.matches:
+            print '%s %s' % (
+                vm.running and 'running' or 'stopped',
+                vm.name
+            )
+
+
+class ResumeCommand(VMListCommand):
+    def run(self, args):
+        args = self.parse_args(args)
+
+        for vm in self.matches:
+            try:
+                vm.resume()
+            except VMError, emsg:
+                self.exit(1, emsg)
+
+
+class SuspendCommand(VMListCommand):
+    def run(self, args):
+        args = self.parse_args(args)
+        for vm in self.matches:
+            try:
+                vm.suspend()
+            except VMError, emsg:
+                self.exit(1, emsg)
+
+
+class ListCommand(VMListCommand):
+    def run(self, args):
+        args = self.parse_args(args)
+
+        for vm in self:
+            print vm.name
+
+class InfoCommand(VMListCommand):
+    def run(self, args):
+        args = self.parse_args(args)
+
+        for vm in self.matches:
+            print '%s %s' % (vm.name, vm.running and 'running' or 'stopped')
+            print '  OS %s' % vm.guestos
+            print '  Memory %s MB' % vm.memorysize
+            print '  HW Version %s' % vm.hw_version
+            if args.verbose:
+                for k,v in vm.items():
+                    print '%34s %s' % (k,v)
+            else:
+                print '  UUID %s' % vm.uuid_bios
+                for interface in vm.interfaces:
+                    print '  %s'  % interface
+                for snapshot in vm.snapshots:
+                    print '  snapshot: %s' % snapshot
+
+script = Script()
+c = script.add_subcommand(SuspendCommand('suspend', 'Resume VM'))
+c.add_argument('names', nargs='*', help='Name of VM to suspend')
+
+c = script.add_subcommand(ResumeCommand('resume', 'Resume VM'))
+c.add_argument('names', nargs='*', help='Name of VM to resume')
+
+c = script.add_subcommand(StatusCommand('status', 'Show VM status'))
+c.add_argument('names', nargs='*', help='Name of VMs to show')
+
+c = script.add_subcommand(InfoCommand('info', 'Show VM info'))
+c.add_argument('--verbose', action='store_true', help='All details')
+c.add_argument('names', nargs='*', help='Name of VMs to show')
+
+c = script.add_subcommand(ListCommand('list', 'List known VMs'))
+
+args = script.parse_args()
+
