@@ -1,0 +1,116 @@
+#!/bin/bash
+
+function usage {
+    echo "Usage: $0"
+    echo "Configures BigPanda script as default action script for all Splunk alerts"
+    echo "SPLUNK_HOME_DIRECTORY is /opt/splunk if unspecified"
+    exit 0
+}
+
+function exit_nicely {
+    case $1 in
+      0)
+        message="INFO:  Splunk configuration was completed successfully"
+        ;;
+      1)
+        message="ERROR:  Failed to configure Splunk."
+        ;;
+    esac
+
+    echo $message
+    exit $1
+}
+
+function enable_action {
+    # Enable the script action by default for all alerts (existing and new)
+    if ! grep -i --silent "action.script\s*=" $CONFIGURATION_FILE; then
+        echo "INFO:  Enabling action.script by default for all alerts"
+        echo "action.script = 1" >> $CONFIGURATION_FILE
+    else
+        if grep -i --silent "action.script\s*=\s*1" $CONFIGURATION_FILE; then
+            echo "INFO:  action.script is already enabled."
+        else
+            echo "INFO:  Enabling action.script by default for all alerts"
+            sed -i.bak '/^action.script *= *0$/ s/0/1/' $CONFIGURATION_FILE
+        fi
+    fi
+}
+
+function configure_script_filename {
+    echo "INFO:  Setting bigpanda-splunk as default script"
+    cat << EOF >> $CONFIGURATION_FILE
+
+####################
+#     BigPanda     #
+####################
+action.script.filename = bigpanda-splunk
+EOF
+}
+
+function write_configuration_file {
+    echo "INFO:  writing configuration file to $CONFIGURATION_FILE"
+    cat << EOF >> $CONFIGURATION_FILE
+####################
+#     BigPanda     #
+####################
+action.script = 1
+action.script.filename = bigpanda-splunk
+EOF
+}
+
+case "$1" in
+    -h|--help)
+        usage
+        ;;
+esac
+
+MY_UID=`id | awk '{ print $1 }'`
+if [ "${MY_UID}" != "uid=0(root)" ] ; then
+    echo "ERROR:  You must run this script with root privileges"
+    exit 1
+fi
+
+while true; do
+    read -p "Do you want to set all your Splunk alerts to be sent to BigPanda by default? [y/n]" yn
+    case $yn in
+        [Yy]* ) break;;
+        [Nn]* ) exit;;
+    esac
+done
+
+SPLUNK_HOME=${SPLUNK_HOME:-/opt/splunk}
+CONFIGURATION_FILE=$SPLUNK_HOME/etc/system/local/savedsearches.conf
+
+echo "INFO:  Splunk home is $SPLUNK_HOME"
+if [ ! -d "$SPLUNK_HOME" ]; then
+    echo "ERROR:  Splunk home directory does not exist at path $SPLUNK_HOME"
+    exit 1
+fi
+echo "INFO:  Configuring BigPanda in $CONFIGURATION_FILE"
+
+if [ ! -f $CONFIGURATION_FILE ]; then
+    write_configuration_file
+    chown splunk:splunk $CONFIGURATION_FILE
+    chmod 0600 $CONFIGURATION_FILE
+else
+    
+    # Make sure action.script.filename was not already configured
+    if grep -i --silent "action.script.filename" $CONFIGURATION_FILE; then
+        # Make sure we're not grepping our own configuration
+        if grep -i --silent "action.script.filename\s*=.*bigpanda.*" $CONFIGURATION_FILE; then
+            echo "INFO:  BigPanda integration is already configured"
+            enable_action
+        else
+            echo "ERROR:  action.script.filename is already configured. Contact support@bigpanda.io for details on how to configure an existing action script."
+            exit_nicely 1
+        fi
+    else
+        enable_action
+        configure_script_filename
+    fi
+
+
+
+fi
+
+exit_nicely 0
