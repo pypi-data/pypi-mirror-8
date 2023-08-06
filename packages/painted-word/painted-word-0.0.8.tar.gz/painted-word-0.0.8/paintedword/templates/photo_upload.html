@@ -1,0 +1,50 @@
+<style>
+#fileInput{
+  width:0;
+  height:0;
+  overflow:hidden;
+}
+
+#preview { 
+  width:390px;
+}
+
+#canvas {
+  z-index:30;
+  pointer-events:none; /* my love! */
+}
+
+#preview { 
+  position:relative;
+  top:91px;
+}
+
+</style>
+
+<div id="upload">
+	<div data-step="1" class="call-box">
+		<h2>Click the image to get started.</h2>
+		<div id="examplePhoto">{{example_photo|safe}}
+			<div id="example-photo-overlay">Upload</div>
+		</div>
+
+	</div>
+	
+	<div data-step="2" style="display:none">
+		<div class="canvas-container" style="position:relative">
+			<canvas id="canvas" style="position:absolute; left:0; top:0;" width="390" height="390"></canvas>
+			<div id="preview"></div>
+		</div>
+		<h2>Enter your name and click Save and Share to take action</h2>
+		<div class="field">
+	 		<label for="name">Your Name</label>
+ 			<input id="name" type="text" name="name" maxlength="50" />
+ 			<input type='file' id='fileInput' name='files[]'/>
+ 		</div>
+		<div class="social-buttons-container">
+			<a class="pw-btn" id="startOver" href="{{campaign_link}}" />Start Over</a>
+			<a class="pw-btn" id="share-to-facebook" href="#">Save and Share</a>
+		</div>
+
+	</div>
+</div>
