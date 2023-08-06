@@ -1,0 +1,49 @@
+#!python
+
+import os
+import json
+import yaml
+
+from git import *
+from argdeclare import (Commander, option_group, option, arg)
+
+def tagrelease():
+    class CLI(Commander):
+        """
+        `tagrelease` is a CLI utility for tagging your releases and
+        updating the deployment branch in `circle.yml`.
+        """
+        name = 'tagrelease'
+        version = '1.0.2'
+        default_args = ['tag', '--help']
+
+        @arg('message', help="Message for tag")
+        @arg('version', help="Version string to tag (M.m.p)")
+        @option('--production',   action='store_const', default=False, const=True, help='Merge w/ `production` branch?')
+        def do_tag(self, opts):
+            """
+            Tag a release and update the circle.yml config file, this method
+            *must be run* within the root of a git initialized directory.
+            """
+
+            cwd = os.getcwd()
+            repo = Repo(cwd)
+            git  = repo.git
+
+            if repo.is_dirty():
+                exit("Commit your changes first before tagging...")
+            elif repo.active_branch.name != 'master':
+                exit("You must tag from the master branch!")
+            else:
+                repo.create_tag(opts.version, a=True, m=opts.message)
+
+            if opts.production:
+                git.checkout("production")
+                git.merge(opts.version)
+                
+
+    app = CLI()
+    app.cmdline()
+
+if __name__ == '__main__':
+    tagrelease()
