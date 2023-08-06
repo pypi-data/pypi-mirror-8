@@ -1,0 +1,21 @@
+#!/usr/bin/env python
+from gevent.wsgi import WSGIServer
+
+from zeropos.config import CONFIG
+from zeropos.broadcast import Broadcast
+from zeropos.service import app
+
+
+if __name__ == '__main__':
+    CONFIG.parse()
+
+    local_ip = CONFIG['address']
+    port = CONFIG['port']
+
+    broadcast = Broadcast(local_ip, port)
+    try:
+        broadcast.register_zeroconf()
+        http_server = WSGIServer((local_ip, port), app)
+        http_server.serve_forever()
+    finally:
+        broadcast.unregister_zeroconf()
