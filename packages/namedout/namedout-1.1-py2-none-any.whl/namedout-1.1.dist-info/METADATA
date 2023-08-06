@@ -1,0 +1,53 @@
+Metadata-Version: 2.0
+Name: namedout
+Version: 1.1
+Summary: write values (and their names) to stdout in python script
+Home-page: UNKNOWN
+Author: Ivan Bykov
+Author-email: ivan.bykov@gmail.com
+License: Python license
+Platform: python 2.7
+Classifier: Natural Language :: Russian
+Classifier: License :: OSI Approved :: Python Software Foundation License
+Requires-Dist: astunparse
+
+*Debug output named values*
+
+warning:
+ - not work in python console
+ - not work in IDLE
+ - only one entry point of *dbg* function for one source line
+
+script::
+
+    from namedout import dbg
+    dbg(dict(a=9))
+
+out::
+
+    dict(a=9) == {'a': 9}
+
+script::
+
+    dbg(list(xrange(9)))
+
+out::
+
+    list(xrange(9)) == [0, 1, 2, 3, 4, 5, 6, 7, 8]
+
+script::
+
+    import os
+    import sys
+    a = 1
+    dbg(a, os.__name__, dir(os.path)[0], sys.modules.keys()[0])
+
+out::
+
+    a == 1
+    os.__name__ == os
+    dir(os.path)[0] == __all__
+    sys.modules.keys()[0] == tokenize
+
+
+
