@@ -1,0 +1,22 @@
+{% extends "base/base.html" %}
+{% load url from future %}
+{% load viewgroups_tags %}
+
+
+{% block title %}{{ object|default:"Nameless" }}{% endblock title %}
+
+
+{% block header %}{{ object|default:"Nameless" }}{% endblock header %}
+
+{% block links %}
+    <a href="{% url 'base:list' %}" class="btn">View All {{ opts.verbose_name_plural.title }}</a>
+    {% for link in manager.links.default_instance %}
+        {% url manager.name|add:':'|add:link.name pk=object.pk as url %}
+        {% if url %}
+            <a class="btn btn-{% if link.name == 'delete' %}danger{% else %}default{% endif %}" href="{{ url }}">{{ link.get_title }}</a>
+        {% else %}
+            {{ manager.name|add:':'|add:link.name }} is not a valid url
+        {% endif %}
+    {% endfor %}
+{% endblock %}
+
