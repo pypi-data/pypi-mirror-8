@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../favicon.ico">
+
+    <title>{{ title }}</title>
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap-theme.min.css">
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <style>
+/*
+ * Globals
+ */
+
+body {
+  color: #555;
+  padding-top: 70px;
+}
+
+h1, .h1,
+h2, .h2,
+h3, .h3,
+h4, .h4,
+h5, .h5,
+h6, .h6 {
+  margin-top: 0;
+  font-weight: normal;
+  color: #333;
+}
+
+
+/*
+ * Override Bootstrap's default container.
+ */
+
+@media (min-width: 1200px) {
+  .container {
+    width: 970px;
+  }
+}
+
+
+/*
+ * Main column and sidebar layout
+ */
+
+.blog-main {
+  font-size: 18px;
+  line-height: 1.5;
+}
+
+/* Sidebar modules for boxing content */
+.sidebar-module {
+  padding: 15px;
+  margin: 0 -15px 15px;
+}
+.sidebar-module-inset {
+  padding: 15px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+}
+.sidebar-module-inset p:last-child,
+.sidebar-module-inset ul:last-child,
+.sidebar-module-inset ol:last-child {
+  margin-bottom: 0;
+}
+
+/*
+ * Blog posts
+ */
+
+.blog-post {
+  margin-bottom: 10px;
+}
+
+
+/*
+ * Footer
+ */
+
+.blog-footer {
+  padding: 10px 0;
+  color: #999;
+  text-align: center;
+  background-color: #f9f9f9;
+  border-top: 1px solid #e5e5e5;
+}
+.blog-footer p:last-child {
+  margin-bottom: 0;
+}
+</style>
+
+  <body>
+
+    <div class="navbar navbar-default navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="#">{{ title }}</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+
+      <!--
+      <h1 class="blog-title">{{ title }}</h1>
+      <p class="lead">{{ description }}</p>
+      -->
+
+      <div class="row">
+
+        <div class="col-sm-8 blog-main">
+
+
+          {% for entry in month_entries %}
+          <div class="blog-post" style=
+             {% if entry.start_of_week %}
+               "border-bottom: 2px solid;"
+             {% else %}
+               "border-bottom: 1px dashed #e5e5e5;"
+             {% endif %}>
+            <a name="{{entry.anchor}}"></a>
+            <a href="#{{entry.anchor}}">
+             <span class="glyphicon glyphicon-bookmark" aria-hidden="true" style="float:right"></span>
+            </a>
+            {{ entry.body|safe }}
+          </div><!-- /.blog-post -->
+          {% endfor %}
+
+        </div><!-- /.blog-main -->
+
+        <div class="col-sm-3 col-sm-offset-1">
+          <div class="sidebar-module sidebar-module-inset">
+            <h4>About</h4>
+            <p>{{ about|safe }}</p>
+          </div>
+
+          <div class="sidebar-module">
+            <h4>Weeks</h4>
+            <ol class="list-unstyled">
+              {% for entry in month_entries %}
+                {% if entry.start_of_week %}
+              <li><a href="#{{ entry.anchor }}">{{ entry.anchor }}</a></li>
+                {% endif %}
+              {% endfor %}
+            </ol>
+          </div>
+
+          <div class="sidebar-module">
+            <h4>Archives</h4>
+            <ol class="list-unstyled">
+              {% for item in all_months %}
+              <li><a href="{{ item }}.html">{{item}}</a></li>
+              {% endfor %}
+            </ol>
+          </div>
+        </div>
+
+      </div><!-- /.row -->
+
+    </div><!-- /.container -->
+
+    <footer class="blog-footer">
+      <p>
+        <span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span> <a href="#">top</a>
+      </p>
+    </footer>
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="../../dist/js/bootstrap.min.js"></script>
+    <script src="../../assets/js/docs.min.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>
+  </body>
+</html>
