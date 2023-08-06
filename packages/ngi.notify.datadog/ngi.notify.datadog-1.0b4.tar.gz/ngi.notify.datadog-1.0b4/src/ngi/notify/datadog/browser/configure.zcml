@@ -1,0 +1,15 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:five="http://namespaces.zope.org/five"
+    i18n_domain="ngi.notify.datadog">
+
+    <!-- Zope Clock server -->
+    <browser:page
+        for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+        name="dd_cron"
+        class=".cron_dd.CronDatadog"
+        permission="cmf.ManagePortal"
+        />
+
+</configure>
