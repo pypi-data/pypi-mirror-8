@@ -1,0 +1,45 @@
+#!/usr/bin/python
+
+# pylint: disable=superfluous-parens
+# superfluous-parens: Parentheses are good for clarity and portability
+
+'''
+Here's a couple of helper methods to print on assigment and dump the
+trie. You don't need in practice and can just treat the Trie as any
+other dict-like structure.
+'''
+
+import trie_mod
+
+
+def dump(trie):
+    '''Print a trie'''
+    print("Dumping trie:")
+    for key in trie:
+        print("  trie[%s] => %s" % (key, trie[key]))
+
+
+def main():
+    '''Main function'''
+    print("\nUsing a simple string as keys and numeric values...")
+    trie = trie_mod.Trie()
+    trie['string1'] = 1
+    trie['string2'] = 2
+    dump(trie)
+
+    print("\nUsing lists as keys and bool values...")
+    trie = trie_mod.Trie()
+    trie[[1, 2]] = True
+    trie[[2, 3]] = False
+    dump(trie)
+
+    print("\nUsing mixed types as keys and values...")
+    trie = trie_mod.Trie()
+    trie[[1, 2]] = 'Hello?'
+    trie['World'] = 'Earth'
+    trie['Planet Number'] = 3
+    trie[(2, 1)] = 'X'
+    dump(trie)
+
+
+main()
