@@ -1,0 +1,26 @@
+{% macro render_pagination(pagination, endpoint, envs) %}
+    <ul class="pager">
+        <li>共{{ pagination.total }}条, {{ pagination.pages }}页</li>
+        {%- if pagination.has_prev %}
+            <li><a href="{{url_for(endpoint, page=pagination.prev_num, per_page=pagination.per_page, **envs)}}">上一页</a></li>
+        {% else %}
+            <li class="disabled"><span>上一页</span><li>
+        {%- endif %}
+        {%- for page in pagination.iter_pages() %}
+            {% if page %}
+                {% if page != pagination.page %}
+                    <li><a href="{{url_for(endpoint, page=page, per_page=pagination.per_page, **envs)}}">{{page}}</a></li>
+                {% else %}
+                    <li><strong>{{page}}</strong></li>
+                {% endif %}
+            {% else %}
+                <li><span class=ellipsis>...</span></li>
+            {% endif %}
+        {%- endfor %}
+        {%- if pagination.has_next %}
+            <li><a href="{{url_for(endpoint, page=pagination.next_num, per_page=pagination.per_page, **envs)}}">下一页</a></li>
+        {% else %}
+            <li class="disabled"><span>下一页</span><li>
+        {%- endif %}
+    </ul>
+{% endmacro %}

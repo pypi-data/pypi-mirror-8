@@ -1,0 +1,11 @@
+{% macro static(filename) -%}
+    {{ url_for('static', filename=path) }}
+{%- endmacro %}
+
+{% macro link_css(path) %}
+    <link rel='stylesheet' type="text/css" href="{{ path }}" media="screen">
+{% endmacro %}
+
+{% macro script(path) %}
+    <script type='text/javascript' src="{{ path }}"></script>
+{% endmacro %}
