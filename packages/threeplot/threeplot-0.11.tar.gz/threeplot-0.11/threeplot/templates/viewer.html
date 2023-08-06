@@ -1,0 +1,172 @@
+<html>
+<head>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r69/three.min.js"></script>
+<script src="https://dl.dropboxusercontent.com/u/3587259/Code/Threejs/OrbitControls.js"></script>
+<style>
+body {
+  color: #000;
+  font-family:Monospace;
+  font-size:13px;
+  text-align:center;
+  font-weight: bold;
+
+  background-color: #fff;
+  margin: 0px;
+  overflow: hidden;
+}
+</style>
+</head>
+<body>
+<div id="container"></div> 
+<script type="text/javascript">
+var spec = $spec;
+</script>
+<script type="text/javascript">
+var container, stats;
+var camera, controls, scene, renderer;
+var cross;
+
+init();
+animate();
+
+function assert(condition, message) {
+  if (!condition) {
+    message = message || "Assertion failed";
+    if (typeof Error !== "undefined") {
+        throw new Error(message);
+    }
+    throw message; // Fallback
+  }
+}
+
+function createObjectsFromSpec(spec) {
+  assert(spec['type'] == 'series', 'Only type="series" is currently supported');
+  objects = [];
+
+  // Create the geometry
+  geometry = new THREE.Geometry();
+  for (var i = 0; i < spec['vertices'].length; ++i) {
+    v = spec['vertices'][i];
+    assert(v.length == 3, 'Expected vertices length 3');
+    geometry.vertices.push(new THREE.Vector3(v[0], v[1], v[2]));
+  }
+
+  // Create the line
+  if (spec['line_width'] != null) {
+    var stipple = spec['line_style'];
+    var material;
+    if (stipple == 'solid') {
+      material = new THREE.LineBasicMaterial({
+        'linewidth': spec['line_width'],
+        'color': parseInt(spec['line_color'])
+      });
+    } else if (stipple == 'dashed') {
+      material = new THREE.LineDashedMaterial({
+        'linewidth': spec['line_width'],
+        'color': parseInt(spec['line_color']),
+        'dashSize': 3,
+        'gapSize': 1,
+      });
+    } else if (stipple == 'dotted') {
+      material = new THREE.LineDashedMaterial({
+        'linewidth': spec['line_width'],
+        'color': parseInt(spec['line_color']),
+        'dashSize': 1,
+        'gapSize': 1,
+      });
+    } else {
+      throw new Error('Unrecognized line style: '+stipple);
+    }
+
+    geometry.computeLineDistances();  // necessary for dots and dashes to work
+    objects.push(new THREE.Line(geometry, material));
+  }
+
+  // Create the point cloud
+  if (spec['marker_size'] != null) {
+    var material = new THREE.PointCloudMaterial({
+      'color': parseInt(spec['marker_color']),  // colors are sent as strings like "0xff00ff"
+      'size': spec['marker_size'],
+      'sizeAttenuation': false,
+    });
+    objects.push(new THREE.PointCloud(geometry, material));
+  }
+
+  return objects;
+}
+
+function init() {
+  container = document.getElementById( 'container' );
+
+  camera = new THREE.PerspectiveCamera(10, window.innerWidth / window.innerHeight, .1, 10000);
+  camera.position.z = 500;
+
+  controls = new THREE.OrbitControls(camera);
+  controls.addEventListener('change', render);
+
+  scene = new THREE.Scene();
+
+  grid_spec = spec['grid'];
+  xmin = grid_spec['xmin'];
+  xmax = grid_spec['xmax'];
+  ymin = grid_spec['ymin'];
+  ymax = grid_spec['ymax'];
+  xspacing = grid_spec['xspacing'];
+  yspacing = grid_spec['yspacing'];
+
+  // Add the X-Y grid
+  grid_geometry = new THREE.Geometry();
+  for (var x = xmin; x <= xmax; x += xspacing) {
+    grid_geometry.vertices.push(new THREE.Vector3(x, ymin, 0));
+    grid_geometry.vertices.push(new THREE.Vector3(x, ymax, 0));
+  }
+  for (var y = ymin; y <= ymax; y += yspacing) {
+    grid_geometry.vertices.push(new THREE.Vector3(xmin, y, 0));
+    grid_geometry.vertices.push(new THREE.Vector3(xmax, y, 0));
+  }
+  grid_material = new THREE.LineBasicMaterial({'color': 0x555555});
+  grid = new THREE.Line(grid_geometry, grid_material, THREE.LinePieces);
+  scene.add(grid);
+
+  // Create a set objects from the spec
+  object_specs = spec['objects'];
+  for (var i = 0; i < object_specs.length; ++i) {
+    var objects = createObjectsFromSpec(object_specs[i]);
+    for (var j = 0; j < objects.length; ++j) {
+      console.log('adding an object');
+      console.log(objects[j]);
+      scene.add(objects[j]);
+    }
+  }
+
+  // Create renderer
+  background_color = 0x3e3e3e;
+
+  renderer = new THREE.WebGLRenderer( { antialias: false } );
+  renderer.setClearColor(background_color, 1);
+  renderer.setSize( window.innerWidth, window.innerHeight );
+
+  container.appendChild( renderer.domElement );
+
+  window.addEventListener( 'resize', onWindowResize, false );
+}
+
+function onWindowResize() {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize( window.innerWidth, window.innerHeight );
+  render();
+}
+
+function animate() {
+  requestAnimationFrame( animate );
+  controls.update();
+}
+
+function render() {
+  renderer.render( scene, camera );
+}
+
+</script>
+</body>
+</html>
