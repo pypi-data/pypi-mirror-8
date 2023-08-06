@@ -1,0 +1,13 @@
+{% load admin_modify i18n %}
+
+<div class='panel panel-inverse aligned {{ fieldset.classes }}'>
+	<div class='panel-body'>
+		{% for line in fieldset %}
+				{% for field in line %}
+					<div class='form-group'>
+						{% include "admin/includes/field.html" %}
+					</div>
+				{% endfor %}
+		{% endfor %}
+	</div>
+</div>

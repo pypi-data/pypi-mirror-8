@@ -1,0 +1,46 @@
+{% load i18n slick_tags %}
+
+{% get_app_list as app_list %}
+
+{% if app_list %}
+  <div class='nav'>
+    <li class='nav-brand'>
+      <a href='{% url 'admin:index' %}'>
+        <span class='nav-logo'></span>
+        {{ site_header|default:_('Django administration') }}
+      </a>
+    </li>
+    <li class='nav-header'>
+      {% trans "Navigation" %}
+    </li>
+    {% for app in app_list %}
+      {% is_active_path app.admin_url 1 1 as active %}
+      <li class='{% if active %}active{% endif %}'>
+
+        <a data-parent='#sidebar' data-toggle='collapse' href='#' data-target='#sub-menu-{{ app.name|lower }}' aria-expanded='false'>
+          <b class='caret pull-right'></b>
+          <i class='fa fa-app-default fa-app-{{app.name|lower}}'></i>
+          <span>
+            {{ app.name }}
+          </span>
+        </a>
+        <ul id='sub-menu-{{ app.name|lower }}' class='sub-menu collapse {% if active %}in{% endif %}'>
+          {% for model in app.models %}
+            {% is_active_path model.admin_url 1 1 as active %}
+            <li class='{% if active %}active{% endif %}'>
+              {% if model.admin_url %}
+                <a href='{{ model.admin_url }}'>
+                  {{ model.name }}
+                </a>
+              {% else %}
+                <a href='#'>
+                  {{ model.name }}
+                </a>
+              {% endif %}
+            </li>
+          {% endfor %}
+        </ul>
+      </li>
+    {% endfor %}
+  </div>
+{% endif %}
