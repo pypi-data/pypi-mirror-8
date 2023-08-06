@@ -1,0 +1,319 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Usage &mdash; Django Perseus 0.1 documentation</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="top" title="Django Perseus 0.1 documentation" href="index.html"/>
+        <link rel="prev" title="Installation" href="installation.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        <a href="index.html" class="fa fa-home"> Django Perseus</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+        
+            <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#renderer">Renderer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#importer">Importer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#template-tags">Template tags</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#management-command">Management command</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#settings">Settings</a></li>
+</ul>
+</li>
+</ul>
+
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">Django Perseus</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>Usage</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          <a href="_sources/usage.txt" rel="nofollow"> View page source</a>
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            
+  <div class="section" id="usage">
+<h1>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h1>
+<p>Django Perseus consists of few modules working together to sucessfully render a static html site.</p>
+<ul>
+<li><dl class="first docutils">
+<dt>Template tags</dt>
+<dd><p class="first last">They overwrite Django&#8217;s builtin url and static tags to rewrite them statically.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Renderer</dt>
+<dd><p class="first last">Selects views and renders them as static pages.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Importer</dt>
+<dd><p class="first last">Imports a selection of static and media files to the output directory of the renderer.</p>
+</dd>
+</dl>
+</li>
+</ul>
+<div class="section" id="renderer">
+<h2>Renderer<a class="headerlink" href="#renderer" title="Permalink to this headline">¶</a></h2>
+<p>Django Perseus will look for renderers.py file in your Django apps.</p>
+<p>You can subclass the <tt class="docutils literal"><span class="pre">BaseRenderer</span></tt> to create a custom renderer, or use the <tt class="docutils literal"><span class="pre">DefaultRenderer</span></tt>
+to render your Django website with the default behaviour.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django_perseus.renderers.default</span> <span class="kn">import</span> <span class="n">DefaultRenderer</span>
+
+
+<span class="k">class</span> <span class="nc">AppRenderer</span><span class="p">(</span><span class="n">DefaultRenderer</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">paths</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="n">reverse</span><span class="p">(</span><span class="s">&#39;index&#39;</span><span class="p">),</span>
+            <span class="n">reverse</span><span class="p">(</span><span class="s">&#39;privacy&#39;</span><span class="p">),</span>
+            <span class="n">reverse</span><span class="p">(</span><span class="s">&#39;app:index&#39;</span><span class="p">),</span>
+            <span class="n">reverse</span><span class="p">(</span><span class="s">&#39;app:settings&#39;</span><span class="p">),</span>
+            <span class="n">reverse</span><span class="p">(</span><span class="s">&#39;app:detail&#39;</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;pk&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}),</span>
+            <span class="n">reverse</span><span class="p">(</span><span class="s">&#39;app:archive&#39;</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;year&#39;</span><span class="p">:</span> <span class="mi">2014</span><span class="p">,</span> <span class="s">&#39;week&#39;</span><span class="p">:</span> <span class="mi">52</span><span class="p">}),</span>
+        <span class="p">]</span>
+
+
+<span class="n">renderers</span> <span class="o">=</span> <span class="p">[</span><span class="n">AppRenderer</span><span class="p">,</span> <span class="p">]</span>
+</pre></div>
+</div>
+<p>The output of the example will be:
+.. code-block:: python</p>
+<blockquote>
+<div>output_dir/index.html
+output_dir/privacy.html
+output_dir/app.html
+output_dir/app/settings.html
+output_dir/app/detail/1.html
+output_dir/app/archive/2014/52.html</div></blockquote>
+</div>
+<div class="section" id="importer">
+<h2>Importer<a class="headerlink" href="#importer" title="Permalink to this headline">¶</a></h2>
+<p>You can subclass <tt class="docutils literal"><span class="pre">BaseImporter</span></tt> to import files from specific locations in your Django app to a
+target directory</p>
+<p>Your static website will need a selection of media and static files.</p>
+<p>The <tt class="docutils literal"><span class="pre">BaseImporter</span></tt> accepts the following class attributes:</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">target_dir</span></tt> (Django setting) the target directory where the files will be copied to.</li>
+<li><tt class="docutils literal"><span class="pre">source_dir</span></tt> (Django setting) the source directory where the files will be copied from.</li>
+<li><tt class="docutils literal"><span class="pre">sub_dirs</span></tt> (List) subdirectories or files to be imported.</li>
+</ul>
+<p>Example media files importer:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MediaImporter</span><span class="p">(</span><span class="n">BaseImporter</span><span class="p">):</span>
+
+    <span class="n">target_dir</span> <span class="o">=</span> <span class="s">&#39;PERSEUS_SOURCE_DIR&#39;</span>
+    <span class="n">source_dir</span> <span class="o">=</span> <span class="s">&#39;MEDIA_ROOT&#39;</span>
+    <span class="n">sub_dirs</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s">&#39;*&#39;</span>
+    <span class="p">]</span>
+</pre></div>
+</div>
+<p>Example static files importer:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">StaticImporter</span><span class="p">(</span><span class="n">BaseImporter</span><span class="p">):</span>
+
+    <span class="n">target_dir</span> <span class="o">=</span> <span class="s">&#39;PERSEUS_SOURCE_DIR&#39;</span>
+    <span class="n">source_dir</span> <span class="o">=</span> <span class="s">&#39;STATIC_ROOT&#39;</span>
+    <span class="n">sub_dirs</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s">&#39;css&#39;</span><span class="p">,</span>
+        <span class="s">&#39;img&#39;</span><span class="p">,</span>
+        <span class="s">&#39;js/build&#39;</span><span class="p">,</span>
+        <span class="s">&#39;robots.txt&#39;</span><span class="p">,</span>
+    <span class="p">]</span>
+</pre></div>
+</div>
+<p>Register the importer subclass in your perseus settings file:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">PERSEUS_IMPORTERS</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s">&#39;yourproject.app.importers.MediaImporter&#39;</span><span class="p">,</span>
+    <span class="s">&#39;yourproject.app.importers.StaticImporter&#39;</span><span class="p">,</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="template-tags">
+<h2>Template tags<a class="headerlink" href="#template-tags" title="Permalink to this headline">¶</a></h2>
+<p>The tags rewrite paths when the <tt class="docutils literal"><span class="pre">render</span></tt> management command is run with a settings file
+containing the setting: <tt class="docutils literal"><span class="pre">RENDER_STATIC</span> <span class="pre">=</span> <span class="pre">True</span></tt></p>
+<p>Load the tags in your templates as:</p>
+<div class="highlight-html"><div class="highlight"><pre>{% load django_perseus_tags %}
+</pre></div>
+</div>
+</div>
+<div class="section" id="management-command">
+<h2>Management command<a class="headerlink" href="#management-command" title="Permalink to this headline">¶</a></h2>
+<p>The <tt class="docutils literal"><span class="pre">render</span></tt> management command will run all renderers found in your Django apps and run
+the file importers.</p>
+<div class="highlight-python"><div class="highlight"><pre>./manage.py render --settings=yourproject.conf.perseus_settings.py
+</pre></div>
+</div>
+</div>
+<div class="section" id="settings">
+<h2>Settings<a class="headerlink" href="#settings" title="Permalink to this headline">¶</a></h2>
+<ul>
+<li><dl class="first docutils">
+<dt><tt class="docutils literal"><span class="pre">RENDER_STATIC</span></tt></dt>
+<dd><p class="first last">A boolean whether the url and static tags will be rewritten to static paths.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><tt class="docutils literal"><span class="pre">PERSEUS_SOURCE_DIR</span></tt></dt>
+<dd><p class="first last">renderer output folder</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><tt class="docutils literal"><span class="pre">PERSEUS_BUILD_DIR</span></tt></dt>
+<dd><p class="first last">output dir if render management command runs with <tt class="docutils literal"><span class="pre">--archive</span></tt> option</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><tt class="docutils literal"><span class="pre">PERSEUS_IMPORTERS</span></tt></dt>
+<dd><p class="first last">A list where Importers are to be found.</p>
+</dd>
+</dl>
+</li>
+</ul>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">PERSEUS_IMPORTERS</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s">&#39;yourproject.app.importers.MediaImporter&#39;</span><span class="p">,</span>
+    <span class="s">&#39;yourproject.app.importers.StaticImporter&#39;</span><span class="p">,</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="installation.html" class="btn btn-neutral" title="Installation"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2014, Carlo Smouter.
+    </p>
+  </div>
+
+  <a href="https://github.com/snide/sphinx_rtd_theme">Sphinx theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
