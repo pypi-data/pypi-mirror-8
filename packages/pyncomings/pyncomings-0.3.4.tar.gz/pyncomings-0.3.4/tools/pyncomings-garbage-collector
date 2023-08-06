@@ -1,0 +1,30 @@
+#!/usr/bin/env python
+
+# Author: Pablo Saavedra Rodinho
+# Contact: saavedra.pablo@gmail.com
+
+"""
+Pyncomings Garbage
+"""
+
+import pyncomings.incomingsmanager
+from optparse import OptionParser
+
+parser = OptionParser()
+parser.add_option("-f", "--file", dest="filename",
+                  help="The configuration file", metavar="CONFIGFILE")
+parser.add_option("-F", "--force", dest="force", action="store_true",
+                  help="Force the clean of the database",
+                  default=False)
+
+(options, args) = parser.parse_args()
+
+if not (options.filename):
+    options.filename = './config.cfg'
+
+m = pyncomings.incomingsmanager.PyncomingsManager(options.filename)
+
+m.purge_garbage()
+
+if options.force:
+  m.clean_purged()
