@@ -1,0 +1,82 @@
+Metadata-Version: 1.1
+Name: django-static-jquery
+Version: 2.1.1
+Summary: jQuery packaged in an handy django app to speed up new applications and deployment.
+Home-page: https://github.com/Haos616/django-static-jquery
+Author: haos616
+Author-email: haos616@gmail.com
+License: BSD
+Description: Django jQuery
+        =============
+        
+        `JQuery <http://jquery.com/>`_ 2.1.1
+        
+        Requirements
+        ------------
+        
+        `Django <https://www.djangoproject.com/>`_ 1.4 or later
+        
+        Installation
+        ------------
+        
+        ::
+        
+            $ pip install django-static-jquery==2.1.1
+        
+        Setup
+        -----
+        
+        Just add ``'django.contrib.staticfiles'`` and ``'django_static_jquery'`` to INSTALLED_APPS in
+        your settings.py::
+        
+            INSTALLED_APPS = (
+                # ...
+        
+                'django.contrib.staticfiles',
+                'django_static_jquery',
+        
+                # ...
+            )
+        
+        Refer to Django `static files <https://docs.djangoproject.com/en/dev/howto/static-files/>`_
+        documentation to configure and deploy static files.
+        
+        
+        Usage
+        -----
+        
+        You can refer to jquery in your template with::
+        
+            {% load staticfiles %}
+            {% static 'static_jquery/js/jquery.js' %}
+        
+        Admin template customization::
+        
+            {% load staticfiles %}
+        
+            {% extends "admin/base_site.html" %}
+        
+            {% block extrahead %}
+                <script type="text/javascript" src="{% static 'static_jquery/js/jquery.js' %}" />
+            {% endblock %}
+        
+        Static files::
+        
+            static_jquery/js/jquery.js - JQuery - v2.1.1
+            static_jquery/js/jquery.min.js - JQuery (min) - v2.1.1
+            static_jquery/js/jquery.min.map - JQuery (map) - v2.1.1
+        
+            static_jquery/js/jquery-migrate.js - jQuery Migrate - v1.2.1
+            static_jquery/js/jquery-migrate.min.js - jQuery Migrate (min) - v1.2.1
+        
+Keywords: django,jquery,staticfiles
+Platform: any
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Environment :: Web Environment
+Classifier: Framework :: Django
+Classifier: Intended Audience :: Developers
+Classifier: Natural Language :: English
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Topic :: Utilities
