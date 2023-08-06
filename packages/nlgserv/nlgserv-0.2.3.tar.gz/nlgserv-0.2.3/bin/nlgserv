@@ -1,0 +1,35 @@
+#!/usr/bin/python
+
+import nlgserv
+from sys import argv
+
+class InvalidArgumentsError(Exception):
+   pass
+
+if __name__=="__main__":
+
+   if len(argv) < 3:
+      raise InvalidArgumentsError("nlgserv takes two arguments: host, port. E.g. nlgserv localhost 8080")
+   
+   host = argv[1]
+   port = int(argv[2])
+
+   if len(argv) == 5:
+      output_filename = argv[3]
+      error_filename = argv[4]
+   else:
+      output_filename = None
+      error_filename = None
+
+   if output_filename != None:
+      with open(output_filename, "w+") as output:
+         with open(error_filename, "w+") as error: 
+            server = nlgserv.start_server(host, port, output, error)
+   else:
+      server = nlgserv.start_server(host, port)
+
+   try:
+      print "Server started. Press Ctrl+C to stop."
+      server.wait()
+   except KeyboardInterrupt:
+      nlgserv.stop_server(server)
