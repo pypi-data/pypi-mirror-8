@@ -1,0 +1,15 @@
+#!/usr/bin/python
+from wicomm import SharedMemoryReader
+import time
+
+# write data to shared memory at this rate
+READ_FREQ = 10
+
+def main():
+    sharedMemReader = SharedMemoryReader()
+    while(True):
+        print sharedMemReader.readData()
+        time.sleep(1.0/READ_FREQ)
+
+if __name__ == '__main__':
+    main()
