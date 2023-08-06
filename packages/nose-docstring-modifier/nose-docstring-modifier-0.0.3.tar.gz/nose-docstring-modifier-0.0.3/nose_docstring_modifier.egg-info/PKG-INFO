@@ -1,0 +1,38 @@
+Metadata-Version: 1.1
+Name: nose-docstring-modifier
+Version: 0.0.3
+Summary: Enables you to modify docstring of tests based on their attributes
+Home-page: UNKNOWN
+Author: Maroun Maroun
+Author-email: maroun@taykey.com
+License: UNKNOWN
+Description: ### nose-docstring-plugin
+        
+        This plugin enables you to modify docstring of tests based on their attributes, for example:
+        ```python
+        @attr(section='MySection', type='functional+', module='MyModule', id=1)
+        def test_function(self):
+            """
+            This is the original docstring
+            """
+            pass
+        ```
+        
+        Running this with nosetest with docstring plugin:
+        
+        ```> python main.py --with-docstring-modifier --prefix=id,section --suffix=type --replace=s,S```
+        
+        will print 
+        
+        ```(1, MySection) ThiS iS the original docString (functional+) ... ok```
+        
+        
+        
+        
+Keywords: nosetest docstring
+Platform: UNKNOWN
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Topic :: Software Development :: Testing
