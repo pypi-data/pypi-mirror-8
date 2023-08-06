@@ -1,0 +1,1942 @@
+
+<!DOCTYPE html>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>API Reference (in progress) &mdash; Python-Future  documentation</title>
+    
+    <link rel="stylesheet" href="_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/my-styles.css" type="text/css" />
+    <link rel="stylesheet" href="_static/bootswatch-3.2.0/cerulean/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="_static/bootstrap-3.2.0/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
+    <link rel="shortcut icon" href="_static/python-future-icon-32.ico"/>
+    <link rel="top" title="Python-Future  documentation" href="index.html" />
+    <link rel="prev" title="Licensing and credits" href="credits.html" />
+
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-19344199-2']);
+  _gaq.push(['_trackPageview']);
+</script>
+
+  </head>
+  <body>
+
+<a href="https://github.com/PythonCharmers/python-future"><img style="position: absolute; top: 45px; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png" alt="Fork me on GitHub"></a>
+<div id="navbar" class="navbar navbar-inverse navbar-default navbar-fixed-top">
+
+    <div class="container">
+
+      <div class="navbar-header">
+
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+
+        <a class="logo"> <img height="32" width="32" src="_static/python-future-logo-textless-transparent.png" /></a>
+        <a class="navbar-brand" href="index.html">Python-Future</a>
+        <span class="navbar-text navbar-version pull-left"><b></b></span>
+      </div>
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            <li class="divider-vertical"></li>
+            
+                <li><a href="overview.html">Overview</a></li>
+                <li><a href="compatible_idioms.html">Cheat Sheet</a></li>
+                <li><a href="faq.html">FAQ</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="index.html">Contents <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="whatsnew.html">What&#8217;s New</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="whatsnew.html#what-s-new-in-version-0-14-1">What&#8217;s new in version 0.14.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="whatsnew.html#what-s-new-in-version-0-14-0">What&#8217;s new in version 0.14.0</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="whatsnew.html#bug-fixes">Bug fixes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="whatsnew.html#internal-cleanups">Internal cleanups</a></li>
+<li class="toctree-l3"><a class="reference internal" href="whatsnew.html#deprecations">Deprecations</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="whatsnew.html#what-s-new-in-version-0-13-1">What&#8217;s new in version 0.13.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="whatsnew.html#what-s-new-in-version-0-13">What&#8217;s new in version 0.13</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="whatsnew.html#id1">Deprecations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="whatsnew.html#new-features">New features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="whatsnew.html#id2">Bug fixes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="whatsnew.html#previous-versions">Previous versions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview: Easy, clean, reliable Python 2/3 compatibility</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="overview.html#features">Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="overview.html#code-examples">Code examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="overview.html#automatic-conversion-to-py2-3-compatible-code">Automatic conversion to Py2/3-compatible code</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="overview.html#futurize-2-to-both">Futurize: 2 to both</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="overview.html#automatic-translation">Automatic translation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="overview.html#licensing">Licensing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="overview.html#next-steps">Next steps</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick-start guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#if-you-are-writing-code-from-scratch">If you are writing code from scratch</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#to-convert-existing-python-3-code">To convert existing Python 3 code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#to-convert-existing-python-2-code">To convert existing Python 2 code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#standard-library-reorganization">Standard library reorganization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#python-2-only-dependencies">Python 2-only dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#next-steps">Next steps</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="compatible_idioms.html">Cheat Sheet: Writing Python 2-3 compatible code</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="compatible_idioms.html#setup">Setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="compatible_idioms.html#essential-syntax-differences">Essential syntax differences</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="compatible_idioms.html#print">print</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compatible_idioms.html#raising-exceptions">Raising exceptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compatible_idioms.html#catching-exceptions">Catching exceptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compatible_idioms.html#division">Division</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compatible_idioms.html#long-integers">Long integers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compatible_idioms.html#octal-constants">Octal constants</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compatible_idioms.html#backtick-repr">Backtick repr</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compatible_idioms.html#metaclasses">Metaclasses</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="compatible_idioms.html#strings-and-bytes">Strings and bytes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="compatible_idioms.html#unicode-text-string-literals">Unicode (text) string literals</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compatible_idioms.html#byte-string-literals">Byte-string literals</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compatible_idioms.html#basestring">basestring</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compatible_idioms.html#unicode">unicode</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compatible_idioms.html#stringio">StringIO</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="compatible_idioms.html#imports-relative-to-a-package">Imports relative to a package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="compatible_idioms.html#dictionaries">Dictionaries</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="compatible_idioms.html#iterating-through-dict-keys-values-items">Iterating through <tt class="docutils literal"><span class="pre">dict</span></tt> keys/values/items</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compatible_idioms.html#dict-keys-values-items-as-a-list">dict keys/values/items as a list</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="compatible_idioms.html#custom-class-behaviour">Custom class behaviour</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="compatible_idioms.html#custom-iterators">Custom iterators</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compatible_idioms.html#custom-str-methods">Custom <tt class="docutils literal"><span class="pre">__str__</span></tt> methods</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compatible_idioms.html#custom-nonzero-vs-bool-method">Custom <tt class="docutils literal"><span class="pre">__nonzero__</span></tt> vs <tt class="docutils literal"><span class="pre">__bool__</span></tt> method:</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="compatible_idioms.html#lists-versus-iterators">Lists versus iterators</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="compatible_idioms.html#xrange">xrange</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compatible_idioms.html#range">range</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compatible_idioms.html#map">map</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compatible_idioms.html#imap">imap</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compatible_idioms.html#zip-izip">zip, izip</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compatible_idioms.html#filter-ifilter">filter, ifilter</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="compatible_idioms.html#other-builtins">Other builtins</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="compatible_idioms.html#file-io-with-open">File IO with open()</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compatible_idioms.html#reduce">reduce()</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compatible_idioms.html#raw-input">raw_input()</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compatible_idioms.html#input">input()</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compatible_idioms.html#file">file()</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compatible_idioms.html#execfile">execfile()</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compatible_idioms.html#unichr">unichr()</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compatible_idioms.html#intern">intern()</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compatible_idioms.html#apply">apply()</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compatible_idioms.html#chr">chr()</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compatible_idioms.html#cmp">cmp()</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compatible_idioms.html#reload">reload()</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="compatible_idioms.html#standard-library">Standard library</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="compatible_idioms.html#dbm-modules">dbm modules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compatible_idioms.html#commands-subprocess-modules">commands / subprocess modules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compatible_idioms.html#subprocess-check-output">subprocess.check_output()</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compatible_idioms.html#collections-counter-and-ordereddict">collections: Counter and OrderedDict</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compatible_idioms.html#stringio-module">StringIO module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compatible_idioms.html#http-module">http module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compatible_idioms.html#xmlrpc-module">xmlrpc module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compatible_idioms.html#html-escaping-and-entities">html escaping and entities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compatible_idioms.html#html-parsing">html parsing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compatible_idioms.html#urllib-module">urllib module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compatible_idioms.html#tkinter">Tkinter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compatible_idioms.html#socketserver">socketserver</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compatible_idioms.html#copy-reg-copyreg">copy_reg, copyreg</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compatible_idioms.html#configparser">configparser</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compatible_idioms.html#queue">queue</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compatible_idioms.html#repr-reprlib">repr, reprlib</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compatible_idioms.html#userdict-userlist-userstring">UserDict, UserList, UserString</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compatible_idioms.html#itertools-filterfalse-zip-longest">itertools: filterfalse, zip_longest</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="imports.html">Imports</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="imports.html#future-imports">__future__ imports</a></li>
+<li class="toctree-l2"><a class="reference internal" href="imports.html#imports-of-builtins">Imports of builtins</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="imports.html#implicit-imports">Implicit imports</a></li>
+<li class="toctree-l3"><a class="reference internal" href="imports.html#explicit-imports">Explicit imports</a></li>
+<li class="toctree-l3"><a class="reference internal" href="imports.html#obsolete-python-2-builtins">Obsolete Python 2 builtins</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="imports.html#should-i-import-unicode-literals">Should I import unicode_literals?</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="imports.html#benefits">Benefits</a></li>
+<li class="toctree-l3"><a class="reference internal" href="imports.html#drawbacks">Drawbacks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="imports.html#others-perspectives">Others&#8217; perspectives</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="standard_library_imports.html">Standard library imports</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="standard_library_imports.html#direct-imports">Direct imports</a></li>
+<li class="toctree-l2"><a class="reference internal" href="standard_library_imports.html#list-of-renamed-standard-library-modules">List of renamed standard library modules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="standard_library_imports.html#list-of-refactored-standard-library-modules">List of refactored standard library modules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="standard_library_imports.html#older-interfaces">Older interfaces</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="standard_library_imports.html#context-manager-for-import-hooks">Context-manager for import hooks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="standard_library_imports.html#future-moves-interface"><tt class="docutils literal"><span class="pre">future.moves</span></tt> interface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="standard_library_imports.html#import-and-from-import-functions"><tt class="docutils literal"><span class="pre">import_</span></tt> and <tt class="docutils literal"><span class="pre">from_import</span></tt> functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="standard_library_imports.html#install-hooks-call">install_hooks() call</a></li>
+<li class="toctree-l3"><a class="reference internal" href="standard_library_imports.html#comparing-future-moves-and-six-moves">Comparing future.moves and six.moves</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="standard_library_imports.html#external-backports">External backports</a></li>
+<li class="toctree-l2"><a class="reference internal" href="standard_library_imports.html#included-backports">Included backports</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="what_else.html">What else you need to know</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="what_else.html#bytes">bytes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="what_else.html#str">str</a></li>
+<li class="toctree-l2"><a class="reference internal" href="what_else.html#dict">dict</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="what_else.html#memory-efficiency-and-alternatives">Memory-efficiency and alternatives</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="what_else.html#int">int</a></li>
+<li class="toctree-l2"><a class="reference internal" href="what_else.html#isinstance">isinstance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="what_else.html#passing-data-to-from-python-2-libraries">Passing data to/from Python 2 libraries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="what_else.html#native-string-type">Native string type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="what_else.html#open">open()</a></li>
+<li class="toctree-l2"><a class="reference internal" href="what_else.html#custom-str-methods">Custom __str__ methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="what_else.html#custom-iterators">Custom iterators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="what_else.html#binding-a-method-to-a-class">Binding a method to a class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="what_else.html#metaclasses">Metaclasses</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="automatic_conversion.html">Automatic conversion to Py2&amp;3</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="automatic_conversion.html#futurize-py2-to-py2-3"><tt class="docutils literal"><span class="pre">futurize</span></tt>: Py2 to Py2&amp;3</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="automatic_conversion.html#stage-1-safe-fixes">Stage 1: &#8220;safe&#8221; fixes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="automatic_conversion.html#stage-2-py3-style-code-with-wrappers-for-py2">Stage 2: Py3-style code with wrappers for Py2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="automatic_conversion.html#separating-text-from-bytes">Separating text from bytes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="automatic_conversion.html#post-conversion">Post-conversion</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="automatic_conversion.html#pasteurize-py3-to-py2-3"><tt class="docutils literal"><span class="pre">pasteurize</span></tt>: Py3 to Py2&amp;3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="automatic_conversion.html#how-well-do-futurize-and-pasteurize-work">How well do <tt class="docutils literal"><span class="pre">futurize</span></tt> and <tt class="docutils literal"><span class="pre">pasteurize</span></tt> work?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="automatic_conversion.html#known-limitations">Known limitations</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="futurize_cheatsheet.html"><tt class="docutils literal"><span class="pre">futurize</span></tt> quick-start: automatic conversion from Py2 to Py2&amp;3</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="futurize_cheatsheet.html#step-0-setup">Step 0: setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="futurize_cheatsheet.html#step-1-modern-py2-code">Step 1: modern Py2 code</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="futurize_cheatsheet.html#example-error">Example error</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="futurize_cheatsheet.html#step-2-working-py3-code-that-still-supports-py2">Step 2: working Py3 code that still supports Py2</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="translation.html">Using Python 2-only dependencies on Python 3</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="translation.html#known-limitations-of-past-translation">Known limitations of <tt class="docutils literal"><span class="pre">past.translation</span></tt></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="stdlib_incompatibilities.html">Standard library incompatibilities</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="stdlib_incompatibilities.html#array-array">array.array()</a></li>
+<li class="toctree-l2"><a class="reference internal" href="stdlib_incompatibilities.html#array-array-read">array.array.read()</a></li>
+<li class="toctree-l2"><a class="reference internal" href="stdlib_incompatibilities.html#base64-decodebytes-and-base64-encodebytes">base64.decodebytes() and base64.encodebytes()</a></li>
+<li class="toctree-l2"><a class="reference internal" href="stdlib_incompatibilities.html#re-ascii">re.ASCII</a></li>
+<li class="toctree-l2"><a class="reference internal" href="stdlib_incompatibilities.html#struct-pack">struct.pack()</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently Asked Questions (FAQ)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="faq.html#who-is-this-for">Who is this for?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html#why-upgrade-to-python-3">Why upgrade to Python 3?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html#porting-philosophy">Porting philosophy</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="faq.html#why-write-python-3-style-code">Why write Python 3-style code?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="faq.html#can-t-i-just-roll-my-own-py2-3-compatibility-layer">Can&#8217;t I just roll my own Py2/3 compatibility layer?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="faq.html#what-inspired-this-project">What inspired this project?</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html#maturity">Maturity</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="faq.html#how-well-has-it-been-tested">How well has it been tested?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="faq.html#is-the-api-stable">Is the API stable?</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html#relationship-between-python-future-and-other-compatibility-tools">Relationship between python-future and other compatibility tools</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="faq.html#how-does-this-relate-to-2to3">How does this relate to <tt class="docutils literal"><span class="pre">2to3</span></tt>?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="faq.html#can-i-maintain-a-python-2-codebase-and-use-2to3-to-automatically-convert-to-python-3-in-the-setup-script">Can I maintain a Python 2 codebase and use 2to3 to automatically convert to Python 3 in the setup script?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="faq.html#what-is-the-relationship-between-future-and-six">What is the relationship between <tt class="docutils literal"><span class="pre">future</span></tt> and <tt class="docutils literal"><span class="pre">six</span></tt>?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="faq.html#what-is-the-relationship-between-python-future-and-python-modernize">What is the relationship between <tt class="docutils literal"><span class="pre">python-future</span></tt> and <tt class="docutils literal"><span class="pre">python-modernize</span></tt>?</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html#platform-and-version-support">Platform and version support</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="faq.html#which-versions-of-python-does-python-future-support">Which versions of Python does <tt class="docutils literal"><span class="pre">python-future</span></tt> support?</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html#support">Support</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="faq.html#is-there-a-mailing-list">Is there a mailing list?</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html#contributing">Contributing</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="faq.html#can-i-help">Can I help?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="faq.html#where-is-the-repo">Where is the repo?</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changes in previous versions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#changes-in-version-0-12-4">Changes in version 0.12.4</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#changes-in-version-0-12-3">Changes in version 0.12.3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#changes-in-version-0-12-2">Changes in version 0.12.2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#changes-in-version-0-12-1">Changes in version 0.12.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#changes-in-version-0-12-0">Changes in version 0.12.0</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="changelog.html#more-robust-standard-library-import-hooks">More robust standard-library import hooks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="changelog.html#newobject-base-object-defines-fallback-py2-compatible-special-methods"><tt class="docutils literal"><span class="pre">newobject</span></tt> base object defines fallback Py2-compatible special methods</a></li>
+<li class="toctree-l3"><a class="reference internal" href="changelog.html#past-builtins-module-improved"><tt class="docutils literal"><span class="pre">past.builtins</span></tt> module improved</a></li>
+<li class="toctree-l3"><a class="reference internal" href="changelog.html#surrogateescape-error-handler"><tt class="docutils literal"><span class="pre">surrogateescape</span></tt> error handler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="changelog.html#newlist-type"><tt class="docutils literal"><span class="pre">newlist</span></tt> type</a></li>
+<li class="toctree-l3"><a class="reference internal" href="changelog.html#listvalues-and-listitems"><tt class="docutils literal"><span class="pre">listvalues</span></tt> and <tt class="docutils literal"><span class="pre">listitems</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="changelog.html#tests">Tests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="changelog.html#refactoring-of-future-standard-library-future-backports">Refactoring of <tt class="docutils literal"><span class="pre">future.standard_library.*</span></tt> -&gt; <tt class="docutils literal"><span class="pre">future.backports</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="changelog.html#backported-http-server-and-urllib-modules">Backported <tt class="docutils literal"><span class="pre">http.server</span></tt> and <tt class="docutils literal"><span class="pre">urllib</span></tt> modules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="changelog.html#internal-refactoring">Internal refactoring</a></li>
+<li class="toctree-l3"><a class="reference internal" href="changelog.html#bug-fixes">Bug fixes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#changes-in-version-0-11-4">Changes in version 0.11.4</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#changes-in-version-0-11-3">Changes in version 0.11.3</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="changelog.html#improved-compatibility-with-requests">Improved compatibility with <tt class="docutils literal"><span class="pre">requests</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="changelog.html#conversion-scripts-explicitly-install-import-hooks">Conversion scripts explicitly install import hooks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="changelog.html#futurize-script-no-longer-adds-unicode-literals-by-default"><tt class="docutils literal"><span class="pre">futurize</span></tt> script no longer adds <tt class="docutils literal"><span class="pre">unicode_literals</span></tt> by default</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#changes-in-version-0-11">Changes in version 0.11</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="changelog.html#past-package"><tt class="docutils literal"><span class="pre">past</span></tt> package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="changelog.html#auto-translation-of-python-2-modules-upon-import">Auto-translation of Python 2 modules upon import</a></li>
+<li class="toctree-l3"><a class="reference internal" href="changelog.html#separate-pasteurize-script">Separate <tt class="docutils literal"><span class="pre">pasteurize</span></tt> script</a></li>
+<li class="toctree-l3"><a class="reference internal" href="changelog.html#pow">pow()</a></li>
+<li class="toctree-l3"><a class="reference internal" href="changelog.html#input-no-longer-disabled-globally-on-py2">input() no longer disabled globally on Py2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="changelog.html#deprecated-feature-auto-installation-of-standard-library-import-hooks">Deprecated feature: auto-installation of standard-library import hooks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="changelog.html#internal-changes">Internal changes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#changes-in-version-0-10-2">Changes in version 0.10.2</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="changelog.html#new-context-manager-interface-to-standard-library-hooks">New context-manager interface to standard_library hooks</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#changes-in-version-0-10-0">Changes in version 0.10.0</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="changelog.html#backported-dict-type">Backported <tt class="docutils literal"><span class="pre">dict</span></tt> type</a></li>
+<li class="toctree-l3"><a class="reference internal" href="changelog.html#utility-functions-raise-and-exec">Utility functions <tt class="docutils literal"><span class="pre">raise_</span></tt> and <tt class="docutils literal"><span class="pre">exec_</span></tt></a></li>
+<li class="toctree-l3"><a class="reference internal" href="changelog.html#bugfixes">Bugfixes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#changes-in-version-0-9">Changes in version 0.9</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="changelog.html#isinstance-checks-are-supported-natively-with-backported-types"><tt class="docutils literal"><span class="pre">isinstance</span></tt> checks are supported natively with backported types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="changelog.html#futurize-minimal-imports-by-default"><tt class="docutils literal"><span class="pre">futurize</span></tt>: minimal imports by default</a></li>
+<li class="toctree-l3"><a class="reference internal" href="changelog.html#looser-type-checking-for-the-backported-str-object">Looser type-checking for the backported <tt class="docutils literal"><span class="pre">str</span></tt> object</a></li>
+<li class="toctree-l3"><a class="reference internal" href="changelog.html#suspend-hooks-context-manager-added-to-future-standard-library">suspend_hooks() context manager added to <tt class="docutils literal"><span class="pre">future.standard_library</span></tt></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#changes-in-version-0-8">Changes in version 0.8</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="changelog.html#python-2-6-support">Python 2.6 support</a></li>
+<li class="toctree-l3"><a class="reference internal" href="changelog.html#unused-modules-removed">Unused modules removed</a></li>
+<li class="toctree-l3"><a class="reference internal" href="changelog.html#isinstance-added-to-future-builtins-v0-8-2">isinstance() added to <tt class="docutils literal"><span class="pre">future.builtins</span></tt> (v0.8.2)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#summary-of-all-changes">Summary of all changes</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="credits.html">Licensing and credits</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="credits.html#licence">Licence</a></li>
+<li class="toctree-l2"><a class="reference internal" href="credits.html#sponsor">Sponsor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="credits.html#authors">Authors</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="credits.html#development-lead">Development Lead</a></li>
+<li class="toctree-l3"><a class="reference internal" href="credits.html#patches">Patches</a></li>
+<li class="toctree-l3"><a class="reference internal" href="credits.html#suggestions-and-feedback">Suggestions and Feedback</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="credits.html#other-credits">Other Credits</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">API Reference (in progress)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-future.builtins">future.builtins Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-future.types">Backported types from Python 3</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#for-more-information">For more information:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#range">range()</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#super">super()</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#round">round()</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-future.standard_library">future.standard_library Interface</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#limitations">Limitations</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-future.utils">future.utils Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-past.builtins">past.builtins Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-past.types">Forward-ported types from Python 2</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">API Reference (in progress)</a><ul>
+<li><a class="reference internal" href="#module-future.builtins">future.builtins Interface</a></li>
+<li><a class="reference internal" href="#module-future.types">Backported types from Python 3</a><ul>
+<li><a class="reference internal" href="#for-more-information">For more information:</a><ul>
+<li><a class="reference internal" href="#notes">Notes</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#range">range()</a></li>
+<li><a class="reference internal" href="#super">super()</a></li>
+<li><a class="reference internal" href="#round">round()</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-future.standard_library">future.standard_library Interface</a><ul>
+<li><a class="reference internal" href="#limitations">Limitations</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-future.utils">future.utils Interface</a></li>
+<li><a class="reference internal" href="#module-past.builtins">past.builtins Interface</a></li>
+<li><a class="reference internal" href="#module-past.types">Forward-ported types from Python 2</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+      <div class="col-md-3">
+        <div id="sidebar" class="bs-sidenav" role="complementary"><!--<h3>Python-Future</h3>
+<p>-->
+  <h4>Easy, clean, reliable Python 2/3 compatibility</h4>
+  <a href="http://python-future.org">Table of Contents</a>
+<!--
+</p>
+<h3>Other Formats</h3>
+<p>
+  You can download the documentation in other formats as well:
+</p>
+<ul>
+  <li><a href="http://jinja.pocoo.org/docs/jinja-docs.pdf">as PDF</a>
+  <li><a href="http://jinja.pocoo.org/docs/jinja-docs.zip">as zipped HTML</a>
+</ul>
+-->
+<!--<h3>Useful Links</h3>
+<ul>
+  <li><a href="http://pypi.python.org/pypi/future">on PyPI</a></li>
+  <li><a href="https://github.com/PythonCharmers/python-future">on GitHub</a></li>
+</ul>
+--><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="whatsnew.html">What&#8217;s New</a></li>
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview: Easy, clean, reliable Python 2/3 compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick-start guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compatible_idioms.html">Cheat Sheet: Writing Python 2-3 compatible code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="imports.html">Imports</a></li>
+<li class="toctree-l1"><a class="reference internal" href="standard_library_imports.html">Standard library imports</a></li>
+<li class="toctree-l1"><a class="reference internal" href="what_else.html">What else you need to know</a></li>
+<li class="toctree-l1"><a class="reference internal" href="automatic_conversion.html">Automatic conversion to Py2&amp;3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="futurize_cheatsheet.html"><tt class="docutils literal"><span class="pre">futurize</span></tt> quick-start: automatic conversion from Py2 to Py2&amp;3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="translation.html">Using Python 2-only dependencies on Python 3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="stdlib_incompatibilities.html">Standard library incompatibilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changes in previous versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="credits.html">Licensing and credits</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">API Reference (in progress)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-future.builtins">future.builtins Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-future.types">Backported types from Python 3</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#for-more-information">For more information:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#range">range()</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#super">super()</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#round">round()</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-future.standard_library">future.standard_library Interface</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#limitations">Limitations</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-future.utils">future.utils Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-past.builtins">past.builtins Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-past.types">Forward-ported types from Python 2</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    <div class="col-md-9">
+      
+  <div class="section" id="api-reference-in-progress">
+<h1>API Reference (in progress)<a class="headerlink" href="#api-reference-in-progress" title="Permalink to this headline">¶</a></h1>
+<p><strong>NOTE: This page is still a work in progress... We need to go through our
+docstrings and make them sphinx-compliant, and figure out how to improve
+formatting with the sphinx-bootstrap-theme plugin. Pull requests would be
+very welcome.</strong></p>
+<div class="contents local topic" id="contents">
+<ul class="simple">
+<li><a class="reference internal" href="#module-future.builtins" id="id5">future.builtins Interface</a></li>
+<li><a class="reference internal" href="#module-future.types" id="id6">Backported types from Python 3</a><ul>
+<li><a class="reference internal" href="#for-more-information" id="id7">For more information:</a></li>
+<li><a class="reference internal" href="#range" id="id8">range()</a></li>
+<li><a class="reference internal" href="#super" id="id9">super()</a></li>
+<li><a class="reference internal" href="#round" id="id10">round()</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-future.standard_library" id="id11">future.standard_library Interface</a><ul>
+<li><a class="reference internal" href="#limitations" id="id12">Limitations</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-future.utils" id="id13">future.utils Interface</a></li>
+<li><a class="reference internal" href="#module-past.builtins" id="id14">past.builtins Interface</a></li>
+<li><a class="reference internal" href="#module-past.types" id="id15">Forward-ported types from Python 2</a></li>
+</ul>
+</div>
+<div class="section" id="module-future.builtins">
+<span id="future-builtins-interface"></span><h2><a class="toc-backref" href="#id5">future.builtins Interface</a><a class="headerlink" href="#module-future.builtins" title="Permalink to this headline">¶</a></h2>
+<p>A module that brings in equivalents of the new and modified Python 3
+builtins into Py2. Has no effect on Py3.</p>
+<p>See the docs <a class="reference external" href="http://python-future.org/what-else.html">here</a>
+(<tt class="docutils literal"><span class="pre">docs/what-else.rst</span></tt>) for more information.</p>
+<dl class="attribute">
+<dt id="future.builtins.filter">
+<tt class="descclassname">future.builtins.</tt><tt class="descname">filter</tt><a class="headerlink" href="#future.builtins.filter" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <tt class="xref py py-class docutils literal"><span class="pre">ifilter</span></tt></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="future.builtins.map">
+<tt class="descclassname">future.builtins.</tt><tt class="descname">map</tt><a class="headerlink" href="#future.builtins.map" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <tt class="xref py py-class docutils literal"><span class="pre">imap</span></tt></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="future.builtins.zip">
+<tt class="descclassname">future.builtins.</tt><tt class="descname">zip</tt><a class="headerlink" href="#future.builtins.zip" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <tt class="xref py py-class docutils literal"><span class="pre">izip</span></tt></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="future.builtins.ascii">
+<tt class="descclassname">future.builtins.</tt><tt class="descname">ascii</tt><big>(</big><em>object</em><big>)</big> &rarr; string<a class="headerlink" href="#future.builtins.ascii" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the same as repr().  In Python 3.x, the repr() result will
+contain printable characters unescaped, while the ascii() result
+will have such characters backslash-escaped.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="future.builtins.chr">
+<tt class="descclassname">future.builtins.</tt><tt class="descname">chr</tt><big>(</big><big>)</big><a class="headerlink" href="#future.builtins.chr" title="Permalink to this definition">¶</a></dt>
+<dd><p>unichr(i) -&gt; Unicode character</p>
+<p>Return a Unicode string of one character with ordinal i; 0 &lt;= i &lt;= 0x10ffff.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="future.builtins.hex">
+<tt class="descclassname">future.builtins.</tt><tt class="descname">hex</tt><big>(</big><em>number</em><big>)</big> &rarr; string<a class="headerlink" href="#future.builtins.hex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the hexadecimal representation of an integer or long integer.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="future.builtins.input">
+<tt class="descclassname">future.builtins.</tt><tt class="descname">input</tt><big>(</big><big>)</big><a class="headerlink" href="#future.builtins.input" title="Permalink to this definition">¶</a></dt>
+<dd><p>raw_input([prompt]) -&gt; string</p>
+<p>Read a string from standard input.  The trailing newline is stripped.
+If the user hits EOF (Unix: Ctl-D, Windows: Ctl-Z+Return), raise EOFError.
+On Unix, GNU readline is used if enabled.  The prompt string, if given,
+is printed without a trailing newline before reading.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="future.builtins.next">
+<tt class="descclassname">future.builtins.</tt><tt class="descname">next</tt><big>(</big><em>iterator</em><span class="optional">[</span>, <em>default</em><span class="optional">]</span><big>)</big><a class="headerlink" href="#future.builtins.next" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the next item from the iterator. If default is given and the iterator
+is exhausted, it is returned instead of raising StopIteration.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="future.builtins.oct">
+<tt class="descclassname">future.builtins.</tt><tt class="descname">oct</tt><big>(</big><em>number</em><big>)</big> &rarr; string<a class="headerlink" href="#future.builtins.oct" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the octal representation of an integer or long integer.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="future.builtins.open">
+<tt class="descclassname">future.builtins.</tt><tt class="descname">open</tt><big>(</big><big>)</big><a class="headerlink" href="#future.builtins.open" title="Permalink to this definition">¶</a></dt>
+<dd><p>Open file and return a stream.  Raise IOError upon failure.</p>
+<p>file is either a text or byte string giving the name (and the path
+if the file isn&#8217;t in the current working directory) of the file to
+be opened or an integer file descriptor of the file to be
+wrapped. (If a file descriptor is given, it is closed when the
+returned I/O object is closed, unless closefd is set to False.)</p>
+<p>mode is an optional string that specifies the mode in which the file
+is opened. It defaults to &#8216;r&#8217; which means open for reading in text
+mode.  Other common values are &#8216;w&#8217; for writing (truncating the file if
+it already exists), and &#8216;a&#8217; for appending (which on some Unix systems,
+means that all writes append to the end of the file regardless of the
+current seek position). In text mode, if encoding is not specified the
+encoding used is platform dependent. (For reading and writing raw
+bytes use binary mode and leave encoding unspecified.) The available
+modes are:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="13%" />
+<col width="88%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>Character</td>
+<td>Meaning</td>
+</tr>
+<tr class="row-even"><td>&#8216;r&#8217;</td>
+<td>open for reading (default)</td>
+</tr>
+<tr class="row-odd"><td>&#8216;w&#8217;</td>
+<td>open for writing, truncating the file first</td>
+</tr>
+<tr class="row-even"><td>&#8216;a&#8217;</td>
+<td>open for writing, appending to the end of the file if it exists</td>
+</tr>
+<tr class="row-odd"><td>&#8216;b&#8217;</td>
+<td>binary mode</td>
+</tr>
+<tr class="row-even"><td>&#8216;t&#8217;</td>
+<td>text mode (default)</td>
+</tr>
+<tr class="row-odd"><td>&#8216;+&#8217;</td>
+<td>open a disk file for updating (reading and writing)</td>
+</tr>
+<tr class="row-even"><td>&#8216;U&#8217;</td>
+<td>universal newline mode (for backwards compatibility; unneeded
+for new code)</td>
+</tr>
+</tbody>
+</table>
+<p>The default mode is &#8216;rt&#8217; (open for reading text). For binary random
+access, the mode &#8216;w+b&#8217; opens and truncates the file to 0 bytes, while
+&#8216;r+b&#8217; opens the file without truncation.</p>
+<p>Python distinguishes between files opened in binary and text modes,
+even when the underlying operating system doesn&#8217;t. Files opened in
+binary mode (appending &#8216;b&#8217; to the mode argument) return contents as
+bytes objects without any decoding. In text mode (the default, or when
+&#8216;t&#8217; is appended to the mode argument), the contents of the file are
+returned as strings, the bytes having been first decoded using a
+platform-dependent encoding or using the specified encoding if given.</p>
+<p>buffering is an optional integer used to set the buffering policy.
+Pass 0 to switch buffering off (only allowed in binary mode), 1 to select
+line buffering (only usable in text mode), and an integer &gt; 1 to indicate
+the size of a fixed-size chunk buffer.  When no buffering argument is
+given, the default buffering policy works as follows:</p>
+<ul class="simple">
+<li>Binary files are buffered in fixed-size chunks; the size of the buffer
+is chosen using a heuristic trying to determine the underlying device&#8217;s
+&#8220;block size&#8221; and falling back on <cite>io.DEFAULT_BUFFER_SIZE</cite>.
+On many systems, the buffer will typically be 4096 or 8192 bytes long.</li>
+<li>&#8220;Interactive&#8221; text files (files for which isatty() returns True)
+use line buffering.  Other text files use the policy described above
+for binary files.</li>
+</ul>
+<p>encoding is the name of the encoding used to decode or encode the
+file. This should only be used in text mode. The default encoding is
+platform dependent, but any encoding supported by Python can be
+passed.  See the codecs module for the list of supported encodings.</p>
+<p>errors is an optional string that specifies how encoding errors are to
+be handled&#8212;this argument should not be used in binary mode. Pass
+&#8216;strict&#8217; to raise a ValueError exception if there is an encoding error
+(the default of None has the same effect), or pass &#8216;ignore&#8217; to ignore
+errors. (Note that ignoring encoding errors can lead to data loss.)
+See the documentation for codecs.register for a list of the permitted
+encoding error strings.</p>
+<p>newline controls how universal newlines works (it only applies to text
+mode). It can be None, &#8216;&#8217;, &#8216;n&#8217;, &#8216;r&#8217;, and &#8216;rn&#8217;.  It works as
+follows:</p>
+<ul class="simple">
+<li>On input, if newline is None, universal newlines mode is
+enabled. Lines in the input can end in &#8216;n&#8217;, &#8216;r&#8217;, or &#8216;rn&#8217;, and
+these are translated into &#8216;n&#8217; before being returned to the
+caller. If it is &#8216;&#8217;, universal newline mode is enabled, but line
+endings are returned to the caller untranslated. If it has any of
+the other legal values, input lines are only terminated by the given
+string, and the line ending is returned to the caller untranslated.</li>
+<li>On output, if newline is None, any &#8216;n&#8217; characters written are
+translated to the system default line separator, os.linesep. If
+newline is &#8216;&#8217;, no translation takes place. If newline is any of the
+other legal values, any &#8216;n&#8217; characters written are translated to
+the given string.</li>
+</ul>
+<p>If closefd is False, the underlying file descriptor will be kept open
+when the file is closed. This does not work when a file name is given
+and must be True in that case.</p>
+<p>open() returns a file object whose type depends on the mode, and
+through which the standard file operations such as reading and writing
+are performed. When open() is used to open a file in a text mode (&#8216;w&#8217;,
+&#8216;r&#8217;, &#8216;wt&#8217;, &#8216;rt&#8217;, etc.), it returns a TextIOWrapper. When used to open
+a file in a binary mode, the returned class varies: in read binary
+mode, it returns a BufferedReader; in write binary and append binary
+modes, it returns a BufferedWriter, and in read/write mode, it returns
+a BufferedRandom.</p>
+<p>It is also possible to use a string or bytearray as a file for both
+reading and writing. For strings StringIO can be used like a file
+opened in a text mode, and for bytes a BytesIO can be used like a file
+opened in a binary mode.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="future.builtins.pow">
+<tt class="descclassname">future.builtins.</tt><tt class="descname">pow</tt><big>(</big><em>x</em>, <em>y</em><span class="optional">[</span>, <em>z</em><span class="optional">]</span><big>)</big> &rarr; number<a class="headerlink" href="#future.builtins.pow" title="Permalink to this definition">¶</a></dt>
+<dd><p>With two arguments, equivalent to x**y.  With three arguments,
+equivalent to (x**y) % z, but may be more efficient (e.g. for ints).</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="future.builtins.round">
+<tt class="descclassname">future.builtins.</tt><tt class="descname">round</tt><big>(</big><em>number</em>, <em>ndigits=None</em><big>)</big><a class="headerlink" href="#future.builtins.round" title="Permalink to this definition">¶</a></dt>
+<dd><p>See Python 3 documentation: uses Banker&#8217;s Rounding.</p>
+<p>Delegates to the __round__ method if for some reason this exists.</p>
+<p>If not, rounds a number to a given precision in decimal digits (default
+0 digits). This returns an int when called with one argument,
+otherwise the same type as the number. ndigits may be negative.</p>
+<p>See the test_round method in future/tests/test_builtins.py for
+examples.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="future.builtins.super">
+<tt class="descclassname">future.builtins.</tt><tt class="descname">super</tt><big>(</big><em>typ=&lt;object object at 0x106e182d0&gt;</em>, <em>type_or_obj=&lt;object object at 0x106e182d0&gt;</em>, <em>framedepth=1</em><big>)</big><a class="headerlink" href="#future.builtins.super" title="Permalink to this definition">¶</a></dt>
+<dd><p>Like builtin super(), but capable of magic.</p>
+<p>This acts just like the builtin super() function, but if called
+without any arguments it attempts to infer them at runtime.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="future.builtins.bytes">
+<tt class="descclassname">future.builtins.</tt><tt class="descname">bytes</tt><a class="headerlink" href="#future.builtins.bytes" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <tt class="xref py py-class docutils literal"><span class="pre">newbytes</span></tt></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="future.builtins.dict">
+<tt class="descclassname">future.builtins.</tt><tt class="descname">dict</tt><a class="headerlink" href="#future.builtins.dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <tt class="xref py py-class docutils literal"><span class="pre">newdict</span></tt></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="future.builtins.int">
+<tt class="descclassname">future.builtins.</tt><tt class="descname">int</tt><a class="headerlink" href="#future.builtins.int" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <tt class="xref py py-class docutils literal"><span class="pre">newint</span></tt></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="future.builtins.list">
+<tt class="descclassname">future.builtins.</tt><tt class="descname">list</tt><a class="headerlink" href="#future.builtins.list" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <tt class="xref py py-class docutils literal"><span class="pre">newlist</span></tt></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="future.builtins.object">
+<tt class="descclassname">future.builtins.</tt><tt class="descname">object</tt><a class="headerlink" href="#future.builtins.object" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <tt class="xref py py-class docutils literal"><span class="pre">newobject</span></tt></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="future.builtins.range">
+<tt class="descclassname">future.builtins.</tt><tt class="descname">range</tt><a class="headerlink" href="#future.builtins.range" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <tt class="xref py py-class docutils literal"><span class="pre">newrange</span></tt></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="future.builtins.str">
+<tt class="descclassname">future.builtins.</tt><tt class="descname">str</tt><a class="headerlink" href="#future.builtins.str" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <tt class="xref py py-class docutils literal"><span class="pre">newstr</span></tt></p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-future.types">
+<span id="backported-types-from-python-3"></span><h2><a class="toc-backref" href="#id6">Backported types from Python 3</a><a class="headerlink" href="#module-future.types" title="Permalink to this headline">¶</a></h2>
+<p>This module contains backports the data types that were significantly changed
+in the transition from Python 2 to Python 3.</p>
+<ul class="simple">
+<li>an implementation of Python 3&#8217;s bytes object (pure Python subclass of
+Python 2&#8217;s builtin 8-bit str type)</li>
+<li>an implementation of Python 3&#8217;s str object (pure Python subclass of
+Python 2&#8217;s builtin unicode type)</li>
+<li>a backport of the range iterator from Py3 with slicing support</li>
+</ul>
+<p>It is used as follows:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">division</span><span class="p">,</span> <span class="n">absolute_import</span><span class="p">,</span> <span class="n">print_function</span>
+<span class="kn">from</span> <span class="nn">builtins</span> <span class="kn">import</span> <span class="nb">bytes</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">range</span><span class="p">,</span> <span class="nb">str</span>
+</pre></div>
+</div>
+<p>to bring in the new semantics for these functions from Python 3. And
+then, for example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">b</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">b</span><span class="s">&#39;ABCD&#39;</span><span class="p">)</span>
+<span class="k">assert</span> <span class="nb">list</span><span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="o">==</span> <span class="p">[</span><span class="mi">65</span><span class="p">,</span> <span class="mi">66</span><span class="p">,</span> <span class="mi">67</span><span class="p">,</span> <span class="mi">68</span><span class="p">]</span>
+<span class="k">assert</span> <span class="nb">repr</span><span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="o">==</span> <span class="s">&quot;b&#39;ABCD&#39;&quot;</span>
+<span class="k">assert</span> <span class="p">[</span><span class="mi">65</span><span class="p">,</span> <span class="mi">66</span><span class="p">]</span> <span class="ow">in</span> <span class="n">b</span>
+
+<span class="c"># These raise TypeErrors:</span>
+<span class="c"># b + u&#39;EFGH&#39;</span>
+<span class="c"># b.split(u&#39;B&#39;)</span>
+<span class="c"># bytes(b&#39;,&#39;).join([u&#39;Fred&#39;, u&#39;Bill&#39;])</span>
+
+
+<span class="n">s</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="s">u&#39;ABCD&#39;</span><span class="p">)</span>
+
+<span class="c"># These raise TypeErrors:</span>
+<span class="c"># s.join([b&#39;Fred&#39;, b&#39;Bill&#39;])</span>
+<span class="c"># s.startswith(b&#39;A&#39;)</span>
+<span class="c"># b&#39;B&#39; in s</span>
+<span class="c"># s.find(b&#39;A&#39;)</span>
+<span class="c"># s.replace(u&#39;A&#39;, b&#39;a&#39;)</span>
+
+<span class="c"># This raises an AttributeError:</span>
+<span class="c"># s.decode(&#39;utf-8&#39;)</span>
+
+<span class="k">assert</span> <span class="nb">repr</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">==</span> <span class="s">&#39;ABCD&#39;</span>      <span class="c"># consistent repr with Py3 (no u prefix)</span>
+
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="o">**</span><span class="mi">11</span><span class="p">)[:</span><span class="mi">10</span><span class="p">]:</span>
+    <span class="k">pass</span>
+</pre></div>
+</div>
+<p>and:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">VerboseList</span><span class="p">(</span><span class="nb">list</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&#39;Adding an item&#39;</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>        <span class="c"># new simpler super() function</span>
+</pre></div>
+</div>
+<div class="section" id="for-more-information">
+<h3><a class="toc-backref" href="#id7">For more information:</a><a class="headerlink" href="#for-more-information" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>future.types.newbytes</li>
+<li>future.types.newdict</li>
+<li>future.types.newint</li>
+<li>future.types.newobject</li>
+<li>future.types.newrange</li>
+<li>future.types.newstr</li>
+</ul>
+<div class="section" id="notes">
+<h4>Notes<a class="headerlink" href="#notes" title="Permalink to this headline">¶</a></h4>
+</div>
+</div>
+<div class="section" id="range">
+<h3><a class="toc-backref" href="#id8">range()</a><a class="headerlink" href="#range" title="Permalink to this headline">¶</a></h3>
+<p><tt class="docutils literal"><span class="pre">range</span></tt> is a custom class that backports the slicing behaviour from
+Python 3 (based on the <tt class="docutils literal"><span class="pre">xrange</span></tt> module by Dan Crosta). See the
+<tt class="docutils literal"><span class="pre">newrange</span></tt> module docstring for more details.</p>
+</div>
+<div class="section" id="super">
+<h3><a class="toc-backref" href="#id9">super()</a><a class="headerlink" href="#super" title="Permalink to this headline">¶</a></h3>
+<p><tt class="docutils literal"><span class="pre">super()</span></tt> is based on Ryan Kelly&#8217;s <tt class="docutils literal"><span class="pre">magicsuper</span></tt> module. See the
+<tt class="docutils literal"><span class="pre">newsuper</span></tt> module docstring for more details.</p>
+</div>
+<div class="section" id="round">
+<h3><a class="toc-backref" href="#id10">round()</a><a class="headerlink" href="#round" title="Permalink to this headline">¶</a></h3>
+<p>Python 3 modifies the behaviour of <tt class="docutils literal"><span class="pre">round()</span></tt> to use &#8220;Banker&#8217;s Rounding&#8221;.
+See <a class="reference external" href="http://stackoverflow.com/a/10825998">http://stackoverflow.com/a/10825998</a>. See the <tt class="docutils literal"><span class="pre">newround</span></tt> module
+docstring for more details.</p>
+<dl class="class">
+<dt id="future.types.newbytes">
+<em class="property">class </em><tt class="descclassname">future.types.</tt><tt class="descname">newbytes</tt><a class="headerlink" href="#future.types.newbytes" title="Permalink to this definition">¶</a></dt>
+<dd><p>A backport of the Python 3 bytes object to Py2</p>
+<dl class="method">
+<dt id="future.types.newbytes.decode">
+<tt class="descname">decode</tt><big>(</big><em>encoding='utf-8'</em>, <em>errors='strict'</em><big>)</big><a class="headerlink" href="#future.types.newbytes.decode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a newstr (i.e. unicode subclass)</p>
+<p>Decode B using the codec registered for encoding. Default encoding
+is &#8216;utf-8&#8217;. errors may be given to set a different error
+handling scheme.  Default is &#8216;strict&#8217; meaning that encoding errors raise
+a UnicodeDecodeError.  Other possible values are &#8216;ignore&#8217; and &#8216;replace&#8217;
+as well as any other name registered with codecs.register_error that is
+able to handle UnicodeDecodeErrors.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="future.types.newbytes.index">
+<tt class="descname">index</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#future.types.newbytes.index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns index of sub in bytes.
+Raises ValueError if byte is not in bytes and TypeError if can&#8217;t
+be converted bytes or its length is not 1.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="future.types.newbytes.lower">
+<tt class="descname">lower</tt><big>(</big><big>)</big> &rarr; copy of b<a class="headerlink" href="#future.types.newbytes.lower" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a copy of b with all ASCII characters converted to lowercase.</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="future.types.newbytes.maketrans">
+<em class="property">classmethod </em><tt class="descname">maketrans</tt><big>(</big><em>frm</em>, <em>to</em><big>)</big> &rarr; translation table<a class="headerlink" href="#future.types.newbytes.maketrans" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a translation table (a bytes object of length 256) suitable
+for use in the bytes or bytearray translate method where each byte
+in frm is mapped to the byte at the same position in to.
+The bytes objects frm and to must be of the same length.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="future.types.newbytes.rindex">
+<tt class="descname">rindex</tt><big>(</big><em>sub</em><span class="optional">[</span>, <em>start</em><span class="optional">[</span>, <em>end</em><span class="optional">]</span><span class="optional">]</span><big>)</big> &rarr; int<a class="headerlink" href="#future.types.newbytes.rindex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Like S.rfind() but raise ValueError when the substring is not found.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="future.types.newbytes.rstrip">
+<tt class="descname">rstrip</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#future.types.newbytes.rstrip" title="Permalink to this definition">¶</a></dt>
+<dd><p>Strip trailing bytes contained in the argument.
+If the argument is omitted, strip trailing ASCII whitespace.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="future.types.newbytes.splitlines">
+<tt class="descname">splitlines</tt><big>(</big><span class="optional">[</span><em>keepends</em><span class="optional">]</span><big>)</big> &rarr; list of lines<a class="headerlink" href="#future.types.newbytes.splitlines" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of the lines in B, breaking at line boundaries.
+Line breaks are not included in the resulting list unless keepends
+is given and true.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="future.types.newbytes.strip">
+<tt class="descname">strip</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#future.types.newbytes.strip" title="Permalink to this definition">¶</a></dt>
+<dd><p>Strip leading and trailing bytes contained in the argument.
+If the argument is omitted, strip trailing ASCII whitespace.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="future.types.newbytes.upper">
+<tt class="descname">upper</tt><big>(</big><big>)</big> &rarr; copy of b<a class="headerlink" href="#future.types.newbytes.upper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a copy of b with all ASCII characters converted to uppercase.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="future.types.newdict">
+<em class="property">class </em><tt class="descclassname">future.types.</tt><tt class="descname">newdict</tt><a class="headerlink" href="#future.types.newdict" title="Permalink to this definition">¶</a></dt>
+<dd><p>A backport of the Python 3 dict object to Py2</p>
+<dl class="method">
+<dt id="future.types.newdict.items">
+<tt class="descname">items</tt><big>(</big><big>)</big><a class="headerlink" href="#future.types.newdict.items" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>On Python 2.7+:</dt>
+<dd>D.items() -&gt; a set-like object providing a view on D&#8217;s items</dd>
+<dt>On Python 2.6:</dt>
+<dd>D.items() -&gt; an iterator over D&#8217;s items</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="future.types.newdict.keys">
+<tt class="descname">keys</tt><big>(</big><big>)</big><a class="headerlink" href="#future.types.newdict.keys" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>On Python 2.7+:</dt>
+<dd>D.keys() -&gt; a set-like object providing a view on D&#8217;s keys</dd>
+<dt>On Python 2.6:</dt>
+<dd>D.keys() -&gt; an iterator over D&#8217;s keys</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="future.types.newdict.values">
+<tt class="descname">values</tt><big>(</big><big>)</big><a class="headerlink" href="#future.types.newdict.values" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>On Python 2.7+:</dt>
+<dd>D.values() -&gt; a set-like object providing a view on D&#8217;s values</dd>
+<dt>On Python 2.6:</dt>
+<dd>D.values() -&gt; an iterator over D&#8217;s values</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="future.types.newint">
+<em class="property">class </em><tt class="descclassname">future.types.</tt><tt class="descname">newint</tt><a class="headerlink" href="#future.types.newint" title="Permalink to this definition">¶</a></dt>
+<dd><p>A backport of the Python 3 int object to Py2</p>
+<dl class="classmethod">
+<dt id="future.types.newint.from_bytes">
+<em class="property">classmethod </em><tt class="descname">from_bytes</tt><big>(</big><em>mybytes</em>, <em>byteorder='big'</em>, <em>signed=False</em><big>)</big><a class="headerlink" href="#future.types.newint.from_bytes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the integer represented by the given array of bytes.</p>
+<p>The mybytes argument must either support the buffer protocol or be an
+iterable object producing bytes.  Bytes and bytearray are examples of
+built-in objects that support the buffer protocol.</p>
+<p>The byteorder argument determines the byte order used to represent the
+integer.  If byteorder is &#8216;big&#8217;, the most significant byte is at the
+beginning of the byte array.  If byteorder is &#8216;little&#8217;, the most
+significant byte is at the end of the byte array.  To request the native
+byte order of the host system, use <a href="#id1"><span class="problematic" id="id2">`</span></a>sys.byteorder&#8217; as the byte order value.</p>
+<p>The signed keyword-only argument indicates whether two&#8217;s complement is
+used to represent the integer.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="future.types.newint.to_bytes">
+<tt class="descname">to_bytes</tt><big>(</big><em>length</em>, <em>byteorder='big'</em>, <em>signed=False</em><big>)</big><a class="headerlink" href="#future.types.newint.to_bytes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an array of bytes representing an integer.</p>
+<p>The integer is represented using length bytes.  An OverflowError is
+raised if the integer is not representable with the given number of
+bytes.</p>
+<p>The byteorder argument determines the byte order used to represent the
+integer.  If byteorder is &#8216;big&#8217;, the most significant byte is at the
+beginning of the byte array.  If byteorder is &#8216;little&#8217;, the most
+significant byte is at the end of the byte array.  To request the native
+byte order of the host system, use <a href="#id3"><span class="problematic" id="id4">`</span></a>sys.byteorder&#8217; as the byte order value.</p>
+<p>The signed keyword-only argument determines whether two&#8217;s complement is
+used to represent the integer.  If signed is False and a negative integer
+is given, an OverflowError is raised.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="future.types.newlist">
+<em class="property">class </em><tt class="descclassname">future.types.</tt><tt class="descname">newlist</tt><a class="headerlink" href="#future.types.newlist" title="Permalink to this definition">¶</a></dt>
+<dd><p>A backport of the Python 3 list object to Py2</p>
+<dl class="method">
+<dt id="future.types.newlist.clear">
+<tt class="descname">clear</tt><big>(</big><big>)</big> &rarr; None -- remove all items from L<a class="headerlink" href="#future.types.newlist.clear" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="future.types.newlist.copy">
+<tt class="descname">copy</tt><big>(</big><big>)</big> &rarr; list -- a shallow copy of L<a class="headerlink" href="#future.types.newlist.copy" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="future.types.newrange">
+<em class="property">class </em><tt class="descclassname">future.types.</tt><tt class="descname">newrange</tt><big>(</big><em>*args</em><big>)</big><a class="headerlink" href="#future.types.newrange" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pure-Python backport of Python 3&#8217;s range object.  See <a class="reference external" href="http://docs.python.org/py3k/library/functions.html#range">the CPython
+documentation for details:</a></p>
+<dl class="method">
+<dt id="future.types.newrange.count">
+<tt class="descname">count</tt><big>(</big><em>value</em><big>)</big><a class="headerlink" href="#future.types.newrange.count" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the number of ocurrences of integer <cite>value</cite>
+in the sequence this range represents.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="future.types.newrange.index">
+<tt class="descname">index</tt><big>(</big><em>value</em><big>)</big><a class="headerlink" href="#future.types.newrange.index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the 0-based position of integer <cite>value</cite> in
+the sequence this range represents.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="future.types.newstr">
+<em class="property">class </em><tt class="descclassname">future.types.</tt><tt class="descname">newstr</tt><a class="headerlink" href="#future.types.newstr" title="Permalink to this definition">¶</a></dt>
+<dd><p>A backport of the Python 3 str object to Py2</p>
+<dl class="method">
+<dt id="future.types.newstr.encode">
+<tt class="descname">encode</tt><big>(</big><em>encoding='utf-8'</em>, <em>errors='strict'</em><big>)</big><a class="headerlink" href="#future.types.newstr.encode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns bytes</p>
+<p>Encode S using the codec registered for encoding. Default encoding
+is &#8216;utf-8&#8217;. errors may be given to set a different error
+handling scheme. Default is &#8216;strict&#8217; meaning that encoding errors raise
+a UnicodeEncodeError. Other possible values are &#8216;ignore&#8217;, &#8216;replace&#8217; and
+&#8216;xmlcharrefreplace&#8217; as well as any other name registered with
+codecs.register_error that can handle UnicodeEncodeErrors.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="future.types.newstr.index">
+<tt class="descname">index</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#future.types.newstr.index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Like newstr.find() but raise ValueError when the substring is not
+found.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="future.types.newstr.maketrans">
+<em class="property">static </em><tt class="descname">maketrans</tt><big>(</big><em>x</em>, <em>y=None</em>, <em>z=None</em><big>)</big><a class="headerlink" href="#future.types.newstr.maketrans" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a translation table usable for str.translate().</p>
+<p>If there is only one argument, it must be a dictionary mapping Unicode
+ordinals (integers) or characters to Unicode ordinals, strings or None.
+Character keys will be then converted to ordinals.
+If there are two arguments, they must be strings of equal length, and
+in the resulting dictionary, each character in x will be mapped to the
+character at the same position in y. If there is a third argument, it
+must be a string, whose characters will be mapped to None in the result.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="future.types.newstr.splitlines">
+<tt class="descname">splitlines</tt><big>(</big><em>keepends=False</em><big>)</big> &rarr; list of strings<a class="headerlink" href="#future.types.newstr.splitlines" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of the lines in S, breaking at line boundaries.
+Line breaks are not included in the resulting list unless keepends
+is given and true.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="future.types.newstr.translate">
+<tt class="descname">translate</tt><big>(</big><em>table</em><big>)</big> &rarr; str<a class="headerlink" href="#future.types.newstr.translate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a copy of the string S, where all characters have been mapped
+through the given translation table, which must be a mapping of
+Unicode ordinals to Unicode ordinals, strings, or None.
+Unmapped characters are left untouched. Characters mapped to None
+are deleted.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="module-future.standard_library">
+<span id="future-standard-library-interface"></span><h2><a class="toc-backref" href="#id11">future.standard_library Interface</a><a class="headerlink" href="#module-future.standard_library" title="Permalink to this headline">¶</a></h2>
+<p>Python 3 reorganized the standard library (PEP 3108). This module exposes
+several standard library modules to Python 2 under their new Python 3
+names.</p>
+<p>It is designed to be used as follows:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">future</span> <span class="kn">import</span> <span class="n">standard_library</span>
+<span class="n">standard_library</span><span class="o">.</span><span class="n">install_aliases</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>And then these normal Py3 imports work on both Py3 and Py2:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">builtins</span>
+<span class="kn">import</span> <span class="nn">configparser</span>
+<span class="kn">import</span> <span class="nn">copyreg</span>
+<span class="kn">import</span> <span class="nn">queue</span>
+<span class="kn">import</span> <span class="nn">reprlib</span>
+<span class="kn">import</span> <span class="nn">socketserver</span>
+<span class="kn">import</span> <span class="nn">winreg</span>    <span class="c"># on Windows only</span>
+<span class="kn">import</span> <span class="nn">test.support</span>
+<span class="kn">import</span> <span class="nn">html</span><span class="o">,</span> <span class="nn">html.parser</span><span class="o">,</span> <span class="nn">html.entites</span>
+<span class="kn">import</span> <span class="nn">http</span><span class="o">,</span> <span class="nn">http.client</span><span class="o">,</span> <span class="nn">http.server</span>
+<span class="kn">import</span> <span class="nn">http.cookies</span><span class="o">,</span> <span class="nn">http.cookiejar</span>
+<span class="kn">import</span> <span class="nn">urllib.parse</span><span class="o">,</span> <span class="nn">urllib.request</span><span class="o">,</span> <span class="nn">urllib.response</span><span class="o">,</span> <span class="nn">urllib.error</span><span class="o">,</span> <span class="nn">urllib.robotparser</span>
+<span class="kn">import</span> <span class="nn">xmlrpc.client</span><span class="o">,</span> <span class="nn">xmlrpc.server</span>
+
+<span class="kn">import</span> <span class="nn">_thread</span>
+<span class="kn">import</span> <span class="nn">_dummy_thread</span>
+<span class="kn">import</span> <span class="nn">_markupbase</span>
+
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">filterfalse</span><span class="p">,</span> <span class="n">zip_longest</span>
+<span class="kn">from</span> <span class="nn">sys</span> <span class="kn">import</span> <span class="nb">intern</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">UserDict</span><span class="p">,</span> <span class="n">UserList</span><span class="p">,</span> <span class="n">UserString</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span><span class="p">,</span> <span class="n">Counter</span>     <span class="c"># even on Py2.6</span>
+<span class="kn">from</span> <span class="nn">subprocess</span> <span class="kn">import</span> <span class="n">getoutput</span><span class="p">,</span> <span class="n">getstatusoutput</span>
+<span class="kn">from</span> <span class="nn">subprocess</span> <span class="kn">import</span> <span class="n">check_output</span>              <span class="c"># even on Py2.6</span>
+</pre></div>
+</div>
+<p>(The renamed modules and functions are still available under their old
+names on Python 2.)</p>
+<p>This is a cleaner alternative to this idiom (see
+<a class="reference external" href="http://docs.pythonsprints.com/python3_porting/py-porting.html">http://docs.pythonsprints.com/python3_porting/py-porting.html</a>):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">queue</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">Queue</span> <span class="kn">as</span> <span class="nn">queue</span>
+</pre></div>
+</div>
+<div class="section" id="limitations">
+<h3><a class="toc-backref" href="#id12">Limitations</a><a class="headerlink" href="#limitations" title="Permalink to this headline">¶</a></h3>
+<p>We don&#8217;t currently support these modules, but would like to:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">dbm</span>
+<span class="kn">import</span> <span class="nn">dbm.dumb</span>
+<span class="kn">import</span> <span class="nn">dbm.gnu</span>
+<span class="kn">import</span> <span class="nn">collections.abc</span>  <span class="c"># on Py33</span>
+<span class="kn">import</span> <span class="nn">tkinter</span>
+<span class="kn">import</span> <span class="nn">pickle</span>     <span class="c"># should (optionally) bring in cPickle on Python 2</span>
+</pre></div>
+</div>
+<dl class="class">
+<dt id="future.standard_library.RenameImport">
+<em class="property">class </em><tt class="descclassname">future.standard_library.</tt><tt class="descname">RenameImport</tt><big>(</big><em>old_to_new</em><big>)</big><a class="reference internal" href="_modules/future/standard_library.html#RenameImport"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#future.standard_library.RenameImport" title="Permalink to this definition">¶</a></dt>
+<dd><p>A class for import hooks mapping Py3 module names etc. to the Py2 equivalents.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="future.standard_library.cache_py2_modules">
+<tt class="descclassname">future.standard_library.</tt><tt class="descname">cache_py2_modules</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/future/standard_library.html#cache_py2_modules"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#future.standard_library.cache_py2_modules" title="Permalink to this definition">¶</a></dt>
+<dd><p>Currently this function is unneeded, as we are not attempting to provide import hooks
+for modules with ambiguous names: email, urllib, pickle.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="future.standard_library.detect_hooks">
+<tt class="descclassname">future.standard_library.</tt><tt class="descname">detect_hooks</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/future/standard_library.html#detect_hooks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#future.standard_library.detect_hooks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns True if the import hooks are installed, False if not.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="future.standard_library.disable_hooks">
+<tt class="descclassname">future.standard_library.</tt><tt class="descname">disable_hooks</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/future/standard_library.html#disable_hooks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#future.standard_library.disable_hooks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deprecated. Use remove_hooks() instead. This will be removed by
+<tt class="docutils literal"><span class="pre">future</span></tt> v1.0.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="future.standard_library.enable_hooks">
+<tt class="descclassname">future.standard_library.</tt><tt class="descname">enable_hooks</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/future/standard_library.html#enable_hooks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#future.standard_library.enable_hooks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deprecated. Use install_hooks() instead. This will be removed by
+<tt class="docutils literal"><span class="pre">future</span></tt> v1.0.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="future.standard_library.exclude_local_folder_imports">
+<em class="property">class </em><tt class="descclassname">future.standard_library.</tt><tt class="descname">exclude_local_folder_imports</tt><big>(</big><em>*args</em><big>)</big><a class="reference internal" href="_modules/future/standard_library.html#exclude_local_folder_imports"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#future.standard_library.exclude_local_folder_imports" title="Permalink to this definition">¶</a></dt>
+<dd><p>A context-manager that prevents standard library modules like configparser
+from being imported from the local python-future source folder on Py3.</p>
+<p>(The presence of a configparser folder would otherwise prevent setuptools
+from running on Py3.)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="future.standard_library.from_import">
+<tt class="descclassname">future.standard_library.</tt><tt class="descname">from_import</tt><big>(</big><em>module_name</em>, <em>*symbol_names</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/future/standard_library.html#from_import"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#future.standard_library.from_import" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Example use:</dt>
+<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">HTTPConnection</span> <span class="o">=</span> <span class="n">from_import</span><span class="p">(</span><span class="s">&#39;http.client&#39;</span><span class="p">,</span> <span class="s">&#39;HTTPConnection&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">HTTPServer</span> <span class="o">=</span> <span class="n">from_import</span><span class="p">(</span><span class="s">&#39;http.server&#39;</span><span class="p">,</span> <span class="s">&#39;HTTPServer&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">urlopen</span><span class="p">,</span> <span class="n">urlparse</span> <span class="o">=</span> <span class="n">from_import</span><span class="p">(</span><span class="s">&#39;urllib.request&#39;</span><span class="p">,</span> <span class="s">&#39;urlopen&#39;</span><span class="p">,</span> <span class="s">&#39;urlparse&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+<p>Equivalent to this on Py3:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">module_name</span> <span class="kn">import</span> <span class="n">symbol_names</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">symbol_names</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="o">...</span>
+</pre></div>
+</div>
+<p>and this on Py2:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">future.moves.module_name</span> <span class="kn">import</span> <span class="n">symbol_names</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="o">...</span>
+</pre></div>
+</div>
+<p>or:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">future.backports.module_name</span> <span class="kn">import</span> <span class="n">symbol_names</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="o">...</span>
+</pre></div>
+</div>
+<p>except that it also handles dotted module names such as <tt class="docutils literal"><span class="pre">http.client</span></tt>.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="future.standard_library.hooks">
+<em class="property">class </em><tt class="descclassname">future.standard_library.</tt><tt class="descname">hooks</tt><a class="reference internal" href="_modules/future/standard_library.html#hooks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#future.standard_library.hooks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Acts as a context manager. Saves the state of sys.modules and restores it
+after the &#8216;with&#8217; block.</p>
+<p>Use like this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">future</span> <span class="kn">import</span> <span class="n">standard_library</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">standard_library</span><span class="o">.</span><span class="n">hooks</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="kn">import</span> <span class="nn">http.client</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">requests</span>
+</pre></div>
+</div>
+<p>For this to work, http.client will be scrubbed from sys.modules after the
+&#8216;with&#8217; block. That way the modules imported in the &#8216;with&#8217; block will
+continue to be accessible in the current namespace but not from any
+imported modules (like requests).</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="future.standard_library.import_">
+<tt class="descclassname">future.standard_library.</tt><tt class="descname">import_</tt><big>(</big><em>module_name</em>, <em>backport=False</em><big>)</big><a class="reference internal" href="_modules/future/standard_library.html#import_"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#future.standard_library.import_" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pass a (potentially dotted) module name of a Python 3 standard library
+module. This function imports the module compatibly on Py2 and Py3 and
+returns the top-level module.</p>
+<dl class="docutils">
+<dt>Example use:</dt>
+<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">http</span> <span class="o">=</span> <span class="n">import_</span><span class="p">(</span><span class="s">&#39;http.client&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">http</span> <span class="o">=</span> <span class="n">import_</span><span class="p">(</span><span class="s">&#39;http.server&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">urllib</span> <span class="o">=</span> <span class="n">import_</span><span class="p">(</span><span class="s">&#39;urllib.request&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+<dt>Then:</dt>
+<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">conn</span> <span class="o">=</span> <span class="n">http</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">HTTPConnection</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">response</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="s">&#39;http://mywebsite.com&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c"># etc.</span>
+</pre></div>
+</div>
+</dd>
+<dt>Use as follows:</dt>
+<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">package_name</span> <span class="o">=</span> <span class="n">import_</span><span class="p">(</span><span class="n">module_name</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+<p>On Py3, equivalent to this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">module_name</span>
+</pre></div>
+</div>
+<p>On Py2, equivalent to this if backport=False:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">future.moves</span> <span class="kn">import</span> <span class="n">module_name</span>
+</pre></div>
+</div>
+<p>or to this if backport=True:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">future.backports</span> <span class="kn">import</span> <span class="n">module_name</span>
+</pre></div>
+</div>
+<p>except that it also handles dotted module names such as <tt class="docutils literal"><span class="pre">http.client</span></tt>
+The effect then is like this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">future.backports</span> <span class="kn">import</span> <span class="n">module</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">future.backports.module</span> <span class="kn">import</span> <span class="n">submodule</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">module</span><span class="o">.</span><span class="n">submodule</span> <span class="o">=</span> <span class="n">submodule</span>
+</pre></div>
+</div>
+<p>Note that this would be a SyntaxError in Python:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">future.backports</span> <span class="kn">import</span> <span class="n">http</span><span class="o">.</span><span class="n">client</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="future.standard_library.install_aliases">
+<tt class="descclassname">future.standard_library.</tt><tt class="descname">install_aliases</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/future/standard_library.html#install_aliases"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#future.standard_library.install_aliases" title="Permalink to this definition">¶</a></dt>
+<dd><p>Monkey-patches the standard library in Py2.6/7 to provide
+aliases for better Py3 compatibility.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="future.standard_library.install_hooks">
+<tt class="descclassname">future.standard_library.</tt><tt class="descname">install_hooks</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/future/standard_library.html#install_hooks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#future.standard_library.install_hooks" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function installs the future.standard_library import hook into
+sys.meta_path.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="future.standard_library.is_py2_stdlib_module">
+<tt class="descclassname">future.standard_library.</tt><tt class="descname">is_py2_stdlib_module</tt><big>(</big><em>m</em><big>)</big><a class="reference internal" href="_modules/future/standard_library.html#is_py2_stdlib_module"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#future.standard_library.is_py2_stdlib_module" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tries to infer whether the module m is from the Python 2 standard library.
+This may not be reliable on all systems.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="future.standard_library.remove_hooks">
+<tt class="descclassname">future.standard_library.</tt><tt class="descname">remove_hooks</tt><big>(</big><em>scrub_sys_modules=False</em><big>)</big><a class="reference internal" href="_modules/future/standard_library.html#remove_hooks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#future.standard_library.remove_hooks" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function removes the import hook from sys.meta_path.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="future.standard_library.restore_sys_modules">
+<tt class="descclassname">future.standard_library.</tt><tt class="descname">restore_sys_modules</tt><big>(</big><em>scrubbed</em><big>)</big><a class="reference internal" href="_modules/future/standard_library.html#restore_sys_modules"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#future.standard_library.restore_sys_modules" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add any previously scrubbed modules back to the sys.modules cache,
+but only if it&#8217;s safe to do so.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="future.standard_library.scrub_future_sys_modules">
+<tt class="descclassname">future.standard_library.</tt><tt class="descname">scrub_future_sys_modules</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/future/standard_library.html#scrub_future_sys_modules"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#future.standard_library.scrub_future_sys_modules" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deprecated.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="future.standard_library.scrub_py2_sys_modules">
+<tt class="descclassname">future.standard_library.</tt><tt class="descname">scrub_py2_sys_modules</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/future/standard_library.html#scrub_py2_sys_modules"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#future.standard_library.scrub_py2_sys_modules" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes any Python 2 standard library modules from <tt class="docutils literal"><span class="pre">sys.modules</span></tt> that
+would interfere with Py3-style imports using import hooks. Examples are
+modules with the same names (like urllib or email).</p>
+<p>(Note that currently import hooks are disabled for modules like these
+with ambiguous names anyway ...)</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="future.standard_library.suspend_hooks">
+<em class="property">class </em><tt class="descclassname">future.standard_library.</tt><tt class="descname">suspend_hooks</tt><a class="reference internal" href="_modules/future/standard_library.html#suspend_hooks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#future.standard_library.suspend_hooks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Acts as a context manager. Use like this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">future</span> <span class="kn">import</span> <span class="n">standard_library</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">standard_library</span><span class="o">.</span><span class="n">install_hooks</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">http.client</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c"># ...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">standard_library</span><span class="o">.</span><span class="n">suspend_hooks</span><span class="p">():</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="kn">import</span> <span class="nn">requests</span>     <span class="c"># incompatible with ``future``&#39;s standard library hooks</span>
+</pre></div>
+</div>
+<p>If the hooks were disabled before the context, they are not installed when
+the context is left.</p>
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="module-future.utils">
+<span id="future-utils-interface"></span><h2><a class="toc-backref" href="#id13">future.utils Interface</a><a class="headerlink" href="#module-future.utils" title="Permalink to this headline">¶</a></h2>
+<p>A selection of cross-compatible functions for Python 2 and 3.</p>
+<p>This exports useful functions for 2/3 compatible code that are not
+builtins on Python 3:</p>
+<blockquote>
+<div><ul>
+<li><p class="first">bind_method: binds functions to classes</p>
+</li>
+<li><p class="first"><tt class="docutils literal"><span class="pre">native_str_to_bytes</span></tt> and <tt class="docutils literal"><span class="pre">bytes_to_native_str</span></tt></p>
+</li>
+<li><p class="first"><tt class="docutils literal"><span class="pre">native_str</span></tt>: always equal to the native platform string object (because
+this may be shadowed by imports from future.builtins)</p>
+</li>
+<li><p class="first">lists: lrange(), lmap(), lzip(), lfilter()</p>
+</li>
+<li><p class="first">iterable method compatibility: iteritems, iterkeys, itervalues</p>
+<blockquote>
+<div><ul class="simple">
+<li>Uses the original method if available, otherwise uses items, keys, values.</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first">types:</p>
+<blockquote>
+<div><ul class="simple">
+<li>text_type: unicode in Python 2, str in Python 3</li>
+<li>binary_type: str in Python 2, bythes in Python 3</li>
+<li>string_types: basestring in Python 2, str in Python 3</li>
+</ul>
+</div></blockquote>
+</li>
+<li><dl class="first docutils">
+<dt>bchr(c):</dt>
+<dd><p class="first last">Take an integer and make a 1-character byte string</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>bord(c)</dt>
+<dd><p class="first last">Take the result of indexing on a byte string and make an integer</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>tobytes(s)</dt>
+<dd><p class="first last">Take a text string, a byte string, or a sequence of characters taken
+from a byte string, and make a byte string.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+<p>This module also defines a simple decorator called
+<tt class="docutils literal"><span class="pre">python_2_unicode_compatible</span></tt> (from django.utils.encoding) which
+defines <tt class="docutils literal"><span class="pre">__unicode__</span></tt> and <tt class="docutils literal"><span class="pre">__str__</span></tt> methods consistently under Python
+3 and 2. To support Python 3 and 2 with a single code base, simply define
+a <tt class="docutils literal"><span class="pre">__str__</span></tt> method returning unicode text and apply the
+python_2_unicode_compatible decorator to the class like this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">future.utils</span> <span class="kn">import</span> <span class="n">python_2_unicode_compatible</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="nd">@python_2_unicode_compatible</span>
+<span class="gp">... </span><span class="k">class</span> <span class="nc">MyClass</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="k">return</span> <span class="s">u&#39;Unicode string: </span><span class="se">\u5b54\u5b50</span><span class="s">&#39;</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">MyClass</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Then, after this import:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">future.builtins</span> <span class="kn">import</span> <span class="nb">str</span>
+</pre></div>
+</div>
+<p>the following is <tt class="docutils literal"><span class="pre">True</span></tt> on both Python 3 and 2:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="nb">str</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">==</span> <span class="n">a</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&#39;utf-8&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&#39;utf-8&#39;</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<p>and, on a Unicode-enabled terminal with the right fonts, these both print the
+Chinese characters for Confucius:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">print</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">a</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>On Python 3, this decorator is a no-op.</p>
+<p>Some of the functions in this module come from the following sources:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Jinja2 (BSD licensed: see
+<a class="reference external" href="https://github.com/mitsuhiko/jinja2/blob/master/LICENSE">https://github.com/mitsuhiko/jinja2/blob/master/LICENSE</a>)</li>
+<li>Pandas compatibility module pandas.compat</li>
+<li>six.py by Benjamin Peterson</li>
+<li>Django</li>
+</ul>
+</div></blockquote>
+<dl class="function">
+<dt id="future.utils.as_native_str">
+<tt class="descclassname">future.utils.</tt><tt class="descname">as_native_str</tt><big>(</big><em>encoding='utf-8'</em><big>)</big><a class="reference internal" href="_modules/future/utils.html#as_native_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#future.utils.as_native_str" title="Permalink to this definition">¶</a></dt>
+<dd><p>A decorator to turn a function or method call that returns text, i.e.
+unicode, into one that returns a native platform str.</p>
+<p>Use it as a decorator like this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">unicode_literals</span>
+
+<span class="k">class</span> <span class="nc">MyClass</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="nd">@as_native_str</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="s">&#39;ascii&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_iter</span><span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="future.utils.bind_method">
+<tt class="descclassname">future.utils.</tt><tt class="descname">bind_method</tt><big>(</big><em>cls</em>, <em>name</em>, <em>func</em><big>)</big><a class="reference internal" href="_modules/future/utils.html#bind_method"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#future.utils.bind_method" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bind a method to class, python 2 and python 3 compatible.</p>
+<dl class="docutils">
+<dt>cls <span class="classifier-delimiter">:</span> <span class="classifier">type</span></dt>
+<dd>class to receive bound method</dd>
+<dt>name <span class="classifier-delimiter">:</span> <span class="classifier">basestring</span></dt>
+<dd>name of method on class instance</dd>
+<dt>func <span class="classifier-delimiter">:</span> <span class="classifier">function</span></dt>
+<dd>function to be bound as method</dd>
+</dl>
+<p>None</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="future.utils.exec_">
+<tt class="descclassname">future.utils.</tt><tt class="descname">exec_</tt><big>(</big><em>code</em>, <em>globs=None</em>, <em>locs=None</em><big>)</big><a class="reference internal" href="_modules/future/utils.html#exec_"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#future.utils.exec_" title="Permalink to this definition">¶</a></dt>
+<dd><p>Execute code in a namespace.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="future.utils.implements_iterator">
+<tt class="descclassname">future.utils.</tt><tt class="descname">implements_iterator</tt><big>(</big><em>cls</em><big>)</big><a class="reference internal" href="_modules/future/utils.html#implements_iterator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#future.utils.implements_iterator" title="Permalink to this definition">¶</a></dt>
+<dd><p>From jinja2/_compat.py. License: BSD.</p>
+<p>Use as a decorator like this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="nd">@implements_iterator</span>
+<span class="k">class</span> <span class="nc">UppercasingIterator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iterable</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_iter</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">iterable</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span>
+    <span class="k">def</span> <span class="nf">__next__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_iter</span><span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="future.utils.is_new_style">
+<tt class="descclassname">future.utils.</tt><tt class="descname">is_new_style</tt><big>(</big><em>cls</em><big>)</big><a class="reference internal" href="_modules/future/utils.html#is_new_style"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#future.utils.is_new_style" title="Permalink to this definition">¶</a></dt>
+<dd><p>Python 2.7 has both new-style and old-style classes. Old-style classes can
+be pesky in some circumstances, such as when using inheritance.  Use this
+function to test for whether a class is new-style. (Python 3 only has
+new-style classes.)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="future.utils.isbytes">
+<tt class="descclassname">future.utils.</tt><tt class="descname">isbytes</tt><big>(</big><em>obj</em><big>)</big><a class="reference internal" href="_modules/future/utils.html#isbytes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#future.utils.isbytes" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Deprecated. Use::</dt>
+<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+<dt>after this import:</dt>
+<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">future.builtins</span> <span class="kn">import</span> <span class="nb">bytes</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="future.utils.isidentifier">
+<tt class="descclassname">future.utils.</tt><tt class="descname">isidentifier</tt><big>(</big><em>s</em>, <em>dotted=False</em><big>)</big><a class="reference internal" href="_modules/future/utils.html#isidentifier"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#future.utils.isidentifier" title="Permalink to this definition">¶</a></dt>
+<dd><p>A function equivalent to the str.isidentifier method on Py3</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="future.utils.isint">
+<tt class="descclassname">future.utils.</tt><tt class="descname">isint</tt><big>(</big><em>obj</em><big>)</big><a class="reference internal" href="_modules/future/utils.html#isint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#future.utils.isint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deprecated. Tests whether an object is a Py3 <tt class="docutils literal"><span class="pre">int</span></tt> or either a Py2 <tt class="docutils literal"><span class="pre">int</span></tt> or
+<tt class="docutils literal"><span class="pre">long</span></tt>.</p>
+<p>Instead of using this function, you can use:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">future.builtins</span> <span class="kn">import</span> <span class="nb">int</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The following idiom is equivalent:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">numbers</span> <span class="kn">import</span> <span class="n">Integral</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">Integral</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="future.utils.isnewbytes">
+<tt class="descclassname">future.utils.</tt><tt class="descname">isnewbytes</tt><big>(</big><em>obj</em><big>)</big><a class="reference internal" href="_modules/future/utils.html#isnewbytes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#future.utils.isnewbytes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Equivalent to the result of <tt class="docutils literal"><span class="pre">isinstance(obj,</span> <span class="pre">newbytes)</span></tt> were
+<tt class="docutils literal"><span class="pre">__instancecheck__</span></tt> not overridden on the newbytes subclass. In
+other words, it is REALLY a newbytes instance, not a Py2 native str
+object?</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="future.utils.istext">
+<tt class="descclassname">future.utils.</tt><tt class="descname">istext</tt><big>(</big><em>obj</em><big>)</big><a class="reference internal" href="_modules/future/utils.html#istext"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#future.utils.istext" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Deprecated. Use::</dt>
+<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+<dt>after this import:</dt>
+<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">future.builtins</span> <span class="kn">import</span> <span class="nb">str</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="future.utils.iteritems">
+<tt class="descclassname">future.utils.</tt><tt class="descname">iteritems</tt><big>(</big><em>obj</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/future/utils.html#iteritems"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#future.utils.iteritems" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use this only if compatibility with Python versions before 2.7 is
+required. Otherwise, prefer viewitems().</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="future.utils.iterkeys">
+<tt class="descclassname">future.utils.</tt><tt class="descname">iterkeys</tt><big>(</big><em>obj</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/future/utils.html#iterkeys"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#future.utils.iterkeys" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use this only if compatibility with Python versions before 2.7 is
+required. Otherwise, prefer viewkeys().</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="future.utils.itervalues">
+<tt class="descclassname">future.utils.</tt><tt class="descname">itervalues</tt><big>(</big><em>obj</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/future/utils.html#itervalues"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#future.utils.itervalues" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use this only if compatibility with Python versions before 2.7 is
+required. Otherwise, prefer viewvalues().</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="future.utils.lfilter">
+<tt class="descclassname">future.utils.</tt><tt class="descname">lfilter</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/future/utils.html#lfilter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#future.utils.lfilter" title="Permalink to this definition">¶</a></dt>
+<dd><p>filter(function or None, sequence) -&gt; list, tuple, or string</p>
+<p>Return those items of sequence for which function(item) is true.  If
+function is None, return the items that are true.  If sequence is a tuple
+or string, return the same type, else return a list.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="future.utils.lmap">
+<tt class="descclassname">future.utils.</tt><tt class="descname">lmap</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/future/utils.html#lmap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#future.utils.lmap" title="Permalink to this definition">¶</a></dt>
+<dd><p>map(function, sequence[, sequence, ...]) -&gt; list</p>
+<p>Return a list of the results of applying the function to the items of
+the argument sequence(s).  If more than one sequence is given, the
+function is called with an argument list consisting of the corresponding
+item of each sequence, substituting None for missing values when not all
+sequences have the same length.  If the function is None, return a list of
+the items of the sequence (or a list of tuples if more than one sequence).</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="future.utils.lrange">
+<tt class="descclassname">future.utils.</tt><tt class="descname">lrange</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/future/utils.html#lrange"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#future.utils.lrange" title="Permalink to this definition">¶</a></dt>
+<dd><p>range(stop) -&gt; list of integers
+range(start, stop[, step]) -&gt; list of integers</p>
+<p>Return a list containing an arithmetic progression of integers.
+range(i, j) returns [i, i+1, i+2, ..., j-1]; start (!) defaults to 0.
+When step is given, it specifies the increment (or decrement).
+For example, range(4) returns [0, 1, 2, 3].  The end point is omitted!
+These are exactly the valid indices for a list of 4 elements.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="future.utils.lzip">
+<tt class="descclassname">future.utils.</tt><tt class="descname">lzip</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/future/utils.html#lzip"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#future.utils.lzip" title="Permalink to this definition">¶</a></dt>
+<dd><p>zip(seq1 [, seq2 [...]]) -&gt; [(seq1[0], seq2[0] ...), (...)]</p>
+<p>Return a list of tuples, where each tuple contains the i-th element
+from each of the argument sequences.  The returned list is truncated
+in length to the length of the shortest argument sequence.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="future.utils.native">
+<tt class="descclassname">future.utils.</tt><tt class="descname">native</tt><big>(</big><em>obj</em><big>)</big><a class="reference internal" href="_modules/future/utils.html#native"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#future.utils.native" title="Permalink to this definition">¶</a></dt>
+<dd><p>On Py3, this is a no-op: native(obj) -&gt; obj</p>
+<p>On Py2, returns the corresponding native Py2 types that are
+superclasses for backported objects from Py3:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">builtins</span> <span class="kn">import</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="nb">int</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">native</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="s">u&#39;ABC&#39;</span><span class="p">))</span>
+<span class="go">u&#39;ABC&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">native</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="s">u&#39;ABC&#39;</span><span class="p">)))</span>
+<span class="go">unicode</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">native</span><span class="p">(</span><span class="nb">bytes</span><span class="p">(</span><span class="n">b</span><span class="s">&#39;ABC&#39;</span><span class="p">))</span>
+<span class="go">b&#39;ABC&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">native</span><span class="p">(</span><span class="nb">bytes</span><span class="p">(</span><span class="n">b</span><span class="s">&#39;ABC&#39;</span><span class="p">)))</span>
+<span class="go">bytes</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">native</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="mi">10</span><span class="o">**</span><span class="mi">20</span><span class="p">))</span>
+<span class="go">100000000000000000000L</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">native</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="mi">10</span><span class="o">**</span><span class="mi">20</span><span class="p">)))</span>
+<span class="go">long</span>
+</pre></div>
+</div>
+<p>Existing native types on Py2 will be returned unchanged:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">native</span><span class="p">(</span><span class="s">u&#39;ABC&#39;</span><span class="p">))</span>
+<span class="go">unicode</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="future.utils.native_bytes">
+<tt class="descclassname">future.utils.</tt><tt class="descname">native_bytes</tt><a class="headerlink" href="#future.utils.native_bytes" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <tt class="xref py py-class docutils literal"><span class="pre">str</span></tt></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="future.utils.native_str">
+<tt class="descclassname">future.utils.</tt><tt class="descname">native_str</tt><a class="headerlink" href="#future.utils.native_str" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <tt class="xref py py-class docutils literal"><span class="pre">str</span></tt></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="future.utils.native_str_to_bytes">
+<tt class="descclassname">future.utils.</tt><tt class="descname">native_str_to_bytes</tt><big>(</big><em>s</em>, <em>encoding=None</em><big>)</big><a class="reference internal" href="_modules/future/utils.html#native_str_to_bytes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#future.utils.native_str_to_bytes" title="Permalink to this definition">¶</a></dt>
+<dd><p>On Py3, returns an encoded string.
+On Py2, returns a newbytes type, ignoring the <tt class="docutils literal"><span class="pre">encoding</span></tt> argument.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="future.utils.old_div">
+<tt class="descclassname">future.utils.</tt><tt class="descname">old_div</tt><big>(</big><em>a</em>, <em>b</em><big>)</big><a class="reference internal" href="_modules/future/utils.html#old_div"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#future.utils.old_div" title="Permalink to this definition">¶</a></dt>
+<dd><p>DEPRECATED: import <tt class="docutils literal"><span class="pre">old_div</span></tt> from <tt class="docutils literal"><span class="pre">past.utils</span></tt> instead.</p>
+<p>Equivalent to <tt class="docutils literal"><span class="pre">a</span> <span class="pre">/</span> <span class="pre">b</span></tt> on Python 2 without <tt class="docutils literal"><span class="pre">from</span> <span class="pre">__future__</span> <span class="pre">import</span>
+<span class="pre">division</span></tt>.</p>
+<p>TODO: generalize this to other objects (like arrays etc.)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="future.utils.python_2_unicode_compatible">
+<tt class="descclassname">future.utils.</tt><tt class="descname">python_2_unicode_compatible</tt><big>(</big><em>cls</em><big>)</big><a class="reference internal" href="_modules/future/utils.html#python_2_unicode_compatible"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#future.utils.python_2_unicode_compatible" title="Permalink to this definition">¶</a></dt>
+<dd><p>A decorator that defines __unicode__ and __str__ methods under Python
+2. Under Python 3 it does nothing.</p>
+<p>To support Python 2 and 3 with a single code base, define a __str__
+method returning unicode text and apply this decorator to the class.</p>
+<p>The implementation comes from django.utils.encoding.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="future.utils.raise_with_traceback">
+<tt class="descclassname">future.utils.</tt><tt class="descname">raise_with_traceback</tt><big>(</big><em>exc</em>, <em>traceback=Ellipsis</em><big>)</big><a class="reference internal" href="_modules/future/utils.html#raise_with_traceback"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#future.utils.raise_with_traceback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raise exception with existing traceback.
+If traceback is not passed, uses sys.exc_info() to get traceback.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="future.utils.text_to_native_str">
+<tt class="descclassname">future.utils.</tt><tt class="descname">text_to_native_str</tt><big>(</big><em>t</em>, <em>encoding='ascii'</em><big>)</big><a class="reference internal" href="_modules/future/utils.html#text_to_native_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#future.utils.text_to_native_str" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use this to create a Py2 native string when &#8220;from __future__ import
+unicode_literals&#8221; is in effect.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="future.utils.tobytes">
+<tt class="descclassname">future.utils.</tt><tt class="descname">tobytes</tt><big>(</big><em>s</em><big>)</big><a class="reference internal" href="_modules/future/utils.html#tobytes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#future.utils.tobytes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Encodes to latin-1 (where the first 256 chars are the same as
+ASCII.)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="future.utils.viewitems">
+<tt class="descclassname">future.utils.</tt><tt class="descname">viewitems</tt><big>(</big><em>obj</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/future/utils.html#viewitems"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#future.utils.viewitems" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function for iterating over dictionary items with the same set-like
+behaviour on Py2.7 as on Py3.</p>
+<p>Passes kwargs to method.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="future.utils.viewkeys">
+<tt class="descclassname">future.utils.</tt><tt class="descname">viewkeys</tt><big>(</big><em>obj</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/future/utils.html#viewkeys"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#future.utils.viewkeys" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function for iterating over dictionary keys with the same set-like
+behaviour on Py2.7 as on Py3.</p>
+<p>Passes kwargs to method.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="future.utils.viewvalues">
+<tt class="descclassname">future.utils.</tt><tt class="descname">viewvalues</tt><big>(</big><em>obj</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/future/utils.html#viewvalues"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#future.utils.viewvalues" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function for iterating over dictionary values with the same set-like
+behaviour on Py2.7 as on Py3.</p>
+<p>Passes kwargs to method.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="future.utils.with_metaclass">
+<tt class="descclassname">future.utils.</tt><tt class="descname">with_metaclass</tt><big>(</big><em>meta</em>, <em>*bases</em><big>)</big><a class="reference internal" href="_modules/future/utils.html#with_metaclass"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#future.utils.with_metaclass" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function from jinja2/_compat.py. License: BSD.</p>
+<p>Use it like this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">BaseForm</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">pass</span>
+
+<span class="k">class</span> <span class="nc">FormType</span><span class="p">(</span><span class="nb">type</span><span class="p">):</span>
+    <span class="k">pass</span>
+
+<span class="k">class</span> <span class="nc">Form</span><span class="p">(</span><span class="n">with_metaclass</span><span class="p">(</span><span class="n">FormType</span><span class="p">,</span> <span class="n">BaseForm</span><span class="p">)):</span>
+    <span class="k">pass</span>
+</pre></div>
+</div>
+<p>This requires a bit of explanation: the basic idea is to make a
+dummy metaclass for one level of class instantiation that replaces
+itself with the actual metaclass.  Because of internal type checks
+we also need to make sure that we downgrade the custom metaclass
+for one level to something closer to type (that&#8217;s why __call__ and
+__init__ comes back from type etc.).</p>
+<p>This has the advantage over six.with_metaclass of not introducing
+dummy classes into the final MRO.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-past.builtins">
+<span id="past-builtins-interface"></span><h2><a class="toc-backref" href="#id14">past.builtins Interface</a><a class="headerlink" href="#module-past.builtins" title="Permalink to this headline">¶</a></h2>
+<p>A resurrection of some old functions from Python 2 for use in Python 3. These
+should be used sparingly, to help with porting efforts, since code using them
+is no longer standard Python 3 code.</p>
+<p>This module provides the following:</p>
+<ol class="arabic simple">
+<li>Implementations of these builtin functions which have no equivalent on Py3:</li>
+</ol>
+<ul class="simple">
+<li>apply</li>
+<li>chr</li>
+<li>cmp</li>
+<li>execfile</li>
+</ul>
+<ol class="arabic simple" start="2">
+<li>Aliases:</li>
+</ol>
+<ul class="simple">
+<li>intern &lt;- sys.intern</li>
+<li>raw_input &lt;- input</li>
+<li>reduce &lt;- functools.reduce</li>
+<li>reload &lt;- imp.reload</li>
+<li>unichr &lt;- chr</li>
+<li>unicode &lt;- str</li>
+<li>xrange &lt;- range</li>
+</ul>
+<ol class="arabic simple" start="3">
+<li>List-producing versions of the corresponding Python 3 iterator-producing functions:</li>
+</ol>
+<ul class="simple">
+<li>filter</li>
+<li>map</li>
+<li>range</li>
+<li>zip</li>
+</ul>
+<ol class="arabic simple" start="4">
+<li>Forward-ported Py2 types:</li>
+</ol>
+<ul class="simple">
+<li>basestring</li>
+<li>dict</li>
+<li>str</li>
+<li>long</li>
+<li>unicode</li>
+</ul>
+</div>
+<div class="section" id="module-past.types">
+<span id="forward-ported-types-from-python-2"></span><h2><a class="toc-backref" href="#id15">Forward-ported types from Python 2</a><a class="headerlink" href="#module-past.types" title="Permalink to this headline">¶</a></h2>
+<p>Forward-ports of types from Python 2 for use with Python 3:</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">basestring</span></tt>: equivalent to <tt class="docutils literal"><span class="pre">(str,</span> <span class="pre">bytes)</span></tt> in <tt class="docutils literal"><span class="pre">isinstance</span></tt> checks</li>
+<li><tt class="docutils literal"><span class="pre">dict</span></tt>: with list-producing .keys() etc. methods</li>
+<li><tt class="docutils literal"><span class="pre">str</span></tt>: bytes-like, but iterating over them doesn&#8217;t product integers</li>
+<li><tt class="docutils literal"><span class="pre">long</span></tt>: alias of Py3 int with <tt class="docutils literal"><span class="pre">L</span></tt> suffix in the <tt class="docutils literal"><span class="pre">repr</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">unicode</span></tt>: alias of Py3 str with <tt class="docutils literal"><span class="pre">u</span></tt> prefix in the <tt class="docutils literal"><span class="pre">repr</span></tt></li>
+</ul>
+</div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2013-2014, Python Charmers Pty Ltd, Australia.<br/>
+    </p>
+  </div>
+</footer>
+<div class="footer">
+<script type="text/javascript">
+  (function() {
+    var ga = document.createElement('script');
+    ga.src = ('https:' == document.location.protocol ?
+              'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    ga.setAttribute('async', 'true');
+    document.documentElement.firstChild.appendChild(ga);
+  })();
+</script>
+</div>
+
+  </body>
+</html>
