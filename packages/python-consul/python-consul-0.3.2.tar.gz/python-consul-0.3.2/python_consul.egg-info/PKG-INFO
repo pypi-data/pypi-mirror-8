@@ -1,0 +1,105 @@
+Metadata-Version: 1.1
+Name: python-consul
+Version: 0.3.2
+Summary: Python client for Consul (http://www.consul.io/)
+Home-page: https://github.com/cablehead/python-consul
+Author: Andy Gayton
+Author-email: andy@thecablelounge.com
+License: MIT
+Description: Python client for `Consul.io <http://www.consul.io/>`_
+        ======================================================
+        
+        Documentation
+        -------------
+        
+        `Read the Docs`_
+        
+        Status
+        ------
+        
+        |Build Status|\ |Coverage Status|
+        
+        Example
+        -------
+        
+        .. code:: python
+        
+            import consul
+        
+            c = consul.Consul()
+        
+            # poll a key for updates
+            index = None
+            while True:
+                index, data = c.kv.get('foo', index=index)
+                print data['Value']
+        
+            # in another process
+            c.kv.put('foo', 'bar')
+        
+        Installation
+        ------------
+        
+        ::
+        
+            pip install python-consul
+        
+        .. |Build Status|
+           image:: https://travis-ci.org/cablehead/python-consul.svg?branch=master
+           :target: https://travis-ci.org/cablehead/python-consul
+        .. |Coverage Status|
+           image:: https://coveralls.io/repos/cablehead/python-consul/badge.png?branch=master
+           :target: https://coveralls.io/r/cablehead/python-consul?branch=master
+        .. _Read the Docs: http://python-consul.readthedocs.org/
+        
+        Status
+        ------
+        
+        There's a few API endpoints still to go to expose all features available in
+        Consul v0.4.1. If you need an endpoint that's not in the documentation, just
+        open an issue and I'll try and add it straight away.
+        
+        
+        Change log
+        ==========
+        
+        0.3.2
+        -----
+        
+        Features
+        ~~~~~~~~
+        
+        * Add support for Python 3.4
+        
+        0.3.1
+        -----
+        
+        Features
+        ~~~~~~~~
+        
+        * Add support for the Catalog API (Consul.Catalog)
+        * Add ability to set a default consistency mode for an entire client session
+        * Add the ability to pass the consistency mode with kv.get
+        
+        0.3.0
+        -----
+        
+        Features
+        ~~~~~~~~
+        
+        * Add support for ACLs (Consul.ACL)
+        
+        
+        API changes (backwards incompatible)
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        
+        * For Consul.Agent.Service.register, rename *check* argument to *script*
+        
+Platform: UNKNOWN
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 2
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.4
