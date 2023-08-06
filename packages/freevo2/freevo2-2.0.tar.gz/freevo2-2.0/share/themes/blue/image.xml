@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<theme>
+
+    <script filename='scripts.py'/>
+    <script filename='image.py'/>
+
+    <menu name="image">
+        <listing style="grid" x="20" y="100" width="1240" height="480" xpadding="30" ypadding="30">
+	    <properties xalign="center"/>
+	    <group width="130" height="130">
+		<properties anchor-point="65,65" opacity="200"/>
+		<thumbnail style="mimetype" height="100" item="item">
+		    <properties xalign="center" yalign="center"/>
+		</thumbnail>
+		<label font="Vera" y="110" height="20" color="0xffffff">
+		    <properties xalign="center"/>
+		    $item.name
+		</label>
+	    </group>
+            <selection>
+		<rectangle color="0xc0000000" radius="15" width="170" height="170"/>
+            </selection>
+	    <event name="select"><![CDATA[
+	        if prev:
+                    prev.animate('EASE_OUT_QUAD', secs, opacity=200, scale_x=1, scale_y=1)
+                next.animate('EASE_OUT_QUAD', secs, opacity=255, scale_x=1.2, scale_y=1.2)
+		]]>
+	    </event>
+        </listing>
+	<group y="620" height="120">
+	    <rectangle color="0x66000000"/>
+	    <text font="Vera:20" color="0xffffff">
+		$item.name with ${item.width}x${item.height}
+	    </text>
+	</group>
+    </menu>
+
+    <application name="imageviewer">
+	<photo name="player"/>
+
+	<osd width="1920" height="1080">
+            <widget use-as="listing">
+		<listing style="fixed-selection" x="1500" y="-150" width="300" height="1300"
+			 selection="1" xpadding="0" ypadding="0" menu="playlist">
+                    <group width="264" height="204">
+			<thumbnail style="mimetype" item="item" x="12" y="12" width="240" height="180">
+			    <properties xalign="center" yalign="center"/>
+			</thumbnail>
+			<rectangle border-color="0xaaffffff" border-size="2"/>
+		    </group>
+		    <selection>
+			<rectangle border-color="0xffffff" border-size="2" width="264" height="204"/>
+		    </selection>
+		</listing>
+		<event name="show" script="fade"/>
+		<event name="hide" script="fade"/>
+	    </widget>
+
+            <widget x="30" y="910" width="1860" height="150" use-as="info">
+		<!--
+		    FIXME: Add a better info area. The kaa.candy.Text
+		    widget should support some sort of layout, it
+		    should ignore whitespaces from the XML file and
+		    ignore not existing fields.
+		-->
+		<label y="0" font="Vera:32" color="0xffffff">
+		    $item.name
+		</label>
+		<label y="60" font="Vera:26" color="0xffffff">
+		    Date: $item.date
+		</label>
+		<label y="90" font="Vera:26" color="0xffffff">
+		    Geometry: $item.geometry
+		</label>
+		<event name="show" script="fade"/>
+		<event name="hide" script="fade"/>
+	    </widget>
+	</osd>
+
+	<event name="system" script="image_osd"/>
+    </application>
+
+</theme>
+<!-- Keep this comment at the end of the file
+Local variables:
+nxml-child-indent: 4
+End:
+-->

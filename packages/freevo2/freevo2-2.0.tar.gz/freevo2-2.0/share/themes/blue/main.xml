@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<theme>
+
+    <script filename='scripts.py'/>
+
+    <freevo>
+	<layer name="background">
+	    <image filename="images/background.jpg"/>
+	</layer>
+
+	<layer name="application"/>
+
+	<layer width="1920" height="1080" name="widgets"/>
+
+	<layer width="1920" height="1080" name="popup"/>
+
+    </freevo>
+
+    <widget name="idlebar" height="90" layer="widgets">
+        <image y="-30" height="110" filename="images/idlebar.png"/>
+	<group>
+	    <image name="logo" height="120" width="300" filename="images/logo.png">
+		<properties opacity="0" keep-aspect="true"/>
+	    </image>
+	    <group x="320" y="15" width="1550" height="90">
+		<properties name="plugins"/>
+	    </group>
+	</group>
+	<event name="show"><![CDATA[
+            yield self.animate('EASE_IN_QUAD', 0.2, opacity=255)
+	    ]]>
+	</event>
+	<event name="hide"><![CDATA[
+            yield self.animate('EASE_OUT_QUAD', 0.2, opacity=0)
+	    ]]>
+	</event>
+    </widget>
+
+    <widget name="osd" layer="widgets">
+	<properties opacity="0"/>
+	<label x="90" width="1800" y="100" height="45" font="Vera" color="0xffffff">
+	    <properties xalign="right"/>
+	    ${message}
+	</label>
+	<event name="show"><![CDATA[
+            yield self.animate('EASE_IN_QUAD', 0.2, opacity=255)
+	    ]]>
+	</event>
+	<event name="hide"><![CDATA[
+            yield self.animate('EASE_OUT_QUAD', 0.2, opacity=0)
+	    ]]>
+	</event>
+    </widget>
+
+    <widget name="popup" font="Vera:24" color="0xffffff" layer="popup">
+    	<group use-as="background">
+    	    <rectangle x="5" y="5" width="100%" height="100%" color="0xbb111111" radius="20">
+    		<properties xpadding="-10" ypadding="-10"/>
+    	    </rectangle>
+    	    <rectangle color="0x001F4A95" border-color="0xcccccc" border-size="2" radius="20">
+    		<properties xpadding="-10" ypadding="-10"/>
+    	    </rectangle>
+    	</group>
+    	<button use-as="button" font="Vera:24" color="0xffffff">
+    	    <rectangle use-as="background" color="0xffffff" radius="10">
+		<properties opacity="0"/>
+	    </rectangle>
+	    <event name="select"><![CDATA[
+    	        if prev:
+                    prev.background.animate('EASE_OUT_QUAD', secs, opacity=0)
+                next.background.animate('EASE_OUT_QUAD', secs, opacity=200)
+    	        ]]>
+	    </event>
+    	</button>
+	<event name="show"><![CDATA[
+	    self.opacity=0
+            for layer in range(3):
+	        self.stage.layer[layer].animate('EASE_OUT_QUAD', 0.2, opacity=150)
+            yield self.animate('EASE_IN_QUAD', 0.2, opacity=255)
+	    ]]>
+	</event>
+	<event name="hide"><![CDATA[
+            for layer in range(3):
+	        self.stage.layer[layer].animate('EASE_IN_QUAD', 0.2, opacity=255)
+            yield self.animate('EASE_OUT_QUAD', 0.2, opacity=0)
+	    ]]>
+	</event>
+    </widget>
+
+    <application name="menu">
+	<group style="scaled" width="1280" height="720" name="menu"/>
+    </application>
+
+    <menu name="main">
+	<properties anchor-point="640,360"/>
+	<image x="200" width="880" y="100" filename="images/logo_large.png">
+	    <properties keep-aspect="true"/>
+	</image>
+	<group name="content" x="-20" y="550" width="1320" height="50">
+	    <rectangle color="0x60000000"/>
+	    <listing width="1320" height="50" style="fixed-selection" xpadding="20" ypadding="3">
+		<label font="Vera" height="25" width="230" color="0xffffff">
+		    <properties xalign="center" yalign="center" opacity="200"/>
+		    $item.name
+		</label>
+		<selection xpadding="20" ypadding="20">
+		    <rectangle color="0xa0ffffff" height="35" width="220" radius="20"/>
+		</selection>
+		<event name="select"><![CDATA[
+    	            if prev:
+		        prev.animate('EASE_OUT_QUAD', secs, opacity=200)
+                    next.animate('EASE_OUT_QUAD', secs, opacity=255)
+    	        ]]>
+		</event>
+    	    </listing>
+	</group>
+	<event name="replace" script="menu"/>
+    </menu>
+
+    <menu name="submenu">
+	<event name="submenu-show"><![CDATA[
+	    self.x = 1300
+	    yield menu.animate('EASE_OUT_QUAD', 0.2, scale_x=0.6, opacity=200)
+	    yield self.animate('EASE_OUT_BACK', 0.3, x=800)
+            ]]>
+	</event>
+	<event name="submenu-hide"><![CDATA[
+	    yield self.animate('EASE_IN_BACK', 0.3, x=1300)
+	    yield menu.animate('EASE_OUT_QUAD', 0.2, scale_x=1.0, opacity=255)
+            ]]>
+	</event>
+	<listing y="100" width="400" height="480" xpadding="20" ypadding="10">
+	    <label font="Vera" height="25" color="0xffffff">
+		<properties opacity="200"/>
+		$item.name
+	    </label>
+	    <selection>
+		<rectangle color="0xa0000000" radius="25" height="30"/>
+	    </selection>
+	    <event name="select"><![CDATA[
+	        if prev:
+                    prev.animate('EASE_OUT_QUAD', secs, opacity=200)
+                next.animate('EASE_OUT_QUAD', secs, opacity=255)
+		]]>
+	    </event>
+	</listing>
+    </menu>
+
+    <menu name="default">
+	<event name="replace" script="menu"/>
+        <listing x="20" y="100" width="600" height="480" xpadding="20" ypadding="10">
+	    <label font="Vera" height="25" color="0xffffff">
+		<properties opacity="200"/>
+		$item.name
+	    </label>
+            <selection>
+                <rectangle color="0xa0000000" radius="25" height="30"/>
+            </selection>
+	    <event name="select"><![CDATA[
+	        if prev:
+                    prev.animate('EASE_OUT_QUAD', secs, opacity=200)
+                next.animate('EASE_OUT_QUAD', secs, opacity=255)
+		]]>
+	    </event>
+        </listing>
+    </menu>
+
+</theme>
+<!-- Keep this comment at the end of the file
+Local variables:
+nxml-child-indent: 4
+End:
+-->

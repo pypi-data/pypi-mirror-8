@@ -1,0 +1,131 @@
+#!/usr/bin/env python
+# -*- coding: iso-8859-1 -*-
+# -----------------------------------------------------------------------------
+# freevo - This is the Freevo main application code
+# -----------------------------------------------------------------------------
+# $Id$
+#
+# This file is the python start file for Freevo. It handles the init
+# phase like checking the python modules, loading the plugins and
+# starting the main menu.
+#
+# -----------------------------------------------------------------------------
+# Freevo - A Home Theater PC framework
+# Copyright (C) 2002 Krister Lagerstrom, 2003-2013 Dirk Meyer, et al.
+#
+# First edition: Krister Lagerstrom <krister-freevo@kmlager.com>
+# Maintainer:    Dirk Meyer <dischi@freevo.org>
+#
+# Please see the file AUTHORS for a complete list of authors.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of MER-
+# CHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
+# Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#
+# -----------------------------------------------------------------------------
+
+# python imports
+import os
+import sys
+import gc
+import logging
+import gettext
+
+# some imports required at the beginning
+import kaa
+from gi.repository import GObject
+
+# get logging object
+log = logging.getLogger()
+
+# set log level
+log.setLevel(logging.WARNING)
+
+#
+# i18n support
+#
+try:
+    # First load the xml module. It's not needed here but it will mess
+    # up with the domain we set (set it from freevo 4Suite). By loading it
+    # first, Freevo will override the 4Suite setting to freevo
+    from xml.dom import minidom
+    from xml.utils import qp_xml
+except ImportError:
+    pass
+i18npath = os.path.abspath(os.path.join(os.path.dirname(__file__), '../share/locale'))
+i18n = gettext.translation('freevo', i18npath, fallback=True)
+i18n.install(unicode=True)
+
+logging.add_stdout_handler()
+logging.add_file_handler(os.path.expanduser('~/.freevo/log/freevo.log'))
+
+kaa.main.init('generic')
+
+#
+# Load freevo modules and config file
+#
+import freevo2.gui
+import freevo2.core
+
+cfgfile = os.path.expanduser('~/.freevo/freevo2.conf')
+if '-c' in sys.argv:
+    cfgfile = sys.argv[sys.argv.index('-c')+1]
+
+if not os.path.isfile(cfgfile):
+    print '%s does not exist' % cfgfile
+    print 'The file is now created and Freevo will stop so you can'
+    print 'adjust the config settings.'
+    print 'You should recheck freevo2.conf after every svn update. Use'
+    print '\'freevo setup\' to rebuild the file without starting freevo.'
+    print 'Your settings will be saved when the config file is rewritten.'
+    freevo2.core.config.load(cfgfile, sync=True)
+    sys.exit(0)
+
+freevo2.core.config.load(cfgfile, sync=True)
+if len(sys.argv) > 1 and sys.argv[1] in ('setup', '--setup', 'config', '--config'):
+    print 'wrote %s' % cfgfile
+    sys.exit(0)
+
+if freevo2.core.config.debug:
+    # FIXME: make it possible to set debug for specific parts.  Maybe
+    # use an environment variable and hock it into freevo2.core or
+    # kaa.base.
+    logging.getLogger().setLevel(logging.INFO)
+
+freevo2.core.config.save(force=True)
+freevo2.core.config.watch()
+
+freevo2.core.init().wait()
+
+# prepare GUI
+freevo2.gui.init(freevo2.core.config, freevo2.core.FREEVO_SHARE_DIR)
+
+# load all plugins
+freevo2.core.load_plugins(freevo2)
+
+# load theme
+freevo2.gui.load_theme()
+
+# start menu
+freevo2.core.MainMenu()
+
+def garbage_collect():
+    gc.collect()
+    for g in gc.garbage:
+        logger.warning('Unable to free %s' % g)
+
+# Set up garbage collector to be called every 5 seconds
+kaa.Timer(garbage_collect).start(5)
+
+# Start main loop
+kaa.main.run()

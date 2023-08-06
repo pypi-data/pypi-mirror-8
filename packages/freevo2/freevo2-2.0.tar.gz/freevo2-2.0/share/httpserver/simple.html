@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Freevo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="jquery/jquery.mobile-1.2.0-beta.1.min.css" />
+    <script src="jquery/jquery-1.8.1.min.js"></script>
+    <script src="jquery/jquery.mobile-1.2.0-beta.1.min.js"></script>
+
+    <style media="screen" type="text/css">
+
+.ui-li-screenshot {
+        float: left; 
+        padding-right: 20px;        
+        width: 124px; height: 70px;
+        text-align: center; 
+        vertical-align: middle; 
+}
+
+    </style>
+</head>
+<body>
+
+<div data-role="page" id="page-menu">
+
+    <div data-role="header" data-position="fixed" data-tap-toggle="false">
+        <h1>Freevo Menu</h1>
+    </div><!-- /header -->
+
+    <div data-role="content">
+        <br/>
+        <ul data-role="listview" data-inset="true" data-filter="true" id="menu">
+	    <script>
+            $('#menu').delegate("li", "click", function (e) {
+                    $(this).addClass("ui-btn-active");
+                    $.ajax({
+                      url: "/select/" + $(this).attr('id'),
+                      cache: false,
+                    });
+		});
+	    </script>
+	</ul>
+        <br/>
+    </div>
+
+    <div data-role="footer" data-position="fixed"
+	 data-transition="none" data-fullscreen="true" data-tap-toggle="false">
+        <div data-role="navbar">
+	    <ul id="navbar">
+	        <li><a href="#" url="select/back">Back</a></li>
+	        <li><a href="#" url="select/home">Home</a></li>
+	        <li><a href="#" url="select/submenu">Submenu</a></li>
+	    </ul>
+	</div>
+    </div>
+    <script>
+        var current;
+        $('#page-menu').delegate("a", "click", function (e) {
+            current = $(this);
+            $.ajax({
+                url: $(this).attr('url'),
+                cache: false,
+                complete: function () {
+                    current.removeClass("ui-btn-active");
+                }
+            });
+        });
+    </script>
+</div>
+
+<div data-role="page" id="page-player">
+    <div data-role="header" data-position="fixed" data-tap-toggle="false">
+        <h1>Freevo</h1>
+    </div>
+
+    <div data-role="content" id="content-player">
+    </div>
+
+    <div data-role="footer" data-position="fixed"
+	 data-transition="none" data-fullscreen="true" data-tap-toggle="false">
+        <div data-role="navbar">
+	    <ul>
+	        <li><a href="#" url="event/STOP">Stop</a></li>
+	    </ul>
+	</div>
+    </div>
+
+    <script>
+        var current;
+        $('#page-player').delegate("a", "click", function (e) {
+                current = $(this);
+                $.ajax({
+                  url: $(this).attr('url'),
+                  cache: false,
+                  complete: function () {
+                      current.removeClass("ui-btn-active");
+                  }
+                });
+        });
+    </script>
+</div>
+
+</body>
+</html>
+
+<script>
+
+var known = 'None';
+var page = 'menu'
+var start = new Date().getTime();
+
+(function fillSectionsPage() {
+
+    start = new Date().getTime();
+    $.ajax({
+        url: '/view?known=' + known,
+        dataType: 'json',
+        cache: false,
+        success: function(data) {
+
+            if (data.type != page) {
+                if (data.type == 'menu') {
+                    $.mobile.changePage( "#page-" + data.type, { transition: "slidedown"} );
+                } else {
+                    $.mobile.changePage( "#page-player", { transition: "slideup"} );
+                };
+                page = data.type;
+            };
+
+            if (data.type == 'menu') {
+                var items = '';
+                $.each(data.menu, function(index, item){
+                     items += '<li id="' + item.id + '">';
+                     if (item.image) {
+                         //items += '<p class="ui-li-screenshot"><img src="' + item.image + '?size=small"/></p>\n';
+                         items += '<img src="' + item.image + '?size=small"/>\n';
+                     }
+                     items += '<h3>' + item.line1 + '</h3>\n';
+                     items += '<p>' + item.line2 + '</p>';
+                     //items += '<p>' + item.name + '</p>;
+                     items += '</li>';
+                });
+                $('#menu').empty()
+                $('#menu').append(items);
+                $('#menu').listview('refresh');
+            };
+            if (data.type == 'videoplayer') {
+                $('#content-player').empty();
+                c = '<br><div class="ui-grid-a"><div class="ui-block-a">';
+                if (data.series) {
+                    c += '<h1>' + data.title + '</h1>';
+                    c += '<h2>' + data.series + '</h2>';
+                } else {
+                    c += '<h1>' + data.title + '</h1>';
+                }
+                if (data.description) {
+                    c += '<p>' + data.description + '</p>';
+                }
+                if (data.imdb) {
+                    c += '<a href="http://www.imdb.com/title/' + data.imdb + '">IMDB</a>';
+                }
+                c += '</div><div class="ui-block-b">';
+                c += '<center><img src="' + data.poster + '?size=normal"</></center>';
+                c += '</div></div>';
+                $('#content-player').append(c);
+            };
+            if (data.type == 'audioplayer') {
+                $('#content-player').empty()
+                $('#content-player').append('<h1>' + data.title + '<h1>');
+                $('#content-player').append('<h2>' + data.artist + '<h2>');
+                $('#content-player').append('<h2>' + data.album + '<h2>');
+            };
+            known = data.status;
+            fillSectionsPage();
+        },
+        error: function() {
+            if ((new Date().getTime() - start) > 2000) {
+                fillSectionsPage();
+            }
+        },
+        timeout: 60000});
+})();
+
+</script>

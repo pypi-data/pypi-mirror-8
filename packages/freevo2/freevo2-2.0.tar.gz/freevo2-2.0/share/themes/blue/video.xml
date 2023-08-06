@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<theme>
+
+    <script filename='scripts.py'/>
+
+    <menu name="video">
+        <alias name="video main menu"/>
+        <event name="replace" script="menu"/>
+        <rectangle name="background" y="520" height="200" color="0x66000000"/>
+        <event name="create"><![CDATA[
+            background = widget.get_widget('background')
+            if widget.context.get('item').get('series') or widget.context.get('item').get('description'):
+                background.y = 520
+            else:
+                background.y = 660
+            ]]>
+        </event>
+        <group x="10" y="530" width="1260" height="180">
+            <group style="condition" x="1180" y="130" width="60" height="60">
+                <case condition="item.autobookmark_resume">
+                    <image url="icons/pause.png">
+                        <properties opacity="50"/>
+                    </image>
+                </case>
+            </group>
+            <group style="condition" x="350" y="150" width="900" height="30">
+                <case condition="item.type" value="directory">
+                    <label font="Vera:18" color="0xffffff">
+                        <properties xalign="right"/>
+                        $item.num_items Items
+                    </label>
+                </case>
+                <case condition="item.length">
+                    <label font="Vera:18" color="0xffffff">
+                        <properties xalign="right"/>
+                        $item.length min.
+                    </label>
+                </case>
+            </group>
+        </group>
+        <group x="10" y="530" width="1260" height="180">
+            <group style="condition" x="10" y="10" width="900" height="140">
+                <event name="replace"><![CDATA[
+                    background = next.parent.parent.get_widget('background')
+                    if next.context.get('item').get('series') or next.context.get('item').get('description'):
+                        background.animate('EASE_IN_QUAD', 0.2, y=520)
+                    else:
+                        background.animate('EASE_IN_QUAD', 0.2, y=660)
+                    next.y += 180
+                    next.animate('EASE_IN_QUAD', 0.2, y=next.y-180)
+                    yield prev.animate('EASE_OUT_QUAD', 0.2, y=prev.y+180)
+                    ]]>
+                </event>
+                <case condition="item.type" value="series">
+                    <text width="1240" font="Vera:18" color="0xffffff">
+                        <replace-on-context-change keys="item.description" script="fade"/>
+                        $item.description
+                    </text>
+                </case>
+                <case condition="item.series">
+                    <thumbnail x="10" width="285" thumbnail="$item.thumbnail">
+                        <replace-on-context-change keys="item" script="fade"/>
+                        <properties xalign="center" yalign="center"/>
+                    </thumbnail>
+                    <label x="350" y="0" font="Vera" height="25" color="0xffffff">
+                        <replace-on-context-change keys="item.title" script="fade"/>
+                        $item.title
+                    </label>
+                    <text x="350" y="40" height="80" font="Vera:18" color="0xffffff">
+                        <replace-on-context-change keys="item.description" script="fade"/>
+                        $item.description
+                    </text>
+                </case>
+                <case condition="item.description">
+                    <text width="1240" font="Vera:18" color="0xffffff">
+                        <replace-on-context-change keys="item.description" script="fade"/>
+                        $item.description
+                    </text>
+                </case>
+            </group>
+        </group>
+
+        <group style="condition" name="right-image">
+            <case condition="item.poster">
+                <rectangle x="910" y="85" width="280" height="410" color="0xa0000000" radius="8"/>
+                <!-- <rectangle x="897" y="87" width="306" height="406" color="0x000000"/> -->
+                <image x="915" y="90" width="270" height="400" url="$item.poster">
+                    <properties load-async="True"/>
+                    <replace-on-context-change keys="item.poster" script="fade"/>
+                </image>
+            </case>
+            <case condition="not item.poster and item.image and not item.series and not item.description">
+                <rectangle x="960" y="485" width="280" height="154" color="0xa0000000" radius="8"/>
+                <image x="965" y="490" width="270" height="144" url="$item.image">
+                    <replace-on-context-change keys="item.image" script="fade"/>
+                </image>
+            </case>
+            <event name="replace" script="fade"/>
+        </group>
+
+        <listing style="fixed-selection" x="10" y="100" width="780" height="380" xpadding="20" ypadding="10">
+            <label font="Vera" height="25" color="0xffffff">
+                <properties opacity="200"/>
+                $item.name
+            </label>
+            <selection>
+                <rectangle color="0xa0000000" radius="25" height="30"/>
+            </selection>
+            <event name="replace"><![CDATA[
+                diff = 200
+                if prev.pos < next.pos:
+                    diff = -200
+                next.x -= diff
+                next.opacity = 0
+                next.animate('EASE_IN_OUT_QUAD', 0.2, x=next.x + diff, opacity=255)
+                yield prev.animate('EASE_IN_OUT_QUAD', 0.2, x=prev.x + diff, opacity=0)
+                ]]>
+            </event>
+            <event name="select"><![CDATA[
+                if prev:
+                    prev.animate('EASE_OUT_QUAD', secs, opacity=200)
+                next.animate('EASE_OUT_QUAD', secs, opacity=255)
+                ]]>
+            </event>
+        </listing>
+    </menu>
+
+    <menu name="video+submenu">
+	<event name="submenu-show"><![CDATA[
+	    self.x = 1300
+	    menu.animate('EASE_OUT_QUAD', 0.2, opacity=200)
+	    yield menu.get_widget('right-image').animate('EASE_OUT_QUAD', 0.2, opacity=0)
+	    yield self.animate('EASE_OUT_BACK', 0.3, x=800)
+            ]]>
+	</event>
+	<event name="submenu-hide"><![CDATA[
+	    yield self.animate('EASE_IN_BACK', 0.3, x=1300)
+	    menu.get_widget('right-image').animate('EASE_OUT_QUAD', 0.2, opacity=255)
+	    yield menu.animate('EASE_OUT_QUAD', 0.2, opacity=255)
+            ]]>
+	</event>
+	<listing y="100" width="400" height="480" xpadding="20" ypadding="10">
+	    <label font="Vera" height="25" color="0xffffff">
+		<properties opacity="200"/>
+		$item.name
+	    </label>
+	    <selection>
+		<rectangle color="0xa0000000" radius="25" height="30"/>
+	    </selection>
+	    <event name="select"><![CDATA[
+	        if prev:
+                    prev.animate('EASE_OUT_QUAD', secs, opacity=200)
+                next.animate('EASE_OUT_QUAD', secs, opacity=255)
+		]]>
+	    </event>
+	</listing>
+    </menu>
+
+    <application name="videoplayer">
+        <video name="player"/>
+
+	<osd width="1920" height="1080">
+
+            <widget use-as="pause">
+                <image x="450" width="930" url="icons/pause.png">
+                    <properties opacity="50" keep-aspect="true"/>
+                </image>
+                <event name="show"><![CDATA[
+                    self.application.get_widget('player').animate('EASE_OUT_QUAD', 0.2, opacity=100)
+                    return self.animate('EASE_IN_QUAD', 0.2, opacity=255)
+                    ]]>
+                </event>
+                <event name="hide"><![CDATA[
+                    self.application.get_widget('player').animate('EASE_IN_QUAD', 0.2, opacity=255)
+                    return self.animate('EASE_OUT_QUAD', 0.2, opacity=0)
+                    ]]>
+                </event>
+            </widget>
+
+            <widget y="-225" height="150" use-as="seek">
+                <rectangle x="-15" width="1950" height="120" color="0x66000000"/>
+                <image x="15" y="45" height="120" width="300" filename="images/logo.png">
+                    <properties keep-aspect="true"/>
+                </image>
+                <label x="1545" y="52" width="270" font="Vera" height="36" color="0xffffff">
+                    <properties xalign="right"/>
+                    $item.elapsed  / $item.length
+                </label>
+                <event name="show"><![CDATA[
+                    return self.animate('EASE_OUT_QUAD', 0.2, y=-30)
+                    ]]>
+                </event>
+                <event name="hide"><![CDATA[
+                    return self.animate('EASE_IN_QUAD', 0.2, y=-225)
+                    ]]>
+                </event>
+            </widget>
+
+            <widget y="1080" height="300" use-as="info">
+                <rectangle x="-15" y="60" width="1950" height="200" color="0x55000000"/>
+                <group style="condition">
+                    <case condition="item.poster">
+                        <rectangle x="42" y="-3" width="206" height="306" color="0x000000"/>
+                        <image x="45" width="200" height="300" url="$item.poster">
+                            <properties load-async="True"/>
+                        </image>
+                    </case>
+                </group>
+                <label x="300" y="75" width="1500" font="Vera" height="36" color="0xffffff">
+                    $item.title
+                </label>
+                <text x="300" y="135" width="1200" height="120" font="Vera:26" color="0xffffff">
+                    $item.description
+                </text>
+                <label x="1545" y="225" width="270" font="Vera" height="30" color="0xffffff">
+                    <properties xalign="right"/>
+                    $item.elapsed  / $item.length
+                </label>
+                <event name="show"><![CDATA[
+                    return self.animate('EASE_OUT_BACK', 0.2, y=750)
+                    ]]>
+                </event>
+                <event name="hide"><![CDATA[
+                    return self.animate('EASE_IN_BACK', 0.2, y=1080)
+                    ]]>
+                </event>
+            </widget>
+
+            <widget use-as="menu">
+		<group style="condition">
+		    <case condition="not stereo">
+			<listing x="1430" y="200" width="460" height="700" xpadding="30" ypadding="15">
+			    <label font="Vera" height="38" color="0xffffff">
+				<properties opacity="200"/>
+				$item.name
+			    </label>
+			    <selection>
+				<rectangle color="0xa0000000" radius="38" height="45"/>
+			    </selection>
+			    <event name="select"><![CDATA[
+			    if prev:
+			        prev.animate('EASE_OUT_QUAD', secs, opacity=200)
+			    next.animate('EASE_OUT_QUAD', secs, opacity=255)
+			    ]]>
+			    </event>
+			</listing>
+			<label x="30" y="150" width="1400" font="Vera" height="48" color="0xffffff">
+			    $video.title
+			</label>
+			<label x="1545" y="1025" width="270" font="Vera" height="30" color="0xffffff">
+			    <properties xalign="right"/>
+			    $video.elapsed  / $video.length
+			</label>
+		    </case>
+		    <case condition="stereo">
+			<rectangle color="0x000000"/>
+			<listing x="30" y="100" width="460" height="900" xpadding="30" ypadding="15">
+			    <label font="Vera" height="38" color="0xffffff">
+				<properties opacity="200"/>
+				$item.name
+			    </label>
+			    <selection>
+				<rectangle color="0x555555" height="45"/>
+			    </selection>
+			    <event name="select"><![CDATA[
+			    if prev:
+			        prev.animate('EASE_OUT_QUAD', secs, opacity=200)
+			    next.animate('EASE_OUT_QUAD', secs, opacity=255)
+			    ]]>
+			    </event>
+			</listing>
+		    </case>
+		</group>
+		<event name="show"><![CDATA[
+                if not self.context.get('stereo'):
+                    widget = self.application
+                    self.stage.layer[0].visible = True
+                    self.opacity = 0
+                    yield widget.get_widget('player').animate('EASE_IN_QUAD', 0.2, scale_x=0.7, scale_y=0.7,
+                             x=30 * widget.osd.scale_x, y=200 * widget.osd.scale_y)
+                    idlebar = widget.stage.get_widget('idlebar')
+                    if idlebar:
+                        idlebar.show()
+                    yield self.animate('EASE_OUT_QUAD', 0.2, opacity=255)
+                else:
+                    self.x = 2000
+                    yield self.animate('EASE_OUT_BACK', 0.2, x=1400)
+		]]>
+		</event>
+		<event name="hide"><![CDATA[
+                if not self.context.get('stereo'):
+                    widget = self.application
+                    idlebar = widget.stage.get_widget('idlebar')
+                    if idlebar:
+                        idlebar.hide()
+                    self.animate('EASE_IN_QUAD', 0.2, opacity=0)
+                    yield widget.get_widget('player').animate(
+                        'EASE_IN_QUAD', 0.2, scale_x=1.0, scale_y=1.0, x=0, y=0)
+                    self.stage.layer[0].visible = False
+                else:
+                    yield self.animate('EASE_IN_BACK', 0.2, x=2000)
+		]]>
+		</event>
+            </widget>
+
+        </osd>
+    </application>
+</theme>
+<!-- Keep this comment at the end of the file
+Local variables:
+nxml-child-indent: 4
+End:
+-->
