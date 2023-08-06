@@ -1,0 +1,1 @@
+Search.setIndex({envversion:42,terms:{polyhedron:0,index:0,search:0,comput:0,help:0,angl:0,tilt:0,miter:0,face:0,content:0,modul:0,util:0,page:0},objtypes:{},objnames:{},filenames:["index"],titles:["PyJoint Documentation"],objects:{},titleterms:{pyjoint:0,document:0,indic:0,tabl:0}})
