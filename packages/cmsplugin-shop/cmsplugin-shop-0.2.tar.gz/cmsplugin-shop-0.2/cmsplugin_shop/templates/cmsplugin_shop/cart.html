@@ -1,0 +1,45 @@
+{% extends 'cmsplugin_shop/base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans 'Shopping Cart' %}{% endblock %}
+
+{% block content %}
+
+<h1>{% trans 'Shopping Cart' %}</h1>
+
+<form method="POST">{% csrf_token %}
+    <table class="table">
+        <tr>
+            <th>{% trans 'Product' %}</th>
+            <th>{% trans 'Unit price' %}</th>
+            <th>{% trans 'Quantity' %}</th>
+            <th>{% trans 'Price' %}</th>
+            <th>{% trans 'Delete' %}</th>
+        </tr>
+        {% for f in form %}
+        <tr>
+            <td>
+                <a href="{{ f.instance.product.get_absolute_url }}">
+                    {{ f.instance.product.name }}
+                    {% if f.instance.package %}/ {{ f.instance.package.name }}{% endif %}
+                </a>
+            </td>
+            <td class="number">{{ f.instance.get_unit_price }}</td>
+            <td>{{ f.quantity }}</td>
+            <td class="number">{{ f.instance.get_price }}</td>
+            <td>{{ f.DELETE }}{{ f.id }}{{ f.cart }}</td>
+        </tr>
+        {% endfor %}
+        <tr>
+            <th colspan="3">{% trans 'Total' %}</th>
+            <th class="number">{{ request.cart.get_price }}</th>
+            <th></th>
+        </tr>
+    </table>
+
+    <input name="update" type="submit" value="{% trans 'Update shopping cart' %}" />
+    <input name="update-and-order" type="submit" value="{% trans 'Update and continue to order' %}" />
+    {{ form.management_form }}
+</form>
+
+{% endblock %}

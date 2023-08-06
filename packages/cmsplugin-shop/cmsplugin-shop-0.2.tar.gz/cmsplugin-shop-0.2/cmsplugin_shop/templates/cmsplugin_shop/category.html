@@ -1,0 +1,18 @@
+{% extends 'cmsplugin_shop/node.html' %}
+{% load sekizai_tags i18n %}
+
+{% block specific_content %}
+
+<h1 class="category_name">
+    {{ category.name }}
+</h1>
+
+<div class="category_description">
+    {{ category.description | safe }}
+</div>
+
+{% include 'cmsplugin_shop/list_categories.html' %}
+
+{% include 'cmsplugin_shop/list_products.html' %}
+
+{% endblock %}

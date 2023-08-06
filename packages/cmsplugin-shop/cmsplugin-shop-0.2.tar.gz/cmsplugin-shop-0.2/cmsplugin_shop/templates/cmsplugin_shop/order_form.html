@@ -1,0 +1,46 @@
+{% extends 'cmsplugin_shop/base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans 'Order' %}{% endblock %}
+{% block extrahead %}{{ wizard.form.media }}{% endblock %}
+
+{% block content %}
+
+<h1>
+    {% if wizard.steps.step1 == 1 %}
+        {% trans 'Order' %}
+    {% else %}
+        {% trans 'Order Summary' %}
+    {% endif %}
+    <small>{% blocktrans with step=wizard.steps.step1 count=wizard.steps.count %}step {{ step }} of {{ count }}{% endblocktrans %}</small>
+</h1>
+
+
+{% if wizard.steps.step0 %}
+{% include 'cmsplugin_shop/order_cart.html' with cart=request.cart %}
+{% include 'cmsplugin_shop/order_details.html' %}
+{% endif %}
+
+<form method="post">{% csrf_token %}
+<table>
+    {{ wizard.management_form }}
+    {% if wizard.form.forms %}
+        {{ wizard.form.management_form }}
+        {% for form in wizard.form.forms %}
+            {{ form }}
+        {% endfor %}
+    {% else %}
+        {{ wizard.form }}
+    {% endif %}
+</table>
+{% if wizard.steps.prev %}
+<button name="wizard_goto_step" type="submit" value="{{ wizard.steps.prev }}">{% trans 'Back' %}</button>
+{% endif %}
+{% if wizard.steps.next %}
+<input type="submit" value="{% trans 'Continue' %}" /></td>
+{% else %}
+<input type="submit" value="{% trans 'Submit order' %}" /></td>
+{% endif %}
+</form>
+
+{% endblock %}
