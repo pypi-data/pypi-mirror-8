@@ -1,0 +1,184 @@
+{% import "templates/sql/virtual.sql" as virtual %}
+{% import "templates/sql/tngems.sql" as tngems %}
+-- vim: syntax=sql
+-----------------------------------------------------------------------
+--
+--  SOUSOU IDENTITY MANAGEMENT SYSTEM VIRTUAL RELATIONS
+--
+--  This file declares the virtual relations used by the Sousou IMS.
+--
+-----------------------------------------------------------------------
+DROP VIEW IF EXISTS public.principals CASCADE;
+DROP VIEW IF EXISTS public.credentials CASCADE;
+DROP VIEW IF EXISTS {{ schema_state }}.principals CASCADE;
+
+
+--  The current state view for PRINCIPAL entities.
+CREATE VIEW public.principals AS
+    SELECT
+        R1.principal_id,
+        R1.subtype,
+        R1.date_registered,
+        R2.is_active,
+        COALESCE(R4.email_address, '') AS email_address,
+        COALESCE(R5.username, '') AS username
+    FROM {{ schema_entities }}.principals R1
+    JOIN {{ schema_state }}.principals_is_active R2 ON
+        R1.principal_id = R2.principal_id AND
+        R2.transaction_time @> public.get_session_state_timestamp()
+    JOIN {{ schema_state }}.principals_is_deleted R3 ON
+        R1.principal_id = R3.principal_id AND
+        R3.transaction_time @> public.get_session_state_timestamp()
+    LEFT OUTER JOIN {{ schema_state }}.principals_email_address R4 ON
+        R1.principal_id = R4.principal_id AND
+        R4.transaction_time @> public.get_session_state_timestamp()
+    LEFT OUTER JOIN {{ schema_state }}.principals_username R5 ON
+        R1.principal_id = R5.principal_id AND
+        R5.transaction_time @> public.get_session_state_timestamp()
+    WHERE NOT R3.is_deleted;
+
+
+ALTER VIEW public.principals ALTER COLUMN is_active SET DEFAULT FALSE;
+
+
+{{ virtual.view_proc_opening("public","principals", schema_state, debug=DEBUG) }}
+    IF TG_OP = 'INSERT' THEN
+        IF obj.principal_id IS NULL THEN
+            INSERT INTO {{ schema_entities }}.principals
+                (principal_id, subtype, date_registered)
+            VALUES (DEFAULT, obj.subtype, obj.date_registered)
+            RETURNING principal_id INTO obj.principal_id;
+        ELSE
+            INSERT INTO {{ schema_entities }}.principals
+                (principal_id, subtype, date_registered)
+            VALUES (obj.principal_id, obj.subtype, obj.date_registered)
+            RETURNING principal_id INTO obj.principal_id;
+        END IF;
+    END IF;
+    IF NOT {{ schema_state }}.principals_is_mutated(obj.principal_id) THEN
+        PERFORM {{ schema_state }}.principals_create_mutation(obj.principal_id);
+    END IF;
+    CASE
+        WHEN TG_OP IN ('INSERT','UPDATE') THEN
+            IF TG_OP = 'INSERT' THEN
+                -- Mark the object as not deleted here, since inserting AND deleting
+                -- will never happen.
+                INSERT INTO {{ schema_state }}.principals_is_deleted
+                    (principal_id, is_deleted)
+                VALUES (obj.principal_id, FALSE);
+            END IF;
+
+            -- Stateful attributes are persisted below.
+            IF obj.is_active IS DISTINCT FROM OLD.is_active
+            OR TG_OP = 'INSERT' THEN
+                INSERT INTO {{ schema_state }}.principals_is_active
+                    (principal_id, is_active)
+                VALUES
+                    (obj.principal_id, obj.is_active);
+            END IF;
+
+            IF {{ tngems.is_not_default('obj.email_address', "''") }} 
+            AND (
+                obj.email_address IS DISTINCT FROM OLD.email_address
+                OR TG_OP = 'INSERT'
+            ) THEN
+                INSERT INTO {{ schema_state }}.principals_email_address
+                    (principal_id, email_address)
+                VALUES (obj.principal_id, obj.email_address);
+            END IF;
+
+            IF {{ tngems.is_not_default('obj.username', "''") }}
+            AND (
+                obj.username IS DISTINCT FROM OLD.username
+                OR TG_OP = 'INSERT'
+            ) THEN
+                INSERT INTO {{ schema_state }}.principals_username
+                    (principal_id, username)
+                VALUES (obj.principal_id, obj.username);
+            END IF;
+        WHEN TG_OP = 'DELETE' THEN
+            INSERT INTO {{ schema_state }}.principals_is_deleted
+                (principal_id, is_deleted)
+            VALUES (obj.principal_id, TRUE);
+        ELSE
+            {{ virtual.raise_invalid_tg_op()|indent(12)|safe }};
+    END CASE;
+{{ virtual.view_proc_closing("public", "principals") }}
+
+
+{{ virtual.view_proc_wrapper("public", "principals") }}
+
+
+-- The historical state view for PRINCIPAL entities.
+CREATE VIEW {{ schema_state }}.principals AS
+    SELECT
+        M.mutation_timestamp,
+        M.mutation_principal,
+        M.mutation_client,
+        M.principal_id,
+        R1.subtype,
+        R1.date_registered,
+        R2.is_active,
+        R3.is_deleted,
+        COALESCE(R4.email_address, '') AS email_address,
+        COALESCE(R5.username, '') AS username
+    FROM {{ schema_entities }}.principals R1
+    JOIN {{ schema_state }}.principals_mutations M ON
+        R1.principal_id = M.principal_id
+    JOIN {{ schema_state }}.principals_is_active R2 ON
+        R1.principal_id = R2.principal_id AND
+        R2.transaction_time @> M.mutation_timestamp::timestamp with time zone
+    JOIN {{ schema_state }}.principals_is_deleted R3 ON
+        R1.principal_id = R3.principal_id AND
+        R3.transaction_time @> M.mutation_timestamp::timestamp with time zone
+    LEFT OUTER JOIN {{ schema_state }}.principals_email_address R4 ON
+        R1.principal_id = R4.principal_id AND
+        R4.transaction_time @> M.mutation_timestamp::timestamp with time zone
+    LEFT OUTER JOIN {{ schema_state }}.principals_username R5 ON
+        R1.principal_id = R5.principal_id AND
+        R5.transaction_time @> M.mutation_timestamp::timestamp with time zone
+    ORDER BY M.mutation_timestamp, R1.principal_id;
+
+
+CREATE VIEW {{ schema_public }}.credentials AS
+    SELECT
+        R1.principal_id,
+        R2.passphrase
+    FROM
+        {{ schema_entities }}.principals R1
+    JOIN {{ schema_state }}.principals_passphrase R2 ON
+        R1.principal_id = R2.principal_id AND
+        R2.transaction_time @> public.get_session_state_timestamp();
+
+
+{{ virtual.view_proc_opening("public","credentials", schema_state, debug=DEBUG) }}
+    IF NOT {{ schema_state }}.principals_is_mutated(obj.principal_id) THEN
+        PERFORM {{ schema_state }}.principals_create_mutation(obj.principal_id);
+    END IF;
+    CASE
+        WHEN TG_OP IN ('INSERT','UPDATE') THEN
+            IF {{ tngems.is_not_default('obj.passphrase', "''") }}
+            AND (
+                obj.passphrase IS DISTINCT FROM OLD.passphrase
+                OR TG_OP = 'INSERT'
+            ) THEN
+                INSERT INTO {{ schema_state }}.principals_passphrase
+                    (principal_id, passphrase)
+                VALUES (obj.principal_id, obj.passphrase);
+            END IF;
+        WHEN TG_OP = 'DELETE' THEN
+            UPDATE {{ schema_state }}.principals_passphrase SET
+                transaction_time = tstzrange(
+                    lower(transaction_time),
+                    public.get_session_state_timestamp()
+                )
+            WHERE
+                principal_id = obj.principal_id AND
+                transaction_time @> public.get_session_state_timestamp();
+        ELSE
+            {{ virtual.raise_invalid_tg_op()|indent(12)|safe }};
+    END CASE;
+{{ virtual.view_proc_closing("public", "credentials") }}
+
+
+{{ virtual.view_proc_wrapper("public", "credentials") }}

@@ -1,0 +1,291 @@
+{% import "templates/sql/temporal.sql" as temporal %}
+-- vim: syntax=sql
+-----------------------------------------------------------------------
+--
+--  CASANOVA FILE STORAGE SYSTEM DATA DEFINITION LANGUAGE
+--
+--  The Casanova Centralized Filestorage System (CFS) provides a library of
+--  all static files owned and managed by the enterprise.
+--
+--  The Casanova CFS specifies the following entities:
+--
+--  -   Bucket
+--  -   Index Node
+--  -   Image Index Node
+--  -   Audio Index Node
+--
+-----------------------------------------------------------------------
+{% if with_drop %}
+DROP TABLE IF EXISTS {{ schema_entities }}.buckets CASCADE;
+DROP TABLE IF EXISTS {{ schema_entities }}.inodes CASCADE;
+DROP TABLE IF EXISTS {{ schema_entities }}.inodes_audio CASCADE;
+DROP TABLE IF EXISTS {{ schema_entities }}.inodes_image CASCADE;
+{% endif %}
+
+
+-----------------------------------------------------------------------
+--  BUCKET
+--
+--  A BUCKET represents a container where files are stored in.
+--
+--  Columns:
+--      bucket_type: specifies the bucket type.
+--      bucket_id: a surrogate primary key.
+--      identifier: a mnemmonic key.
+--      public_access: indicates if public access is globally enabled or
+--          disabled.
+--      unmanaged: indicates if the bucket is unmanaged. Unmanaged buckets
+--          have no INDEX NODEs associated with them.
+--      quota: specifies the maximum size of the bucket, in bytes.
+--
+-----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS {{ schema_entities }}.buckets(
+    bucket_type varchar NOT NULL,
+    bucket_id int8 NOT NULL,
+    identifier varchar NOT NULL,
+    public_access boolean NOT NULL
+        DEFAULT FALSE,
+    unmanaged boolean NOT NULL
+        DEFAULT FALSE,
+    quota int8 NOT NULL
+        DEFAULT 0,
+    CONSTRAINT buckets_pk
+        PRIMARY KEY (bucket_id),
+    CONSTRAINT buckets_ak1
+        UNIQUE (identifier),
+    CONSTRAINT buckets_quota_gte_zero
+        CHECK (quota >= 0)
+);
+
+
+-----------------------------------------------------------------------
+--  INDEX NODE
+--
+--  An INDEX NODE represents a static file managed by the Casanova CFS.
+--
+--  Columns:
+--      inode_id: a surrogate primary key.
+--      uuid: a Universally Unique Identifier.
+--      subtype: specifies the subtype; generic, audio or video.
+--      mimetype: specifies the content type of the file.
+--
+-----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS {{ schema_entities }}.inodes(
+    inode_id int8 NOT NULL DEFAULT nextval('{{ TNGEMS_OBJECT_SEQUENCE }}'),
+    uuid4 uuid NOT NULL DEFAULT uuid_generate_v4(),
+    subtype varchar NOT NULL,
+    mimetype varchar NOT NULL,
+    filename public.string NOT NULL,
+    CONSTRAINT inodes_pk
+        PRIMARY KEY (inode_id),
+    CONSTRAINT inodes_ak1
+        UNIQUE (uuid4)
+);
+
+
+{{ temporal.table_mutations(schema_entities, "inodes",
+    [("inode_id","int8")], schema_state=schema_state,
+    with_drop=with_drop) }}
+
+
+{% macro inodes_attr(nspname, colname, coltype, attname, with_drop=False) -%}
+--  States that a INDEX NODE identified by `inode_id` had it's
+--  Stateful Attribute {{ attname }} set to `{{ colname }}` in the period 
+--  `transaction_time`.
+{% if with_drop %}DROP TABLE IF EXISTS
+    {{ nspname }}.inodes_{{ colname }} CASCADE;
+{% endif %}
+CREATE TABLE IF NOT EXISTS {{ nspname }}.inodes_{{ colname }}(
+    mutation_timestamp public.mutation_timestamp NOT NULL,
+    inode_id int8 NOT NULL,
+    transaction_time public.transaction_time NOT NULL,
+    {{ colname }} {{ coltype }} NOT NULL,
+    CONSTRAINT inodes_{{ colname }}_pk
+        PRIMARY KEY (mutation_timestamp, inode_id),
+    CONSTRAINT inodes_{{ colname }}_inodes_mutations_fk1
+        FOREIGN KEY (mutation_timestamp, inode_id)
+        REFERENCES {{ schema_state }}.inodes_mutations (
+            mutation_timestamp, inode_id)
+        ON UPDATE NO ACTION ON DELETE NO ACTION
+        DEFERRABLE INITIALLY IMMEDIATE,
+    CONSTRAINT inodes_{{ colname }}_mutation_timestamp
+        CHECK (mutation_timestamp = lower(transaction_time)),
+    CONSTRAINT inodes_{{ colname }}_transaction_time_excl
+        EXCLUDE USING GIST (inode_id WITH =, transaction_time WITH &&),
+    CONSTRAINT inodes_{{ colname }}_transaction_time_adj
+        EXCLUDE USING GIST (
+            inode_id WITH =,
+            ({{ colname }}{% if coltype=="boolean" %}::int::smallint{% endif %}) WITH =,
+            transaction_time WITH -|-
+    )
+);
+
+
+-- Update the existing transaction time before inserting.
+CREATE OR REPLACE FUNCTION {{ nspname }}.inodes_{{ colname }}__mutate()
+RETURNS TRIGGER AS
+$$
+BEGIN
+    UPDATE {{ nspname }}.inodes_{{ colname }} SET
+        transaction_time = tstzrange(lower(transaction_time),
+            public.get_session_mutation_timestamp())
+    WHERE
+        inode_id = NEW.inode_id AND
+        transaction_time @> public.get_session_mutation_timestamp();
+    RETURN NEW;
+END;
+$$ LANGUAGE PLPGSQL SECURITY DEFINER;
+
+
+DROP TRIGGER IF EXISTS end_transaction_time
+    ON {{ nspname }}.inodes_{{ colname }} CASCADE;
+CREATE TRIGGER end_transaction_time 
+    BEFORE INSERT ON {{ nspname }}.inodes_{{ colname }}
+    FOR EACH ROW EXECUTE PROCEDURE 
+    {{ nspname }}.inodes_{{ colname }}__mutate();
+
+{% endmacro -%}
+
+
+{{ inodes_attr(schema_state, "display_name", "public.string",
+    "Display name", with_drop=with_drop) }}
+{{ inodes_attr(schema_state, "content_hash", "varchar(28)",
+    "Checksum", with_drop=with_drop) }}
+{{ inodes_attr(schema_state, "filesize", "int8",
+    "Filesize", with_drop=with_drop) }}
+{{ inodes_attr(schema_state, "policy", "varchar",
+    "Policy", with_drop=with_drop) }}
+
+
+-----------------------------------------------------------------------
+--  AUDIO INDEX NODE
+--
+--  Represents an INDEX NODE holding audio data.
+--
+--  Columns:
+--      inode_id: a reference to the {{ schema_entities }}.inodes 
+--          relation.
+--      acodec: identifies the codec that was used to encode the raw
+--          audio.
+--      channels: the number of channels in the recording (0 if not
+--          known).
+--      duration: the duration, in milliseconds.
+--      samplerate: the samplerate of the recording, in Herz/second.
+--      bitrate: the bitrate of the recording, in kB/second.
+--
+-----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS {{ schema_entities }}.inodes_audio(
+    inode_id int8 NOT NULL,
+    acodec varchar NOT NULL,
+    channels int NOT NULL,
+    duration int8 NOT NULL,
+    samplerate int NOT NULL,
+    bitrate int NOT NULL,
+    CONSTRAINT inodes_audio_pk
+        PRIMARY KEY (inode_id),
+    CONSTRAINT inodes_audio_inodes_fk1
+        FOREIGN KEY (inode_id)
+        REFERENCES {{ schema_entities }}.inodes (inode_id)
+        ON UPDATE CASCADE ON DELETE NO ACTION
+        DEFERRABLE INITIALLY IMMEDIATE,
+    CONSTRAINT inodes_audio_channels_gte_zero
+        CHECK (channels >= 0),
+    CONSTRAINT inodes_audio_duration_gte_zero
+        CHECK (duration >= 0),
+    CONSTRAINT inodes_audio_samplerate_gte_zero
+        CHECK (samplerate >= 0),
+    CONSTRAINT inodes_audio_bitrate_gte_zero
+        CHECK (bitrate >= 0)
+);
+
+
+-----------------------------------------------------------------------
+--  IMAGE INDEX NODE
+--
+--  Represents an IMAGE INDEX NODE holding image data.
+--
+--  Column:
+--      inode_id: reference to the {{ schema_entities }}.inodes
+--          relation.
+--      icodec: identifies the codec that was used to encode the image.
+--      pixel_format: specifies the pixel format of the encoded image
+--          data.
+--      width: the width of the image, in pixels.
+--      height: the height of the image, in pixels.
+--      luma: the luma.
+--      center: coordinates of the image subject, represented as two
+--          floating point values in [0.0,1.0].
+--   
+-----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS {{ schema_entities }}.inodes_image(
+    inode_id int8 NOT NULL,
+    icodec varchar NOT NULL,
+    pixel_format varchar NOT NULL,
+    width int NOT NULL,
+    height int NOT NULL,
+    luma double precision NOT NULL,
+    center double precision[] NOT NULL,
+    CONSTRAINT inodes_image_pk
+        PRIMARY KEY (inode_id),
+    CONSTRAINT inodes_image_inodes_fk1
+        FOREIGN KEY (inode_id)
+        REFERENCES {{ schema_entities }}.inodes (inode_id)
+        ON UPDATE CASCADE ON DELETE NO ACTION
+        DEFERRABLE INITIALLY IMMEDIATE,
+    CONSTRAINT inodes_image_width_gt_zero
+        CHECK (width > 0),
+    CONSTRAINT inodes_image_height_gt_zero
+        CHECK (height > 0),
+    CONSTRAINT inodes_image_center1_in_0_1
+        CHECK (center[1] IS NOT NULL AND numrange(0.0, 1.0, '[]') @> center[1]::numeric),
+    CONSTRAINT inodes_image_center2_in_0_1
+        CHECK (center[2] IS NOT NULL AND numrange(0.0, 1.0, '[]') @> center[2]::numeric),
+    CONSTRAINT inodes_image_pixel_format_valid
+        CHECK (pixel_format IN (
+            'RGB',
+            'RGBA',
+            'RGBX',
+            'RGBa',
+            'CMYK',
+            'YCbCr',
+            '1',
+            'P',
+            'L',
+            'LA',
+            'I',
+            'F'
+        )
+    )
+);
+
+
+-----------------------------------------------------------------------
+--  INODE DESCRIPTOR
+--
+--  Identifies the physical location of an INDEX NODE.
+--
+--  Columns:
+--      bucket: identifies the BUCKET holding the file.
+--      inode_id: a reference to the {{ schema_entities }}.inodes
+--          relation.
+--      storage_key: the local path specification in the BUCKET.
+--
+-----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS {{ schema_entities }}.inodedescriptors(
+    bucket varchar NOT NULL,
+    inode_id int8 NOT NULL,
+    storage_key varchar NOT NULL,
+    CONSTRAINT inodedescriptors_pk
+        PRIMARY KEY (bucket, storage_key),
+    CONSTRAINT inodedescriptors_buckets_fk1
+        FOREIGN KEY (bucket)
+        REFERENCES {{ schema_entities }}.buckets (identifier)
+        ON UPDATE NO ACTION ON DELETE NO ACTION
+        DEFERRABLE INITIALLY IMMEDIATE,
+    CONSTRAINT inodedescriptors_inodes_fk1
+        FOREIGN KEY (inode_id)
+        REFERENCES {{ schema_entities }}.inodes (inode_id)
+        ON UPDATE NO ACTION ON DELETE NO ACTION
+        DEFERRABLE INITIALLY IMMEDIATE
+        
+);

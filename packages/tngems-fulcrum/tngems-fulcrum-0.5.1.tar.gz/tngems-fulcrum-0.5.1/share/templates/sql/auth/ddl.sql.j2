@@ -1,0 +1,156 @@
+{% import "templates/sql/temporal.sql" as temporal %}
+-- vim: syntax=sql
+-----------------------------------------------------------------------
+--
+--  SOUSOU IDENTITY MANAGEMENT SYSTEM DATA DEFINITION LANGUAGE (DDL)
+--
+--  This file contains the Data Definition Language (DDL) statements to
+--  create the Sousou IMS schema.
+--
+--  The Sousou IMS specifies the following objects:
+--
+--  Principal:
+--  Client:
+--
+-----------------------------------------------------------------------
+{% if with_drop %}
+DROP TABLE IF EXISTS {{ schema_entities }}.principals CASCADE;
+DROP TABLE IF EXISTS {{ schema_entities }}.clients CASCADE;
+{% endif %}
+
+
+-----------------------------------------------------------------------
+--  CLIENT
+--
+--  Represents a access point to the TNG Enterprise Management System.
+--
+--  Columns:
+--      client_id: a surrogate primary key.
+--      codename: an mnemmonic identifier.
+--
+-----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS {{ schema_entities }}.clients(
+    client_id int8 NOT NULL
+        DEFAULT nextval('{{ TNGEMS_OBJECT_SEQUENCE }}'),
+    codename varchar NOT NULL,
+    CONSTRAINT clients_pk
+        PRIMARY KEY (client_id),
+    CONSTRAINT clients_ak1
+        UNIQUE (codename)
+);
+
+
+-----------------------------------------------------------------------
+--  PRINCIPAL
+--
+--  Columns:
+--      principal_id: a surrogate primary key.
+--      subtype: a discriminator column identifying the subtype.
+--      date_registered: indicates the date and time the account was
+--          created.
+--
+-----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS {{ schema_entities }}.principals(
+    principal_id int8 NOT NULL
+        DEFAULT nextval('{{ TNGEMS_OBJECT_SEQUENCE }}'),
+    subtype varchar NOT NULL,
+    date_registered timestamp with time zone NOT NULL,
+    CONSTRAINT principals_pk
+        PRIMARY KEY (principal_id),
+    CONSTRAINT principals_subtype_valid
+        CHECK (subtype IN ('user','auto'))
+);
+
+
+{{ temporal.table_mutations(schema_entities, "principals",
+    [("principal_id","int8")], schema_state=schema_state,
+    with_drop=with_drop) }}
+
+
+{% macro principals_attr(nspname, colname, coltype, attname, with_drop=False) -%}
+--  States that a PRINCIPAL identified by `principal_id` had it's
+--  Attribute {{ attname }} set to `{{ colname }}` in the period 
+--  `transaction_time`.
+{% if with_drop %}DROP TABLE IF EXISTS
+    {{ nspname }}.principals_{{ colname }} CASCADE;
+{% endif %}
+CREATE TABLE IF NOT EXISTS {{ nspname }}.principals_{{ colname }}(
+    mutation_timestamp public.mutation_timestamp NOT NULL,
+    principal_id int8 NOT NULL,
+    transaction_time public.transaction_time NOT NULL,
+    {{ colname }} {{ coltype }} NOT NULL,
+    CONSTRAINT principals_{{ colname }}_pk
+        PRIMARY KEY (mutation_timestamp, principal_id),
+    CONSTRAINT principals_{{ colname }}_principals_mutations_fk1
+        FOREIGN KEY (mutation_timestamp, principal_id)
+        REFERENCES {{ schema_state }}.principals_mutations (
+            mutation_timestamp, principal_id)
+        ON UPDATE NO ACTION ON DELETE NO ACTION
+        DEFERRABLE INITIALLY IMMEDIATE,
+    CONSTRAINT principals_{{ colname }}_mutation_timestamp
+        CHECK (mutation_timestamp = lower(transaction_time)),
+    CONSTRAINT principals_{{ colname }}_transaction_time_excl
+        EXCLUDE USING GIST (principal_id WITH =, transaction_time WITH &&),
+    CONSTRAINT principals_{{ colname }}_transaction_time_adj
+        EXCLUDE USING GIST (
+            principal_id WITH =,
+            ({{ colname }}{% if coltype=="boolean" %}::int::smallint{% endif %}) WITH =,
+            transaction_time WITH -|-
+    )
+);
+
+
+-- Update the existing transaction time before inserting.
+CREATE OR REPLACE FUNCTION {{ nspname }}.principals_{{ colname }}__mutate()
+RETURNS TRIGGER AS
+$$
+BEGIN
+    UPDATE {{ nspname }}.principals_{{ colname }} SET
+        transaction_time = tstzrange(lower(transaction_time),
+            public.get_session_mutation_timestamp())
+    WHERE
+        principal_id = NEW.principal_id AND
+        transaction_time @> public.get_session_mutation_timestamp();
+    RETURN NEW;
+END;
+$$ LANGUAGE PLPGSQL SECURITY DEFINER;
+
+
+DROP TRIGGER IF EXISTS end_transaction_time
+    ON {{ nspname }}.principals_{{ colname }} CASCADE;
+CREATE TRIGGER end_transaction_time 
+    BEFORE INSERT ON {{ nspname }}.principals_{{ colname }}
+    FOR EACH ROW EXECUTE PROCEDURE 
+    {{ nspname }}.principals_{{ colname }}__mutate();
+
+{% endmacro -%}
+
+{{ principals_attr(schema_state, "username", "public.string", "Username",
+    with_drop=with_drop) }}
+{{ principals_attr(schema_state, "email_address", "public.string",
+    "Email Address", with_drop=with_drop) }}
+{{ principals_attr(schema_state, "passphrase", "public.string", "Passphrase",
+    with_drop=with_drop) }}
+
+-- The `is_active` and `is_deleted` should probably be timestamp ranges,
+-- but this would require additional constraints (no overlapping ranges
+-- for both the attribute and the transaction time).
+{{ principals_attr(schema_state, "is_active", "boolean", "Is active",
+    with_drop=with_drop) }}
+{{ principals_attr(schema_state, "is_deleted", "boolean", "Is deleted",
+    with_drop=with_drop) }}
+
+-- Relation-specific constraints
+ALTER TABLE {{ schema_state }}.principals_username
+    DROP CONSTRAINT IF EXISTS principals_username_excl CASCADE;
+ALTER TABLE {{ schema_state }}.principals_username
+    ADD CONSTRAINT principals_username_excl
+    EXCLUDE USING GIST (username WITH =, transaction_time WITH &&);
+
+
+ALTER TABLE {{ schema_state }}.principals_email_address
+    DROP CONSTRAINT IF EXISTS principals_email_address_excl CASCADE;
+ALTER TABLE {{ schema_state }}.principals_email_address
+    ADD CONSTRAINT principals_email_address_excl
+    EXCLUDE USING GIST (email_address WITH =, transaction_time WITH &&);
+

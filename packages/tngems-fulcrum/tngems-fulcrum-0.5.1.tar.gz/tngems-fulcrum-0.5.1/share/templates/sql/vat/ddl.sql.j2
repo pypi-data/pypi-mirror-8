@@ -1,0 +1,69 @@
+-- vim: syntax=sql
+-----------------------------------------------------------------------
+--
+--  VALUE ADDED TAX DATA-DEFINITION LANGUAGE
+--
+--  This file specified the Data Definition Language of a datamodel for
+--  storing Value Added Tax rates and rules.
+--
+-----------------------------------------------------------------------
+{% if with_drop %}
+DROP TABLE IF EXISTS
+    {{ schema_common }}.vatratetypes CASCADE;
+DROP TABLE IF EXISTS
+    {{ schema_common }}.vatrates CASCADE;
+{% endif %}
+
+-----------------------------------------------------------------------
+--  VAT RATE TYPE
+--
+--  Defines a VAT rate type for a specific country.
+--
+--  Columns:
+--      imposing_country: the country that specified the rate.
+--      name: a unique name for rate/country.
+--
+-----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS {{ schema_common }}.vatratetypes(
+    imposing_country varchar(2) NOT NULL,
+    name varchar NOT NULL,
+    CONSTRAINT vatratetypes_pk
+        PRIMARY KEY (imposing_country, name)
+);
+
+
+-----------------------------------------------------------------------
+--  VAT RATE
+--
+--  Specifies  a VAT rate for a certain period.
+--
+--  Columns:
+--      imposing_country: an ISO 3166 country code specifying the 
+--          first-order administrative division that imposes the
+--          VAT rate.
+--      name: an identifier for the VAT rate.
+--      during: specifies the period during which the VAT rate was
+--          imposed. Defaults to ('-infinity','infinity').
+--      rate: the VAT rate as a fraction of 1.
+--
+-----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS {{ schema_common }}.vatrates(
+    imposing_country varchar(2) NOT NULL,
+    name varchar NOT NULL,
+    during daterange NOT NULL
+        DEFAULT daterange('-infinity','infinity'),
+    rate numeric NOT NULL,
+    CONSTRAINT vatrates_pk
+        PRIMARY KEY (imposing_country, name, during),
+    CONSTRAINT vatrates_during_excl
+        EXCLUDE USING GIST (imposing_country WITH =, name WITH =,
+            during WITH &&),
+    CONSTRAINT vatrates_during_adj
+        EXCLUDE USING GIST (imposing_country WITH =, name WITH =,
+            rate WITH =, during WITH -|-),
+    CONSTRAINT vatrates_vatratetypes_fk1
+        FOREIGN KEY (imposing_country, name)
+        REFERENCES {{ schema_common }}.vatratetypes (imposing_country, name)
+        ON UPDATE NO ACTION ON DELETE NO ACTION
+        DEFERRABLE INITIALLY IMMEDIATE
+);

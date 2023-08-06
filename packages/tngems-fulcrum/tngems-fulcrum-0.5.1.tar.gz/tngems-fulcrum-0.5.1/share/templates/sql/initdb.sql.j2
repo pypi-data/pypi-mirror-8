@@ -1,0 +1,691 @@
+{% set schema_entities="entities" %}
+{% set schema_state="state" %}
+-- vim: syntax=sql
+-----------------------------------------------------------------------
+--  Fulcrum
+--
+--  This is the Fulcrum header file which specifies all stored
+--  procedures, types, sequences and views used by the TNGEMS/Fulcrum
+--  database.
+--
+--  Rendered {{ generated }} with options:
+--
+--      schema_common           : {{ schema_common }}
+--      schema_public           : {{ schema_public }}
+--      schema_entities         : {{ schema_entities }}
+--      schema_state            ; {{ schema_state }}
+--      with_data               : {{ with_data }}
+--      with_drop               : {{ with_drop }}
+--      with_history_drop       : {{ with_history_drop }}
+--      with_remote_data        : {{ with_remote_data }}
+--      with_example_data       : {{ with_example_data }}
+--      drop_cascade            : {{ drop_cascade }}
+--
+--
+--  SYNOPSIS
+--
+--  This file specifies the TNG Enterprise Management System master
+--  database through a series of Stuctured Query Language (SQL)
+--  statements.
+--
+--  OVERVIEW
+--
+--  The TNGEMS database declares multiple schemata, logically grouping
+--  tables, views and stored procedures.
+--
+--  -   The ``{{ schema_common }}`` schema contains data the is shared
+--      by all system components, such as object type declarations and
+--      ISO code lists.
+--
+--  -   The ``{{ schema_entities }} schema holds all domain entities.
+--
+--  -   The ``{{ schema_state }} schema holds the state of all domain
+--      entities.
+--
+--
+--  DESIGN CONSIDERATIONS
+--
+--  -   All entities that are used in decision-making should store
+--      their historical state and a reference to the user and client
+--      whose actions produced that state.
+--
+-----------------------------------------------------------------------
+{% if with_drop %}
+DROP SCHEMA IF EXISTS {{ schema_common }} CASCADE;
+DROP SCHEMA IF EXISTS {{ schema_entities }} CASCADE;
+DROP SCHEMA IF EXISTS {{ schema_state }} CASCADE;
+DROP SCHEMA IF EXISTS {{ schema_system }} CASCADE;
+{% endif %}
+
+{% set _INCL_FULCRUM = True %}
+
+
+-- Master schema containing application data
+CREATE SCHEMA IF NOT EXISTS {{ schema_common }};
+CREATE SCHEMA IF NOT EXISTS {{ schema_entities }};
+CREATE SCHEMA IF NOT EXISTS {{ schema_state }};
+
+--  This is the main sequences for all domain objects that are identified
+--  by a surrogate primary key.
+DO
+$$
+BEGIN
+    PERFORM 1
+    FROM pg_class R1
+    JOIN pg_namespace R2 ON
+        R1.relnamespace = R2.oid
+    WHERE
+        R1.relname = '{{ TNGEMS_OBJECT_SEQUENCE }}' AND
+        R2.nspname = 'public' AND
+        R1.relkind = 'S';
+    IF NOT FOUND THEN
+        CREATE SEQUENCE {{ schema_public }}.{{ TNGEMS_OBJECT_SEQUENCE }};
+    END IF;
+END
+$$ LANGUAGE PLPGSQL;
+
+
+-- This sequence is used by all mutations.
+DO
+$$
+BEGIN
+    PERFORM 1
+    FROM pg_class R1
+    JOIN pg_namespace R2 ON
+        R1.relnamespace = R2.oid
+    WHERE
+        R1.relname = 'mutations_mutation_id_seq' AND
+        R2.nspname = '{{ schema_state }}' AND
+        R1.relkind = 'S';
+    IF NOT FOUND THEN
+        CREATE SEQUENCE {{ schema_state }}.mutations_mutation_id_seq;
+    END IF;
+END
+$$ LANGUAGE PLPGSQL;
+
+--  These are the extensions used by the TNGEMS/Fulcrum database. In future
+--  releases a mechanism must be defined to include these extensions only
+--  if they are actually needed.
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+CREATE EXTENSION IF NOT EXISTS fuzzystrmatch;
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
+CREATE EXTENSION IF NOT EXISTS postgis;
+CREATE EXTENSION IF NOT EXISTS btree_gist;
+CREATE EXTENSION IF NOT EXISTS lo;
+CREATE EXTENSION IF NOT EXISTS plpython3u;
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
+
+-- Set the PYTHONPATH for all subsequent commands using PL/Python so that
+-- it can import libtng.
+DO
+$$
+    import sys
+    sys.path.append("{{ libtng_module_dir }}")
+
+    # Import libtng and just let it raise a fatal exception if we couldnt
+    # import it (the transaction will rollback).
+    import libtng
+
+    plpy.notice("libtng succesfully imported")
+$$
+LANGUAGE PLPYTHON3U;
+
+-----------------------------------------------------------------------
+--  Returns a timestamp with time zone indicating the state
+--  timestamp of the current session.
+--
+-----------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION public.get_session_state_timestamp()
+RETURNS timestamp with time zone AS
+$$
+DECLARE
+    x timestamp with time zone;
+BEGIN
+    SELECT session_timestamp INTO x
+    FROM tngems_session_state_timestamp
+    LIMIT 1;
+    RETURN x;
+EXCEPTION
+    WHEN undefined_table THEN RETURN CURRENT_TIMESTAMP;
+END;
+$$ LANGUAGE plpgsql STABLE SECURITY DEFINER;
+
+
+CREATE OR REPLACE FUNCTION public.set_session_state_timestamp(
+    timestamp with time zone)
+RETURNS VOID AS
+$$
+BEGIN
+    DROP TABLE IF EXISTS tngems_session_state_timestamp;
+    IF $1 IS NOT NULL THEN
+        CREATE TEMPORARY TABLE tngems_session_state_timestamp (
+            session_timestamp timestamp with time zone PRIMARY KEY
+        );
+        INSERT INTO tngems_session_state_timestamp VALUES ($1);
+    END IF;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+-----------------------------------------------------------------------
+--  Returns a timestamp with time zone indicating the mutation
+--  timestamp of the current session.
+--
+-----------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION public.get_session_mutation_timestamp()
+RETURNS timestamp with time zone AS
+$$
+DECLARE
+    x timestamp with time zone;
+BEGIN
+    SELECT session_timestamp INTO x
+    FROM tngems_session_mutation_timestamp
+    LIMIT 1;
+    RETURN x;
+EXCEPTION
+    WHEN undefined_table THEN RETURN CURRENT_TIMESTAMP;
+END;
+$$ LANGUAGE plpgsql STABLE SECURITY DEFINER;
+
+
+CREATE OR REPLACE FUNCTION public.set_session_mutation_timestamp(
+    timestamp with time zone)
+RETURNS VOID AS
+$$
+BEGIN
+    DROP TABLE IF EXISTS tngems_session_mutation_timestamp;
+    IF $1 IS NOT NULL THEN
+        CREATE TEMPORARY TABLE tngems_session_mutation_timestamp (
+            session_timestamp timestamp with time zone PRIMARY KEY
+        );
+        INSERT INTO tngems_session_mutation_timestamp VALUES ($1);
+    END IF;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+
+-----------------------------------------------------------------------
+--  Returns the ID of the client that is currently connected.
+--
+-----------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION public.get_session_client()
+RETURNS int AS
+$$
+DECLARE
+    pk int;
+BEGIN
+    SELECT client_id INTO pk
+    FROM tngems_session_client_id;
+    RETURN pk;
+EXCEPTION
+    WHEN undefined_table THEN RETURN NULL;
+END;
+$$ LANGUAGE plpgsql STABLE SECURITY DEFINER;
+
+
+CREATE OR REPLACE FUNCTION public.set_session_client(int)
+RETURNS VOID AS
+$$
+BEGIN
+    DROP TABLE IF EXISTS tngems_session_client_id;
+    IF $1 IS NOT NULL THEN
+        CREATE TEMPORARY TABLE tngems_session_client_id (
+            client_id int PRIMARY KEY
+        );
+        INSERT INTO tngems_session_client_id VALUES ($1);
+    END IF;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+
+CREATE OR REPLACE FUNCTION public.set_session_client(varchar)
+RETURNS VOID AS
+$$
+BEGIN
+    DROP TABLE IF EXISTS tngems_session_client_id;
+    IF $1 IS NOT NULL THEN
+        CREATE TEMPORARY TABLE tngems_session_client_id (
+            client_id int PRIMARY KEY
+        );
+        INSERT INTO tngems_session_client_id
+        SELECT R1.client_id
+        FROM {{ schema_entities }}.clients R1
+        WHERE R1.identifier = $1;
+    END IF;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+
+
+-----------------------------------------------------------------------
+--  Returns the ID of the user that is currently connected.
+--
+-----------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION public.get_session_user()
+RETURNS int AS
+$$
+DECLARE
+    pk int;
+BEGIN
+    SELECT user_id INTO pk
+    FROM tngems_session_user_id;
+    RETURN pk;
+EXCEPTION
+    WHEN undefined_table THEN RETURN NULL;
+END;
+$$ LANGUAGE plpgsql STABLE SECURITY DEFINER;
+
+
+CREATE OR REPLACE FUNCTION public.set_session_user(int)
+RETURNS VOID AS
+$$
+BEGIN
+    DROP TABLE IF EXISTS tngems_session_user_id;
+    IF $1 IS NOT NULL THEN
+        CREATE TEMPORARY TABLE tngems_session_user_id (
+            user_id int PRIMARY KEY
+        );
+        INSERT INTO tngems_session_user_id VALUES ($1);
+    END IF;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+
+CREATE OR REPLACE FUNCTION public.set_session_user(varchar)
+RETURNS VOID AS
+$$
+BEGIN
+    DROP TABLE IF EXISTS tngems_session_user_id;
+    IF $1 IS NOT NULL THEN
+        CREATE TEMPORARY TABLE tngems_session_user_id (
+            user_id int PRIMARY KEY
+        );
+        INSERT INTO tngems_session_user_id
+        SELECT R1.user_id
+        FROM {{ schema_state }}.principals_username R1
+        WHERE R1.username = $1;
+    END IF;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+
+-----------------------------------------------------------------------
+--  Set the user/client authorization for the current transaction.
+--
+--  Args:
+--      int: the user id.
+--      int: the client_id.
+--
+--  Returns:
+--      void
+--
+-----------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION public.set_session_authorization(int, int)
+RETURNS VOID AS
+$$
+BEGIN
+    PERFORM public.set_session_user($1);
+    PERFORM public.set_session_client($2);
+END;
+$$ LANGUAGE PLPGSQL SECURITY DEFINER;
+
+
+-----------------------------------------------------------------------
+--  Set the user/client authorization for the current transaction.
+--
+--  Args:
+--      varchar: the user id.
+--      varchar: the client_id.
+--
+--  Returns:
+--      void
+--
+-----------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION public.set_session_authorization(varchar, varchar)
+RETURNS VOID AS
+$$
+BEGIN
+    PERFORM public.set_session_user($1);
+    PERFORM public.set_session_client($2);
+END;
+$$ LANGUAGE PLPGSQL SECURITY DEFINER;
+
+
+-----------------------------------------------------------------------
+--  Set the user/client authorization for the current transaction.
+--
+--  Args:
+--      varchar: the user/client formatted as 'user:client'
+--
+--  Returns:
+--      void
+--
+-----------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION public.set_session_authorization(varchar)
+RETURNS VOID AS
+$$
+DECLARE
+    x varchar[];
+BEGIN
+    x := string_to_array($1, ':');
+    PERFORM public.set_session_user(x[1]);
+    PERFORM public.set_session_client(x[2]);
+END;
+$$ LANGUAGE PLPGSQL SECURITY DEFINER;
+
+
+
+-----------------------------------------------------------------------
+--  Set automatic history for current session.
+--
+-----------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION public.get_auto_history()
+RETURNS boolean AS
+$$
+DECLARE
+    pk boolean;
+BEGIN
+    SELECT is_enabled INTO pk
+    FROM tngems_auto_history_enabled;
+    RETURN pk;
+EXCEPTION
+    WHEN undefined_table THEN RETURN FALSE;
+END;
+$$ LANGUAGE plpgsql STABLE SECURITY DEFINER;
+
+
+CREATE OR REPLACE FUNCTION public.set_auto_history(boolean)
+RETURNS VOID AS
+$$
+BEGIN
+    DROP TABLE IF EXISTS tngems_auto_history_enabled;
+    CREATE TEMPORARY TABLE tngems_auto_history_enabled (
+        is_enabled boolean PRIMARY KEY
+    );
+    INSERT INTO tngems_auto_history_enabled VALUES ($1);
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+
+
+
+-- Constraint enforcing functions; these procedures are use to enforce
+-- contraints, usually at the table level. We have chosen not to implement
+-- these as DOMAIN types, because it would be impossible to initialize them
+-- with NULL attributes.
+
+-----------------------------------------------------------------------
+--  Returns a boolean indicating if the specified value is legal for
+--  use as an object transaction time.
+--
+-----------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION public.is_valid_transaction_time(tstzrange)
+RETURNS boolean AS
+$$
+    SELECT isfinite(lower($1)) AND lower($1) IS NOT NULL
+        AND upper($1) IS NOT NULL;
+$$ LANGUAGE SQL SECURITY DEFINER IMMUTABLE RETURNS NULL ON NULL INPUT;
+
+
+-----------------------------------------------------------------------
+--  Validate an IPv4 address.
+--
+--  Args:
+--      varchar: an IPv4 address.
+--
+--  Returns:
+--      boolean
+-----------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION public.is_valid_ipv4(varchar)
+RETURNS boolean AS
+$$
+    SELECT NOT EXISTS(
+        SELECT x::int
+        FROM unnest(string_to_array($1, '.')) x
+        WHERE
+            NOT int4range(0, 255, '[]') @> x::int
+    );
+$$ LANGUAGE SQL SECURITY DEFINER IMMUTABLE;
+
+
+-----------------------------------------------------------------------
+--  Assert that a hostname is a valid hostname.
+--
+--  Args:
+--      varchar: the hostname.
+--
+--  Returns:
+--      boolean
+--
+-----------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION public.is_valid_hostname(varchar)
+RETURNS boolean AS
+$$
+    SELECT $1 ~ '^(?=.{1,255}$)[0-9A-Za-z](?:(?:[0-9A-Za-z]|-){0,61}[0-9A-Za-z])?(?:\.[0-9A-Za-z](?:(?:[0-9A-Za-z]|-){0,61}[0-9A-Za-z])?)*\.?$';
+$$ LANGUAGE SQL SECURITY DEFINER IMMUTABLE RETURNS NULL ON NULL INPUT;
+
+
+-----------------------------------------------------------------------
+--  Return a boolean indicating if the specified IP-address
+--  identifies a single host.
+--
+--  Args:
+--      inet: the IPv4 or IPv6 address.
+--
+--  Returns:
+--      boolean
+--
+-----------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION public.is_single_host(inet)
+RETURNS boolean AS
+$$
+    SELECT (
+        CASE
+            WHEN family($1) = 6 THEN masklen($1) = 128
+            WHEN family($1) = 4 THEN masklen($1) = 32
+            ELSE FALSE
+        END
+    );
+$$ LANGUAGE SQL SECURITY DEFINER IMMUTABLE RETURNS NULL ON NULL INPUT;
+
+
+-----------------------------------------------------------------------
+--  Assert that a given IP address is a private network.
+--
+--  Args:
+--      inet: the IP address.
+--
+--  Returns:
+--      boolean
+--
+-----------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION public.is_private_network(inet)
+RETURNS boolean AS
+$$
+    SELECT
+        ('10.0.0.0/8'::inet >>= $1) OR
+        ('172.16.0.0/12'::inet >>= $1) OR
+        ('192.168.0.0/16'::inet >>= $1);
+$$ LANGUAGE SQL SECURITY DEFINER IMMUTABLE RETURNS NULL ON NULL INPUT;
+
+
+------------------------------------------------------------------------
+--  Return a boolean indicating if a certain domain exists.
+--
+--  Args:
+--      varchar: the schema name of the domain.
+--      varchar: the name of the domain.
+--
+--  Returns:
+--      boolean
+--
+------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION public.domain_exists(varchar, varchar)
+RETURNS boolean AS
+$$
+    SELECT EXISTS(
+        SELECT 1
+        FROM pg_catalog.pg_type
+        JOIN pg_catalog.pg_namespace ON
+            pg_namespace.oid = pg_type.typnamespace
+        WHERE
+            typtype = 'd' AND
+            lower(nspname) = lower($1) AND
+            lower(typname) = lower($2)
+    );
+$$ LANGUAGE SQL;
+
+
+-----------------------------------------------------------------------
+--  Domain  types
+--
+-----------------------------------------------------------------------
+DO $$
+BEGIN
+{% if with_drop %}
+DROP DOMAIN IF EXISTS public.transaction_time CASCADE;
+DROP DOMAIN IF EXISTS public.mutation_timestamp CASCADE;
+{% endif %}
+
+IF NOT public.domain_exists('public', 'transaction_time') THEN
+    CREATE DOMAIN public.transaction_time AS tstzrange
+        DEFAULT tstzrange(public.get_session_mutation_timestamp(), 
+            'infinity', '[)')
+        CONSTRAINT transaction_time_bounds_chk CHECK (
+            lower(VALUE) IS NOT NULL AND
+            isfinite(lower(VALUE)) AND
+            upper(VALUE) IS NOT NULL
+        );
+END IF;
+
+
+IF NOT public.domain_exists('public', 'mutation_timestamp') THEN
+    CREATE DOMAIN public.mutation_timestamp AS timestamp with time zone
+        DEFAULT public.get_session_mutation_timestamp();
+END IF;
+
+
+IF NOT public.domain_exists('public', 'session_user') THEN
+    CREATE DOMAIN public.session_user AS int
+        DEFAULT public.get_session_user();
+END IF;
+
+
+IF NOT public.domain_exists('public', 'session_client') THEN
+    CREATE DOMAIN public.session_client AS int
+        DEFAULT public.get_session_client();
+END IF;
+
+
+IF NOT public.domain_exists('public', 'identifier') THEN
+    CREATE DOMAIN public.identifier AS varchar
+        CONSTRAINT identifier_valid_pattern
+        CHECK (VALUE != '');
+END IF;
+
+
+IF NOT public.domain_exists('public', 'string') THEN
+    CREATE DOMAIN public.string AS varchar
+        CONSTRAINT string_valid_pattern
+        CHECK (VALUE != '');
+END IF;
+ALTER DOMAIN public.string DROP NOT NULL;
+
+
+IF NOT public.domain_exists('public', 'username') THEN
+    CREATE DOMAIN public.username AS varchar
+        CONSTRAINT username_valid_pattern
+        CHECK (VALUE != '');
+END IF;
+
+
+IF NOT public.domain_exists('public', 'rsapublic') THEN
+    CREATE DOMAIN public.rsapublic AS varchar
+        CONSTRAINT rsa_public_valid_pattern
+        CHECK (VALUE ~ 'ssh-rsa AAAA[0-9A-Za-z+/]+[=]{0,3}');
+END IF;
+
+IF NOT public.domain_exists('public', 'ipv4') THEN
+    CREATE DOMAIN public.ipv4 AS varchar
+        CONSTRAINT ipv4_valid
+        CHECK (public.is_valid_ipv4(VALUE));
+END IF;
+
+
+IF NOT public.domain_exists('public', 'hostname') THEN
+    CREATE DOMAIN public.hostname AS varchar
+        CONSTRAINT hostname_valid
+        CHECK (public.is_valid_hostname(VALUE));
+END IF;
+
+
+IF NOT public.domain_exists('public', 'ipaddress') THEN
+    CREATE DOMAIN public.ipaddress AS inet
+        CONSTRAINT ipaddress_valid
+        CHECK (public.is_single_host(VALUE));
+END IF;
+
+
+IF NOT public.domain_exists('public', 'filepath') THEN
+    CREATE DOMAIN public.filepath AS varchar
+        CONSTRAINT filepath_valid
+        CHECK (VALUE ~ '^((/[\d\w\_\-\.]+)+|/)$'); -- TODO: probably does not work with Unicode
+END IF;
+
+
+IF NOT public.domain_exists('public', 'mimetype') THEN
+    CREATE DOMAIN public.mimetype AS varchar
+        CONSTRAINT mimetype_pattern
+        CHECK (VALUE ~ '^(application|audio|example|image|message|model|multipart|text|video)/.*$');
+END IF;
+
+
+IF NOT public.domain_exists('public', 'surah') THEN
+    CREATE DOMAIN public.surah AS smallint
+        CONSTRAINT surah_number_valid
+        CHECK (int4range(1, 114, '[]') @> VALUE::int);
+END IF;
+
+
+
+IF NOT public.domain_exists('public', 'slug') THEN
+    CREATE DOMAIN public.slug AS varchar
+        CONSTRAINT slug_valid
+        CHECK (VALUE ~ '^[a-z0-9]+(?:-[a-z0-9]+)*$');
+END IF;
+
+
+IF NOT public.domain_exists('public', 'phonenumber') THEN
+    CREATE DOMAIN public.phonenumber AS varchar
+        CONSTRAINT phonenumber_valid
+        CHECK (VALUE ~ '^\+[0-9]{8,}$');
+END IF;
+
+
+
+-----------------------------------------------------------------------
+--  Specifies a gender type domain. Though the subject is complicated due
+--  to identity/biological complexities, the domain tries to be as
+--  comprehensive as possible. The gender domain is to be used for a
+--  persons phenotype in common applications; e.g. medical applications
+--  should define their own domain for specifying a persons genotype.
+--
+--  Values are:
+--      M: Male
+--      F: Female
+--      N: Neither
+--      B: Both
+--      D: Decline to state
+--      C: It's complicated
+--      X: Unknown.
+--
+--  See also http://www.sarahdopp.com/blog/2010/designing-a-better-drop-down-menu-for-gender/
+--
+-----------------------------------------------------------------------
+IF NOT public.domain_exists('public', 'gender') THEN
+    CREATE DOMAIN public.gender AS varchar(1)
+        CHECK (VALUE IN ('M','F','N','B','D','C','X'));
+END IF;
+
+
+END;
+$$ LANGUAGE plpgsql;

@@ -1,0 +1,40 @@
+-- vim: syntax=sql
+-----------------------------------------------------------------------
+--
+--  TOP-LEVEL DOMAIN NAME DDL, VIEWS, PROCEDURES AND TRIGGERS
+--
+-----------------------------------------------------------------------
+{% if with_drop %}
+DROP TABLE IF EXISTS
+    {{ schema_common }}.topleveldomains CASCADE;
+{% endif %}
+
+
+-----------------------------------------------------------------------
+--  TOP LEVEL DOMAIN NAME
+--
+--  Describes a top-level domain (TLD), one of the domains at the
+--  highest level in the hierarchical Domain Name System of the Internet.
+--  The top-level domain names are installed in the root zone of the
+--  name space.
+--
+--  Columns:
+--      country_code: an ISO 3166-2 code specifying the country.
+--      tld: the TLD.
+--
+--  Notes:
+--      -   `tld` may not begin with a dot (.).
+--      -   `tld` may not end with a dot (.).
+--
+-----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS {{ schema_common }}.topleveldomains(
+    tld varchar NOT NULL,
+    CONSTRAINT topleveldomains_pk
+        PRIMARY KEY (tld),
+    CONSTRAINT topleveldomains_tld_chk1
+        CHECK (tld != ''),
+    CONSTRAINT topleveldomains_tld_chk2
+        CHECK (NOT tld ~ '^\..*$'),
+    CONSTRAINT topleveldomains_tld_chk3
+        CHECK (NOT tld ~ '^.*\.$')
+);

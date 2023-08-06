@@ -1,0 +1,32 @@
+-- vim: syntax=sql
+-----------------------------------------------------------------------
+--
+--  UNIT OF MEASUREMENT DATA DEFINITION LANGUAGE (DDL)
+--
+-----------------------------------------------------------------------
+{% if with_drop %}
+DROP TABLE IF EXISTS
+    {{ schema_common }}.unitsofmeasure CASCADE;
+DROP TABLE IF EXISTS
+    {{ schema_common }}.unitofmeasureconversions CASCADE;
+{% endif %}
+
+
+-----------------------------------------------------------------------
+--  UNIT OF MEASUREMENT
+--
+--  Columns:
+--      quantity: specifies the quantity of the unit of measurement.
+--          Only units of the same quantity can be compared with
+--          each other.
+--      code: the primary key.
+--      display_name: a token display name for the unit of measurement.
+--
+-----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS {{ schema_common }}.unitsofmeasure(
+    quantity varchar NOT NULL,
+    codename public.slug NOT NULL,
+    display_name public.string NOT NULL,
+    CONSTRAINT unitsofmeasure_pk
+        PRIMARY KEY (codename)
+);

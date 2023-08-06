@@ -1,0 +1,74 @@
+-- vim: syntax=sql
+-----------------------------------------------------------------------
+--
+--  VALUE ADDED TAX SCHEMA INITIAL DATA
+--
+-----------------------------------------------------------------------
+
+-- {{ schema_common }}.vatratetypes initial data
+WITH initial_data(imposing_country, name) AS (
+    VALUES
+        ('DE', 'low'),
+        ('DE', 'high'),
+        ('NL', 'low'),
+        ('NL', 'standard')
+)
+INSERT INTO {{ schema_common }}.vatratetypes (imposing_country, name)
+SELECT T.imposing_country, T.name
+FROM initial_data T
+EXCEPT
+SELECT R.imposing_country, R.name
+FROM {{ schema_common }}.vatratetypes R;
+
+
+-- {{ schema_common }}.vatrates initial data
+WITH initial_data(imposing_country, name, start_date, end_date, rate) AS (
+    VALUES
+        ('DE', 'low', '1968-01-01'::date, '1968-01-06'::date, '0.05'::numeric),
+        ('DE', 'low', '1968-06-01'::date, '1978-01-01'::date, '0.055'::numeric),
+        ('DE', 'low', '1978-01-01'::date, '1979-06-01'::date, '0.06'::numeric),
+        ('DE', 'low', '1979-06-01'::date, '1983-06-01'::date, '0.065'::numeric),
+        ('DE', 'low', '1983-06-01'::date, 'infinity'::date, '0.07'::numeric),
+        ('DE', 'high', '1968-01-01'::date, '1968-01-06'::date, '0.10'::numeric),
+        ('DE', 'high', '1968-06-01'::date, '1978-01-01'::date, '0.11'::numeric),
+        ('DE', 'high', '1978-01-01'::date, '1979-06-01'::date, '0.12'::numeric),
+        ('DE', 'high', '1979-06-01'::date, '1983-06-01'::date, '0.13'::numeric),
+        ('DE', 'high', '1983-06-01'::date, '1993-01-01'::date, '0.14'::numeric),
+        ('DE', 'high', '1993-01-01'::date, '1998-04-01'::date, '0.15'::numeric),
+        ('DE', 'high', '1998-04-01'::date, '2007-01-01'::date, '0.16'::numeric),
+        ('DE', 'high', '2007-01-01'::date, 'infinity'::date, '0.19'::numeric),
+        ('NL', 'low', '1969-01-01'::date, '1984-01-01'::date, '0.04'::numeric),
+        ('NL', 'low', '1984-01-01'::date, '1986-10-01'::date, '0.05'::numeric),
+        ('NL', 'low', '1986-10-01'::date, 'infinity'::date, '0.06'::numeric),
+        ('NL', 'standard', '1969-01-01'::date, '1971-01-01'::date, '0.12'::numeric),
+        ('NL', 'standard', '1971-01-01'::date, '1973-01-01'::date, '0.14'::numeric),
+        ('NL', 'standard', '1973-01-01'::date, '1976-10-01'::date, '0.16'::numeric),
+        ('NL', 'standard', '1976-10-01'::date, '1984-01-01'::date, '0.18'::numeric),
+        ('NL', 'standard', '1984-01-01'::date, '1986-10-01'::date, '0.19'::numeric),
+        ('NL', 'standard', '1986-10-01'::date, '1989-01-01'::date, '0.20'::numeric),
+        ('NL', 'standard', '1989-01-01'::date, '1992-10-01'::date, '0.185'::numeric),
+        ('NL', 'standard', '1992-10-01'::date, '2001-01-01'::date, '0.175'::numeric),
+        ('NL', 'standard', '2001-01-01'::date, '2012-01-01'::date, '0.19'::numeric),
+        ('NL', 'standard', '2012-10-01'::date, 'infinity'::date, '0.21'::numeric)
+),
+upsert AS (
+    UPDATE {{ schema_common }}.vatrates R SET
+        during = daterange(I.start_date, I.end_date),
+        rate = I.rate
+    FROM initial_data I
+    WHERE
+        R.imposing_country = I.imposing_country AND
+        R.name = I.name AND
+        lower(R.during) = I.start_date
+    RETURNING R.*
+)
+INSERT INTO {{ schema_common }}.vatrates
+    (imposing_country, name, during, rate)
+SELECT imposing_country, name, daterange(start_date::date, end_date::date), rate
+FROM initial_data
+WHERE
+    (imposing_country, name, start_date) NOT IN (
+        SELECT imposing_country, name, lower(during)
+        FROM upsert
+    )
+;

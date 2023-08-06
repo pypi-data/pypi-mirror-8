@@ -1,0 +1,62 @@
+-- vim: syntax=sql
+-----------------------------------------------------------------------
+--
+--  ISO 4217 DATA DEFINITION LANGUAGE (DDL)
+--
+--  This file specifies the ISO 4217 datamodel. It supports both 
+--  current and historic ISO 4217 code lists.
+--
+-----------------------------------------------------------------------
+{% if with_drop %}
+DROP TABLE IF EXISTS
+    {{ schema_common }}.iso4217 CASCADE;
+DROP TABLE IF EXISTS
+    {{ schema_common }}.iso4217_elements CASCADE;
+{% endif %}
+
+
+-----------------------------------------------------------------------
+--  ISO 4217 CODE
+--
+--  Indicates that `code` is or was a valid ISO 4217 currency code.
+--
+-----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS {{ schema_common }}.iso4217(
+    code varchar(3) NOT NULL,
+    CONSTRAINT iso4217_pk
+        PRIMARY KEY (code)
+);
+
+
+-----------------------------------------------------------------------
+--  ISO 4217 Code
+--
+--  Represent an ISO 4217 country code and the period during which
+--  it was active in it.
+--
+--  Columns:
+--      alphabetic_code: specifies the code.
+--      during: specifies the period during which the code was active
+--          in ISO 4217.
+--
+-----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS {{ schema_common }}.iso4217_elements(
+    currency varchar NOT NULL,
+    alphabetic_code varchar(3) NOT NULL,
+    numeric_code varchar(3) NOT NULL,
+    minor_unit integer NOT NULL,
+    during daterange NOT NULL,
+    CONSTRAINT iso4217_elements_pk PRIMARY KEY (alphabetic_code, during),
+    CONSTRAINT iso4217_elements_ak1 UNIQUE (numeric_code, during),
+    CONSTRAINT iso4217_elements_alphabetic_code_during_excl
+        EXCLUDE USING GIST (alphabetic_code WITH =, during WITH &&),
+    CONSTRAINT iso4217_elements_numeric_code_during_excl
+        EXCLUDE USING GIST (numeric_code WITH =, during WITH &&),
+    CONSTRAINT iso4217_elements_minor_unit_chk1
+        CHECK (minor_unit >= -1),
+    CONSTRAINT iso4217_elements_alphabetic_code_fk
+        FOREIGN KEY (alphabetic_code)
+        REFERENCES {{ schema_common }}.iso4217 (code)
+        ON UPDATE NO ACTION ON DELETE NO ACTION
+        DEFERRABLE INITIALLY IMMEDIATE
+);

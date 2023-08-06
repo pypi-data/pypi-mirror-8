@@ -1,0 +1,59 @@
+-- vim: syntax=sql
+-----------------------------------------------------------------------
+--
+--  SOUSOU IDENTITY MANAGEMENT SYSTEM INITIAL DATA
+--
+--  This file specifies the initial data for the Sousou IMS database
+--  schema, such as the root user and clients.
+--
+-----------------------------------------------------------------------
+
+SELECT public.set_session_user(0);
+SELECT public.set_session_client(0);
+SELECT public.set_session_mutation_timestamp('2011-01-01 00:00+00');
+
+
+-- {{ schema_entities }}.clients initial data
+WITH
+clients (client_id, codename, display_name) AS (
+    VALUES
+        (-2, 'unspecified', 'Unspecified'),
+        (-1, 'anonymous', 'Anonymous'),
+        (0, 'tngems', 'TNG Enterprise Management System')
+)
+INSERT INTO {{ schema_entities }}.clients
+    (client_id, codename)
+SELECT client_id, codename
+FROM clients
+WHERE codename NOT IN (
+    SELECT codename
+    FROM {{ schema_entities }}.clients
+);
+
+
+-- These are the default users specified in The Sovereign Charter
+WITH
+users (user_id, subtype, username, date_registered) AS (
+    VALUES
+        (0, 'auto', 'root', '2011-01-01 00:00:00'),
+        (1, 'auto', 'fulcrum', '2011-01-01 00:00:00'),
+        (2, 'auto', 'neural', '2011-01-01 00:00:00'),
+        (3, 'auto', 'commander', '2011-01-01 00:00:00'),
+        (4, 'auto', 'sousou', '2011-01-01 00:00:00'),
+        (-1, 'auto', 'anonymous', '2011-01-01 00:00:00'),
+        (-2, 'auto', 'unspecified', '2011-01-01 00:00:00')
+)
+INSERT INTO public.principals
+    (principal_id, subtype, username, date_registered, is_active)
+SELECT user_id, subtype, username, date_registered::timestamp with time zone,
+    TRUE
+FROM users
+WHERE username NOT IN (
+    SELECT username
+    FROM public.principals
+);
+
+
+
+-- Important!
+SELECT public.set_session_mutation_timestamp(CURRENT_TIMESTAMP);

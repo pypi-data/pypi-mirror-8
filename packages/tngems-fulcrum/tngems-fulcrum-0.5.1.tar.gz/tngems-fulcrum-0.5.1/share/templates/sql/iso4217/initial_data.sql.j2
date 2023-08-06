@@ -1,0 +1,337 @@
+-- vim: syntax=sql
+-----------------------------------------------------------------------
+--
+--  ISO 4217 INITIAL DATA
+--
+-----------------------------------------------------------------------
+SET CONSTRAINTS ALL DEFERRED;
+
+WITH
+initial_data(currency, alphabetic_code, numeric_code, minor_unit, valid_from, valid_to) AS
+(
+    VALUES
+        ('Algerian Dinar', 'DZD', '012', 2, '2008-01-01', NULL),
+        ('Namibia Dollar', 'NAD', '516', 2, '2008-01-01', NULL),
+        ('Ghana Cedi', 'GHS', '936', 2, '2008-01-01', NULL),
+        ('Egyptian Pound', 'EGP', '818', 2, '2008-01-01', NULL),
+        ('Mvdol', 'BOV', '984', 2, '2008-01-01', NULL),
+        ('Balboa', 'PAB', '590', 2, '2008-01-01', NULL),
+        ('Philippine Peso', 'PHP', '608', 2, '2008-01-01', NULL),
+        ('Bond Markets Unit European Unit of Account 17 (E.U.A.-17)', 'XBD', '958', NULL, '2008-01-01', NULL),
+        ('Boliviano', 'BOB', '068', 2, '2008-01-01', NULL),
+        ('Bond Markets Unit European Composite Unit (EURCO)', 'XBA', '955', NULL, '2008-01-01', NULL),
+        ('Danish Krone', 'DKK', '208', 2, '2008-01-01', NULL),
+        ('Bond Markets Unit European Unit of Account 9 (E.U.A.-9)', 'XBC', '957', NULL, '2008-01-01', NULL),
+        ('Bond Markets Unit European Monetary Unit (E.M.U.-6)', 'XBB', '956', NULL, '2008-01-01', NULL),
+        ('Pula', 'BWP', '072', 2, '2008-01-01', NULL),
+        ('Lebanese Pound', 'LBP', '422', 2, '2008-01-01', NULL),
+        ('Tanzanian Shilling', 'TZS', '834', 2, '2008-01-01', NULL),
+        ('Dong', 'VND', '704', 0, '2008-01-01', NULL),
+        ('Kwanza', 'AOA', '973', 2, '2008-01-01', NULL),
+        ('Riel', 'KHR', '116', 2, '2008-01-01', NULL),
+        ('Qatari Rial', 'QAR', '634', 2, '2008-01-01', NULL),
+        ('Cayman Islands Dollar', 'KYD', '136', 2, '2008-01-01', NULL),
+        ('Libyan Dinar', 'LYD', '434', 3, '2008-01-01', NULL),
+        ('Hryvnia', 'UAH', '980', 2, '2008-01-01', NULL),
+        ('Jordanian Dinar', 'JOD', '400', 3, '2008-01-01', NULL),
+        ('Aruban Florin', 'AWG', '533', 2, '2008-01-01', NULL),
+        ('Saudi Riyal', 'SAR', '682', 2, '2008-01-01', NULL),
+        ('Platinum', 'XPT', '962', NULL, '2008-01-01', NULL),
+        ('Hong Kong Dollar', 'HKD', '344', 2, '2008-01-01', NULL),
+        ('Euro', 'EUR', '978', 2, '2008-01-01', NULL),
+        ('WIR Euro', 'CHE', '947', 2, '2008-01-01', NULL),
+        ('Swiss Franc', 'CHF', '756', 2, '2008-01-01', NULL),
+        ('Gibraltar Pound', 'GIP', '292', 2, '2008-01-01', NULL),
+        ('Belarussian Ruble', 'BYR', '974', 0, '2008-01-01', NULL),
+        ('CFP Franc', 'XPF', '953', 0, '2008-01-01', NULL),
+        ('Palladium', 'XPD', '964', NULL, '2008-01-01', NULL),
+        ('Ouguiya', 'MRO', '478', 2, '2008-01-01', NULL),
+        ('Bulgarian Lev', 'BGN', '975', 2, '2008-01-01', NULL),
+        ('Croatian Kuna', 'HRK', '191', 2, '2008-01-01', NULL),
+        ('Djibouti Franc', 'DJF', '262', 0, '2008-01-01', NULL),
+        ('Baht', 'THB', '764', 2, '2008-01-01', NULL),
+        ('CFA Franc BEAC', 'XAF', '950', 0, '2008-01-01', NULL),
+        ('Brunei Dollar', 'BND', '096', 2, '2008-01-01', NULL),
+        ('Ethiopian Birr', 'ETB', '230', 2, '2008-01-01', NULL),
+        ('Peso Uruguayo', 'UYU', '858', 2, '2008-01-01', NULL),
+        ('Cordoba Oro', 'NIO', '558', 2, '2008-01-01', NULL),
+        ('Kip', 'LAK', '418', 2, '2008-01-01', NULL),
+        ('Singapore Dollar', 'SGD', '702', 2, '2008-01-01', NULL),
+        ('Syrian Pound', 'SYP', '760', 2, '2008-01-01', NULL),
+        ('Moroccan Dirham', 'MAD', '504', 2, '2008-01-01', NULL),
+        ('Uruguay Peso en Unidades Indexadas (URUIURUI)', 'UYI', '940', 0, '2008-01-01', NULL),
+        ('Mozambique Metical', 'MZN', '943', 2, '2008-01-01', NULL),
+        ('Yemeni Rial', 'YER', '886', 2, '2008-01-01', NULL),
+        ('Rand', 'ZAR', '710', 2, '2008-01-01', NULL),
+        ('Nepalese Rupee', 'NPR', '524', 2, '2008-01-01', NULL),
+        ('Zimbabwe Dollar', 'ZWL', '932', 2, '2008-01-01', NULL),
+        ('Sucre', 'XSU', '994', NULL, '2008-01-01', NULL),
+        ('Naira', 'NGN', '566', 2, '2008-01-01', NULL),
+        ('Costa Rican Colon', 'CRC', '188', 2, '2008-01-01', NULL),
+        ('UAE Dirham', 'AED', '784', 2, '2008-01-01', NULL),
+        ('Pound Sterling', 'GBP', '826', 2, '2008-01-01', NULL),
+        ('Kwacha', 'MWK', '454', 2, '2008-01-01', NULL),
+        ('Trinidad and Tobago Dollar', 'TTD', '780', 2, '2008-01-01', NULL),
+        ('Sri Lanka Rupee', 'LKR', '144', 2, '2008-01-01', NULL),
+        ('Pakistan Rupee', 'PKR', '586', 2, '2008-01-01', NULL),
+        ('Forint', 'HUF', '348', 2, '2008-01-01', NULL),
+        ('Bermudian Dollar', 'BMD', '060', 2, '2008-01-01', NULL),
+        ('Loti', 'LSL', '426', 2, '2008-01-01', NULL),
+        ('Tugrik', 'MNT', '496', 2, '2008-01-01', NULL),
+        ('Armenian Dram', 'AMD', '051', 2, '2008-01-01', NULL),
+        ('Uganda Shilling', 'UGX', '800', 2, '2008-01-01', NULL),
+        ('SDR (Special Drawing Right)', 'XDR', '960', NULL, '2008-01-01', NULL),
+        ('Jamaican Dollar', 'JMD', '388', 2, '2008-01-01', NULL),
+        ('Lari', 'GEL', '981', 2, '2008-01-01', NULL),
+        ('Saint Helena Pound', 'SHP', '654', 2, '2008-01-01', NULL),
+        ('Afghani', 'AFN', '971', 2, '2008-01-01', NULL),
+        ('Kyat', 'MMK', '104', 2, '2008-01-01', NULL),
+        ('North Korean Won', 'KPW', '408', 2, '2008-01-01', NULL),
+        ('Turkish Lira', 'TRY', '949', 2, '2008-01-01', NULL),
+        ('Taka', 'BDT', '050', 2, '2008-01-01', NULL),
+        ('Yuan Renminbi', 'CNY', '156', 2, '2008-01-01', NULL),
+        ('Gourde', 'HTG', '332', 2, '2008-01-01', NULL),
+        ('CFA Franc BCEAO', 'XOF', '952', 0, '2008-01-01', NULL),
+        ('Malagasy Ariary', 'MGA', '969', 2, '2008-01-01', NULL),
+        ('Netherlands Antillean Guilder', 'ANG', '532', 2, '2008-01-01', NULL),
+        ('Liberian Dollar', 'LRD', '430', 2, '2008-01-01', NULL),
+        ('East Caribbean Dollar', 'XCD', '951', 2, '2008-01-01', NULL),
+        ('Norwegian Krone', 'NOK', '578', 2, '2008-01-01', NULL),
+        ('Mexican Unidad de Inversion (UDI)', 'MXV', '979', 2, '2008-01-01', NULL),
+        ('Pataca', 'MOP', '446', 2, '2008-01-01', NULL),
+        ('South Sudanese Pound', 'SSP', '728', 2, '2008-01-01', NULL),
+        ('Indian Rupee', 'INR', '356', 2, '2008-01-01', NULL),
+        ('Mexican Peso', 'MXN', '484', 2, '2008-01-01', NULL),
+        ('Czech Koruna', 'CZK', '203', 2, '2008-01-01', NULL),
+        ('Somoni', 'TJS', '972', 2, '2008-01-01', NULL),
+        ('Ngultrum', 'BTN', '064', 2, '2008-01-01', NULL),
+        ('Comoro Franc', 'KMF', '174', 0, '2008-01-01', NULL),
+        ('Malaysian Ringgit', 'MYR', '458', 2, '2008-01-01', NULL),
+        ('Turkmenistan New Manat', 'TMT', '934', 2, '2008-01-01', NULL),
+        ('Mauritius Rupee', 'MUR', '480', 2, '2008-01-01', NULL),
+        ('Rupiah', 'IDR', '360', 2, '2008-01-01', NULL),
+        ('Lempira', 'HNL', '340', 2, '2008-01-01', NULL),
+        ('Fiji Dollar', 'FJD', '242', 2, '2008-01-01', NULL),
+        ('Iceland Krona', 'ISK', '352', 0, '2008-01-01', NULL),
+        ('Nuevo Sol', 'PEN', '604', 2, '2008-01-01', NULL),
+        ('Belize Dollar', 'BZD', '084', 2, '2008-01-01', NULL),
+        ('ADB Unit of Account', 'XUA', '965', NULL, '2008-01-01', NULL),
+        ('Dominican Peso', 'DOP', '214', 2, '2008-01-01', NULL),
+        ('Azerbaijanian Manat', 'AZN', '944', 2, '2008-01-01', NULL),
+        ('Moldovan Leu', 'MDL', '498', 2, '2008-01-01', NULL),
+        ('Bahamian Dollar', 'BSD', '044', 2, '2008-01-01', NULL),
+        ('Swedish Krona', 'SEK', '752', 2, '2008-01-01', NULL),
+        ('Rufiyaa', 'MVR', '462', 2, '2008-01-01', NULL),
+        ('Codes specifically reserved for testing purposes', 'XTS', '963', NULL, '2008-01-01', NULL),
+        ('Australian Dollar', 'AUD', '036', 2, '2008-01-01', NULL),
+        ('Surinam Dollar', 'SRD', '968', 2, '2008-01-01', NULL),
+        ('Cuban Peso', 'CUP', '192', 2, '2008-01-01', NULL),
+        ('WIR Franc', 'CHW', '948', 2, '2008-01-01', NULL),
+        ('Barbados Dollar', 'BBD', '052', 2, '2008-01-01', NULL),
+        ('Won', 'KRW', '410', 0, '2008-01-01', NULL),
+        ('Dalasi', 'GMD', '270', 2, '2008-01-01', NULL),
+        ('Bolivar ', 'VEF', '937', 2, '2008-01-01', NULL),
+        ('Quetzal', 'GTQ', '320', 2, '2008-01-01', NULL),
+        ('Peso Convertible', 'CUC', '931', 2, '2008-01-01', NULL),
+        ('Chilean Peso', 'CLP', '152', 0, '2008-01-01', NULL),
+        ('Zambian Kwacha', 'ZMW', '967', 2, '2013-01-01', NULL),
+        ('Lithuanian Litas', 'LTL', '440', 2, '2008-01-01', NULL),
+        ('Lek', 'ALL', '008', 2, '2008-01-01', NULL),
+        ('Rwanda Franc', 'RWF', '646', 0, '2008-01-01', NULL),
+        ('Tenge', 'KZT', '398', 2, '2008-01-01', NULL),
+        ('Russian Ruble', 'RUB', '643', 2, '2008-01-01', NULL),
+        ('UIC-Franc', 'XFU', 'Nil', NULL, '2008-01-01', NULL),
+        ('Silver', 'XAG', '961', NULL, '2008-01-01', NULL),
+        ('Congolese Franc', 'CDF', '976', 2, '2008-01-01', NULL),
+        ('New Romanian Leu', 'RON', '946', 2, '2008-01-01', NULL),
+        ('Rial Omani', 'OMR', '512', 3, '2008-01-01', NULL),
+        ('Brazilian Real', 'BRL', '986', 2, '2008-01-01', NULL),
+        ('Solomon Islands Dollar', 'SBD', '090', 2, '2008-01-01', NULL),
+        ('Zloty', 'PLN', '985', 2, '2008-01-01', NULL),
+        ('Guarani', 'PYG', '600', 0, '2008-01-01', NULL),
+        ('Kenyan Shilling', 'KES', '404', 2, '2008-01-01', NULL),
+        ('Denar', 'MKD', '807', 2, '2008-01-01', NULL),
+        ('New Taiwan Dollar', 'TWD', '901', 2, '2008-01-01', NULL),
+        ('US Dollar (Next day)', 'USN', '997', 2, '2008-01-01', NULL),
+        ('PaÃanga', 'TOP', '776', 2, '2008-01-01', NULL),
+        ('Colombian Peso', 'COP', '170', 2, '2008-01-01', NULL),
+        ('Vatu', 'VUV', '548', 0, '2008-01-01', NULL),
+        ('Guinea Franc', 'GNF', '324', 0, '2008-01-01', NULL),
+        ('Tala', 'WST', '882', 2, '2008-01-01', NULL),
+        ('Iraqi Dinar', 'IQD', '368', 3, '2008-01-01', NULL),
+        ('Nakfa', 'ERN', '232', 2, '2008-01-01', NULL),
+        ('Convertible Mark', 'BAM', '977', 2, '2008-01-01', NULL),
+        ('Seychelles Rupee', 'SCR', '690', 2, '2008-01-01', NULL),
+        ('Canadian Dollar', 'CAD', '124', 2, '2008-01-01', NULL),
+        ('Cape Verde Escudo', 'CVE', '132', 2, '2008-01-01', NULL),
+        ('Kuwaiti Dinar', 'KWD', '414', 3, '2008-01-01', NULL),
+        ('Burundi Franc', 'BIF', '108', 0, '2008-01-01', NULL),
+        ('No currency', 'XXX', '999', NULL, '2008-01-01', NULL),
+        ('Kina', 'PGK', '598', 2, '2008-01-01', NULL),
+        ('Somali Shilling', 'SOS', '706', 2, '2008-01-01', NULL),
+        ('Unidades de fomento', 'CLF', '990', 0, '2008-01-01', NULL),
+        ('Uzbekistan Sum', 'UZS', '860', 2, '2008-01-01', NULL),
+        ('Dobra', 'STD', '678', 2, '2008-01-01', NULL),
+        ('Iranian Rial', 'IRR', '364', 2, '2008-01-01', NULL),
+        ('El Salvador Colon', 'SVC', '222', 2, '2008-01-01', NULL),
+        ('Leone', 'SLL', '694', 2, '2008-01-01', NULL),
+        ('Tunisian Dinar', 'TND', '788', 3, '2008-01-01', NULL),
+        ('Guyana Dollar', 'GYD', '328', 2, '2008-01-01', NULL),
+        ('New Zealand Dollar', 'NZD', '554', 2, '2008-01-01', NULL),
+        ('Falkland Islands Pound', 'FKP', '238', 2, '2008-01-01', NULL),
+        ('Latvian Lats', 'LVL', '428', 2, '2008-01-01', NULL),
+        ('US Dollar (Same day)', 'USS', '998', 2, '2008-01-01', NULL),
+        ('US Dollar', 'USD', '840', 2, '2008-01-01', NULL),
+        ('Som', 'KGS', '417', 2, '2008-01-01', NULL),
+        ('Argentine Peso', 'ARS', '032', 2, '2008-01-01', NULL),
+        ('New Israeli Sheqel', 'ILS', '376', 2, '2008-01-01', NULL),
+        ('Lilangeni', 'SZL', '748', 2, '2008-01-01', NULL),
+        ('Unidad de Valor Real', 'COU', '970', 2, '2008-01-01', NULL),
+        ('Serbian Dinar', 'RSD', '941', 2, '2008-01-01', NULL),
+        ('Bahraini Dinar', 'BHD', '048', 3, '2008-01-01', NULL),
+        ('Yen', 'JPY', '392', 0, '2008-01-01', NULL),
+        ('Sudanese Pound', 'SDG', '938', 2, '2008-01-01', NULL),
+        ('Gold', 'XAU', '959', NULL, '2008-01-01', NULL),
+        ('Estonian Kroon', 'EEK', '233', 2, '2008-01-01', '2011-01-01'),
+        ('Zambian Kwacha', 'ZMK','-1', 2, '2008-01-01', '2013-01-01'),
+
+        -- User assigned
+
+
+        -- Historical
+
+        -- ADF ... 2   Andorran franc (1:1 peg to the French franc)     ?  1998-12-31  EUR
+        -- ADP 020 0   Andorran peseta (1:1 peg to the Spanish peseta)  ?  1998-12-31  EUR
+        -- ATS 040 2   Austrian schilling  1945    2002-02-28  EUR
+        -- BEF 056 2   Belgian franc (currency union with LUF) 1832    2002-02-28  EUR
+        -- CYP 196 2   Cypriot pound   1879    2008-01-31  EUR
+        -- DEM 276 2   German mark 1948    2001-12-31  EUR
+        -- EEK 233 2   Estonian kroon  1992    2010-12-31  EUR
+        -- ESP 724 0   Spanish peseta  1869    2002-02-28  EUR
+        -- FIM 246 2   Finnish markka  1860    2002-02-28  EUR
+        -- FRF 250 2   French franc    1960    2002-02-17  EUR
+        -- GRD 300 2   Greek drachma   1954    2002-02-28  EUR
+        -- IEP 372 2   Irish pound (punt in Irish language)    1938    2002-02-09  EUR
+        -- ITL 380 0   Italian lira    1861    2002-02-28  EUR
+        -- LUF 442 2   Luxembourg franc (currency union with BEF)  1944    2002-02-28  EUR
+        -- LVL 428 2   Latvian lats    1992    2014-01-15  EUR
+        -- MCF ... 2   Monegasque franc (currency union with FRF)  1960    2002-02-17  EUR
+        -- MAF ... –   Moroccan franc  1921    1960–1976   MAD
+        -- MTL 470 2   Maltese lira    1968[15]    2008-01-31  EUR
+        ('Maltese lira', 'MTR', '470', 2, '1968-01-01', '2008-01-31'),
+        ('Netherlands Guilder', 'NLG', '528', 2, '1815-01-01', '2002-02-28'),
+        -- PTE 620 0   Portuguese escudo   1911-05-22  2002-02-28  EUR
+        ('Portuguese escudo', 'PTE', '620', 0, '1911-05-22', '2002-02-28')
+        -- SIT 705 2   Slovenian tolar 1991-10-08  2007-01-14  EUR
+        -- SKK 703 2   Slovak koruna   1993-02-08  2009-01-16  EUR
+        -- SML ... 0   San Marinese lira (currency union with ITL and VAL) 1864    2002-02-28  EUR
+        -- VAL ... 0   Vatican lira (currency union with ITL and SML)  1929    2002-02-28  EUR
+        -- XEU 954 .   European Currency Unit (1 XEU = 1 EUR)   ?  1998-12-31  EUR
+        -- AFA 004     Afghan afghani  1925    2003    AFN
+        -- AON 024 0   Angolan new kwanza  1990    1995    AOR
+        -- AOR 982 0   Angolan kwanza readjustado  1995    1999    AOA
+        -- ARL ... 2   Argentine peso ley  1970-01-01  1983-05-05  ARP
+        -- ARP ... 2   Argentine peso argentino    1983-06-06  1985-06-14  ARA
+        -- ARA ... 2   Argentine austral   1985-06-15  1991-12-31  ARS
+        -- AZM 031 0   Azerbaijani manat   1992-08-15  2006-01-01  AZN
+        -- BGL 100 2   Bulgarian lev A/99  1962    1999-07-05  BGN
+        -- BOP ... 2   Bolivian peso   1963-01-01  1987-01-01  BOB
+        -- BRZ ... 2   Brazilian cruzeiro  1942-11-01  1967-02-12  BRB
+        -- BRB ... 2   Brazilian cruzeiro novo 1967-02-13  1986-02-28  BRC
+        -- BRC ... 2   Brazilian cruzado   1986-02-28  1989-01-15  BRN
+        -- BRN ... 2   Brazilian cruzado novo  1989-01-16  1990-03-15  BRE
+        -- BRE ... 2   Brazilian cruzeiro  1990-03-15  1993-08-01  BRR
+        -- BRR ... 2   Brazilian cruzeiro real 1993-08-01  1994-06-30  BRL
+        -- CLE ...     Chilean escudo  1960-01-01  1975    CLP
+        -- CSD 891 2   Serbian dinar   2003-07-03  2006    RSD
+        -- CSK 200     Czechoslovak koruna 1919-04-10  1993-02-08  CZK and SKK (CZK and EUR)
+        -- DDM 278     East German Mark of the GDR (East Germany)  1948-06-21  1990-07-01  DEM (EUR)
+        -- ECS 218 0   Ecuadorian sucre    1884    2000    USD
+        -- ECV 983 .   Ecuador Unidad de Valor Constante (funds code)  1993    2000-01-09  (no successor)
+        -- GQE ...     Equatorial Guinean ekwele   1975    1985    XAF
+        -- ESA 996     Spanish peseta (account A)   ?   ?  ESP (EUR)
+        -- ESB 995     Spanish peseta (account B)   ?   ?  ESP (EUR)
+        -- GNE ...     Guinean syli    1971    1985    GNF
+        -- GHC 288 0   Ghanaian cedi   1967    2007-07-01  GHS
+        -- GWP 624     Guinea-Bissau peso  1975    1997    XOF
+        -- ILP ... 3, 2    Israeli lira    1948    1980    ILR
+        -- ILR ... 2   Israeli shekel  1980-02-24  1985-12-31  ILS
+        -- ISJ ... 2   Icelandic krona 1922    1981    ISK
+        -- LAJ ...     Lao kip  ?  1979    LAK
+        -- MGF 450 2   Malagasy franc  1963-07-01  2005-01-01  MGA
+        -- MKN ...     Old Macedonian denar A/93    ?  1993    MKD
+        -- MLF ...     Mali franc   ?  1984    XOF
+        -- MVQ ...     Maldivian rupee  ?  1981    MVR
+        -- MXP ...     Mexican peso     ?  1993    MXN
+        -- MZM 508 0   Mozambican metical  1980    2006-06-30  MZN
+        -- NFD ... 2   Newfoundland dollar 1865    1949    CAD
+        -- PEH ...     Peruvian sol    1863    1985-02-01  PEI
+        -- PEI ...     Peruvian inti   1985-02-01  1991-10-01  PEN
+        -- PLZ 616     Polish zloty A/94   1950    1995    PLN
+        -- ROL 642     Romanian leu A/05   1952-01-28  2005    RON
+        -- RUR 810 2   Russian ruble A/97  1992    1997-12-31  RUB
+        -- SDD 736     Sudanese dinar  1992-06-08  2007-01-10  SDG
+        -- SDP 736     Sudanese old pound  1956    1992-06-08  SDD
+        -- SRG 740     Suriname guilder     ?  2004    SRD
+        -- SUR ...     Soviet Union ruble  1961    1991    RUR
+        -- SVC 222 2   Salvadoran colón    1892    2001    USD
+        -- TJR 762     Tajikistani ruble   1995-05-10  2000-10-30  TJS
+        -- TMM 795 0   Turkmenistani manat 1-11-1993   31-12-2008  TMT
+        -- TPE ...     Portuguese Timorese escudo  1959    1976    PTP
+        -- TRL 792 0   Turkish lira A/05    ?  2005    TRY
+        -- UAK 804     Ukrainian karbovanets   1-10-1992   1-9-1996    UAK
+        -- UGS ...     Ugandan shilling A/87    ?  1987    UGX
+        -- UYN ...     Uruguay old peso     ?  1993-03-01  UYU
+        -- VEB 862 2   Venezuelan bolívar   ?  2008-01-01  VEF
+        -- XFO ...     Gold franc (special settlement currency)    1803    2003    XDR
+        -- YDD 720     South Yemeni dinar   ?  1996-06-11  YER
+        -- YUD ... 2   Yugoslav dinar  1966-01-01  1989-12-31  YUN
+        -- YUN ... 2   Yugoslav dinar  1990-01-01  1992-06-30  YUR
+        -- YUR ... 2   Yugoslav dinar  1992-07-01  1993-09-30  YUO
+        -- YUO ... 2   Yugoslav dinar  1993-10-01  1993-12-31  YUG
+        -- YUG ... 2   Yugoslav dinar  1994-01-01  1994-01-23  YUM
+        -- YUM 891 2   Yugoslav dinar  1994-01-24  2003-07-02  CSD
+        -- ZAL 991 .   South African financial rand (funds code)   1985-09-01  1995-03-13  (no successor)
+        -- ZMK 894 2   Zambian kwacha   ?  2013-01-01  ZMW
+        -- ZRN 180 2   Zaïrean new zaïre   1993    1997    CDF
+        -- ZRZ ... 3   Zaïrean zaïre   1967    1993    ZRN
+        -- ZWC ... 2   Rhodesian dollar    1970-02-17  1980    ZWD
+        -- ZWD 716 2   Zimbabwean dollar A/06  1980-04-18  2006-07-31  ZWN
+        -- ZWN 942 2   Zimbabwean dollar A/08  2006-08-01  2008-07-31  ZWR
+        -- ZWR 935 2   Zimbabwean dollar A/09  2008-08-01  2009-02-02  ZWL
+        -- ZWL 933 2   Zimbabwean dollar A/10  2009-02-03  2009-04-12  ZMW
+
+), upsert AS (
+    UPDATE {{ schema_common }}.iso4217_elements R1 SET
+        currency = U1.currency,
+        alphabetic_code = U1.alphabetic_code,
+        numeric_code = U1.numeric_code,
+        minor_unit = COALESCE(U1.minor_unit, -1),
+        during = daterange(U1.valid_from::date, COALESCE(U1.valid_to::date, 'infinity'))
+    FROM initial_data U1
+    WHERE
+        U1.alphabetic_code = R1.alphabetic_code
+    RETURNING R1.*
+)
+INSERT INTO {{ schema_common }}.iso4217_elements
+    (currency, alphabetic_code, numeric_code, minor_unit, during)
+SELECT currency, alphabetic_code, numeric_code, COALESCE(minor_unit, -1),
+    daterange(valid_from::date, COALESCE(valid_to::date, 'infinity'))
+FROM initial_data
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM upsert up
+    WHERE up.alphabetic_code = initial_data.alphabetic_code
+);
+
+
+-- Insert elements not in {{ schema_common }}.iso4217
+INSERT INTO {{ schema_common }}.iso4217
+SELECT R1.alphabetic_code
+FROM {{ schema_common }}.iso4217_elements R1
+WHERE R1.alphabetic_code NOT IN (
+    SELECT code FROM {{ schema_common }}.iso4217
+);
+
+
+SET CONSTRAINTS ALL IMMEDIATE;
