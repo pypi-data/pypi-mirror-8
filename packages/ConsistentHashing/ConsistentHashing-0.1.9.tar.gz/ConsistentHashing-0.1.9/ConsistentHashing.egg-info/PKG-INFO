@@ -1,0 +1,53 @@
+Metadata-Version: 1.0
+Name: ConsistentHashing
+Version: 0.1.9
+Summary: A simple implement of consistent hashing.
+Home-page: UNKNOWN
+Author: Ziang Guo
+Author-email: iziang@yeah.net
+License: BSD
+Description: A very simple implement of consistent hashing.
+        
+        
+        ***************
+        Usage examples
+        ***************
+        
+        Getting Started
+        ---------------
+        
+        .. code-block:: python
+        
+            >>> from consistenthashing import consistenthashing
+            >>> inst = consistenthashing(nodes=["122.225.109.103","221.236.5.135","58.58.179.52","61.174.51.204","222.186.31.234","182.74.141.242","179.107.90.135"], slotSize=10000, virtualNode=2)
+            >>> inst.getAllNodes()
+            ['122.225.109.103', '221.236.5.135', '58.58.179.52', '61.174.51.204', '222.186.31.234', '182.74.141.242', '179.107.90.135']
+            >>> inst.addNode('1.1.1.1')
+            True
+            >>> inst.getNode('1')
+            '61.174.51.204'
+            >>> inst.getNode('a')
+            '122.225.109.103'
+            >>> inst.getNode('hello')
+            '61.174.51.204'
+            >>> inst.getNode('consistenthashing')
+            '1.1.1.1'
+            >>> inst.getVirtualNodeNumber()
+            2
+            >>> inst.getVirtualNodes('221.236.5.135')
+            ['221.236.5.135_virtual1', '221.236.5.135_virtual2']
+            >>> inst.removeNode('122.225.109.103')
+            True
+            >>> inst.addNode('pypi.python.org')
+            True
+            >>> inst.getAllNodes()
+            ['221.236.5.135', '58.58.179.52', '61.174.51.204', '222.186.31.234', '182.74.141.242', '179.107.90.135', '1.1.1.1', 'pypi.python.org']
+        
+Keywords: hashing hash consistent distributed
+Platform: Any
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
