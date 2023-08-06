@@ -1,0 +1,58 @@
+
+{% import "_macros/base.html" as base_macro with context %}
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>{{ get_page_info("title") | safe }}</title>
+
+        {{- base_macro.webassets_header() -}}
+
+    </head>
+
+    <body>
+
+        <div class="navbar navbar-default">
+            <div class="container ">
+                <div class="navbar-header">
+                  <a href="{{url_for('Index:index')}}" class="navbar-brand">Marco Polo</a>
+                  <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                  </button>
+                </div>
+                <div class="navbar-collapse collapse" id="navbar-main">
+                  <ul class="nav navbar-nav">
+                    <li>
+                      <a href="/">Home</a>
+                    </li>
+                    <li>
+                      <a href="{{ url_for('Example:index') }}">Examples</a>
+                    </li>
+                  </ul>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+
+            <div class="row">
+                <div class="col-md-12">
+                    {{- base_macro.flashed_messages() -}}
+                </div>
+            </div>
+
+            {%- include __view_template__ -%}
+
+        </div>
+
+        {{- base_macro.webassets_footer() -}}
+
+    </body>
+
+</html>
+
+
+
