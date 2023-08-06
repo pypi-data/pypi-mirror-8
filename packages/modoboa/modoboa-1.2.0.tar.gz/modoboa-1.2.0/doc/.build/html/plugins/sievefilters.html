@@ -1,0 +1,169 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Sieve filters &mdash; Modoboa 1.2.0-rc1 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.2.0-rc1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="Modoboa 1.2.0-rc1 documentation" href="../index.html" />
+    <link rel="next" title="Webmail" href="webmail.html" />
+    <link rel="prev" title="Postifx auto-reply messages" href="postfix_autoreply.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="webmail.html" title="Webmail"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="postfix_autoreply.html" title="Postifx auto-reply messages"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">Modoboa 1.2.0-rc1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="sieve-filters">
+<h1>Sieve filters<a class="headerlink" href="#sieve-filters" title="Permalink to this headline">¶</a></h1>
+<p>This plugin let users create server-side message filters, using the
+<a class="reference external" href="http://pypi.python.org/pypi/sievelib">sievelib module</a> (which
+provides Sieve and ManageSieve clients).</p>
+<p>Two working modes are available:</p>
+<ul class="simple">
+<li>A raw mode: you create filters using the Sieve language directly
+(advanced users)</li>
+<li>An assisted mode: you create filters using an intuitive form</li>
+</ul>
+<p>To use this plugin, your hosting setup must include a <em>ManageSieve</em>
+server and your local delivery agent must understand the <em>Sieve</em>
+language. Don&#8217;t panic, Dovecot supports both :-) (refer to
+<a class="reference internal" href="../integration/imap_and_smtp.html#dovecot"><em>Dovecot</em></a> to know how to enable those features).</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The sieve filters plugin requires that the <a class="reference internal" href="webmail.html#webmail"><em>Webmail</em></a> plugin is
+activated and configured.</p>
+</div>
+<p>Go the online panel and modify the following parameters in order to
+communicate with the <em>ManageSieve</em> server:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="33%" />
+<col width="33%" />
+<col width="33%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Name</th>
+<th class="head">Description</th>
+<th class="head">Default value</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Server address</td>
+<td>Address of your
+MANAGESIEVE server</td>
+<td>127.0.0.1</td>
+</tr>
+<tr class="row-odd"><td>Server port</td>
+<td>Listening port of
+your MANAGESIEVE
+server</td>
+<td>4190</td>
+</tr>
+<tr class="row-even"><td>Connect using
+STARTTLS</td>
+<td>Use the STARTTLS
+extension</td>
+<td>no</td>
+</tr>
+<tr class="row-odd"><td>Authentication
+mechanism</td>
+<td>Prefered
+authentication
+mechanism</td>
+<td>auto</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="postfix_autoreply.html"
+                        title="previous chapter">Postifx auto-reply messages</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="webmail.html"
+                        title="next chapter">Webmail</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/plugins/sievefilters.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="webmail.html" title="Webmail"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="postfix_autoreply.html" title="Postifx auto-reply messages"
+             >previous</a> |</li>
+        <li><a href="../index.html">Modoboa 1.2.0-rc1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Antoine Nguyen.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>
