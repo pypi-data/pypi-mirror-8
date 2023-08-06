@@ -1,0 +1,23 @@
+{%- extends "base.html" -%}
+
+{% block title %} Diff {% endblock %}
+
+{% block head %}
+{% endblock %}
+
+{% block body %}
+
+<div id="application"></div>
+
+<script src="/static/js/file_diff.js"></script>
+
+<script>var pairs = {{pairs|tojson}};</script>
+
+<script type="text/jsx;harmony=true" src="/static/js/util.js"></script>
+<script type="text/jsx;harmony=true" src="/static/js/components.jsx"></script>
+<script type="text/jsx;harmony=true">
+/** @jsx React.DOM */
+React.renderComponent(<Root filePairs={pairs} />, $('#application').get(0));
+</script>
+
+{% endblock %}
