@@ -1,0 +1,252 @@
+Metadata-Version: 1.1
+Name: django-oak
+Version: 0.1.0
+Summary: Rapid prototyping for views and models in django.
+Home-page: https://github.com/weholt/django-oak
+Author: Thomas A. Weholt
+Author-email: thomas@weholt.org
+License: BSD License
+Description: oak
+        ===
+        
+        Rapid prototyping for views, templates and models in django.
+        
+            Version : 0.1
+            Status  : alpha / proof-of-concept
+            Code @  : http://github.com/weholt/django-oak/
+            Contact : thomas@weholt.org
+        
+        Introduction
+        ------------
+        
+        Oak is a tool to help you get a prototype of a site up and running very fast. It takes care of configuring urls,
+        creating views and provide a basic set of templates to enable creation, deletion and removal of objects.
+        
+        It might not be production-ready and serves more as a proof-of-concept project at the moment. Comments are very welcome.
+        
+        Why?
+        ----
+        
+        - *DRY*. I found myself re-creating the same templates, views and urls over and over for models in my apps. My templates for 
+        create, update and delete was almost identical for 9 of 10 models. My urlpatterns followed the same pattern. And my views. 
+        - I wanted to build on-top of class based generic views and easily switch to full CBGV if need be.
+        
+        Installation
+        ------------
+                
+        1. `pip install django-oak`
+        2. Add `oak` to INSTALLED_APPS in settings.py - after all other apps to get correct template resolving.
+        3. `python manage.py migrate` and `python manage.py runserver`
+        
+        Requirements
+        ------------
+        
+        Oak assumes use of a few patterns:
+        
+            - urls will be created as:
+                - create:   '/app_label/model_name/create/$'
+                - update:   '/app_label/model_name/update/(?P<pk>\d+)/$'
+                - delete:   '/app_label/model_name/delete/(?P<pk>\d+)/$'
+                - list:     '/app_label/model_name/list/$'
+                - detail:   '/app_label/model_name/(?P<pk>\d+)/$'
+            
+            - names of urls will be:    
+                - create:   'app_label-model_name-create'
+                - update:   'app_label-model_name-update'
+                - delete:   'app_label-model_name-delete'
+                - list:     'app_label-model_name-list'
+                - detail:   'app_label-model_name'
+                
+            - models must implement the 'get_absolute_url'-method
+        
+        A simple example
+        ----------------
+        
+        *NB! This alpha-release of oak assumes the user is logged in all views related to creation, updates and deletion of objects.*
+        
+        We want to re-create the polls app from the django tutorial (with minor changes to illustrate some features of oak).
+        Create a new django project, create an app called polls and the following models to your polls/models.py:
+        
+            from django.core.urlresolvers import reverse_lazy
+            from django.contrib.auth.models import User
+            from django.db import models
+            from oak.decorators import oakify
+            
+            
+            @oakify.model()
+            class Question(models.Model):
+                creator = models.ForeignKey(User, related_name="questions")
+                question_text = models.CharField(max_length=200)
+                pub_date = models.DateTimeField('date published')
+            
+                def __str__(self):
+                    return self.question_text
+            
+                def get_absolute_url(self):
+                    return reverse_lazy('polls-question', args=[self.id])
+            
+            
+            @oakify.model()
+            class Choice(models.Model):
+                question = models.ForeignKey(Question, related_name="choices")
+                choice_text = models.CharField(max_length=200)
+                votes = models.IntegerField(default=0)
+            
+                def __str__(self):
+                    return self.choice_text
+            
+                def get_absolute_url(self):
+                    return reverse_lazy('polls-choice', args=[self.id])
+        
+        A few things to notice:
+        
+        -  `from oak.decorators import oakify` : this is the oak decorator registering the model and triggers the creation 
+        of required views and urls.
+        -  `@oakify.model()`: the actual decoration of our models.
+        - both models implement `the get_absolute_url` method and return a reversed url using the patterns described above.
+        
+        To get the generated urls into our project, modify your urls.py file to look like this:
+        
+            from django.conf.urls import patterns, include, url
+            from django.contrib import admin
+            import oak
+            
+            urlpatterns = patterns('',
+                url(r'^admin/', include(admin.site.urls)),
+                url(r'^', include('oak.urls')),
+            )
+            
+        Notice that this will make every url automatically generated by oak available at root level. Finally add oak and polls
+        to your installed apps in settings.py, always adding oak *after* everything else:
+        
+            INSTALLED_APPS = (
+                'django.contrib.admin',
+                'django.contrib.auth',
+                'django.contrib.contenttypes',
+                'django.contrib.sessions',
+                'django.contrib.messages',
+                'django.contrib.staticfiles',
+                'polls',
+                'oak',
+            )
+        
+        Now do the `python manage.py migrate` and `python manage.py runserver` to test it. If you type in any non-existing url,
+         you'll see the generated urls in the debug page:
+         
+             ^admin/
+             ^polls/choice/(?P<pk>\d+)/ [name='polls-choice']
+             ^polls/choice/create/$ [name='polls-choice-create']
+             ^polls/choice/update/(?P<pk>\d+)/$ [name='polls-choice-update']
+             ^polls/choice/delete/(?P<pk>\d+)/$ [name='polls-choice-delete']
+             ^polls/choice/list/$ [name='polls-choice-list']
+             ^polls/question/(?P<pk>\d+)/ [name='polls-question']
+             ^polls/question/create/$ [name='polls-question-create']
+             ^polls/question/update/(?P<pk>\d+)/$ [name='polls-question-update']
+             ^polls/question/delete/(?P<pk>\d+)/$ [name='polls-question-delete']
+             ^polls/question/list/$ [name='polls-question-list']
+        
+        If you go to `/polls/question/list/` you'll be greeted with a page telling you that templates are missing - this is by design.
+        You'll have to implement the templates for list and detail views your self. Now create `polls/templates/polls/question_list.html`
+        with this content:
+        
+            {% extends 'base.html' %}
+            {% block content %}
+            <a href="{% url 'polls-question-create' %}">Create</a>
+            <ul>
+            {% for question in object_list %}
+                <li><a href="{{ question.get_absolute_url }}" >{{ question }}</a></li>
+            {% endfor %}
+            </ul>
+            <a href="{% url 'polls-choice-create' %}">Create choice</a>
+            {% endblock %}
+            
+        Create `polls/templates/polls/question_detail.html` with this content:
+        
+            {% extends 'base.html' %}
+            {% block content %}
+            <h1>Question #{{object.id}}: {{object.question_text}}</h1>
+            <a href="{% url 'polls-question-update' object.id %}">Update</a>
+            <a href="{% url 'polls-question-delete' object.id %}">Delete</a>
+            {% endblock %}
+        
+        *NB! If you get any errors, try going to `/admin/` and log in before proceeding further.*
+            
+        Now you should be able to create, update, delete, list and view details of questions.
+        
+        A more advanced example
+        -----------------------
+        
+        On of the changes of our models compared to the standard polls app is the addition of a creator. We want this to be set
+        to the user creating the questions and should not have to be entered by the user at all. Modify your models.py file and
+        remove the decorations of the Question model:
+        
+            @oakify.model() <- Remove this line
+            class Question(models.Model):
+        
+        If you enter an invalid url and look at the available urlconfigurations you'll notice everyting related to Question is gone.
+        In polls/views.py add:
+        
+            import datetime
+            from django.http import HttpResponseRedirect
+            from django.views.generic import ListView, DetailView
+            import oak
+            from .models import *
+            
+            
+            @oak.decorators.oakify.view()
+            class QuestionView(oak.views.BaseCrudView):
+                model = Question
+                fields = ('question_text',)
+            
+                def form_valid(self, form):
+                    self.object = form.save(commit=False)
+                    # only set the following values at creation, not on updates
+                    if not self.object.pk: 
+                        self.object.creator = self.request.user
+                        self.object.pub_date = datetime.date.today()
+                    self.object.save()
+                    return HttpResponseRedirect(self.target_url or self.get_success_url())
+            
+                def get_success_url(self):
+                    return reverse_lazy('polls-question-list')
+            
+            
+            @oak.decorators.oakify.view()
+            class QuestionListView(ListView):
+                model = Question
+                queryset = Question.objects.all()
+            
+            
+            @oak.decorators.oakify.view()
+            class QuestionDetailView(DetailView):
+                model = Question
+        
+        The first view subclasses BaseCrudView and it will handle create, update and delete operations related to your model. 
+        Implementing `form_valid` method handles setting the creator-field of a question to the user object of the logged in user.
+        It also sets the pub_date-field to today.
+        
+        The two next views handles the list and detail views. 
+        
+        Adding your own templates
+        -------------------------
+        
+        Oak will look for matching templates in your apps template folders before defaulting to its own base templates. So to add
+         your own templates simply create a folderstructure like `templates/app_label/model_name/<operation name>.html` in your app folder.
+        Change `<operation name>` to one of the following; create, update, delete, detail or list.
+        
+        License
+        -------
+        Oak is released under a BSD license.
+Platform: UNKNOWN
+Classifier: Development Status :: 3 - Alpha
+Classifier: Environment :: Web Environment
+Classifier: Framework :: Django
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3.3
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Topic :: Internet :: WWW/HTTP
+Classifier: Topic :: Internet :: WWW/HTTP :: Dynamic Content
+Requires: django
