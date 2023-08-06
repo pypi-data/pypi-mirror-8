@@ -1,0 +1,31 @@
+{% extends "openlivinglab/base.html" %}
+
+{% block breadcrumbs %}
+<ul class="breadcrumb">
+  <li><a href="/">Root</a></li>
+  <li class="active">Samples</li>
+</ul>
+{% endblock %}
+
+{% block heading1 %}Active sensors{% endblock %}
+
+{% block body1 %}
+<table class="table table-striped table-hover">
+    <thead>
+        <tr>
+            <th>Node</th><th>Sensor</th>
+            <th>Unit</th><th>Last value</th>
+        </tr>
+    </thead>
+    <tbody>
+{% for sensor in sensors %}
+    <tr>
+        <td><a href="/samples/{{sensor.code}}">{{sensor.node}}</a></td>
+        <td><a href="/samples/{{sensor.code}}">{{sensor.code}}</a></td>
+        <td><a href="/samples/{{sensor.code}}">{{sensor.units}}</a></td>
+        <td><a href="/samples/{{sensor.code}}">{{sensor.values__date__max}}</a></td>
+
+{% endfor %}
+    </tbody>
+</table>
+{% endblock %}
