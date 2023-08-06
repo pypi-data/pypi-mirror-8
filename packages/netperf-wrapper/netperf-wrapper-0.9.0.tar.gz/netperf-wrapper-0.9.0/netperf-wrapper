@@ -1,0 +1,67 @@
+#!/usr/bin/env python
+## -*- mode: python; coding: utf-8 -*-
+##
+## netperf-wrapper.py
+##
+## Author:   Toke Høiland-Jørgensen (toke@toke.dk)
+## Date:     October 8th, 2012
+## Copyright (c) 2012, Toke Høiland-Jørgensen
+##
+## This program is free software: you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation, either version 3 of the License, or
+## (at your option) any later version.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+import sys, signal, os
+
+# Convert SIGTERM into SIGINT to apply the same shutdown logic.
+def handle_sigterm(sig, frame):
+        os.kill(os.getpid(), signal.SIGINT)
+
+try:
+    from netperf_wrapper import batch
+    from netperf_wrapper.settings import load
+
+    if __name__ == "__main__":
+        try:
+            signal.signal(signal.SIGTERM, handle_sigterm)
+            settings = load()
+            if settings.GUI:
+                from netperf_wrapper.gui import run_gui
+                run_gui(settings) # does not return
+            else:
+                b = batch.new(settings)
+                b.run()
+
+        except RuntimeError as e:
+            try:
+                if not settings.DEBUG_ERROR:
+                    sys.stderr.write("Fatal error: %s\n"% str(e))
+                    sys.exit(1)
+                else:
+                    raise
+            except NameError:
+                sys.stderr.write("Fatal error: %s\n"% str(e))
+                sys.exit(1)
+except KeyboardInterrupt:
+    try:
+        b.kill()
+    except NameError:
+        pass
+
+    # Proper behaviour on SIGINT is re-killing self with SIGINT to properly
+    # signal to surrounding shell what happened.
+    # Ref: http://mywiki.wooledge.org/SignalTrap
+    try:
+        signal.signal(signal.SIGINT, signal.SIG_DFL)
+        os.kill(os.getpid(), signal.SIGINT)
+    except:
+        sys.exit(1) # Just in case...
