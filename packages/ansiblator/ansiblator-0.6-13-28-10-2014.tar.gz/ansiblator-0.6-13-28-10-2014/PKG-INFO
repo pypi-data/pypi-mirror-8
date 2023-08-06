@@ -1,0 +1,143 @@
+Metadata-Version: 1.1
+Name: ansiblator
+Version: 0.6-13-28-10-2014
+Summary: Ansiblator - makes Ansible api more Pythonic
+Home-page: http://www.pripravto.cz
+Author: pripravto-service
+Author-email: test@dlauhy.cz
+License: GPLv3
+Description: 
+            Ansiblator
+            ==========
+        
+            Ansiblator - makes Ansible api more Pythonic
+        
+            This wrapper allows more easier way how to use Ansible in Python.
+            Chain commands without without playbooks. More like Fabric.
+        
+            With this Ansible can be more powerfull and it will allow to chain commands with
+            python commands. Ansible documentation is on http://docs.ansible.com/.
+            API is now trying to feel like Fabric, but it's still not complete, there
+            will be some changes.
+        
+            Get started
+            ===========
+        
+            For instalation you can download package and then just unpack package from
+            https://pypi.python.org/pypi/ansiblator and use it::
+        
+                python setup.py install
+        
+            or install by pip::
+        
+                pip install ansiblator
+        
+        
+            Quickstart
+            ==========
+        
+            For most quickest example you can just create your ansible host file named
+            ansible_hosts inside your home directory or give full path to file.
+        
+            Ansiblator is mainly using file such as in ~/ansible_hosts.
+        
+            code::
+        
+                import ansiblator.api as an
+                ans = an.Ansiblator()
+                ret = ans.local("uname -a", now=True, use_shell=True)
+                ans.run("uname -a", now=True)
+                ans.runner("uptime")
+                ans.run_all()
+                ans.copy(src="/tmp/aabc.csv", dest="/tmp/",pattern="pc",now=True)
+        
+            specify ansible hosts file and select pattern::
+        
+                ans = an.Ansiblator(inventory="/tmp/ansible_file", pattern="pc")
+        
+            use dictionary to create inventory::
+        
+                inv = {'pc':[{'ssh_host':'192.168.0.10', 'ssh_user':'test_user', 'su_user':'root'},
+                            {'ssh_host':'192.168.0.12', 'ssh_user':'test_user2', 'su_pass':'paasswd','su_user':'root'}]}
+                ans = an.Ansiblator(inventory=inv)
+                ans.run("uname -a", now=True)
+        
+            prepare commands and run after::
+        
+                ans = an.Ansiblator(run_at_once=False)
+                ans.get(src="/tmp/file", dest="/tmp/")
+                ans.get(src="/tmp/file2", dest="/tmp/")
+                ans.run_all()
+        
+            make custom class::
+        
+                class Automatization(Ansiblator):
+        
+                    def update_server(self, su=True,sudo=False):
+                        self.run("apt-get update", su=su, sudo=sudo)
+                        self.run("apt-get upgrade -y", su=su, sudo=sudo)
+        
+            use custom class and more patterns together::
+        
+                ans = Automatization(pattern=['servers', 'production', 'test', 'pc'])
+                ans.update_server()
+        
+            With this, you can create full commands or functions and just pass to them
+            pattern and run at the end.
+        
+            Need all modules inside Ansible?::
+        
+                ans = an.Ansiblator()
+                ans.get_all_modules()
+                #now you should be able to do >
+                ans.user(name="hugo")
+                #or even
+                ans.pip(name="six", virtualenv="/tmp/venv", virtualenv_site_packages="yes")
+        
+        
+            More information
+            ================
+        
+            Ansiblator automatically saves returned json values for actuall runs, so
+            you can use them for testing and conditions. For example
+        
+            testing::
+        
+                return_code = ans.local("uname -a", now=True, use_shell=True)
+                return_code['contacted']
+        
+                or
+        
+                return_code = ans.local(["uname", "-a"], now=True, use_shell=False)
+                return_code['contacted']
+        
+            Todo
+            ====
+        
+            - make more tests
+            - improve logging
+            - improve DictToInventory mapper, so more options are possible, such as groups and so on
+        
+            Changes
+            =======
+        
+            - ability to run on more patterns
+            - fixes on more runs
+            - run all modules on ansible
+        
+            Info
+            ====
+        
+            For more information you can consult functions or actual Ansible documentation.
+            More information can be also used on http://www.pripravto.cz. You can also
+            contact us there.
+            
+Keywords: ansible,wrapper,automatization,api
+Platform: UNKNOWN
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: System Administrators
+Classifier: License :: OSI Approved :: GNU General Public License v3 (GPLv3)
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
