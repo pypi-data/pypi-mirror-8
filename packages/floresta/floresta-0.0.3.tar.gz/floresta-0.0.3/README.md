@@ -1,0 +1,20 @@
+# Floresta - VPC automation tool
+
+## Installing
+
+```sh
+pip install floresta
+```
+
+## Creating the whole VPC
+
+it takes around 10 minutes to create a brand new VPC from scratch: all
+the security groups, subnets, route tables, ec2 instances, internet
+gateway, stitch them together and run their ansible playbooks, if you want to.
+
+
+```sh
+# supposing that you keep your vpc yaml files inside of ./vpcs/
+
+floresta vpcs/myvpc.yml
+```
