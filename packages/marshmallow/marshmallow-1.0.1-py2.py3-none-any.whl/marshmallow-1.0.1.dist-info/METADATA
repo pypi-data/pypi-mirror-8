@@ -1,0 +1,302 @@
+Metadata-Version: 2.0
+Name: marshmallow
+Version: 1.0.1
+Summary: A lightweight library for converting complex datatypes to and from native Python datatypes.
+Home-page: https://github.com/sloria/marshmallow
+Author: Steven Loria
+Author-email: sloria1@gmail.com
+License: Copyright 2014 Steven Loria
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+Description: ********************************************
+        marshmallow: simplified object serialization
+        ********************************************
+        
+        .. image:: https://badge.fury.io/py/marshmallow.png
+            :target: http://badge.fury.io/py/marshmallow
+            :alt: Latest version
+        
+        .. image:: https://travis-ci.org/sloria/marshmallow.png?branch=master
+            :target: https://travis-ci.org/sloria/marshmallow
+            :alt: Travis-CI
+        
+        Homepage: http://marshmallow.rtfd.org/
+        
+        **marshmallow** is an ORM/ODM/framework-agnostic library for converting complex datatypes, such as objects, to and from native Python datatypes.
+        
+        .. code-block:: python
+        
+            from datetime import date
+            from marshmallow import Schema, fields, pprint
+        
+            class ArtistSchema(Schema):
+                name = fields.Str()
+        
+            class AlbumSchema(Schema):
+                title = fields.Str()
+                release_date = fields.Date()
+                artist = fields.Nested(ArtistSchema)
+        
+            bowie = dict(name='David Bowie')
+            album = dict(artist=bowie, title='Hunky Dory', release_date=date(1971, 12, 17))
+        
+            schema = AlbumSchema()
+            result = schema.dump(album)
+            pprint(result.data, indent=2)
+            # { 'artist': {'name': 'David Bowie'},
+            #   'release_date': '1971-12-17',
+            #   'title': 'Hunky Dory'}
+        
+        
+        In short, marshmallow schemas can be used to:
+        
+        - **Validate** input data.
+        - **Deserialize** input data to app-level objects.
+        - **Serialize** app-level objects to primitive Python types. The serialized objects can then be rendered to standard formats such as JSON for use in an HTTP API.
+        
+        Get It Now
+        ==========
+        
+        ::
+        
+            $ pip install -U marshmallow
+        
+        
+        Documentation
+        =============
+        
+        Full documentation is available at http://marshmallow.rtfd.org/ .
+        
+        
+        Requirements
+        ============
+        
+        - Python >= 2.6 or >= 3.3
+        
+        marshmallow has no external dependencies outside of the Python standard library, although `python-dateutil <https://pypi.python.org/pypi/python-dateutil>`_ is recommended for robust datetime deserialization.
+        
+        
+        License
+        =======
+        
+        MIT licensed. See the bundled `LICENSE <https://github.com/sloria/marshmallow/blob/master/LICENSE>`_ file for more details.
+        
+        
+        Changelog
+        ---------
+        
+        1.0.1 (2014-11-18)
+        ++++++++++++++++++
+        
+        Hotfix release.
+        
+        - Ensure that errors dictionary is correctly cleared on each call to Schema.dump and Schema.load.
+        
+        1.0.0 (2014-11-16)
+        ++++++++++++++++++
+        
+        Adds new features, speed improvements, better error handling, and updated documentation.
+        
+        - Add ``skip_missing`` ``class Meta`` option.
+        - A field's ``default`` may be a callable.
+        - Allow accessor function to be configured via the ``Schema.accessor`` decorator or the ``__accessor__`` class member.
+        - ``URL`` and ``Email`` fields are validated upon serialization.
+        - ``dump`` and ``load`` can receive the ``many`` argument.
+        - Move a number of utility functions from fields.py to utils.py.
+        - More useful ``repr`` for ``Field`` classes.
+        - If a field's default is ``fields.missing`` and its serialized value is ``None``, it will not be included in the final serialized result.
+        - Schema.dumps no longer coerces its result to a binary string on Python 3.
+        - *Backwards-incompatible*: Schema output is no longer an ``OrderedDict`` by default. If you want ordered field output, you must explicitly set the ``ordered`` option to ``True``.
+        - *Backwards-incompatible*: `error` parameter of the `Field` constructor is deprecated. Raise a `ValidationError` instead.
+        - Expanded test coverage.
+        - Updated docs.
+        
+        1.0.0-a (2014-10-19)
+        ++++++++++++++++++++
+        
+        Major reworking and simplification of the public API, centered around support for deserialization, improved validation, and a less stateful ``Schema`` class.
+        
+        * Rename ``Serializer`` to ``Schema``.
+        * Support for deserialization.
+        * Use the ``Schema.dump`` and ``Schema.load`` methods for serializing and deserializing, respectively.
+        * *Backwards-incompatible*: Remove ``Serializer.json`` and ``Serializer.to_json``. Use ``Schema.dumps`` instead.
+        * Reworked fields interface.
+        * *Backwards-incompatible*: ``Field`` classes implement ``_serialize`` and ``_deserialize`` methods. ``serialize`` and ``deserialize`` comprise the public API for a ``Field``. ``Field.format`` and ``Field.output`` have been removed.
+        * Add ``exceptions.ForcedError`` which allows errors to be raised during serialization (instead of storing errors in the ``errors`` dict).
+        * *Backwards-incompatible*: ``DateTime`` field serializes to ISO8601 format by default (instead of RFC822).
+        * *Backwards-incompatible*: Remove `Serializer.factory` method. It is no longer necessary with the ``dump`` method.
+        * *Backwards-incompatible*: Allow nesting a serializer within itself recursively. Use ``exclude`` or ``only`` to prevent infinite recursion.
+        * *Backwards-incompatible*: Multiple errors can be stored for a single field. The errors dictionary returned by ``load`` and ``dump`` have lists of error messages keyed by field name.
+        * Remove ``validated`` decorator. Validation occurs within ``Field`` methods.
+        * ``Function`` field raises a ``ValueError`` if an uncallable object is passed to its constructor.
+        * ``Nested`` fields inherit context from their parent.
+        * Add ``Schema.preprocessor`` and ``Schema.validator`` decorators for registering preprocessing and schema-level validation functions respectively.
+        * Custom error messages can be specified by raising a ``ValidationError`` within a validation function.
+        * Extra keyword arguments passed to a Field are stored as metadata.
+        * Fix ordering of field output.
+        * Fix behavior of the ``required`` parameter on ``Nested`` fields.
+        * Fix serializing keyed tuple types (e.g. ``namedtuple``) with ``class Meta`` options.
+        * Fix default value for ``Fixed`` and ``Price`` fields.
+        * Fix serialization of binary strings.
+        * ``Schemas`` can inherit fields from non-``Schema`` base classes (e.g. mixins). Also, fields are inherited according to the MRO (rather than recursing over base classes). Thanks Josh Carp.
+        * Add ``Str``, ``Bool``, and ``Int`` field class aliases.
+        
+        0.7.0 (2014-06-22)
+        ++++++++++++++++++
+        
+        * Add ``Serializer.error_handler`` decorator that registers a custom error handler.
+        * Add ``Serializer.data_handler`` decorator that registers data post-processing callbacks.
+        * *Backwards-incompatible*: ``process_data`` method is deprecated. Use the ``data_handler`` decorator instead.
+        * Fix bug that raised error when passing ``extra`` data together with ``many=True``. Thanks Joe Alcorn for reporting.
+        * If ``required=True`` validation is violated for a given ``Field``, it will raise an error message that is different from the message specified by the ``error`` argument. Thanks Anders Steinlein.
+        * More generic error message raised when required field is missing.
+        * ``validated`` decorator should only wrap a ``Field`` class's ``output`` method.
+        
+        0.6.0 (2014-06-03)
+        ++++++++++++++++++
+        
+        * Fix bug in serializing keyed tuple types, e.g. ``namedtuple`` and ``KeyedTuple``.
+        * Nested field can load a serializer by its class name as a string. This makes it easier to implement 2-way nesting.
+        * Make Serializer.data override-able.
+        
+        0.5.5 (2014-05-02)
+        ++++++++++++++++++
+        
+        * Add ``Serializer.factory`` for creating a factory function that returns a Serializer instance.
+        * ``MarshallingError`` stores its underlying exception as an instance variable. This is useful for inspecting errors.
+        * ``fields.Select`` is aliased to ``fields.Enum``.
+        * Add ``fields.__all__`` and ``marshmallow.__all__`` so that the modules can be more easily extended.
+        * Expose ``Serializer.OPTIONS_CLASS`` as a class variable so that options defaults can be overridden.
+        * Add ``Serializer.process_data`` hook that allows subclasses to manipulate the final output data.
+        
+        0.5.4 (2014-04-17)
+        ++++++++++++++++++
+        
+        * Add ``json_module`` class Meta option.
+        * Add ``required`` option to fields . Thanks `@DeaconDesperado <http://github.com/DeaconDesperado>`_.
+        * Tested on Python 3.4 and PyPy.
+        
+        0.5.3 (2014-03-02)
+        ++++++++++++++++++
+        
+        * Fix ``Integer`` field default. It is now ``0`` instead of ``0.0``. Thanks `@kalasjocke <http://github.com/kalasjocke>`_.
+        * Add ``context`` param to ``Serializer``. Allows accessing arbitrary objects in ``Function`` and ``Method`` fields.
+        * ``Function`` and ``Method`` fields raise ``MarshallingError`` if their argument is uncallable.
+        
+        
+        0.5.2 (2014-02-10)
+        ++++++++++++++++++
+        
+        * Enable custom field validation via the ``validate`` parameter.
+        * Add ``utils.from_rfc`` for parsing RFC datestring to Python datetime object.
+        
+        0.5.1 (2014-02-02)
+        ++++++++++++++++++
+        
+        * Avoid unnecessary attribute access in ``utils.to_marshallable_type`` for improved performance.
+        * Fix RFC822 formatting for localized datetimes.
+        
+        0.5.0 (2013-12-29)
+        ++++++++++++++++++
+        
+        * Can customize validation error messages by passing the ``error`` parameter to a field.
+        * *Backwards-incompatible*: Rename ``fields.NumberField`` -> ``fields.Number``.
+        * Add ``fields.Select``. Thanks @ecarreras.
+        * Support nesting a Serializer within itself by passing ``"self"`` into ``fields.Nested`` (only up to depth=1).
+        * *Backwards-incompatible*: No implicit serializing of collections. Must set ``many=True`` if serializing to a list. This ensures that marshmallow handles singular objects correctly, even if they are iterable.
+        * If Nested field ``only`` parameter is a field name, only return a single value for the nested object (instead of a dict) or a flat list of values.
+        * Improved performance and stability.
+        
+        0.4.1 (2013-12-01)
+        ++++++++++++++++++
+        
+        * An object's ``__marshallable__`` method, if defined, takes precedence over ``__getitem__``.
+        * Generator expressions can be passed to a serializer.
+        * Better support for serializing list-like collections (e.g. ORM querysets).
+        * Other minor bugfixes.
+        
+        0.4.0 (2013-11-24)
+        ++++++++++++++++++
+        
+        * Add ``additional`` `class Meta` option.
+        * Add ``dateformat`` `class Meta` option.
+        * Support for serializing UUID, date, time, and timedelta objects.
+        * Remove ``Serializer.to_data`` method. Just use ``Serialize.data`` property.
+        * String field defaults to empty string instead of ``None``.
+        * *Backwards-incompatible*: ``isoformat`` and ``rfcformat`` functions moved to utils.py.
+        * *Backwards-incompatible*: Validation functions moved to validate.py.
+        * *Backwards-incompatible*: Remove types.py.
+        * Reorder parameters to ``DateTime`` field (first parameter is dateformat).
+        * Ensure that ``to_json`` returns bytestrings.
+        * Fix bug with including an object property in ``fields`` Meta option.
+        * Fix bug with passing ``None`` to a serializer.
+        
+        0.3.1 (2013-11-16)
+        ++++++++++++++++++
+        
+        * Fix bug with serializing dictionaries.
+        * Fix error raised when serializing empty list.
+        * Add ``only`` and ``exclude`` parameters to Serializer constructor.
+        * Add ``strict`` parameter and option: causes Serializer to raise an error if invalid data are passed in, rather than storing errors.
+        * Updated Flask + SQLA example in docs.
+        
+        0.3.0 (2013-11-14)
+        ++++++++++++++++++
+        
+        * Declaring Serializers just got easier. The *class Meta* paradigm allows you to specify fields more concisely. Can specify ``fields`` and ``exclude`` options.
+        * Allow date formats to be changed by passing ``format`` parameter to ``DateTime`` field constructor. Can either be ``"rfc"`` (default), ``"iso"``, or a date format string.
+        * More useful error message when declaring fields as classes (instead of an instance, which is the correct usage).
+        * Rename MarshallingException -> MarshallingError.
+        * Rename marshmallow.core -> marshmallow.serializer.
+        
+        0.2.1 (2013-11-12)
+        ++++++++++++++++++
+        
+        * Allow prefixing field names.
+        * Fix storing errors on Nested Serializers.
+        * Python 2.6 support.
+        
+        0.2.0 (2013-11-11)
+        ++++++++++++++++++
+        
+        * Field-level validation.
+        * Add ``fields.Method``.
+        * Add ``fields.Function``.
+        * Allow binding of extra data to a serialized object by passing the ``extra`` param when initializing a ``Serializer``.
+        * Add ``relative`` paramater to ``fields.Url`` that allows for relative URLs.
+        
+        0.1.0 (2013-11-10)
+        ++++++++++++++++++
+        
+        * First release.
+        
+Keywords: serialization,rest,json,api,marshal,marshalling,deserialization,validation,schema
+Platform: UNKNOWN
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 2
+Classifier: Programming Language :: Python :: 2.6
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.3
+Classifier: Programming Language :: Python :: 3.4
+Classifier: Programming Language :: Python :: Implementation :: CPython
+Classifier: Programming Language :: Python :: Implementation :: PyPy
