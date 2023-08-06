@@ -1,0 +1,127 @@
+"""
+Flask-MarcoPolo Base Macros
+"""
+
+#---- webassets_header() -------------------------------------------------------
+# Define CSS, JS to be included in the header
+{% macro webassets_header(bootswatch_theme="superhero") %}
+
+    {%- assets output="gen/style.css",
+        "vendor/font-awesome/css/font-awesome.min.css",
+        "vendor/bootstrap/css/bootstrap.min.css",
+        "vendor/bootswatch/" + bootswatch_theme + ".css",
+        "css/style.css"
+    %}
+        <link href="{{ ASSET_URL }}" type="text/css" rel="stylesheet">
+    {%- endassets %}
+
+
+    {%- assets
+        "vendor/jquery/jquery.min.js",
+        "vendor/bootstrap/js/bootstrap.min.js"
+    %}
+        <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+    {%- endassets %}
+{% endmacro %}
+
+
+#---- webassets_footer() -------------------------------------------------------
+# Define all javascript to be included in the footer of the page
+{% macro webassets_footer() %}
+    {%- assets
+            "js/app.js"
+    %}
+        <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+    {%- endassets %}
+
+{% endmacro %}
+
+
+#---- flashed_messages() -------------------------------------------------------
+# Render the flashed messages set
+{% macro flashed_messages() %}
+    {% for category, message in __flashed_messages__ %}
+        <div class="alert alert-{{category|replace('error', 'danger')}}">
+            {{message}}
+        </div>
+    {%endfor%}
+{% endmacro %}
+
+#---- create_list_menu ---------------------------------------------------------
+{% macro create_list_menu(items) %}
+    <ul class="list-group">
+        {% for href, id, caption in items %}
+            <li class="list-group-item {% if id == get_page_info('active_page') %}active{% endif%}">
+                <a href="{{ href|e }}">{{ caption|e }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+{% endmacro %}
+
+#---- alert_message() ----------------------------------------------------------
+{% macro alert_message(message, category="info", dismissible=False) %}
+    <div class="alert
+        alert-{{category|replace('error', 'danger')}}
+        {% if dismissible %}alert-dismissible{%endif%}
+        " role="alert">
+        {% if dismissible %}
+         <button type="button" class="close" data-dismiss="alert">
+             <span aria-hidden="true">&times;</span>
+             <span class="sr-only">Close</span>
+         </button>
+        {%endif%}
+        {{message}}
+    </div>
+{% endmacro %}
+
+
+#---- show_pagination() --------------------------------------------------------
+{% macro show_pagination(paginator, endpoint) %}
+
+  <p>Showing {{ paginator.showing }} or {{ paginator.total }}</p>
+
+    <ul class="pagination">
+      {%- if paginator.has_prev %}
+        <li><a href="{{ url_for(endpoint, page=paginator.prev_num, **kwargs) }}"
+         rel="me prev">«</a></li>
+      {% else %}
+        <li class="disabled"><span>«</span></li>
+      {%- endif %}
+
+      {%- for page in paginator.pages %}
+        {% if page %}
+          {% if page != paginator.page %}
+            <li><a href="{{ url_for(endpoint, page=page, **kwargs) }}"
+             rel="me">{{ page }}</a></li>
+          {% else %}
+            <li class="current"><span>{{ page }}</span></li>
+          {% endif %}
+        {% else %}
+          <li><span class=ellipsis>…</span></li>
+        {% endif %}
+      {%- endfor %}
+
+      {%- if paginator.has_next %}
+        <li><a href="{{ url_for(endpoint, page=paginator.next_num, **kwargs) }}"
+         rel="me next">»</a></li>
+      {% else %}
+        <li class="disabled"><span>»</span></li>
+      {%- endif %}
+    </ul>
+{% endmacro %}
+
+
+#---- form_select_options() --------------------------------------------------------
+{% macro form_select_options(name, data_dict, selected_option=None, class_name="form-control", blank_option=True) %}
+
+    <select name="{{name}}" class="{{class_name}}">
+        {% if blank_option %}
+            <option></option>
+        {% endif %}
+
+        {%- for key, value in data_dict.items() %}
+            <option value="{{key}}" {% if key == selected_option %} SELECTED {% endif%}>{{value}}</option>
+        {%- endfor %}
+    </select>
+
+{% endmacro %}
