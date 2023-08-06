@@ -1,0 +1,15 @@
+# This file describes the network interfaces available on your system
+# and how to activate them. For more information, see interfaces(5).
+
+# The loopback network interface
+auto lo
+iface lo inet loopback
+
+{% for iface in interfaces %}{% if iface.configured %}
+auto {{ iface }}
+iface {{ iface.name }} inet {{ iface.mode }}
+{% if iface.mode == 'static' %}
+    address {{ iface.address }}
+    netmask {{ iface.netmask }}
+{% endif %}
+{% endif %}{% endfor %}
