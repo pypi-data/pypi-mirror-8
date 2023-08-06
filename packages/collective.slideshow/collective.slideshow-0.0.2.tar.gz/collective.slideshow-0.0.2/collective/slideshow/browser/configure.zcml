@@ -1,0 +1,23 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:plone="http://namespaces.plone.org/plone"
+i18n_domain="collective.slideshow">
+
+    <browser:page
+         for="*"
+         name="get_slideshow_item"
+         class=".views.getSlideshowItem"
+         template="templates/slideshow_item.pt"
+         permission="zope2.View"
+    />
+
+    <browser:page
+         for="plone.app.contenttypes.interfaces.IFolder"
+         name="slideshowListing"
+         class=".views.slideshowListingView"
+         template="templates/slideshowListing.pt"
+         permission="zope2.View"
+    />
+
+</configure>
