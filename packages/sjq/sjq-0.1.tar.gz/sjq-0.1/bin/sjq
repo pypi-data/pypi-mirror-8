@@ -1,0 +1,137 @@
+#!/usr/bin/env python
+'''
+Simple Job Queue (SJQ)
+
+Start the server
+
+- or - 
+
+Connect to the server as a client
+  - submit tasks
+  - get status of tasks
+  - shutdown server
+
+'''
+
+import os
+import sys
+import socket
+
+try:
+    import sjq
+except:
+    sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..'))
+    import sjq
+
+import sjq.server
+import sjq.client
+
+def submit(conn, *args):
+    kwargs = {}
+    last = None
+    src = ''
+    for arg in args:
+        if arg == '-env':
+            kwargs['env'] = True
+        elif last:
+            kwargs[last] = arg
+            last = None
+        elif arg[0] == '-':
+            last = arg[1:]
+        elif not src and os.path.exists(os.path.expanduser(arg)):
+            src = ''
+            name = os.path.basename(arg)
+            with open(os.path.expanduser(arg)) as f:
+                for line in f:
+                    src += line
+
+    if not src:
+        for line in sys.stdin:
+            src += line
+
+    if not 'name' in kwargs:
+        kwargs['name'] = name
+
+    print conn.submit(src, **kwargs)
+
+
+if __name__ == '__main__':
+    args = {}
+    last = None
+
+    server = False
+    cmd = None
+    cmdargs = []
+
+    verbose = False
+
+    for arg in sys.argv[1:]:
+        if cmd and cmd != 'server':
+            cmdargs.append(arg)
+        elif cmd == 'server':
+            if last == '-l':
+                args['sjq.logfile'] = arg
+                last = None
+            elif last == '-s':
+                args['sjq.socket'] = arg
+                last = None
+            elif last == '-waittime':
+                args['sjq.waittime'] = int(arg)
+                last = None
+            elif last == '-procs':
+                args['sjq.procs'] = int(arg)
+                last = None
+            elif last == '-mem':
+                args['sjq.mem'] = arg
+                last = None
+            elif arg == '-d':
+                args['sjq.daemon'] = True
+            elif arg == '-f':
+                args['sjq.daemon'] = False
+            elif arg == '-autoshutdown':
+                args['sjq.autoshutdown'] = True
+            elif arg == '-no-autoshutdown':
+                args['sjq.autoshutdown'] = False
+            elif arg == '-v':
+                verbose = True
+            elif arg[0] == '-':
+                last = arg
+        elif arg == '-v':
+            verbose = True
+        elif not cmd and arg in ['status', 'submit', 'shutdown', 'ping' ,'server', 'kill']:
+            cmd = arg
+        else:
+            sys.stderr.write("Unknown option: %s\n\n" % arg)
+            sys.exit(1)
+
+    if cmd == 'server':
+        sjq.server.start(verbose, args)
+    else:
+        try:
+            conn = sjq.client.SJQClient(verbose)
+        except socket.error:
+            sys.stderr.write("SJQ server not found!\n")
+            sys.exit(1)
+
+            # sjq.server.start(verbose, args, daemon=True)
+            # sys.stderr.write("OK\n")
+            # time.sleep(2)
+
+            # conn = sjq.client.SJQClient(verbose)
+
+            pass
+
+        if cmd == 'status':
+            result = conn.status(*cmdargs)
+            for line in result.split('\n'):
+                sys.stdout.write('%s\n' % line.rstrip())
+        elif cmd == 'submit':
+            submit(conn, *cmdargs)
+        elif cmd == 'ping':
+            print conn.ping()
+        elif cmd == 'kill':
+            print conn.kill(*cmdargs)
+        elif cmd == 'shutdown':
+            print conn.shutdown()
+
+        conn.close()
