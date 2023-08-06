@@ -1,0 +1,44 @@
+#!/usr/bin/python
+# -*- coding:utf-8 -*-
+
+# Author: Pablo Saavedra Rodinho
+# Contact: pablo.saavedra@interoud.com
+
+import os
+import sys
+import time
+import calendar
+import json
+
+reload(sys)
+sys.setdefaultencoding('utf-8')
+print sys.getdefaultencoding()
+
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings")
+
+from optparse import OptionParser
+from liver.models import Record
+import logging
+logger = logging.getLogger("liver")
+
+parser = OptionParser()
+(options, args) = parser.parse_args()
+
+now_milliseconds = int(time.time())
+
+for r in Record.objects.filter(to_delete=False).iterator():
+    print r
+    try:
+        insertion_date = \
+            float(calendar.timegm(r.insertion_date.utctimetuple()))
+        try:
+            availability_window = \
+            json.loads(r.metadata_json)["availability_window"]
+        except Exception as e:
+            availability_window = 0
+        if now_milliseconds > insertion_date + availability_window :
+            logger.info ( "Set record %s to be deleted" % r)
+            r.to_delete = True
+            r.save()
+    except Exception as e:
+        logger.error( "Error deleting asset: %s" % e)
