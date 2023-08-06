@@ -1,0 +1,58 @@
+{% load i18n static cms_tags menu_tags sekizai_tags  %}
+
+
+
+{%addtoblock "js" %} <script src="//code.jquery.com/jquery-1.10.2.js" > </script> {%endaddtoblock%}
+
+{%addtoblock "js" %}<script > if($ == undefined) $ = $ || CMS.$ ; </script>{%endaddtoblock%}
+
+{%addtoblock "js" %}  <script src="//code.jquery.com/ui/1.11.2/jquery-ui.min.js"></script>{%endaddtoblock%}
+{%addtoblock "css" %} <link rel="stylesheet" href="{% static 'cmsplugin_tab_ui/css/tab.css' %}"> {%endaddtoblock%}
+
+{%addtoblock "css" %}
+<style>
+.ui-tabs-nav {
+	{% if object.align == 'h'%}
+    display: inline-flex;
+    {%endif%}
+    list-style: none outside none;
+    margin: 5px;
+
+}
+</style>
+{%endaddtoblock%}
+
+
+<div id="tabs_list{{object.pk}}" class="{{object.custom_classes}}">
+			{%with 1 as step %}
+<ul>
+			    {% for plugin in object.child_plugin_instances %}			    
+		    
+					{% with forloop as parentloop %}{% render_plugin plugin %}{% endwith %}
+
+			    {% endfor %} 
+</ul>			
+			{% endwith %}
+			
+			{%with 2 as step %}
+			    {% for plugin in object.child_plugin_instances %}
+					{% with forloop as parentloop %}{% render_plugin plugin %}{% endwith %}
+			    {% endfor %} 
+			
+			{% endwith %}
+</div>
+
+
+
+{%addtoblock "js" %}
+ <script>
+$(function() {
+	{% if object.align == 'h'%}
+		$( "#tabs_list{{object.pk}}" ).tabs();
+	{%else%}
+		$( "#tabs_list{{object.pk}}" ).tabs().addClass( "ui-tabs-vertical ui-helper-clearfix" );
+		$( "#tabs_list{{object.pk}} li" ).removeClass( "ui-corner-top" ).addClass( "ui-corner-left" );
+	{%endif%}
+});
+</script>
+{%endaddtoblock%}
