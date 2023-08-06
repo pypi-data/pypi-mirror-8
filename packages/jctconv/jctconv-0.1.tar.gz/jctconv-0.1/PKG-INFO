@@ -1,0 +1,109 @@
+Metadata-Version: 1.1
+Name: jctconv
+Version: 0.1
+Summary: Pure-Python Japanese character interconverter for Hiragana, Katakana, Hankaku and Zenkaku
+Home-page: https://github.com/ikegami-yukino/jctconv
+Author: Yukino Ikegami
+Author-email: yukino0131@me.com
+License: MIT License
+Description: jctconv
+        ==========
+        .. image:: https://badge.fury.io/py/jctconv.png
+            :target: http://badge.fury.io/py/jctconv
+        
+        .. image:: https://travis-ci.org/ikegami-yukino/jctconv.png?branch=master
+            :target: https://travis-ci.org/ikegami-yukino/jctconv
+        
+        .. image:: https://coveralls.io/repos/ikegami-yukino/jctconv/badge.png
+            :target: https://coveralls.io/r/ikegami-yukino/jctconv
+        
+        
+        jctconv (Japanese Character Type Converter) はひらがな・カタカナ・全角・半角の文字種変換を高速に行います。
+        Pythonのみで実装されているので、Cコンパイラが使えない環境でも利用できます。
+        
+        normalizeメソッドは、unicodedata.normalize を日本語処理向けに特化した拡張を行っています。
+        具体的には以下のように変換します。
+        
+        ::
+        
+          u'〜' -> u'ー',
+          u'～' -> u'ー',
+          u"’" -> "'",
+          u'”' -> '"',
+          u'―' -> '-',
+          u'‐' -> '-'
+        
+        INSTALLATION
+        ==============
+        
+        ::
+        
+         $ pip install jctconv
+        
+        
+        USAGE
+        ============
+        
+        >>> import jctconv
+        >>> jctconv.hira2kata(u'ともえまみ')
+        トモエマミ
+        >>> jctconv.hira2hkata(u'ともえまみ')
+        ﾄﾓｴﾏﾐ
+        >>> jctconv.kata2hira(u'巴マミ')
+        巴まみ
+        >>> jctconv.h2z(u'ﾃｨﾛ･ﾌｨﾅｰﾚ')
+        ティロ･フィナーレ
+        >>> jctconv.h2z(u'abc', ascii=True)
+        ａｂｃ
+        >>> jctconv.h2z(u'123', digit=True)
+        １２３
+        >>> jctconv.h2z(u'ｱabc123', kana=False, digit=True, ascii=True)
+        ｱａｂｃ１２３
+        >>> jctconv.z2h(u'ティロ・フィナーレ')
+        ﾃｨﾛ・ﾌｨﾅｰﾚ
+        >>> jctconv.z2h(u'ａｂｃ', ascii=True)
+        abc
+        >>> jctconv.z2h(u'１２３', digit=True)
+        123
+        >>> jctconv.z2h(u'アａｂｃ１２３', kana=False, digit=True, ascii=True)
+        アabc123
+        >>> jctconv.normalize(u'ティロ･フィナ〜レ','NFKC')
+        ティロ・フィナーレ
+        
+        
+        CHANGES
+        =======
+        
+        0.1 (2014-11-24)
+        ------------------
+        
+        - Add some Japanese characters to convert table (ゝゞ・「」。、)
+        - Decresing memory usage
+        - Some function names are deprecated (hankaku2zenkaku, zenkaku2hankaku, H2K, H2hK, K2H)
+        
+        
+        0.0.7 (2014-03-22)
+        ------------------
+        
+        z2h and h2z allow mojimoji-like target character type determination.
+        Bug fix about Half Kana conversion.
+        
+        
+Keywords: japanese converter,half-width kana,Hiragana,Katakana,Hankaku,Zenkaku
+Platform: POSIX
+Platform: Windows
+Platform: Unix
+Platform: MacOS
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: Information Technology
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Natural Language :: Japanese
+Classifier: Operating System :: MacOS
+Classifier: Operating System :: Microsoft
+Classifier: Operating System :: POSIX
+Classifier: Programming Language :: Python :: 2.6
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Programming Language :: Python :: 3.3
+Classifier: Programming Language :: Python :: 3.4
+Classifier: Topic :: Text Processing
