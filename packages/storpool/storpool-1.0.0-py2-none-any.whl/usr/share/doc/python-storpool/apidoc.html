@@ -1,0 +1,3363 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Storpool API Reference</title>
+		<style>
+			pre {
+				border: 1px dashed #333333;
+				padding: 1em;
+				margin-top: 5px;
+				margin-bottom: 5px;
+				overflow: auto;
+				width: 95%;
+				color: #000066;
+			}
+			
+			pre var {
+				font-weight: bold;
+				color: #FF0000;
+			}
+			
+			strong {
+				font-style: italic;
+				color: #000066;
+			}
+			
+			li.attribute {
+				margin-bottom: 0.2em;
+			}
+		</style>
+	</head>
+	<body>
+	
+<h1>Storpool API Reference</h1>
+<ol>
+<li><a href="#Peers">Peers</a></li>
+<ol>
+<li><a href="#NetworkPeersList">List Peers</a></li>
+</ol>
+<li><a href="#Tasks">Tasks</a></li>
+<ol>
+<li><a href="#TasksList">List tasks</a></li>
+</ol>
+<li><a href="#Services">Services</a></li>
+<ol>
+<li><a href="#ServicesList">List all Storpool services</a></li>
+<li><a href="#ServersListBlocked">List all blocked Storpool servers</a></li>
+</ol>
+<li><a href="#Servers">Servers</a></li>
+<ol>
+<li><a href="#ServersList">List all Storpool servers</a></li>
+<li><a href="#ServerDisksList">List all disks on server</a></li>
+<li><a href="#ServerDiskDescribe">Describe a disk on server</a></li>
+</ol>
+<li><a href="#Clients">Clients</a></li>
+<ol>
+<li><a href="#ClientsConfigDump">Get current configuration for all clients</a></li>
+<li><a href="#ClientConfigWait">Wait until client updates to current configuration</a></li>
+<li><a href="#ClientActiveRequests">List all active requests on client</a></li>
+</ol>
+<li><a href="#Disks">Disks</a></li>
+<ol>
+<li><a href="#DisksList">List all disks</a></li>
+<li><a href="#DiskDescribe">Describe a disk</a></li>
+<li><a href="#DiskGetInfo">Get disk info</a></li>
+<li><a href="#DiskEject">Eject a disk</a></li>
+<li><a href="#DiskForget">Foget a disk</a></li>
+<li><a href="#DiskSoftEject">Soft-eject a disk</a></li>
+<li><a href="#DiskSoftEjectPause">Pause disk soft-eject</a></li>
+<li><a href="#DiskSoftEjectCancel">Cancel disk soft-eject</a></li>
+<li><a href="#DiskSetDescription">Set a disk&apos;s description</a></li>
+<li><a href="#DiskActiveRequests">List all active requests on disk</a></li>
+</ol>
+<li><a href="#Volumes">Volumes</a></li>
+<ol>
+<li><a href="#VolumesList">List all volumes</a></li>
+<li><a href="#VolumesGetStatus">Get volume and snapshot status</a></li>
+<li><a href="#Volume">List a single volume</a></li>
+<li><a href="#VolumeDescribe">Describe a volume</a></li>
+<li><a href="#VolumeGetInfo">Get volume info</a></li>
+<li><a href="#VolumeListSnapshots">List parent snapshots for volume</a></li>
+<li><a href="#VolumeCreate">Create a new volume</a></li>
+<li><a href="#VolumeUpdate">Update a volume</a></li>
+<li><a href="#VolumeFreeze">Freeze a volume</a></li>
+<li><a href="#VolumeRebase">Rebase a volume</a></li>
+<li><a href="#VolumeDelete">Delete a volume</a></li>
+</ol>
+<li><a href="#Snapshots">Snapshots</a></li>
+<ol>
+<li><a href="#SnapshotsList">List all snapshots</a></li>
+<li><a href="#Snapshot">List a single snapshots</a></li>
+<li><a href="#SnapshotDescribe">Describe a snapshot</a></li>
+<li><a href="#SnapshotGetInfo">Get snapshot info</a></li>
+<li><a href="#VolumeSnapshot">Snapshot a volume</a></li>
+<li><a href="#SnapshotUpdate">Update snapshot</a></li>
+<li><a href="#SnapshotRebase">Rebase snapshot</a></li>
+<li><a href="#SnapshotDelete">Delete snapshot</a></li>
+</ol>
+<li><a href="#Volume-Rights">Volume Rights</a></li>
+<ol>
+<li><a href="#AttachmentsList">List all Attachments</a></li>
+<li><a href="#VolumesReassign">Reassign volumes and/or snapshots</a></li>
+</ol>
+<li><a href="#Placement-Groups">Placement Groups</a></li>
+<ol>
+<li><a href="#PlacementGroupsList">List all placement groups</a></li>
+<li><a href="#PlacementGroupDescribe">Describe single placement group</a></li>
+<li><a href="#PlacementGroupUpdate">Create and/or update placement group</a></li>
+<li><a href="#PlacementGroupDelete">Delete placement group</a></li>
+</ol>
+<li><a href="#Volume-Templates">Volume Templates</a></li>
+<ol>
+<li><a href="#VolumeTemplatesList">List all volume templates</a></li>
+<li><a href="#VolumeTemplateDescribe">Describe single volume template</a></li>
+<li><a href="#VolumeTemplateCreate">Create volume template</a></li>
+<li><a href="#VolumeTemplateUpdate">Update volume template</a></li>
+<li><a href="#VolumeTemplateDelete">Delete volume template</a></li>
+</ol>
+<li><a href="#Volume-Relocator">Volume Relocator</a></li>
+<ol>
+<li><a href="#VolumeRelocatorOn">Turn-ON relocator</a></li>
+<li><a href="#VolumeRelocatorOff">Turn-OFF relocator</a></li>
+<li><a href="#VolumeRelocatorStatus">Get relocator status</a></li>
+</ol>
+<li><a href="#Balancer">Balancer</a></li>
+<ol>
+<li><a href="#VolumeBalancerOn">Turn-ON balancer</a></li>
+<li><a href="#VolumeBalancerOff">Turn-OFF balancer</a></li>
+<li><a href="#VolumeBalancerStatus">Get balancer status</a></li>
+</ol>
+</ol>
+<h2 id="Peers">Peers</h2>
+<p></p>
+<h3 id="NetworkPeersList">List Peers (<strong>NetworkPeersList</strong>)</h3>
+<ol><li>Request:
+<ul><li>Example HTTP Request:
+<pre><code>GET /ctrl/1.0/NetworkPeersList HTTP/1.0
+Host: <var>SP_API_HOST</var>:<var>SP_API_PORT</var>
+Authorization: Storpool v1:<var>SP_AUTH_TOKEN</var>
+Content-Length: <var>LENGTH</var>
+
+</code></pre></li><li>Method: <em>GET</em></li>
+<li>Path: <em>/ctrl/1.0/NetworkPeersList</em></li>
+<li>Arguments: <em>No arguments</em></li>
+<li>Json: <em>Either no JSON or {}</em></li>
+</ul>
+</li>
+<li>Response:
+<ul>
+<li>Example HTTP Response:
+<pre><code>HTTP/1.0 200 OK
+Connection: close
+Content-Type: application/json
+Cache-control: private
+Content-Length: <var>LENGTH</var>
+
+{
+  "generation": <var>generation</var>,
+  "data": {
+    "<var>PeerID</var>": {
+      "networks": {
+        "<var>NetID</var>": {
+          "mac": <var>MAC Address</var>
+        }, ...}
+    }, ...}
+}
+</code></pre></li>
+<li>Response Data:
+A dict from PeerID to PeerDesc
+<ul>
+<li>Key type: <strong>PeerID</strong>, integer, 0 &lt;= value &lt;= 65535</li>
+<li>Value type: <strong>PeerDesc</strong><ul>
+<li class="attribute">networks: A dict from NetID to NetDesc
+<ul>
+<li>Key type: <strong>NetID</strong>, integer, 0 &lt;= value &lt;= 3</li>
+<li>Value type: <strong>NetDesc</strong><ul>
+<li class="attribute">mac: <strong>MAC Address</strong>, string, regex ^([0-9a-fA-F]{2}:){5}[0-9a-fA-F]{2}$</li></ul>
+</li>
+</ul>
+</li></ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<h2 id="Tasks">Tasks</h2>
+<p></p>
+<h3 id="TasksList">List tasks (<strong>TasksList</strong>)</h3>
+<p>List currently active recovery tasks.</p>
+<ol><li>Request:
+<ul><li>Example HTTP Request:
+<pre><code>GET /ctrl/1.0/TasksList HTTP/1.0
+Host: <var>SP_API_HOST</var>:<var>SP_API_PORT</var>
+Authorization: Storpool v1:<var>SP_AUTH_TOKEN</var>
+Content-Length: <var>LENGTH</var>
+
+</code></pre></li><li>Method: <em>GET</em></li>
+<li>Path: <em>/ctrl/1.0/TasksList</em></li>
+<li>Arguments: <em>No arguments</em></li>
+<li>Json: <em>Either no JSON or {}</em></li>
+</ul>
+</li>
+<li>Response:
+<ul>
+<li>Example HTTP Response:
+<pre><code>HTTP/1.0 200 OK
+Connection: close
+Content-Type: application/json
+Cache-control: private
+Content-Length: <var>LENGTH</var>
+
+{
+  "generation": <var>generation</var>,
+  "data": [{
+    "allObjects": <var>int</var>,
+    "completedObjects": <var>int</var>,
+    "diskId": <var>DiskID</var>,
+    "dispatchedObjects": <var>int</var>,
+    "transactionId": <var>long</var>,
+    "unresolvedObjects": <var>int</var>
+  }, ...]
+}
+</code></pre></li>
+<li>Response Data:
+A list of Task
+<ul>Element type: <strong>Task</strong><ul>
+<li class="attribute">allObjects: <strong>int</strong>, An integer value.</li><li class="attribute">completedObjects: <strong>int</strong>, An integer value.</li><li class="attribute">diskId: <strong>DiskID</strong>, integer, 0 &lt;= value &lt;= 4095</li><li class="attribute">dispatchedObjects: <strong>int</strong>, An integer value.</li><li class="attribute">transactionId: <strong>long</strong>, A long integer value.</li><li class="attribute">unresolvedObjects: <strong>int</strong>, An integer value.</li></ul>
+
+</li></ul>
+</li>
+</ul>
+</li>
+</ol>
+<h2 id="Services">Services</h2>
+<p></p>
+<h3 id="ServicesList">List all Storpool services (<strong>ServicesList</strong>)</h3>
+<ol><li>Request:
+<ul><li>Example HTTP Request:
+<pre><code>GET /ctrl/1.0/ServicesList HTTP/1.0
+Host: <var>SP_API_HOST</var>:<var>SP_API_PORT</var>
+Authorization: Storpool v1:<var>SP_AUTH_TOKEN</var>
+Content-Length: <var>LENGTH</var>
+
+</code></pre></li><li>Method: <em>GET</em></li>
+<li>Path: <em>/ctrl/1.0/ServicesList</em></li>
+<li>Arguments: <em>No arguments</em></li>
+<li>Json: <em>Either no JSON or {}</em></li>
+</ul>
+</li>
+<li>Response:
+<ul>
+<li>Example HTTP Response:
+<pre><code>HTTP/1.0 200 OK
+Connection: close
+Content-Type: application/json
+Cache-control: private
+Content-Length: <var>LENGTH</var>
+
+{
+  "generation": <var>generation</var>,
+  "data": {
+    "clients": {
+      "<var>CientID</var>": {
+        "id": <var>CientID</var>,
+        "nodeId": <var>NodeID</var>,
+        "status": <var>ClientStatus</var>,
+        "version": <var>string</var>
+      }, ...},
+    "mgmt": {
+      "id": <var>65535</var>,
+      "nodeId": <var>NodeID</var>,
+      "status": <var>ClientStatus</var>,
+      "version": <var>string</var>
+    },
+    "servers": {
+      "<var>ServerID</var>": {
+        "id": <var>ServerID</var>,
+        "missingDisks": [<var>DiskID</var>, ...],
+        "nodeId": <var>NodeID</var>,
+        "pendingDisks": [<var>DiskID</var>, ...],
+        "status": <var>ServerStatus</var>,
+        "version": <var>string</var>
+      }, ...}
+  }
+}
+</code></pre></li>
+<li>Response Data:
+<strong>ClusterStatus</strong><ul>
+<li class="attribute">clients: A dict from CientID to Client
+<ul>
+<li>Key type: <strong>CientID</strong>, integer, 1 &lt;= value &lt;= 32768</li>
+<li>Value type: <strong>Client</strong><ul>
+<li class="attribute">id: <strong>CientID</strong>, integer, 1 &lt;= value &lt;= 32768</li><li class="attribute">nodeId: <strong>NodeID</strong>, integer, 0 &lt;= value &lt;= 63</li><li class="attribute">status: <strong>ClientStatus</strong>, One of {running, down}</li><li class="attribute">version: <strong>string</strong>, A string value.</li></ul>
+</li>
+</ul>
+</li><li class="attribute">mgmt: <strong>Mgmt</strong><ul>
+<li class="attribute">id: <strong>65535</strong>, The constant value 65535.</li><li class="attribute">nodeId: <strong>NodeID</strong>, integer, 0 &lt;= value &lt;= 63</li><li class="attribute">status: <strong>ClientStatus</strong>, One of {running, down}</li><li class="attribute">version: <strong>string</strong>, A string value.</li></ul>
+</li><li class="attribute">servers: A dict from ServerID to Server
+<ul>
+<li>Key type: <strong>ServerID</strong>, integer, 1 &lt;= value &lt;= 32768</li>
+<li>Value type: <strong>Server</strong><ul>
+<li class="attribute">id: <strong>ServerID</strong>, integer, 1 &lt;= value &lt;= 32768</li><li class="attribute">missingDisks: A list of DiskID
+<ul>Element type: <strong>DiskID</strong>, integer, 0 &lt;= value &lt;= 4095
+</li></ul>
+</li><li class="attribute">nodeId: <strong>NodeID</strong>, integer, 0 &lt;= value &lt;= 63</li><li class="attribute">pendingDisks: A list of DiskID
+<ul>Element type: <strong>DiskID</strong>, integer, 0 &lt;= value &lt;= 4095
+</li></ul>
+</li><li class="attribute">status: <strong>ServerStatus</strong>, One of {running, waiting, booting, down}</li><li class="attribute">version: <strong>string</strong>, A string value.</li></ul>
+</li>
+</ul>
+</li></ul>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="ServersListBlocked">List all blocked Storpool servers (<strong>ServersListBlocked</strong>)</h3>
+<ol><li>Request:
+<ul><li>Example HTTP Request:
+<pre><code>GET /ctrl/1.0/ServersListBlocked HTTP/1.0
+Host: <var>SP_API_HOST</var>:<var>SP_API_PORT</var>
+Authorization: Storpool v1:<var>SP_AUTH_TOKEN</var>
+Content-Length: <var>LENGTH</var>
+
+</code></pre></li><li>Method: <em>GET</em></li>
+<li>Path: <em>/ctrl/1.0/ServersListBlocked</em></li>
+<li>Arguments: <em>No arguments</em></li>
+<li>Json: <em>Either no JSON or {}</em></li>
+</ul>
+</li>
+<li>Response:
+<ul>
+<li>Example HTTP Response:
+<pre><code>HTTP/1.0 200 OK
+Connection: close
+Content-Type: application/json
+Cache-control: private
+Content-Length: <var>LENGTH</var>
+
+{
+  "generation": <var>generation</var>,
+  "data": {
+    "clients": {
+      "<var>CientID</var>": {
+        "id": <var>CientID</var>,
+        "nodeId": <var>NodeID</var>,
+        "status": <var>ClientStatus</var>,
+        "version": <var>string</var>
+      }, ...},
+    "mgmt": {
+      "id": <var>65535</var>,
+      "nodeId": <var>NodeID</var>,
+      "status": <var>ClientStatus</var>,
+      "version": <var>string</var>
+    },
+    "servers": {
+      "<var>ServerID</var>": {
+        "id": <var>ServerID</var>,
+        "missingDisks": [<var>DiskID</var>, ...],
+        "nodeId": <var>NodeID</var>,
+        "pendingDisks": [<var>DiskID</var>, ...],
+        "status": <var>ServerStatus</var>,
+        "version": <var>string</var>
+      }, ...}
+  }
+}
+</code></pre></li>
+<li>Response Data:
+<strong>ClusterStatus</strong><ul>
+<li class="attribute">clients: A dict from CientID to Client
+<ul>
+<li>Key type: <strong>CientID</strong>, integer, 1 &lt;= value &lt;= 32768</li>
+<li>Value type: <strong>Client</strong><ul>
+<li class="attribute">id: <strong>CientID</strong>, integer, 1 &lt;= value &lt;= 32768</li><li class="attribute">nodeId: <strong>NodeID</strong>, integer, 0 &lt;= value &lt;= 63</li><li class="attribute">status: <strong>ClientStatus</strong>, One of {running, down}</li><li class="attribute">version: <strong>string</strong>, A string value.</li></ul>
+</li>
+</ul>
+</li><li class="attribute">mgmt: <strong>Mgmt</strong><ul>
+<li class="attribute">id: <strong>65535</strong>, The constant value 65535.</li><li class="attribute">nodeId: <strong>NodeID</strong>, integer, 0 &lt;= value &lt;= 63</li><li class="attribute">status: <strong>ClientStatus</strong>, One of {running, down}</li><li class="attribute">version: <strong>string</strong>, A string value.</li></ul>
+</li><li class="attribute">servers: A dict from ServerID to Server
+<ul>
+<li>Key type: <strong>ServerID</strong>, integer, 1 &lt;= value &lt;= 32768</li>
+<li>Value type: <strong>Server</strong><ul>
+<li class="attribute">id: <strong>ServerID</strong>, integer, 1 &lt;= value &lt;= 32768</li><li class="attribute">missingDisks: A list of DiskID
+<ul>Element type: <strong>DiskID</strong>, integer, 0 &lt;= value &lt;= 4095
+</li></ul>
+</li><li class="attribute">nodeId: <strong>NodeID</strong>, integer, 0 &lt;= value &lt;= 63</li><li class="attribute">pendingDisks: A list of DiskID
+<ul>Element type: <strong>DiskID</strong>, integer, 0 &lt;= value &lt;= 4095
+</li></ul>
+</li><li class="attribute">status: <strong>ServerStatus</strong>, One of {running, waiting, booting, down}</li><li class="attribute">version: <strong>string</strong>, A string value.</li></ul>
+</li>
+</ul>
+</li></ul>
+</li>
+</ul>
+</li>
+</ol>
+<h2 id="Servers">Servers</h2>
+<p></p>
+<h3 id="ServersList">List all Storpool servers (<strong>ServersList</strong>)</h3>
+<ol><li>Request:
+<ul><li>Example HTTP Request:
+<pre><code>GET /ctrl/1.0/ServersList HTTP/1.0
+Host: <var>SP_API_HOST</var>:<var>SP_API_PORT</var>
+Authorization: Storpool v1:<var>SP_AUTH_TOKEN</var>
+Content-Length: <var>LENGTH</var>
+
+</code></pre></li><li>Method: <em>GET</em></li>
+<li>Path: <em>/ctrl/1.0/ServersList</em></li>
+<li>Arguments: <em>No arguments</em></li>
+<li>Json: <em>Either no JSON or {}</em></li>
+</ul>
+</li>
+<li>Response:
+<ul>
+<li>Example HTTP Response:
+<pre><code>HTTP/1.0 200 OK
+Connection: close
+Content-Type: application/json
+Cache-control: private
+Content-Length: <var>LENGTH</var>
+
+{
+  "generation": <var>generation</var>,
+  "data": {
+    "clients": {
+      "<var>CientID</var>": {
+        "id": <var>CientID</var>,
+        "nodeId": <var>NodeID</var>,
+        "status": <var>ClientStatus</var>,
+        "version": <var>string</var>
+      }, ...},
+    "mgmt": {
+      "id": <var>65535</var>,
+      "nodeId": <var>NodeID</var>,
+      "status": <var>ClientStatus</var>,
+      "version": <var>string</var>
+    },
+    "servers": {
+      "<var>ServerID</var>": {
+        "id": <var>ServerID</var>,
+        "missingDisks": [<var>DiskID</var>, ...],
+        "nodeId": <var>NodeID</var>,
+        "pendingDisks": [<var>DiskID</var>, ...],
+        "status": <var>ServerStatus</var>,
+        "version": <var>string</var>
+      }, ...}
+  }
+}
+</code></pre></li>
+<li>Response Data:
+<strong>ClusterStatus</strong><ul>
+<li class="attribute">clients: A dict from CientID to Client
+<ul>
+<li>Key type: <strong>CientID</strong>, integer, 1 &lt;= value &lt;= 32768</li>
+<li>Value type: <strong>Client</strong><ul>
+<li class="attribute">id: <strong>CientID</strong>, integer, 1 &lt;= value &lt;= 32768</li><li class="attribute">nodeId: <strong>NodeID</strong>, integer, 0 &lt;= value &lt;= 63</li><li class="attribute">status: <strong>ClientStatus</strong>, One of {running, down}</li><li class="attribute">version: <strong>string</strong>, A string value.</li></ul>
+</li>
+</ul>
+</li><li class="attribute">mgmt: <strong>Mgmt</strong><ul>
+<li class="attribute">id: <strong>65535</strong>, The constant value 65535.</li><li class="attribute">nodeId: <strong>NodeID</strong>, integer, 0 &lt;= value &lt;= 63</li><li class="attribute">status: <strong>ClientStatus</strong>, One of {running, down}</li><li class="attribute">version: <strong>string</strong>, A string value.</li></ul>
+</li><li class="attribute">servers: A dict from ServerID to Server
+<ul>
+<li>Key type: <strong>ServerID</strong>, integer, 1 &lt;= value &lt;= 32768</li>
+<li>Value type: <strong>Server</strong><ul>
+<li class="attribute">id: <strong>ServerID</strong>, integer, 1 &lt;= value &lt;= 32768</li><li class="attribute">missingDisks: A list of DiskID
+<ul>Element type: <strong>DiskID</strong>, integer, 0 &lt;= value &lt;= 4095
+</li></ul>
+</li><li class="attribute">nodeId: <strong>NodeID</strong>, integer, 0 &lt;= value &lt;= 63</li><li class="attribute">pendingDisks: A list of DiskID
+<ul>Element type: <strong>DiskID</strong>, integer, 0 &lt;= value &lt;= 4095
+</li></ul>
+</li><li class="attribute">status: <strong>ServerStatus</strong>, One of {running, waiting, booting, down}</li><li class="attribute">version: <strong>string</strong>, A string value.</li></ul>
+</li>
+</ul>
+</li></ul>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="ServerDisksList">List all disks on server (<strong>ServerDisksList</strong>)</h3>
+<ol><li>Request:
+<ul><li>Example HTTP Request:
+<pre><code>GET /ctrl/1.0/ServerDisksList/{serverId} HTTP/1.0
+Host: <var>SP_API_HOST</var>:<var>SP_API_PORT</var>
+Authorization: Storpool v1:<var>SP_AUTH_TOKEN</var>
+Content-Length: <var>LENGTH</var>
+
+</code></pre></li><li>Method: <em>GET</em></li>
+<li>Path: <em>/ctrl/1.0/ServerDisksList/{serverId}</em></li>
+<li>Arguments: 
+<ul>
+<li>serverId - <strong>ServerID</strong>: <em>integer, 1 &lt;= value &lt;= 32768</em></li>
+</ul>
+</li>
+<li>Json: <em>Either no JSON or {}</em></li>
+</ul>
+</li>
+<li>Response:
+<ul>
+<li>Example HTTP Response:
+<pre><code>HTTP/1.0 200 OK
+Connection: close
+Content-Type: application/json
+Cache-control: private
+Content-Length: <var>LENGTH</var>
+
+{
+  "generation": <var>generation</var>,
+  "data": {
+    "<var>DiskID</var>": {
+      "agAllocated": <var>int</var>,
+      "agCount": <var>int</var>,
+      "agFree": <var>int</var>,
+      "agFreeing": <var>int</var>,
+      "agFull": <var>int</var>,
+      "agMaxSizeFull": <var>int</var>,
+      "agMaxSizePartial": <var>int</var>,
+      "agPartial": <var>int</var>,
+      "description": <var>DiskDescritpion</var>,
+      "device": <var>string</var>,
+      "empty": <var>bool</var>,
+      "entriesAllocated": <var>int</var>,
+      "entriesCount": <var>int</var>,
+      "entriesFree": <var>int</var>,
+      "generationLeft": <var>long</var>,
+      "id": <var>DiskID</var>,
+      "model": <var>string</var>,
+      "objectsAllocated": <var>int</var>,
+      "objectsCount": <var>int</var>,
+      "objectsFree": <var>int</var>,
+      "objectsOnDiskSize": <var>long</var>,
+      "sectorsCount": <var>long</var>,
+      "serial": <var>string</var>,
+      "serverId": <var>ServerID</var>,
+      "softEject": <var>DiskSoftEjectStatus</var>,
+      "ssd": <var>bool</var>
+    }, ...}
+}
+</code></pre></li>
+<li>Response Data:
+A dict from DiskID to DiskSummary
+<ul>
+<li>Key type: <strong>DiskID</strong>, integer, 0 &lt;= value &lt;= 4095</li>
+<li>Value type: <strong>DiskSummary</strong><ul>
+<li class="attribute">agAllocated: <strong>int</strong>, An integer value.</li><li class="attribute">agCount: <strong>int</strong>, An integer value.</li><li class="attribute">agFree: <strong>int</strong>, An integer value.</li><li class="attribute">agFreeing: <strong>int</strong>, An integer value.</li><li class="attribute">agFull: <strong>int</strong>, An integer value.</li><li class="attribute">agMaxSizeFull: <strong>int</strong>, An integer value.</li><li class="attribute">agMaxSizePartial: <strong>int</strong>, An integer value.</li><li class="attribute">agPartial: <strong>int</strong>, An integer value.</li><li class="attribute">description: <strong>DiskDescritpion</strong>, string, regex ^[A-Za-z0-9_\- ]{,30}$</li><li class="attribute">device: <strong>string</strong>, A string value.</li><li class="attribute">empty: <strong>bool</strong>, true or false.</li><li class="attribute">entriesAllocated: <strong>int</strong>, An integer value.</li><li class="attribute">entriesCount: <strong>int</strong>, An integer value.</li><li class="attribute">entriesFree: <strong>int</strong>, An integer value.</li><li class="attribute">generationLeft: <strong>long</strong>, A long integer value.</li><li class="attribute">id: <strong>DiskID</strong>, integer, 0 &lt;= value &lt;= 4095</li><li class="attribute">model: <strong>string</strong>, A string value.</li><li class="attribute">objectsAllocated: <strong>int</strong>, An integer value.</li><li class="attribute">objectsCount: <strong>int</strong>, An integer value.</li><li class="attribute">objectsFree: <strong>int</strong>, An integer value.</li><li class="attribute">objectsOnDiskSize: <strong>long</strong>, A long integer value.</li><li class="attribute">sectorsCount: <strong>long</strong>, A long integer value.</li><li class="attribute">serial: <strong>string</strong>, A string value.</li><li class="attribute">serverId: <strong>ServerID</strong>, integer, 1 &lt;= value &lt;= 32768</li><li class="attribute">softEject: <strong>DiskSoftEjectStatus</strong>, One of {on, off, paused}</li><li class="attribute">ssd: <strong>bool</strong>, true or false.</li></ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="ServerDiskDescribe">Describe a disk on server (<strong>ServerDiskDescribe</strong>)</h3>
+<ol><li>Request:
+<ul><li>Example HTTP Request:
+<pre><code>GET /ctrl/1.0/ServerDiskDescribe/{serverId}/{diskId} HTTP/1.0
+Host: <var>SP_API_HOST</var>:<var>SP_API_PORT</var>
+Authorization: Storpool v1:<var>SP_AUTH_TOKEN</var>
+Content-Length: <var>LENGTH</var>
+
+</code></pre></li><li>Method: <em>GET</em></li>
+<li>Path: <em>/ctrl/1.0/ServerDiskDescribe/{serverId}/{diskId}</em></li>
+<li>Arguments: 
+<ul>
+<li>diskId - <strong>DiskID</strong>: <em>integer, 0 &lt;= value &lt;= 4095</em></li>
+<li>serverId - <strong>ServerID</strong>: <em>integer, 1 &lt;= value &lt;= 32768</em></li>
+</ul>
+</li>
+<li>Json: <em>Either no JSON or {}</em></li>
+</ul>
+</li>
+<li>Response:
+<ul>
+<li>Example HTTP Response:
+<pre><code>HTTP/1.0 200 OK
+Connection: close
+Content-Type: application/json
+Cache-control: private
+Content-Length: <var>LENGTH</var>
+
+{
+  "generation": <var>generation</var>,
+  "data": {
+    "agAllocated": <var>int</var>,
+    "agCount": <var>int</var>,
+    "agFree": <var>int</var>,
+    "agFreeing": <var>int</var>,
+    "agFull": <var>int</var>,
+    "agMaxSizeFull": <var>int</var>,
+    "agMaxSizePartial": <var>int</var>,
+    "agPartial": <var>int</var>,
+    "description": <var>DiskDescritpion</var>,
+    "device": <var>string</var>,
+    "empty": <var>bool</var>,
+    "entriesAllocated": <var>int</var>,
+    "entriesCount": <var>int</var>,
+    "entriesFree": <var>int</var>,
+    "generationLeft": <var>long</var>,
+    "id": <var>DiskID</var>,
+    "model": <var>string</var>,
+    "objects": {
+      "<var>int</var>": {
+        "generation": <var>long</var>,
+        "objectId": <var>int</var>,
+        "onDiskSize": <var>int</var>,
+        "parentVolume": <var>string</var>,
+        "state": <var>ObjectState</var>,
+        "storedSize": <var>int</var>,
+        "version": <var>long</var>,
+        "volume": <var>string</var>,
+        "volumeId": <var>long</var>
+      }, ...},
+    "objectsAllocated": <var>int</var>,
+    "objectsCount": <var>int</var>,
+    "objectsFree": <var>int</var>,
+    "objectsOnDiskSize": <var>long</var>,
+    "sectorsCount": <var>long</var>,
+    "serial": <var>string</var>,
+    "serverId": <var>ServerID</var>,
+    "softEject": <var>DiskSoftEjectStatus</var>,
+    "ssd": <var>bool</var>
+  }
+}
+</code></pre></li>
+<li>Response Data:
+<strong>Disk</strong><ul>
+<li class="attribute">agAllocated: <strong>int</strong>, An integer value.</li><li class="attribute">agCount: <strong>int</strong>, An integer value.</li><li class="attribute">agFree: <strong>int</strong>, An integer value.</li><li class="attribute">agFreeing: <strong>int</strong>, An integer value.</li><li class="attribute">agFull: <strong>int</strong>, An integer value.</li><li class="attribute">agMaxSizeFull: <strong>int</strong>, An integer value.</li><li class="attribute">agMaxSizePartial: <strong>int</strong>, An integer value.</li><li class="attribute">agPartial: <strong>int</strong>, An integer value.</li><li class="attribute">description: <strong>DiskDescritpion</strong>, string, regex ^[A-Za-z0-9_\- ]{,30}$</li><li class="attribute">device: <strong>string</strong>, A string value.</li><li class="attribute">empty: <strong>bool</strong>, true or false.</li><li class="attribute">entriesAllocated: <strong>int</strong>, An integer value.</li><li class="attribute">entriesCount: <strong>int</strong>, An integer value.</li><li class="attribute">entriesFree: <strong>int</strong>, An integer value.</li><li class="attribute">generationLeft: <strong>long</strong>, A long integer value.</li><li class="attribute">id: <strong>DiskID</strong>, integer, 0 &lt;= value &lt;= 4095</li><li class="attribute">model: <strong>string</strong>, A string value.</li><li class="attribute">objects: A dict from int to DiskObject
+<ul>
+<li>Key type: <strong>int</strong>, An integer value.</li>
+<li>Value type: <strong>DiskObject</strong><ul>
+<li class="attribute">generation: <strong>long</strong>, A long integer value.</li><li class="attribute">objectId: <strong>int</strong>, An integer value.</li><li class="attribute">onDiskSize: <strong>int</strong>, An integer value.</li><li class="attribute">parentVolume: <strong>string</strong>, A string value.</li><li class="attribute">state: <strong>ObjectState</strong>, ObjectState, enumeration from 0 to 9</li><li class="attribute">storedSize: <strong>int</strong>, An integer value.</li><li class="attribute">version: <strong>long</strong>, A long integer value.</li><li class="attribute">volume: <strong>string</strong>, A string value.</li><li class="attribute">volumeId: <strong>long</strong>, A long integer value.</li></ul>
+</li>
+</ul>
+</li><li class="attribute">objectsAllocated: <strong>int</strong>, An integer value.</li><li class="attribute">objectsCount: <strong>int</strong>, An integer value.</li><li class="attribute">objectsFree: <strong>int</strong>, An integer value.</li><li class="attribute">objectsOnDiskSize: <strong>long</strong>, A long integer value.</li><li class="attribute">sectorsCount: <strong>long</strong>, A long integer value.</li><li class="attribute">serial: <strong>string</strong>, A string value.</li><li class="attribute">serverId: <strong>ServerID</strong>, integer, 1 &lt;= value &lt;= 32768</li><li class="attribute">softEject: <strong>DiskSoftEjectStatus</strong>, One of {on, off, paused}</li><li class="attribute">ssd: <strong>bool</strong>, true or false.</li></ul>
+</li>
+</ul>
+</li>
+</ol>
+<h2 id="Clients">Clients</h2>
+<p></p>
+<h3 id="ClientsConfigDump">Get current configuration for all clients (<strong>ClientsConfigDump</strong>)</h3>
+<ol><li>Request:
+<ul><li>Example HTTP Request:
+<pre><code>GET /ctrl/1.0/ClientsConfigDump HTTP/1.0
+Host: <var>SP_API_HOST</var>:<var>SP_API_PORT</var>
+Authorization: Storpool v1:<var>SP_AUTH_TOKEN</var>
+Content-Length: <var>LENGTH</var>
+
+</code></pre></li><li>Method: <em>GET</em></li>
+<li>Path: <em>/ctrl/1.0/ClientsConfigDump</em></li>
+<li>Arguments: <em>No arguments</em></li>
+<li>Json: <em>Either no JSON or {}</em></li>
+</ul>
+</li>
+<li>Response:
+<ul>
+<li>Example HTTP Response:
+<pre><code>HTTP/1.0 200 OK
+Connection: close
+Content-Type: application/json
+Cache-control: private
+Content-Length: <var>LENGTH</var>
+
+{
+  "generation": <var>generation</var>,
+  "data": [{
+    "clientGeneration": <var>long</var>,
+    "configStatus": <var>client status</var>,
+    "delay": <var>int</var>,
+    "generation": <var>long</var>,
+    "id": <var>CientID</var>
+  }, ...]
+}
+</code></pre></li>
+<li>Response Data:
+A list of ClientConfigStatus
+<ul>Element type: <strong>ClientConfigStatus</strong><ul>
+<li class="attribute">clientGeneration: <strong>long</strong>, A long integer value.</li><li class="attribute">configStatus: <strong>client status</strong>, One of {ok, updating, down}</li><li class="attribute">delay: <strong>int</strong>, An integer value.</li><li class="attribute">generation: <strong>long</strong>, A long integer value.</li><li class="attribute">id: <strong>CientID</strong>, integer, 1 &lt;= value &lt;= 32768</li></ul>
+
+</li></ul>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="ClientConfigWait">Wait until client updates to current configuration (<strong>ClientConfigWait</strong>)</h3>
+<ol><li>Request:
+<ul><li>Example HTTP Request:
+<pre><code>GET /ctrl/1.0/ClientConfigWait/{clientId} HTTP/1.0
+Host: <var>SP_API_HOST</var>:<var>SP_API_PORT</var>
+Authorization: Storpool v1:<var>SP_AUTH_TOKEN</var>
+Content-Length: <var>LENGTH</var>
+
+</code></pre></li><li>Method: <em>GET</em></li>
+<li>Path: <em>/ctrl/1.0/ClientConfigWait/{clientId}</em></li>
+<li>Arguments: 
+<ul>
+<li>clientId - <strong>CientID</strong>: <em>integer, 1 &lt;= value &lt;= 32768</em></li>
+</ul>
+</li>
+<li>Json: <em>Either no JSON or {}</em></li>
+</ul>
+</li>
+<li>Response:
+<ul>
+<li>Example HTTP Response:
+<pre><code>HTTP/1.0 200 OK
+Connection: close
+Content-Type: application/json
+Cache-control: private
+Content-Length: <var>LENGTH</var>
+
+{
+  "generation": <var>generation</var>,
+  "data": [{
+    "clientGeneration": <var>long</var>,
+    "configStatus": <var>client status</var>,
+    "delay": <var>int</var>,
+    "generation": <var>long</var>,
+    "id": <var>CientID</var>
+  }, ...]
+}
+</code></pre></li>
+<li>Response Data:
+A list of ClientConfigStatus
+<ul>Element type: <strong>ClientConfigStatus</strong><ul>
+<li class="attribute">clientGeneration: <strong>long</strong>, A long integer value.</li><li class="attribute">configStatus: <strong>client status</strong>, One of {ok, updating, down}</li><li class="attribute">delay: <strong>int</strong>, An integer value.</li><li class="attribute">generation: <strong>long</strong>, A long integer value.</li><li class="attribute">id: <strong>CientID</strong>, integer, 1 &lt;= value &lt;= 32768</li></ul>
+
+</li></ul>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="ClientActiveRequests">List all active requests on client (<strong>ClientActiveRequests</strong>)</h3>
+<ol><li>Request:
+<ul><li>Example HTTP Request:
+<pre><code>GET /ctrl/1.0/ClientActiveRequests/{clientId} HTTP/1.0
+Host: <var>SP_API_HOST</var>:<var>SP_API_PORT</var>
+Authorization: Storpool v1:<var>SP_AUTH_TOKEN</var>
+Content-Length: <var>LENGTH</var>
+
+</code></pre></li><li>Method: <em>GET</em></li>
+<li>Path: <em>/ctrl/1.0/ClientActiveRequests/{clientId}</em></li>
+<li>Arguments: 
+<ul>
+<li>clientId - <strong>CientID</strong>: <em>integer, 1 &lt;= value &lt;= 32768</em></li>
+</ul>
+</li>
+<li>Json: <em>Either no JSON or {}</em></li>
+</ul>
+</li>
+<li>Response:
+<ul>
+<li>Example HTTP Response:
+<pre><code>HTTP/1.0 200 OK
+Connection: close
+Content-Type: application/json
+Cache-control: private
+Content-Length: <var>LENGTH</var>
+
+{
+  "generation": <var>generation</var>,
+  "data": {
+    "clientId": <var>CientID</var>,
+    "requests": [{
+      "address": <var>long</var>,
+      "drOp": <var>string</var>,
+      "msecActive": <var>int</var>,
+      "op": <var>RequestOp</var>,
+      "prevState": <var>string</var>,
+      "requestId": <var>string</var>,
+      "requestIdx": <var>int</var>,
+      "size": <var>int</var>,
+      "state": <var>string</var>,
+      "volumeId": <var>long</var>
+    }, ...]
+  }
+}
+</code></pre></li>
+<li>Response Data:
+<strong>ClientActiveRequests</strong><ul>
+<li class="attribute">clientId: <strong>CientID</strong>, integer, 1 &lt;= value &lt;= 32768</li><li class="attribute">requests: A list of ActiveRequestDesc
+<ul>Element type: <strong>ActiveRequestDesc</strong><ul>
+<li class="attribute">address: <strong>long</strong>, A long integer value.</li><li class="attribute">drOp: <strong>string</strong>, A string value.</li><li class="attribute">msecActive: <strong>int</strong>, An integer value.</li><li class="attribute">op: <strong>RequestOp</strong>, One of {read, write, merge, system, entries flush, #bad_state, #bad_drOp}</li><li class="attribute">prevState: <strong>string</strong>, A string value.</li><li class="attribute">requestId: <strong>string</strong>, A string value.</li><li class="attribute">requestIdx: <strong>int</strong>, An integer value.</li><li class="attribute">size: <strong>int</strong>, An integer value.</li><li class="attribute">state: <strong>string</strong>, A string value.</li><li class="attribute">volumeId: <strong>long</strong>, A long integer value.</li></ul>
+
+</li></ul>
+</li></ul>
+</li>
+</ul>
+</li>
+</ol>
+<h2 id="Disks">Disks</h2>
+<p></p>
+<h3 id="DisksList">List all disks (<strong>DisksList</strong>)</h3>
+<ol><li>Request:
+<ul><li>Example HTTP Request:
+<pre><code>GET /ctrl/1.0/DisksList HTTP/1.0
+Host: <var>SP_API_HOST</var>:<var>SP_API_PORT</var>
+Authorization: Storpool v1:<var>SP_AUTH_TOKEN</var>
+Content-Length: <var>LENGTH</var>
+
+</code></pre></li><li>Method: <em>GET</em></li>
+<li>Path: <em>/ctrl/1.0/DisksList</em></li>
+<li>Arguments: <em>No arguments</em></li>
+<li>Json: <em>Either no JSON or {}</em></li>
+</ul>
+</li>
+<li>Response:
+<ul>
+<li>Example HTTP Response:
+<pre><code>HTTP/1.0 200 OK
+Connection: close
+Content-Type: application/json
+Cache-control: private
+Content-Length: <var>LENGTH</var>
+
+{
+  "generation": <var>generation</var>,
+  "data": {
+    "<var>DiskID</var>": {
+      "agAllocated": <var>int</var>,
+      "agCount": <var>int</var>,
+      "agFree": <var>int</var>,
+      "agFreeing": <var>int</var>,
+      "agFull": <var>int</var>,
+      "agMaxSizeFull": <var>int</var>,
+      "agMaxSizePartial": <var>int</var>,
+      "agPartial": <var>int</var>,
+      "description": <var>DiskDescritpion</var>,
+      "device": <var>string</var>,
+      "empty": <var>bool</var>,
+      "entriesAllocated": <var>int</var>,
+      "entriesCount": <var>int</var>,
+      "entriesFree": <var>int</var>,
+      "generationLeft": <var>long</var>,
+      "id": <var>DiskID</var>,
+      "model": <var>string</var>,
+      "objectsAllocated": <var>int</var>,
+      "objectsCount": <var>int</var>,
+      "objectsFree": <var>int</var>,
+      "objectsOnDiskSize": <var>long</var>,
+      "sectorsCount": <var>long</var>,
+      "serial": <var>string</var>,
+      "serverId": <var>ServerID</var>,
+      "softEject": <var>DiskSoftEjectStatus</var>,
+      "ssd": <var>bool</var>
+    }, ...}
+}
+</code></pre></li>
+<li>Response Data:
+A dict from DiskID to DiskSummary
+<ul>
+<li>Key type: <strong>DiskID</strong>, integer, 0 &lt;= value &lt;= 4095</li>
+<li>Value type: <strong>DiskSummary</strong><ul>
+<li class="attribute">agAllocated: <strong>int</strong>, An integer value.</li><li class="attribute">agCount: <strong>int</strong>, An integer value.</li><li class="attribute">agFree: <strong>int</strong>, An integer value.</li><li class="attribute">agFreeing: <strong>int</strong>, An integer value.</li><li class="attribute">agFull: <strong>int</strong>, An integer value.</li><li class="attribute">agMaxSizeFull: <strong>int</strong>, An integer value.</li><li class="attribute">agMaxSizePartial: <strong>int</strong>, An integer value.</li><li class="attribute">agPartial: <strong>int</strong>, An integer value.</li><li class="attribute">description: <strong>DiskDescritpion</strong>, string, regex ^[A-Za-z0-9_\- ]{,30}$</li><li class="attribute">device: <strong>string</strong>, A string value.</li><li class="attribute">empty: <strong>bool</strong>, true or false.</li><li class="attribute">entriesAllocated: <strong>int</strong>, An integer value.</li><li class="attribute">entriesCount: <strong>int</strong>, An integer value.</li><li class="attribute">entriesFree: <strong>int</strong>, An integer value.</li><li class="attribute">generationLeft: <strong>long</strong>, A long integer value.</li><li class="attribute">id: <strong>DiskID</strong>, integer, 0 &lt;= value &lt;= 4095</li><li class="attribute">model: <strong>string</strong>, A string value.</li><li class="attribute">objectsAllocated: <strong>int</strong>, An integer value.</li><li class="attribute">objectsCount: <strong>int</strong>, An integer value.</li><li class="attribute">objectsFree: <strong>int</strong>, An integer value.</li><li class="attribute">objectsOnDiskSize: <strong>long</strong>, A long integer value.</li><li class="attribute">sectorsCount: <strong>long</strong>, A long integer value.</li><li class="attribute">serial: <strong>string</strong>, A string value.</li><li class="attribute">serverId: <strong>ServerID</strong>, integer, 1 &lt;= value &lt;= 32768</li><li class="attribute">softEject: <strong>DiskSoftEjectStatus</strong>, One of {on, off, paused}</li><li class="attribute">ssd: <strong>bool</strong>, true or false.</li></ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="DiskDescribe">Describe a disk (<strong>DiskDescribe</strong>)</h3>
+<ol><li>Request:
+<ul><li>Example HTTP Request:
+<pre><code>GET /ctrl/1.0/DiskDescribe/{diskId} HTTP/1.0
+Host: <var>SP_API_HOST</var>:<var>SP_API_PORT</var>
+Authorization: Storpool v1:<var>SP_AUTH_TOKEN</var>
+Content-Length: <var>LENGTH</var>
+
+</code></pre></li><li>Method: <em>GET</em></li>
+<li>Path: <em>/ctrl/1.0/DiskDescribe/{diskId}</em></li>
+<li>Arguments: 
+<ul>
+<li>diskId - <strong>DiskID</strong>: <em>integer, 0 &lt;= value &lt;= 4095</em></li>
+</ul>
+</li>
+<li>Json: <em>Either no JSON or {}</em></li>
+</ul>
+</li>
+<li>Response:
+<ul>
+<li>Example HTTP Response:
+<pre><code>HTTP/1.0 200 OK
+Connection: close
+Content-Type: application/json
+Cache-control: private
+Content-Length: <var>LENGTH</var>
+
+{
+  "generation": <var>generation</var>,
+  "data": {
+    "agAllocated": <var>int</var>,
+    "agCount": <var>int</var>,
+    "agFree": <var>int</var>,
+    "agFreeing": <var>int</var>,
+    "agFull": <var>int</var>,
+    "agMaxSizeFull": <var>int</var>,
+    "agMaxSizePartial": <var>int</var>,
+    "agPartial": <var>int</var>,
+    "description": <var>DiskDescritpion</var>,
+    "device": <var>string</var>,
+    "empty": <var>bool</var>,
+    "entriesAllocated": <var>int</var>,
+    "entriesCount": <var>int</var>,
+    "entriesFree": <var>int</var>,
+    "generationLeft": <var>long</var>,
+    "id": <var>DiskID</var>,
+    "model": <var>string</var>,
+    "objects": {
+      "<var>int</var>": {
+        "generation": <var>long</var>,
+        "objectId": <var>int</var>,
+        "onDiskSize": <var>int</var>,
+        "parentVolume": <var>string</var>,
+        "state": <var>ObjectState</var>,
+        "storedSize": <var>int</var>,
+        "version": <var>long</var>,
+        "volume": <var>string</var>,
+        "volumeId": <var>long</var>
+      }, ...},
+    "objectsAllocated": <var>int</var>,
+    "objectsCount": <var>int</var>,
+    "objectsFree": <var>int</var>,
+    "objectsOnDiskSize": <var>long</var>,
+    "sectorsCount": <var>long</var>,
+    "serial": <var>string</var>,
+    "serverId": <var>ServerID</var>,
+    "softEject": <var>DiskSoftEjectStatus</var>,
+    "ssd": <var>bool</var>
+  }
+}
+</code></pre></li>
+<li>Response Data:
+<strong>Disk</strong><ul>
+<li class="attribute">agAllocated: <strong>int</strong>, An integer value.</li><li class="attribute">agCount: <strong>int</strong>, An integer value.</li><li class="attribute">agFree: <strong>int</strong>, An integer value.</li><li class="attribute">agFreeing: <strong>int</strong>, An integer value.</li><li class="attribute">agFull: <strong>int</strong>, An integer value.</li><li class="attribute">agMaxSizeFull: <strong>int</strong>, An integer value.</li><li class="attribute">agMaxSizePartial: <strong>int</strong>, An integer value.</li><li class="attribute">agPartial: <strong>int</strong>, An integer value.</li><li class="attribute">description: <strong>DiskDescritpion</strong>, string, regex ^[A-Za-z0-9_\- ]{,30}$</li><li class="attribute">device: <strong>string</strong>, A string value.</li><li class="attribute">empty: <strong>bool</strong>, true or false.</li><li class="attribute">entriesAllocated: <strong>int</strong>, An integer value.</li><li class="attribute">entriesCount: <strong>int</strong>, An integer value.</li><li class="attribute">entriesFree: <strong>int</strong>, An integer value.</li><li class="attribute">generationLeft: <strong>long</strong>, A long integer value.</li><li class="attribute">id: <strong>DiskID</strong>, integer, 0 &lt;= value &lt;= 4095</li><li class="attribute">model: <strong>string</strong>, A string value.</li><li class="attribute">objects: A dict from int to DiskObject
+<ul>
+<li>Key type: <strong>int</strong>, An integer value.</li>
+<li>Value type: <strong>DiskObject</strong><ul>
+<li class="attribute">generation: <strong>long</strong>, A long integer value.</li><li class="attribute">objectId: <strong>int</strong>, An integer value.</li><li class="attribute">onDiskSize: <strong>int</strong>, An integer value.</li><li class="attribute">parentVolume: <strong>string</strong>, A string value.</li><li class="attribute">state: <strong>ObjectState</strong>, ObjectState, enumeration from 0 to 9</li><li class="attribute">storedSize: <strong>int</strong>, An integer value.</li><li class="attribute">version: <strong>long</strong>, A long integer value.</li><li class="attribute">volume: <strong>string</strong>, A string value.</li><li class="attribute">volumeId: <strong>long</strong>, A long integer value.</li></ul>
+</li>
+</ul>
+</li><li class="attribute">objectsAllocated: <strong>int</strong>, An integer value.</li><li class="attribute">objectsCount: <strong>int</strong>, An integer value.</li><li class="attribute">objectsFree: <strong>int</strong>, An integer value.</li><li class="attribute">objectsOnDiskSize: <strong>long</strong>, A long integer value.</li><li class="attribute">sectorsCount: <strong>long</strong>, A long integer value.</li><li class="attribute">serial: <strong>string</strong>, A string value.</li><li class="attribute">serverId: <strong>ServerID</strong>, integer, 1 &lt;= value &lt;= 32768</li><li class="attribute">softEject: <strong>DiskSoftEjectStatus</strong>, One of {on, off, paused}</li><li class="attribute">ssd: <strong>bool</strong>, true or false.</li></ul>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="DiskGetInfo">Get disk info (<strong>DiskGetInfo</strong>)</h3>
+<ol><li>Request:
+<ul><li>Example HTTP Request:
+<pre><code>GET /ctrl/1.0/DiskGetInfo/{diskId} HTTP/1.0
+Host: <var>SP_API_HOST</var>:<var>SP_API_PORT</var>
+Authorization: Storpool v1:<var>SP_AUTH_TOKEN</var>
+Content-Length: <var>LENGTH</var>
+
+</code></pre></li><li>Method: <em>GET</em></li>
+<li>Path: <em>/ctrl/1.0/DiskGetInfo/{diskId}</em></li>
+<li>Arguments: 
+<ul>
+<li>diskId - <strong>DiskID</strong>: <em>integer, 0 &lt;= value &lt;= 4095</em></li>
+</ul>
+</li>
+<li>Json: <em>Either no JSON or {}</em></li>
+</ul>
+</li>
+<li>Response:
+<ul>
+<li>Example HTTP Response:
+<pre><code>HTTP/1.0 200 OK
+Connection: close
+Content-Type: application/json
+Cache-control: private
+Content-Length: <var>LENGTH</var>
+
+{
+  "generation": <var>generation</var>,
+  "data": {
+    "agAllocated": <var>int</var>,
+    "agCount": <var>int</var>,
+    "agFree": <var>int</var>,
+    "agFreeing": <var>int</var>,
+    "agFull": <var>int</var>,
+    "agMaxSizeFull": <var>int</var>,
+    "agMaxSizePartial": <var>int</var>,
+    "agPartial": <var>int</var>,
+    "description": <var>DiskDescritpion</var>,
+    "device": <var>string</var>,
+    "empty": <var>bool</var>,
+    "entriesAllocated": <var>int</var>,
+    "entriesCount": <var>int</var>,
+    "entriesFree": <var>int</var>,
+    "generationLeft": <var>long</var>,
+    "id": <var>DiskID</var>,
+    "model": <var>string</var>,
+    "objectStates": {
+      "<var>ObjectState</var>": <var>int</var>, ...},
+    "objectsAllocated": <var>int</var>,
+    "objectsCount": <var>int</var>,
+    "objectsFree": <var>int</var>,
+    "objectsOnDiskSize": <var>long</var>,
+    "sectorsCount": <var>long</var>,
+    "serial": <var>string</var>,
+    "serverId": <var>ServerID</var>,
+    "softEject": <var>DiskSoftEjectStatus</var>,
+    "ssd": <var>bool</var>,
+    "volumeInfos": {
+      "<var>string</var>": {
+        "name": <var>string</var>,
+        "objectStates": {
+          "<var>ObjectState</var>": <var>int</var>, ...},
+        "objectsCount": <var>long</var>,
+        "onDiskSize": <var>long</var>,
+        "storedSize": <var>long</var>
+      }, ...}
+  }
+}
+</code></pre></li>
+<li>Response Data:
+<strong>DiskInfo</strong><ul>
+<li class="attribute">agAllocated: <strong>int</strong>, An integer value.</li><li class="attribute">agCount: <strong>int</strong>, An integer value.</li><li class="attribute">agFree: <strong>int</strong>, An integer value.</li><li class="attribute">agFreeing: <strong>int</strong>, An integer value.</li><li class="attribute">agFull: <strong>int</strong>, An integer value.</li><li class="attribute">agMaxSizeFull: <strong>int</strong>, An integer value.</li><li class="attribute">agMaxSizePartial: <strong>int</strong>, An integer value.</li><li class="attribute">agPartial: <strong>int</strong>, An integer value.</li><li class="attribute">description: <strong>DiskDescritpion</strong>, string, regex ^[A-Za-z0-9_\- ]{,30}$</li><li class="attribute">device: <strong>string</strong>, A string value.</li><li class="attribute">empty: <strong>bool</strong>, true or false.</li><li class="attribute">entriesAllocated: <strong>int</strong>, An integer value.</li><li class="attribute">entriesCount: <strong>int</strong>, An integer value.</li><li class="attribute">entriesFree: <strong>int</strong>, An integer value.</li><li class="attribute">generationLeft: <strong>long</strong>, A long integer value.</li><li class="attribute">id: <strong>DiskID</strong>, integer, 0 &lt;= value &lt;= 4095</li><li class="attribute">model: <strong>string</strong>, A string value.</li><li class="attribute">objectStates: A dict from ObjectState to int
+<ul>
+<li>Key type: <strong>ObjectState</strong>, ObjectState, enumeration from 0 to 9</li>
+<li>Value type: <strong>int</strong>, An integer value.</li>
+</ul>
+</li><li class="attribute">objectsAllocated: <strong>int</strong>, An integer value.</li><li class="attribute">objectsCount: <strong>int</strong>, An integer value.</li><li class="attribute">objectsFree: <strong>int</strong>, An integer value.</li><li class="attribute">objectsOnDiskSize: <strong>long</strong>, A long integer value.</li><li class="attribute">sectorsCount: <strong>long</strong>, A long integer value.</li><li class="attribute">serial: <strong>string</strong>, A string value.</li><li class="attribute">serverId: <strong>ServerID</strong>, integer, 1 &lt;= value &lt;= 32768</li><li class="attribute">softEject: <strong>DiskSoftEjectStatus</strong>, One of {on, off, paused}</li><li class="attribute">ssd: <strong>bool</strong>, true or false.</li><li class="attribute">volumeInfos: A dict from str to DiskVolumeInfo
+<ul>
+<li>Key type: <strong>string</strong>, A string value.</li>
+<li>Value type: <strong>DiskVolumeInfo</strong><ul>
+<li class="attribute">name: <strong>string</strong>, A string value.</li><li class="attribute">objectStates: A dict from ObjectState to int
+<ul>
+<li>Key type: <strong>ObjectState</strong>, ObjectState, enumeration from 0 to 9</li>
+<li>Value type: <strong>int</strong>, An integer value.</li>
+</ul>
+</li><li class="attribute">objectsCount: <strong>long</strong>, A long integer value.</li><li class="attribute">onDiskSize: <strong>long</strong>, A long integer value.</li><li class="attribute">storedSize: <strong>long</strong>, A long integer value.</li></ul>
+</li>
+</ul>
+</li></ul>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="DiskEject">Eject a disk (<strong>DiskEject</strong>)</h3>
+<ol><li>Request:
+<ul><li>Example HTTP Request:
+<pre><code>POST /ctrl/1.0/DiskEject/{diskId} HTTP/1.0
+Host: <var>SP_API_HOST</var>:<var>SP_API_PORT</var>
+Authorization: Storpool v1:<var>SP_AUTH_TOKEN</var>
+Content-Length: <var>LENGTH</var>
+
+</code></pre></li><li>Method: <em>POST</em></li>
+<li>Path: <em>/ctrl/1.0/DiskEject/{diskId}</em></li>
+<li>Arguments: 
+<ul>
+<li>diskId - <strong>DiskID</strong>: <em>integer, 0 &lt;= value &lt;= 4095</em></li>
+</ul>
+</li>
+<li>Json: <em>Either no JSON or {}</em></li>
+</ul>
+</li>
+<li>Response:
+<ul>
+<li>Example HTTP Response:
+<pre><code>HTTP/1.0 200 OK
+Connection: close
+Content-Type: application/json
+Cache-control: private
+Content-Length: <var>LENGTH</var>
+
+{
+  "generation": <var>generation</var>,
+  "data": {
+    "generation": <var>long</var>,
+    "ok": <var>true</var>
+  }
+}
+</code></pre></li>
+<li>Response Data:
+<strong>ApiOk</strong><ul>
+<li class="attribute">generation: <strong>long</strong>, A long integer value.</li><li class="attribute">ok: <strong>true</strong>, The constant value true.</li></ul>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="DiskForget">Foget a disk (<strong>DiskForget</strong>)</h3>
+<ol><li>Request:
+<ul><li>Example HTTP Request:
+<pre><code>POST /ctrl/1.0/DiskForget/{diskId} HTTP/1.0
+Host: <var>SP_API_HOST</var>:<var>SP_API_PORT</var>
+Authorization: Storpool v1:<var>SP_AUTH_TOKEN</var>
+Content-Length: <var>LENGTH</var>
+
+</code></pre></li><li>Method: <em>POST</em></li>
+<li>Path: <em>/ctrl/1.0/DiskForget/{diskId}</em></li>
+<li>Arguments: 
+<ul>
+<li>diskId - <strong>DiskID</strong>: <em>integer, 0 &lt;= value &lt;= 4095</em></li>
+</ul>
+</li>
+<li>Json: <em>Either no JSON or {}</em></li>
+</ul>
+</li>
+<li>Response:
+<ul>
+<li>Example HTTP Response:
+<pre><code>HTTP/1.0 200 OK
+Connection: close
+Content-Type: application/json
+Cache-control: private
+Content-Length: <var>LENGTH</var>
+
+{
+  "generation": <var>generation</var>,
+  "data": {
+    "generation": <var>long</var>,
+    "ok": <var>true</var>
+  }
+}
+</code></pre></li>
+<li>Response Data:
+<strong>ApiOk</strong><ul>
+<li class="attribute">generation: <strong>long</strong>, A long integer value.</li><li class="attribute">ok: <strong>true</strong>, The constant value true.</li></ul>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="DiskSoftEject">Soft-eject a disk (<strong>DiskSoftEject</strong>)</h3>
+<ol><li>Request:
+<ul><li>Example HTTP Request:
+<pre><code>POST /ctrl/1.0/DiskSoftEject/{diskId} HTTP/1.0
+Host: <var>SP_API_HOST</var>:<var>SP_API_PORT</var>
+Authorization: Storpool v1:<var>SP_AUTH_TOKEN</var>
+Content-Length: <var>LENGTH</var>
+
+</code></pre></li><li>Method: <em>POST</em></li>
+<li>Path: <em>/ctrl/1.0/DiskSoftEject/{diskId}</em></li>
+<li>Arguments: 
+<ul>
+<li>diskId - <strong>DiskID</strong>: <em>integer, 0 &lt;= value &lt;= 4095</em></li>
+</ul>
+</li>
+<li>Json: <em>Either no JSON or {}</em></li>
+</ul>
+</li>
+<li>Response:
+<ul>
+<li>Example HTTP Response:
+<pre><code>HTTP/1.0 200 OK
+Connection: close
+Content-Type: application/json
+Cache-control: private
+Content-Length: <var>LENGTH</var>
+
+{
+  "generation": <var>generation</var>,
+  "data": {
+    "generation": <var>long</var>,
+    "ok": <var>true</var>
+  }
+}
+</code></pre></li>
+<li>Response Data:
+<strong>ApiOk</strong><ul>
+<li class="attribute">generation: <strong>long</strong>, A long integer value.</li><li class="attribute">ok: <strong>true</strong>, The constant value true.</li></ul>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="DiskSoftEjectPause">Pause disk soft-eject (<strong>DiskSoftEjectPause</strong>)</h3>
+<ol><li>Request:
+<ul><li>Example HTTP Request:
+<pre><code>POST /ctrl/1.0/DiskSoftEjectPause/{diskId} HTTP/1.0
+Host: <var>SP_API_HOST</var>:<var>SP_API_PORT</var>
+Authorization: Storpool v1:<var>SP_AUTH_TOKEN</var>
+Content-Length: <var>LENGTH</var>
+
+</code></pre></li><li>Method: <em>POST</em></li>
+<li>Path: <em>/ctrl/1.0/DiskSoftEjectPause/{diskId}</em></li>
+<li>Arguments: 
+<ul>
+<li>diskId - <strong>DiskID</strong>: <em>integer, 0 &lt;= value &lt;= 4095</em></li>
+</ul>
+</li>
+<li>Json: <em>Either no JSON or {}</em></li>
+</ul>
+</li>
+<li>Response:
+<ul>
+<li>Example HTTP Response:
+<pre><code>HTTP/1.0 200 OK
+Connection: close
+Content-Type: application/json
+Cache-control: private
+Content-Length: <var>LENGTH</var>
+
+{
+  "generation": <var>generation</var>,
+  "data": {
+    "generation": <var>long</var>,
+    "ok": <var>true</var>
+  }
+}
+</code></pre></li>
+<li>Response Data:
+<strong>ApiOk</strong><ul>
+<li class="attribute">generation: <strong>long</strong>, A long integer value.</li><li class="attribute">ok: <strong>true</strong>, The constant value true.</li></ul>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="DiskSoftEjectCancel">Cancel disk soft-eject (<strong>DiskSoftEjectCancel</strong>)</h3>
+<ol><li>Request:
+<ul><li>Example HTTP Request:
+<pre><code>POST /ctrl/1.0/DiskSoftEjectCancel/{diskId} HTTP/1.0
+Host: <var>SP_API_HOST</var>:<var>SP_API_PORT</var>
+Authorization: Storpool v1:<var>SP_AUTH_TOKEN</var>
+Content-Length: <var>LENGTH</var>
+
+</code></pre></li><li>Method: <em>POST</em></li>
+<li>Path: <em>/ctrl/1.0/DiskSoftEjectCancel/{diskId}</em></li>
+<li>Arguments: 
+<ul>
+<li>diskId - <strong>DiskID</strong>: <em>integer, 0 &lt;= value &lt;= 4095</em></li>
+</ul>
+</li>
+<li>Json: <em>Either no JSON or {}</em></li>
+</ul>
+</li>
+<li>Response:
+<ul>
+<li>Example HTTP Response:
+<pre><code>HTTP/1.0 200 OK
+Connection: close
+Content-Type: application/json
+Cache-control: private
+Content-Length: <var>LENGTH</var>
+
+{
+  "generation": <var>generation</var>,
+  "data": {
+    "generation": <var>long</var>,
+    "ok": <var>true</var>
+  }
+}
+</code></pre></li>
+<li>Response Data:
+<strong>ApiOk</strong><ul>
+<li class="attribute">generation: <strong>long</strong>, A long integer value.</li><li class="attribute">ok: <strong>true</strong>, The constant value true.</li></ul>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="DiskSetDescription">Set a disk&apos;s description (<strong>DiskSetDescription</strong>)</h3>
+<ol><li>Request:
+<ul><li>Example HTTP Request:
+<pre><code>POST /ctrl/1.0/DiskSetDescription/{diskId} HTTP/1.0
+Host: <var>SP_API_HOST</var>:<var>SP_API_PORT</var>
+Authorization: Storpool v1:<var>SP_AUTH_TOKEN</var>
+Content-Length: <var>LENGTH</var>
+
+{
+  "description": <var>DiskDescritpion</var>
+}</code></pre></li><li>Method: <em>POST</em></li>
+<li>Path: <em>/ctrl/1.0/DiskSetDescription/{diskId}</em></li>
+<li>Arguments: 
+<ul>
+<li>diskId - <strong>DiskID</strong>: <em>integer, 0 &lt;= value &lt;= 4095</em></li>
+</ul>
+</li>
+<li>Json: <strong>DiskDescUpdate</strong><ul>
+<li class="attribute">description: <strong>DiskDescritpion</strong>, string, regex ^[A-Za-z0-9_\- ]{,30}$</li></ul>
+</li>
+</ul>
+</li>
+<li>Response:
+<ul>
+<li>Example HTTP Response:
+<pre><code>HTTP/1.0 200 OK
+Connection: close
+Content-Type: application/json
+Cache-control: private
+Content-Length: <var>LENGTH</var>
+
+{
+  "generation": <var>generation</var>,
+  "data": {
+    "generation": <var>long</var>,
+    "ok": <var>true</var>
+  }
+}
+</code></pre></li>
+<li>Response Data:
+<strong>ApiOk</strong><ul>
+<li class="attribute">generation: <strong>long</strong>, A long integer value.</li><li class="attribute">ok: <strong>true</strong>, The constant value true.</li></ul>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="DiskActiveRequests">List all active requests on disk (<strong>DiskActiveRequests</strong>)</h3>
+<ol><li>Request:
+<ul><li>Example HTTP Request:
+<pre><code>GET /ctrl/1.0/DiskActiveRequests/{diskId} HTTP/1.0
+Host: <var>SP_API_HOST</var>:<var>SP_API_PORT</var>
+Authorization: Storpool v1:<var>SP_AUTH_TOKEN</var>
+Content-Length: <var>LENGTH</var>
+
+</code></pre></li><li>Method: <em>GET</em></li>
+<li>Path: <em>/ctrl/1.0/DiskActiveRequests/{diskId}</em></li>
+<li>Arguments: 
+<ul>
+<li>diskId - <strong>DiskID</strong>: <em>integer, 0 &lt;= value &lt;= 4095</em></li>
+</ul>
+</li>
+<li>Json: <em>Either no JSON or {}</em></li>
+</ul>
+</li>
+<li>Response:
+<ul>
+<li>Example HTTP Response:
+<pre><code>HTTP/1.0 200 OK
+Connection: close
+Content-Type: application/json
+Cache-control: private
+Content-Length: <var>LENGTH</var>
+
+{
+  "generation": <var>generation</var>,
+  "data": {
+    "diskId": <var>DiskID</var>,
+    "requests": [{
+      "address": <var>long</var>,
+      "drOp": <var>string</var>,
+      "msecActive": <var>int</var>,
+      "op": <var>RequestOp</var>,
+      "prevState": <var>string</var>,
+      "requestId": <var>string</var>,
+      "requestIdx": <var>int</var>,
+      "size": <var>int</var>,
+      "state": <var>string</var>,
+      "volumeId": <var>long</var>
+    }, ...]
+  }
+}
+</code></pre></li>
+<li>Response Data:
+<strong>DiskActiveRequests</strong><ul>
+<li class="attribute">diskId: <strong>DiskID</strong>, integer, 0 &lt;= value &lt;= 4095</li><li class="attribute">requests: A list of ActiveRequestDesc
+<ul>Element type: <strong>ActiveRequestDesc</strong><ul>
+<li class="attribute">address: <strong>long</strong>, A long integer value.</li><li class="attribute">drOp: <strong>string</strong>, A string value.</li><li class="attribute">msecActive: <strong>int</strong>, An integer value.</li><li class="attribute">op: <strong>RequestOp</strong>, One of {read, write, merge, system, entries flush, #bad_state, #bad_drOp}</li><li class="attribute">prevState: <strong>string</strong>, A string value.</li><li class="attribute">requestId: <strong>string</strong>, A string value.</li><li class="attribute">requestIdx: <strong>int</strong>, An integer value.</li><li class="attribute">size: <strong>int</strong>, An integer value.</li><li class="attribute">state: <strong>string</strong>, A string value.</li><li class="attribute">volumeId: <strong>long</strong>, A long integer value.</li></ul>
+
+</li></ul>
+</li></ul>
+</li>
+</ul>
+</li>
+</ol>
+<h2 id="Volumes">Volumes</h2>
+<p></p>
+<h3 id="VolumesList">List all volumes (<strong>VolumesList</strong>)</h3>
+<ol><li>Request:
+<ul><li>Example HTTP Request:
+<pre><code>GET /ctrl/1.0/VolumesList HTTP/1.0
+Host: <var>SP_API_HOST</var>:<var>SP_API_PORT</var>
+Authorization: Storpool v1:<var>SP_AUTH_TOKEN</var>
+Content-Length: <var>LENGTH</var>
+
+</code></pre></li><li>Method: <em>GET</em></li>
+<li>Path: <em>/ctrl/1.0/VolumesList</em></li>
+<li>Arguments: <em>No arguments</em></li>
+<li>Json: <em>Either no JSON or {}</em></li>
+</ul>
+</li>
+<li>Response:
+<ul>
+<li>Example HTTP Response:
+<pre><code>HTTP/1.0 200 OK
+Connection: close
+Content-Type: application/json
+Cache-control: private
+Content-Length: <var>LENGTH</var>
+
+{
+  "generation": <var>generation</var>,
+  "data": [{
+    "bw": <var>Bandwidth</var>,
+    "creationTimestamp": <var>long</var>,
+    "flags": <var>int</var>,
+    "id": <var>long</var>,
+    "iops": <var>IOPS</var>,
+    "name": <var>VolumeName</var>,
+    "objectsCount": <var>int</var>,
+    "originalParentVolumeId": <var>long</var>,
+    "parentName": Either(<var>&quot;&quot;</var>, <var>SnapshotName</var>),
+    "parentVolumeId": <var>long</var>,
+    "placeAll": <var>PlacementGroupName</var>,
+    "placeTail": <var>PlacementGroupName</var>,
+    "replication": <var>Replication</var>,
+    "size": <var>Size</var>,
+    "templateName": Either(<var>&quot;&quot;</var>, <var>VolumeTemplateName</var>),
+    "visibleVolumeId": <var>long</var>
+  }, ...]
+}
+</code></pre></li>
+<li>Response Data:
+A list of VolumeSummary
+<ul>Element type: <strong>VolumeSummary</strong><ul>
+<li class="attribute">bw: <strong>Bandwidth</strong>, positive integer or &apos;-&apos; for unlimited</li><li class="attribute">creationTimestamp: <strong>long</strong>, A long integer value.</li><li class="attribute">flags: <strong>int</strong>, An integer value.</li><li class="attribute">id: <strong>long</strong>, A long integer value.</li><li class="attribute">iops: <strong>IOPS</strong>, positive integer or &apos;-&apos; for unlimited</li><li class="attribute">name: <strong>VolumeName</strong>, string(200), matching ^[A-Za-z0-9_\-.:]+$, except {list, status}</li><li class="attribute">objectsCount: <strong>int</strong>, An integer value.</li><li class="attribute">originalParentVolumeId: <strong>long</strong>, A long integer value.</li><li class="attribute">parentName: Value must be from one of the following types: &quot;&quot;, SnapshotName.
+<ul><em>Subtypes:</em>
+<li><strong>&quot;&quot;</strong>, The constant value &quot;&quot;.</li>
+<li><strong>SnapshotName</strong>, string(200), matching ^[A-Za-z0-9_\-.@:]+$, except {list, status}</li>
+</ul>
+</li><li class="attribute">parentVolumeId: <strong>long</strong>, A long integer value.</li><li class="attribute">placeAll: <strong>PlacementGroupName</strong>, string(128), matching ^[A-Za-z0-9_\-]+$, except {list}</li><li class="attribute">placeTail: <strong>PlacementGroupName</strong>, string(128), matching ^[A-Za-z0-9_\-]+$, except {list}</li><li class="attribute">replication: <strong>Replication</strong>, integer, 1 &lt;= value &lt;= 3</li><li class="attribute">size: <strong>Size</strong>, positive integer, divisible by 512</li><li class="attribute">templateName: Value must be from one of the following types: &quot;&quot;, VolumeTemplateName.
+<ul><em>Subtypes:</em>
+<li><strong>&quot;&quot;</strong>, The constant value &quot;&quot;.</li>
+<li><strong>VolumeTemplateName</strong>, string(200), matching ^[A-Za-z0-9_\-]+$, except {list}</li>
+</ul>
+</li><li class="attribute">visibleVolumeId: <strong>long</strong>, A long integer value.</li></ul>
+
+</li></ul>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="VolumesGetStatus">Get volume and snapshot status (<strong>VolumesGetStatus</strong>)</h3>
+<ol><li>Request:
+<ul><li>Example HTTP Request:
+<pre><code>GET /ctrl/1.0/VolumesGetStatus HTTP/1.0
+Host: <var>SP_API_HOST</var>:<var>SP_API_PORT</var>
+Authorization: Storpool v1:<var>SP_AUTH_TOKEN</var>
+Content-Length: <var>LENGTH</var>
+
+</code></pre></li><li>Method: <em>GET</em></li>
+<li>Path: <em>/ctrl/1.0/VolumesGetStatus</em></li>
+<li>Arguments: <em>No arguments</em></li>
+<li>Json: <em>Either no JSON or {}</em></li>
+</ul>
+</li>
+<li>Response:
+<ul>
+<li>Example HTTP Response:
+<pre><code>HTTP/1.0 200 OK
+Connection: close
+Content-Type: application/json
+Cache-control: private
+Content-Length: <var>LENGTH</var>
+
+{
+  "generation": <var>generation</var>,
+  "data": {
+    "<var>VolumeName</var>": {
+      "balancerBlocked": <var>bool</var>,
+      "decreasedRedundancy": <var>bool</var>,
+      "downBytes": <var>int</var>,
+      "downDrives": [<var>DiskID</var>, ...],
+      "migrating": <var>bool</var>,
+      "missingDrives": [<var>DiskID</var>, ...],
+      "missingTargetDrives": [<var>DiskID</var>, ...],
+      "name": <var>VolumeName</var>,
+      "onDiskSize": <var>int</var>,
+      "replication": <var>Replication</var>,
+      "size": <var>Size</var>,
+      "softEjectingDrives": [<var>DiskID</var>, ...],
+      "status": <var>string</var>,
+      "storedSize": <var>int</var>,
+      "syncingDataBytes": <var>int</var>,
+      "syncingMetaObjects": <var>int</var>
+    }, ...}
+}
+</code></pre></li>
+<li>Response Data:
+A dict from VolumeName to VolumeStatus
+<ul>
+<li>Key type: <strong>VolumeName</strong>, string(200), matching ^[A-Za-z0-9_\-.:]+$, except {list, status}</li>
+<li>Value type: <strong>VolumeStatus</strong><ul>
+<li class="attribute">balancerBlocked: <strong>bool</strong>, true or false.</li><li class="attribute">decreasedRedundancy: <strong>bool</strong>, true or false.</li><li class="attribute">downBytes: <strong>int</strong>, An integer value.</li><li class="attribute">downDrives: A list of DiskID
+<ul>Element type: <strong>DiskID</strong>, integer, 0 &lt;= value &lt;= 4095
+</li></ul>
+</li><li class="attribute">migrating: <strong>bool</strong>, true or false.</li><li class="attribute">missingDrives: A list of DiskID
+<ul>Element type: <strong>DiskID</strong>, integer, 0 &lt;= value &lt;= 4095
+</li></ul>
+</li><li class="attribute">missingTargetDrives: A list of DiskID
+<ul>Element type: <strong>DiskID</strong>, integer, 0 &lt;= value &lt;= 4095
+</li></ul>
+</li><li class="attribute">name: <strong>VolumeName</strong>, string(200), matching ^[A-Za-z0-9_\-.:]+$, except {list, status}</li><li class="attribute">onDiskSize: <strong>int</strong>, An integer value.</li><li class="attribute">replication: <strong>Replication</strong>, integer, 1 &lt;= value &lt;= 3</li><li class="attribute">size: <strong>Size</strong>, positive integer, divisible by 512</li><li class="attribute">softEjectingDrives: A list of DiskID
+<ul>Element type: <strong>DiskID</strong>, integer, 0 &lt;= value &lt;= 4095
+</li></ul>
+</li><li class="attribute">status: <strong>string</strong>, A string value.</li><li class="attribute">storedSize: <strong>int</strong>, An integer value.</li><li class="attribute">syncingDataBytes: <strong>int</strong>, An integer value.</li><li class="attribute">syncingMetaObjects: <strong>int</strong>, An integer value.</li></ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="Volume">List a single volume (<strong>Volume</strong>)</h3>
+<ol><li>Request:
+<ul><li>Example HTTP Request:
+<pre><code>GET /ctrl/1.0/Volume/{volumeName} HTTP/1.0
+Host: <var>SP_API_HOST</var>:<var>SP_API_PORT</var>
+Authorization: Storpool v1:<var>SP_AUTH_TOKEN</var>
+Content-Length: <var>LENGTH</var>
+
+</code></pre></li><li>Method: <em>GET</em></li>
+<li>Path: <em>/ctrl/1.0/Volume/{volumeName}</em></li>
+<li>Arguments: 
+<ul>
+<li>volumeName - <strong>VolumeName</strong>: <em>string(200), matching ^[A-Za-z0-9_\-.:]+$, except {list, status}</em></li>
+</ul>
+</li>
+<li>Json: <em>Either no JSON or {}</em></li>
+</ul>
+</li>
+<li>Response:
+<ul>
+<li>Example HTTP Response:
+<pre><code>HTTP/1.0 200 OK
+Connection: close
+Content-Type: application/json
+Cache-control: private
+Content-Length: <var>LENGTH</var>
+
+{
+  "generation": <var>generation</var>,
+  "data": [{
+    "bw": <var>Bandwidth</var>,
+    "creationTimestamp": <var>long</var>,
+    "flags": <var>int</var>,
+    "id": <var>long</var>,
+    "iops": <var>IOPS</var>,
+    "name": <var>VolumeName</var>,
+    "objectsCount": <var>int</var>,
+    "originalParentVolumeId": <var>long</var>,
+    "parentName": Either(<var>&quot;&quot;</var>, <var>SnapshotName</var>),
+    "parentVolumeId": <var>long</var>,
+    "placeAll": <var>PlacementGroupName</var>,
+    "placeTail": <var>PlacementGroupName</var>,
+    "replication": <var>Replication</var>,
+    "size": <var>Size</var>,
+    "templateName": Either(<var>&quot;&quot;</var>, <var>VolumeTemplateName</var>),
+    "visibleVolumeId": <var>long</var>
+  }, ...]
+}
+</code></pre></li>
+<li>Response Data:
+A list of VolumeSummary
+<ul>Element type: <strong>VolumeSummary</strong><ul>
+<li class="attribute">bw: <strong>Bandwidth</strong>, positive integer or &apos;-&apos; for unlimited</li><li class="attribute">creationTimestamp: <strong>long</strong>, A long integer value.</li><li class="attribute">flags: <strong>int</strong>, An integer value.</li><li class="attribute">id: <strong>long</strong>, A long integer value.</li><li class="attribute">iops: <strong>IOPS</strong>, positive integer or &apos;-&apos; for unlimited</li><li class="attribute">name: <strong>VolumeName</strong>, string(200), matching ^[A-Za-z0-9_\-.:]+$, except {list, status}</li><li class="attribute">objectsCount: <strong>int</strong>, An integer value.</li><li class="attribute">originalParentVolumeId: <strong>long</strong>, A long integer value.</li><li class="attribute">parentName: Value must be from one of the following types: &quot;&quot;, SnapshotName.
+<ul><em>Subtypes:</em>
+<li><strong>&quot;&quot;</strong>, The constant value &quot;&quot;.</li>
+<li><strong>SnapshotName</strong>, string(200), matching ^[A-Za-z0-9_\-.@:]+$, except {list, status}</li>
+</ul>
+</li><li class="attribute">parentVolumeId: <strong>long</strong>, A long integer value.</li><li class="attribute">placeAll: <strong>PlacementGroupName</strong>, string(128), matching ^[A-Za-z0-9_\-]+$, except {list}</li><li class="attribute">placeTail: <strong>PlacementGroupName</strong>, string(128), matching ^[A-Za-z0-9_\-]+$, except {list}</li><li class="attribute">replication: <strong>Replication</strong>, integer, 1 &lt;= value &lt;= 3</li><li class="attribute">size: <strong>Size</strong>, positive integer, divisible by 512</li><li class="attribute">templateName: Value must be from one of the following types: &quot;&quot;, VolumeTemplateName.
+<ul><em>Subtypes:</em>
+<li><strong>&quot;&quot;</strong>, The constant value &quot;&quot;.</li>
+<li><strong>VolumeTemplateName</strong>, string(200), matching ^[A-Za-z0-9_\-]+$, except {list}</li>
+</ul>
+</li><li class="attribute">visibleVolumeId: <strong>long</strong>, A long integer value.</li></ul>
+
+</li></ul>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="VolumeDescribe">Describe a volume (<strong>VolumeDescribe</strong>)</h3>
+<ol><li>Request:
+<ul><li>Example HTTP Request:
+<pre><code>GET /ctrl/1.0/VolumeDescribe/{volumeName} HTTP/1.0
+Host: <var>SP_API_HOST</var>:<var>SP_API_PORT</var>
+Authorization: Storpool v1:<var>SP_AUTH_TOKEN</var>
+Content-Length: <var>LENGTH</var>
+
+</code></pre></li><li>Method: <em>GET</em></li>
+<li>Path: <em>/ctrl/1.0/VolumeDescribe/{volumeName}</em></li>
+<li>Arguments: 
+<ul>
+<li>volumeName - <strong>VolumeName</strong>: <em>string(200), matching ^[A-Za-z0-9_\-.:]+$, except {list, status}</em></li>
+</ul>
+</li>
+<li>Json: <em>Either no JSON or {}</em></li>
+</ul>
+</li>
+<li>Response:
+<ul>
+<li>Example HTTP Response:
+<pre><code>HTTP/1.0 200 OK
+Connection: close
+Content-Type: application/json
+Cache-control: private
+Content-Length: <var>LENGTH</var>
+
+{
+  "generation": <var>generation</var>,
+  "data": {
+    "bw": <var>Bandwidth</var>,
+    "creationTimestamp": <var>long</var>,
+    "flags": <var>int</var>,
+    "id": <var>long</var>,
+    "iops": <var>IOPS</var>,
+    "name": <var>VolumeName</var>,
+    "objects": [[<var>DiskID</var>, ...], ...],
+    "objectsCount": <var>int</var>,
+    "originalParentVolumeId": <var>long</var>,
+    "parentName": Either(<var>&quot;&quot;</var>, <var>SnapshotName</var>),
+    "parentVolumeId": <var>long</var>,
+    "placeAll": <var>PlacementGroupName</var>,
+    "placeTail": <var>PlacementGroupName</var>,
+    "replication": <var>Replication</var>,
+    "size": <var>Size</var>,
+    "targetDiskSets": [[<var>DiskID</var>, ...], ...],
+    "templateName": Either(<var>&quot;&quot;</var>, <var>VolumeTemplateName</var>),
+    "visibleVolumeId": <var>long</var>
+  }
+}
+</code></pre></li>
+<li>Response Data:
+<strong>Volume</strong><ul>
+<li class="attribute">bw: <strong>Bandwidth</strong>, positive integer or &apos;-&apos; for unlimited</li><li class="attribute">creationTimestamp: <strong>long</strong>, A long integer value.</li><li class="attribute">flags: <strong>int</strong>, An integer value.</li><li class="attribute">id: <strong>long</strong>, A long integer value.</li><li class="attribute">iops: <strong>IOPS</strong>, positive integer or &apos;-&apos; for unlimited</li><li class="attribute">name: <strong>VolumeName</strong>, string(200), matching ^[A-Za-z0-9_\-.:]+$, except {list, status}</li><li class="attribute">objects: A list of [DiskID]
+<ul>Element type: A list of DiskID
+<ul>Element type: <strong>DiskID</strong>, integer, 0 &lt;= value &lt;= 4095
+</li></ul>
+
+</li></ul>
+</li><li class="attribute">objectsCount: <strong>int</strong>, An integer value.</li><li class="attribute">originalParentVolumeId: <strong>long</strong>, A long integer value.</li><li class="attribute">parentName: Value must be from one of the following types: &quot;&quot;, SnapshotName.
+<ul><em>Subtypes:</em>
+<li><strong>&quot;&quot;</strong>, The constant value &quot;&quot;.</li>
+<li><strong>SnapshotName</strong>, string(200), matching ^[A-Za-z0-9_\-.@:]+$, except {list, status}</li>
+</ul>
+</li><li class="attribute">parentVolumeId: <strong>long</strong>, A long integer value.</li><li class="attribute">placeAll: <strong>PlacementGroupName</strong>, string(128), matching ^[A-Za-z0-9_\-]+$, except {list}</li><li class="attribute">placeTail: <strong>PlacementGroupName</strong>, string(128), matching ^[A-Za-z0-9_\-]+$, except {list}</li><li class="attribute">replication: <strong>Replication</strong>, integer, 1 &lt;= value &lt;= 3</li><li class="attribute">size: <strong>Size</strong>, positive integer, divisible by 512</li><li class="attribute">targetDiskSets: A list of [DiskID]
+<ul>Element type: A list of DiskID
+<ul>Element type: <strong>DiskID</strong>, integer, 0 &lt;= value &lt;= 4095
+</li></ul>
+
+</li></ul>
+</li><li class="attribute">templateName: Value must be from one of the following types: &quot;&quot;, VolumeTemplateName.
+<ul><em>Subtypes:</em>
+<li><strong>&quot;&quot;</strong>, The constant value &quot;&quot;.</li>
+<li><strong>VolumeTemplateName</strong>, string(200), matching ^[A-Za-z0-9_\-]+$, except {list}</li>
+</ul>
+</li><li class="attribute">visibleVolumeId: <strong>long</strong>, A long integer value.</li></ul>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="VolumeGetInfo">Get volume info (<strong>VolumeGetInfo</strong>)</h3>
+<ol><li>Request:
+<ul><li>Example HTTP Request:
+<pre><code>GET /ctrl/1.0/VolumeGetInfo/{volumeName} HTTP/1.0
+Host: <var>SP_API_HOST</var>:<var>SP_API_PORT</var>
+Authorization: Storpool v1:<var>SP_AUTH_TOKEN</var>
+Content-Length: <var>LENGTH</var>
+
+</code></pre></li><li>Method: <em>GET</em></li>
+<li>Path: <em>/ctrl/1.0/VolumeGetInfo/{volumeName}</em></li>
+<li>Arguments: 
+<ul>
+<li>volumeName - <strong>VolumeName</strong>: <em>string(200), matching ^[A-Za-z0-9_\-.:]+$, except {list, status}</em></li>
+</ul>
+</li>
+<li>Json: <em>Either no JSON or {}</em></li>
+</ul>
+</li>
+<li>Response:
+<ul>
+<li>Example HTTP Response:
+<pre><code>HTTP/1.0 200 OK
+Connection: close
+Content-Type: application/json
+Cache-control: private
+Content-Length: <var>LENGTH</var>
+
+{
+  "generation": <var>generation</var>,
+  "data": {
+    "bw": <var>Bandwidth</var>,
+    "creationTimestamp": <var>long</var>,
+    "disksCount": <var>int</var>,
+    "flags": <var>int</var>,
+    "id": <var>long</var>,
+    "iops": <var>IOPS</var>,
+    "name": <var>VolumeName</var>,
+    "objectsCount": <var>int</var>,
+    "objectsPerChain": [{
+      "count": <var>int</var>,
+      "disks": [<var>DiskID</var>, ...]
+    }, ...],
+    "objectsPerDisk": {
+      "<var>DiskID</var>": <var>int</var>, ...},
+    "objectsPerDiskSet": [{
+      "count": <var>int</var>,
+      "disks": [<var>DiskID</var>, ...]
+    }, ...],
+    "originalParentVolumeId": <var>long</var>,
+    "parentName": Either(<var>&quot;&quot;</var>, <var>SnapshotName</var>),
+    "parentVolumeId": <var>long</var>,
+    "placeAll": <var>PlacementGroupName</var>,
+    "placeTail": <var>PlacementGroupName</var>,
+    "replication": <var>Replication</var>,
+    "size": <var>Size</var>,
+    "templateName": Either(<var>&quot;&quot;</var>, <var>VolumeTemplateName</var>),
+    "visibleVolumeId": <var>long</var>
+  }
+}
+</code></pre></li>
+<li>Response Data:
+<strong>VolumeInfo</strong><ul>
+<li class="attribute">bw: <strong>Bandwidth</strong>, positive integer or &apos;-&apos; for unlimited</li><li class="attribute">creationTimestamp: <strong>long</strong>, A long integer value.</li><li class="attribute">disksCount: <strong>int</strong>, An integer value.</li><li class="attribute">flags: <strong>int</strong>, An integer value.</li><li class="attribute">id: <strong>long</strong>, A long integer value.</li><li class="attribute">iops: <strong>IOPS</strong>, positive integer or &apos;-&apos; for unlimited</li><li class="attribute">name: <strong>VolumeName</strong>, string(200), matching ^[A-Za-z0-9_\-.:]+$, except {list, status}</li><li class="attribute">objectsCount: <strong>int</strong>, An integer value.</li><li class="attribute">objectsPerChain: A list of VolumeChainStat
+<ul>Element type: <strong>VolumeChainStat</strong><ul>
+<li class="attribute">count: <strong>int</strong>, An integer value.</li><li class="attribute">disks: A list of DiskID
+<ul>Element type: <strong>DiskID</strong>, integer, 0 &lt;= value &lt;= 4095
+</li></ul>
+</li></ul>
+
+</li></ul>
+</li><li class="attribute">objectsPerDisk: A dict from DiskID to int
+<ul>
+<li>Key type: <strong>DiskID</strong>, integer, 0 &lt;= value &lt;= 4095</li>
+<li>Value type: <strong>int</strong>, An integer value.</li>
+</ul>
+</li><li class="attribute">objectsPerDiskSet: A list of VolumeChainStat
+<ul>Element type: <strong>VolumeChainStat</strong><ul>
+<li class="attribute">count: <strong>int</strong>, An integer value.</li><li class="attribute">disks: A list of DiskID
+<ul>Element type: <strong>DiskID</strong>, integer, 0 &lt;= value &lt;= 4095
+</li></ul>
+</li></ul>
+
+</li></ul>
+</li><li class="attribute">originalParentVolumeId: <strong>long</strong>, A long integer value.</li><li class="attribute">parentName: Value must be from one of the following types: &quot;&quot;, SnapshotName.
+<ul><em>Subtypes:</em>
+<li><strong>&quot;&quot;</strong>, The constant value &quot;&quot;.</li>
+<li><strong>SnapshotName</strong>, string(200), matching ^[A-Za-z0-9_\-.@:]+$, except {list, status}</li>
+</ul>
+</li><li class="attribute">parentVolumeId: <strong>long</strong>, A long integer value.</li><li class="attribute">placeAll: <strong>PlacementGroupName</strong>, string(128), matching ^[A-Za-z0-9_\-]+$, except {list}</li><li class="attribute">placeTail: <strong>PlacementGroupName</strong>, string(128), matching ^[A-Za-z0-9_\-]+$, except {list}</li><li class="attribute">replication: <strong>Replication</strong>, integer, 1 &lt;= value &lt;= 3</li><li class="attribute">size: <strong>Size</strong>, positive integer, divisible by 512</li><li class="attribute">templateName: Value must be from one of the following types: &quot;&quot;, VolumeTemplateName.
+<ul><em>Subtypes:</em>
+<li><strong>&quot;&quot;</strong>, The constant value &quot;&quot;.</li>
+<li><strong>VolumeTemplateName</strong>, string(200), matching ^[A-Za-z0-9_\-]+$, except {list}</li>
+</ul>
+</li><li class="attribute">visibleVolumeId: <strong>long</strong>, A long integer value.</li></ul>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="VolumeListSnapshots">List parent snapshots for volume (<strong>VolumeListSnapshots</strong>)</h3>
+<ol><li>Request:
+<ul><li>Example HTTP Request:
+<pre><code>GET /ctrl/1.0/VolumeListSnapshots/{volumeName} HTTP/1.0
+Host: <var>SP_API_HOST</var>:<var>SP_API_PORT</var>
+Authorization: Storpool v1:<var>SP_AUTH_TOKEN</var>
+Content-Length: <var>LENGTH</var>
+
+</code></pre></li><li>Method: <em>GET</em></li>
+<li>Path: <em>/ctrl/1.0/VolumeListSnapshots/{volumeName}</em></li>
+<li>Arguments: 
+<ul>
+<li>volumeName - <strong>VolumeName</strong>: <em>string(200), matching ^[A-Za-z0-9_\-.:]+$, except {list, status}</em></li>
+</ul>
+</li>
+<li>Json: <em>Either no JSON or {}</em></li>
+</ul>
+</li>
+<li>Response:
+<ul>
+<li>Example HTTP Response:
+<pre><code>HTTP/1.0 200 OK
+Connection: close
+Content-Type: application/json
+Cache-control: private
+Content-Length: <var>LENGTH</var>
+
+{
+  "generation": <var>generation</var>,
+  "data": [{
+    "bw": <var>Bandwidth</var>,
+    "creationTimestamp": <var>long</var>,
+    "flags": <var>int</var>,
+    "id": <var>long</var>,
+    "iops": <var>IOPS</var>,
+    "name": <var>VolumeName</var>,
+    "objectsCount": <var>int</var>,
+    "onVolume": <var>VolumeName</var>,
+    "originalParentVolumeId": <var>long</var>,
+    "parentName": Either(<var>&quot;&quot;</var>, <var>SnapshotName</var>),
+    "parentVolumeId": <var>long</var>,
+    "placeAll": <var>PlacementGroupName</var>,
+    "placeTail": <var>PlacementGroupName</var>,
+    "replication": <var>Replication</var>,
+    "size": <var>Size</var>,
+    "templateName": Either(<var>&quot;&quot;</var>, <var>VolumeTemplateName</var>),
+    "visibleVolumeId": <var>long</var>
+  }, ...]
+}
+</code></pre></li>
+<li>Response Data:
+A list of SnapshotSummary
+<ul>Element type: <strong>SnapshotSummary</strong><ul>
+<li class="attribute">bw: <strong>Bandwidth</strong>, positive integer or &apos;-&apos; for unlimited</li><li class="attribute">creationTimestamp: <strong>long</strong>, A long integer value.</li><li class="attribute">flags: <strong>int</strong>, An integer value.</li><li class="attribute">id: <strong>long</strong>, A long integer value.</li><li class="attribute">iops: <strong>IOPS</strong>, positive integer or &apos;-&apos; for unlimited</li><li class="attribute">name: <strong>VolumeName</strong>, string(200), matching ^[A-Za-z0-9_\-.:]+$, except {list, status}</li><li class="attribute">objectsCount: <strong>int</strong>, An integer value.</li><li class="attribute">onVolume: <strong>VolumeName</strong>, string(200), matching ^[A-Za-z0-9_\-.:]+$, except {list, status}</li><li class="attribute">originalParentVolumeId: <strong>long</strong>, A long integer value.</li><li class="attribute">parentName: Value must be from one of the following types: &quot;&quot;, SnapshotName.
+<ul><em>Subtypes:</em>
+<li><strong>&quot;&quot;</strong>, The constant value &quot;&quot;.</li>
+<li><strong>SnapshotName</strong>, string(200), matching ^[A-Za-z0-9_\-.@:]+$, except {list, status}</li>
+</ul>
+</li><li class="attribute">parentVolumeId: <strong>long</strong>, A long integer value.</li><li class="attribute">placeAll: <strong>PlacementGroupName</strong>, string(128), matching ^[A-Za-z0-9_\-]+$, except {list}</li><li class="attribute">placeTail: <strong>PlacementGroupName</strong>, string(128), matching ^[A-Za-z0-9_\-]+$, except {list}</li><li class="attribute">replication: <strong>Replication</strong>, integer, 1 &lt;= value &lt;= 3</li><li class="attribute">size: <strong>Size</strong>, positive integer, divisible by 512</li><li class="attribute">templateName: Value must be from one of the following types: &quot;&quot;, VolumeTemplateName.
+<ul><em>Subtypes:</em>
+<li><strong>&quot;&quot;</strong>, The constant value &quot;&quot;.</li>
+<li><strong>VolumeTemplateName</strong>, string(200), matching ^[A-Za-z0-9_\-]+$, except {list}</li>
+</ul>
+</li><li class="attribute">visibleVolumeId: <strong>long</strong>, A long integer value.</li></ul>
+
+</li></ul>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="VolumeCreate">Create a new volume (<strong>VolumeCreate</strong>)</h3>
+<ol><li>Request:
+<ul><li>Example HTTP Request:
+<pre><code>POST /ctrl/1.0/VolumeCreate HTTP/1.0
+Host: <var>SP_API_HOST</var>:<var>SP_API_PORT</var>
+Authorization: Storpool v1:<var>SP_AUTH_TOKEN</var>
+Content-Length: <var>LENGTH</var>
+
+{
+  "bw": <var>Optional(Bandwidth)</var>,
+  "iops": <var>Optional(IOPS)</var>,
+  "name": <var>VolumeName</var>,
+  "parent": <var>Optional(SnapshotName)</var>,
+  "placeAll": <var>Optional(PlacementGroupName)</var>,
+  "placeTail": <var>Optional(PlacementGroupName)</var>,
+  "replication": <var>Optional(Replication)</var>,
+  "size": <var>Size</var>,
+  "template": <var>Optional(VolumeTemplateName)</var>
+}</code></pre></li><li>Method: <em>POST</em></li>
+<li>Path: <em>/ctrl/1.0/VolumeCreate</em></li>
+<li>Arguments: <em>No arguments</em></li>
+<li>Json: <strong>VolumeCreateDesc</strong><ul>
+<li class="attribute">bw: <strong>Optional(Bandwidth)</strong>, If present must be of type Bandwidth</li><li class="attribute">iops: <strong>Optional(IOPS)</strong>, If present must be of type IOPS</li><li class="attribute">name: <strong>VolumeName</strong>, string(200), matching ^[A-Za-z0-9_\-.:]+$, except {list, status}</li><li class="attribute">parent: <strong>Optional(SnapshotName)</strong>, If present must be of type SnapshotName</li><li class="attribute">placeAll: <strong>Optional(PlacementGroupName)</strong>, If present must be of type PlacementGroupName</li><li class="attribute">placeTail: <strong>Optional(PlacementGroupName)</strong>, If present must be of type PlacementGroupName</li><li class="attribute">replication: <strong>Optional(Replication)</strong>, If present must be of type Replication</li><li class="attribute">size: <strong>Size</strong>, positive integer, divisible by 512</li><li class="attribute">template: <strong>Optional(VolumeTemplateName)</strong>, If present must be of type VolumeTemplateName</li></ul>
+</li>
+</ul>
+</li>
+<li>Response:
+<ul>
+<li>Example HTTP Response:
+<pre><code>HTTP/1.0 200 OK
+Connection: close
+Content-Type: application/json
+Cache-control: private
+Content-Length: <var>LENGTH</var>
+
+{
+  "generation": <var>generation</var>,
+  "data": {
+    "generation": <var>long</var>,
+    "ok": <var>true</var>
+  }
+}
+</code></pre></li>
+<li>Response Data:
+<strong>ApiOk</strong><ul>
+<li class="attribute">generation: <strong>long</strong>, A long integer value.</li><li class="attribute">ok: <strong>true</strong>, The constant value true.</li></ul>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="VolumeUpdate">Update a volume (<strong>VolumeUpdate</strong>)</h3>
+<ol><li>Request:
+<ul><li>Example HTTP Request:
+<pre><code>POST /ctrl/1.0/VolumeUpdate/{volumeName} HTTP/1.0
+Host: <var>SP_API_HOST</var>:<var>SP_API_PORT</var>
+Authorization: Storpool v1:<var>SP_AUTH_TOKEN</var>
+Content-Length: <var>LENGTH</var>
+
+{
+  "bw": <var>Optional(Bandwidth)</var>,
+  "iops": <var>Optional(IOPS)</var>,
+  "placeAll": <var>Optional(PlacementGroupName)</var>,
+  "placeTail": <var>Optional(PlacementGroupName)</var>,
+  "rename": <var>Optional(VolumeName)</var>,
+  "replication": <var>Optional(Replication)</var>,
+  "size": <var>Optional(Size)</var>,
+  "sizeAdd": <var>Optional(SizeAdd)</var>,
+  "template": <var>Optional(VolumeTemplateName)</var>
+}</code></pre></li><li>Method: <em>POST</em></li>
+<li>Path: <em>/ctrl/1.0/VolumeUpdate/{volumeName}</em></li>
+<li>Arguments: 
+<ul>
+<li>volumeName - <strong>VolumeName</strong>: <em>string(200), matching ^[A-Za-z0-9_\-.:]+$, except {list, status}</em></li>
+</ul>
+</li>
+<li>Json: <strong>VolumeUpdateDesc</strong><ul>
+<li class="attribute">bw: <strong>Optional(Bandwidth)</strong>, If present must be of type Bandwidth</li><li class="attribute">iops: <strong>Optional(IOPS)</strong>, If present must be of type IOPS</li><li class="attribute">placeAll: <strong>Optional(PlacementGroupName)</strong>, If present must be of type PlacementGroupName</li><li class="attribute">placeTail: <strong>Optional(PlacementGroupName)</strong>, If present must be of type PlacementGroupName</li><li class="attribute">rename: <strong>Optional(VolumeName)</strong>, If present must be of type VolumeName</li><li class="attribute">replication: <strong>Optional(Replication)</strong>, If present must be of type Replication</li><li class="attribute">size: <strong>Optional(Size)</strong>, If present must be of type Size</li><li class="attribute">sizeAdd: <strong>Optional(SizeAdd)</strong>, If present must be of type SizeAdd</li><li class="attribute">template: <strong>Optional(VolumeTemplateName)</strong>, If present must be of type VolumeTemplateName</li></ul>
+</li>
+</ul>
+</li>
+<li>Response:
+<ul>
+<li>Example HTTP Response:
+<pre><code>HTTP/1.0 200 OK
+Connection: close
+Content-Type: application/json
+Cache-control: private
+Content-Length: <var>LENGTH</var>
+
+{
+  "generation": <var>generation</var>,
+  "data": {
+    "generation": <var>long</var>,
+    "ok": <var>true</var>
+  }
+}
+</code></pre></li>
+<li>Response Data:
+<strong>ApiOk</strong><ul>
+<li class="attribute">generation: <strong>long</strong>, A long integer value.</li><li class="attribute">ok: <strong>true</strong>, The constant value true.</li></ul>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="VolumeFreeze">Freeze a volume (<strong>VolumeFreeze</strong>)</h3>
+<ol><li>Request:
+<ul><li>Example HTTP Request:
+<pre><code>POST /ctrl/1.0/VolumeFreeze/{volumeName} HTTP/1.0
+Host: <var>SP_API_HOST</var>:<var>SP_API_PORT</var>
+Authorization: Storpool v1:<var>SP_AUTH_TOKEN</var>
+Content-Length: <var>LENGTH</var>
+
+</code></pre></li><li>Method: <em>POST</em></li>
+<li>Path: <em>/ctrl/1.0/VolumeFreeze/{volumeName}</em></li>
+<li>Arguments: 
+<ul>
+<li>volumeName - <strong>VolumeName</strong>: <em>string(200), matching ^[A-Za-z0-9_\-.:]+$, except {list, status}</em></li>
+</ul>
+</li>
+<li>Json: <em>Either no JSON or {}</em></li>
+</ul>
+</li>
+<li>Response:
+<ul>
+<li>Example HTTP Response:
+<pre><code>HTTP/1.0 200 OK
+Connection: close
+Content-Type: application/json
+Cache-control: private
+Content-Length: <var>LENGTH</var>
+
+{
+  "generation": <var>generation</var>,
+  "data": {
+    "generation": <var>long</var>,
+    "ok": <var>true</var>
+  }
+}
+</code></pre></li>
+<li>Response Data:
+<strong>ApiOk</strong><ul>
+<li class="attribute">generation: <strong>long</strong>, A long integer value.</li><li class="attribute">ok: <strong>true</strong>, The constant value true.</li></ul>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="VolumeRebase">Rebase a volume (<strong>VolumeRebase</strong>)</h3>
+<ol><li>Request:
+<ul><li>Example HTTP Request:
+<pre><code>POST /ctrl/1.0/VolumeRebase/{volumeName} HTTP/1.0
+Host: <var>SP_API_HOST</var>:<var>SP_API_PORT</var>
+Authorization: Storpool v1:<var>SP_AUTH_TOKEN</var>
+Content-Length: <var>LENGTH</var>
+
+{
+  "parentName": <var>Optional(SnapshotName)</var>
+}</code></pre></li><li>Method: <em>POST</em></li>
+<li>Path: <em>/ctrl/1.0/VolumeRebase/{volumeName}</em></li>
+<li>Arguments: 
+<ul>
+<li>volumeName - <strong>VolumeName</strong>: <em>string(200), matching ^[A-Za-z0-9_\-.:]+$, except {list, status}</em></li>
+</ul>
+</li>
+<li>Json: <strong>VolumeRebaseDesc</strong><ul>
+<li class="attribute">parentName: <strong>Optional(SnapshotName)</strong>, If present must be of type SnapshotName</li></ul>
+</li>
+</ul>
+</li>
+<li>Response:
+<ul>
+<li>Example HTTP Response:
+<pre><code>HTTP/1.0 200 OK
+Connection: close
+Content-Type: application/json
+Cache-control: private
+Content-Length: <var>LENGTH</var>
+
+{
+  "generation": <var>generation</var>,
+  "data": {
+    "generation": <var>long</var>,
+    "ok": <var>true</var>
+  }
+}
+</code></pre></li>
+<li>Response Data:
+<strong>ApiOk</strong><ul>
+<li class="attribute">generation: <strong>long</strong>, A long integer value.</li><li class="attribute">ok: <strong>true</strong>, The constant value true.</li></ul>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="VolumeDelete">Delete a volume (<strong>VolumeDelete</strong>)</h3>
+<ol><li>Request:
+<ul><li>Example HTTP Request:
+<pre><code>POST /ctrl/1.0/VolumeDelete/{volumeName} HTTP/1.0
+Host: <var>SP_API_HOST</var>:<var>SP_API_PORT</var>
+Authorization: Storpool v1:<var>SP_AUTH_TOKEN</var>
+Content-Length: <var>LENGTH</var>
+
+</code></pre></li><li>Method: <em>POST</em></li>
+<li>Path: <em>/ctrl/1.0/VolumeDelete/{volumeName}</em></li>
+<li>Arguments: 
+<ul>
+<li>volumeName - <strong>VolumeName</strong>: <em>string(200), matching ^[A-Za-z0-9_\-.:]+$, except {list, status}</em></li>
+</ul>
+</li>
+<li>Json: <em>Either no JSON or {}</em></li>
+</ul>
+</li>
+<li>Response:
+<ul>
+<li>Example HTTP Response:
+<pre><code>HTTP/1.0 200 OK
+Connection: close
+Content-Type: application/json
+Cache-control: private
+Content-Length: <var>LENGTH</var>
+
+{
+  "generation": <var>generation</var>,
+  "data": {
+    "generation": <var>long</var>,
+    "ok": <var>true</var>
+  }
+}
+</code></pre></li>
+<li>Response Data:
+<strong>ApiOk</strong><ul>
+<li class="attribute">generation: <strong>long</strong>, A long integer value.</li><li class="attribute">ok: <strong>true</strong>, The constant value true.</li></ul>
+</li>
+</ul>
+</li>
+</ol>
+<h2 id="Snapshots">Snapshots</h2>
+<p></p>
+<h3 id="SnapshotsList">List all snapshots (<strong>SnapshotsList</strong>)</h3>
+<ol><li>Request:
+<ul><li>Example HTTP Request:
+<pre><code>GET /ctrl/1.0/SnapshotsList HTTP/1.0
+Host: <var>SP_API_HOST</var>:<var>SP_API_PORT</var>
+Authorization: Storpool v1:<var>SP_AUTH_TOKEN</var>
+Content-Length: <var>LENGTH</var>
+
+</code></pre></li><li>Method: <em>GET</em></li>
+<li>Path: <em>/ctrl/1.0/SnapshotsList</em></li>
+<li>Arguments: <em>No arguments</em></li>
+<li>Json: <em>Either no JSON or {}</em></li>
+</ul>
+</li>
+<li>Response:
+<ul>
+<li>Example HTTP Response:
+<pre><code>HTTP/1.0 200 OK
+Connection: close
+Content-Type: application/json
+Cache-control: private
+Content-Length: <var>LENGTH</var>
+
+{
+  "generation": <var>generation</var>,
+  "data": [{
+    "bw": <var>Bandwidth</var>,
+    "creationTimestamp": <var>long</var>,
+    "flags": <var>int</var>,
+    "id": <var>long</var>,
+    "iops": <var>IOPS</var>,
+    "name": <var>VolumeName</var>,
+    "objectsCount": <var>int</var>,
+    "onVolume": <var>VolumeName</var>,
+    "originalParentVolumeId": <var>long</var>,
+    "parentName": Either(<var>&quot;&quot;</var>, <var>SnapshotName</var>),
+    "parentVolumeId": <var>long</var>,
+    "placeAll": <var>PlacementGroupName</var>,
+    "placeTail": <var>PlacementGroupName</var>,
+    "replication": <var>Replication</var>,
+    "size": <var>Size</var>,
+    "templateName": Either(<var>&quot;&quot;</var>, <var>VolumeTemplateName</var>),
+    "visibleVolumeId": <var>long</var>
+  }, ...]
+}
+</code></pre></li>
+<li>Response Data:
+A list of SnapshotSummary
+<ul>Element type: <strong>SnapshotSummary</strong><ul>
+<li class="attribute">bw: <strong>Bandwidth</strong>, positive integer or &apos;-&apos; for unlimited</li><li class="attribute">creationTimestamp: <strong>long</strong>, A long integer value.</li><li class="attribute">flags: <strong>int</strong>, An integer value.</li><li class="attribute">id: <strong>long</strong>, A long integer value.</li><li class="attribute">iops: <strong>IOPS</strong>, positive integer or &apos;-&apos; for unlimited</li><li class="attribute">name: <strong>VolumeName</strong>, string(200), matching ^[A-Za-z0-9_\-.:]+$, except {list, status}</li><li class="attribute">objectsCount: <strong>int</strong>, An integer value.</li><li class="attribute">onVolume: <strong>VolumeName</strong>, string(200), matching ^[A-Za-z0-9_\-.:]+$, except {list, status}</li><li class="attribute">originalParentVolumeId: <strong>long</strong>, A long integer value.</li><li class="attribute">parentName: Value must be from one of the following types: &quot;&quot;, SnapshotName.
+<ul><em>Subtypes:</em>
+<li><strong>&quot;&quot;</strong>, The constant value &quot;&quot;.</li>
+<li><strong>SnapshotName</strong>, string(200), matching ^[A-Za-z0-9_\-.@:]+$, except {list, status}</li>
+</ul>
+</li><li class="attribute">parentVolumeId: <strong>long</strong>, A long integer value.</li><li class="attribute">placeAll: <strong>PlacementGroupName</strong>, string(128), matching ^[A-Za-z0-9_\-]+$, except {list}</li><li class="attribute">placeTail: <strong>PlacementGroupName</strong>, string(128), matching ^[A-Za-z0-9_\-]+$, except {list}</li><li class="attribute">replication: <strong>Replication</strong>, integer, 1 &lt;= value &lt;= 3</li><li class="attribute">size: <strong>Size</strong>, positive integer, divisible by 512</li><li class="attribute">templateName: Value must be from one of the following types: &quot;&quot;, VolumeTemplateName.
+<ul><em>Subtypes:</em>
+<li><strong>&quot;&quot;</strong>, The constant value &quot;&quot;.</li>
+<li><strong>VolumeTemplateName</strong>, string(200), matching ^[A-Za-z0-9_\-]+$, except {list}</li>
+</ul>
+</li><li class="attribute">visibleVolumeId: <strong>long</strong>, A long integer value.</li></ul>
+
+</li></ul>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="Snapshot">List a single snapshots (<strong>Snapshot</strong>)</h3>
+<ol><li>Request:
+<ul><li>Example HTTP Request:
+<pre><code>GET /ctrl/1.0/Snapshot/{snapshotName} HTTP/1.0
+Host: <var>SP_API_HOST</var>:<var>SP_API_PORT</var>
+Authorization: Storpool v1:<var>SP_AUTH_TOKEN</var>
+Content-Length: <var>LENGTH</var>
+
+</code></pre></li><li>Method: <em>GET</em></li>
+<li>Path: <em>/ctrl/1.0/Snapshot/{snapshotName}</em></li>
+<li>Arguments: 
+<ul>
+<li>snapshotName - <strong>SnapshotName</strong>: <em>string(200), matching ^[A-Za-z0-9_\-.@:]+$, except {list, status}</em></li>
+</ul>
+</li>
+<li>Json: <em>Either no JSON or {}</em></li>
+</ul>
+</li>
+<li>Response:
+<ul>
+<li>Example HTTP Response:
+<pre><code>HTTP/1.0 200 OK
+Connection: close
+Content-Type: application/json
+Cache-control: private
+Content-Length: <var>LENGTH</var>
+
+{
+  "generation": <var>generation</var>,
+  "data": [{
+    "bw": <var>Bandwidth</var>,
+    "creationTimestamp": <var>long</var>,
+    "flags": <var>int</var>,
+    "id": <var>long</var>,
+    "iops": <var>IOPS</var>,
+    "name": <var>VolumeName</var>,
+    "objectsCount": <var>int</var>,
+    "onVolume": <var>VolumeName</var>,
+    "originalParentVolumeId": <var>long</var>,
+    "parentName": Either(<var>&quot;&quot;</var>, <var>SnapshotName</var>),
+    "parentVolumeId": <var>long</var>,
+    "placeAll": <var>PlacementGroupName</var>,
+    "placeTail": <var>PlacementGroupName</var>,
+    "replication": <var>Replication</var>,
+    "size": <var>Size</var>,
+    "templateName": Either(<var>&quot;&quot;</var>, <var>VolumeTemplateName</var>),
+    "visibleVolumeId": <var>long</var>
+  }, ...]
+}
+</code></pre></li>
+<li>Response Data:
+A list of SnapshotSummary
+<ul>Element type: <strong>SnapshotSummary</strong><ul>
+<li class="attribute">bw: <strong>Bandwidth</strong>, positive integer or &apos;-&apos; for unlimited</li><li class="attribute">creationTimestamp: <strong>long</strong>, A long integer value.</li><li class="attribute">flags: <strong>int</strong>, An integer value.</li><li class="attribute">id: <strong>long</strong>, A long integer value.</li><li class="attribute">iops: <strong>IOPS</strong>, positive integer or &apos;-&apos; for unlimited</li><li class="attribute">name: <strong>VolumeName</strong>, string(200), matching ^[A-Za-z0-9_\-.:]+$, except {list, status}</li><li class="attribute">objectsCount: <strong>int</strong>, An integer value.</li><li class="attribute">onVolume: <strong>VolumeName</strong>, string(200), matching ^[A-Za-z0-9_\-.:]+$, except {list, status}</li><li class="attribute">originalParentVolumeId: <strong>long</strong>, A long integer value.</li><li class="attribute">parentName: Value must be from one of the following types: &quot;&quot;, SnapshotName.
+<ul><em>Subtypes:</em>
+<li><strong>&quot;&quot;</strong>, The constant value &quot;&quot;.</li>
+<li><strong>SnapshotName</strong>, string(200), matching ^[A-Za-z0-9_\-.@:]+$, except {list, status}</li>
+</ul>
+</li><li class="attribute">parentVolumeId: <strong>long</strong>, A long integer value.</li><li class="attribute">placeAll: <strong>PlacementGroupName</strong>, string(128), matching ^[A-Za-z0-9_\-]+$, except {list}</li><li class="attribute">placeTail: <strong>PlacementGroupName</strong>, string(128), matching ^[A-Za-z0-9_\-]+$, except {list}</li><li class="attribute">replication: <strong>Replication</strong>, integer, 1 &lt;= value &lt;= 3</li><li class="attribute">size: <strong>Size</strong>, positive integer, divisible by 512</li><li class="attribute">templateName: Value must be from one of the following types: &quot;&quot;, VolumeTemplateName.
+<ul><em>Subtypes:</em>
+<li><strong>&quot;&quot;</strong>, The constant value &quot;&quot;.</li>
+<li><strong>VolumeTemplateName</strong>, string(200), matching ^[A-Za-z0-9_\-]+$, except {list}</li>
+</ul>
+</li><li class="attribute">visibleVolumeId: <strong>long</strong>, A long integer value.</li></ul>
+
+</li></ul>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="SnapshotDescribe">Describe a snapshot (<strong>SnapshotDescribe</strong>)</h3>
+<ol><li>Request:
+<ul><li>Example HTTP Request:
+<pre><code>GET /ctrl/1.0/SnapshotDescribe/{snapshotName} HTTP/1.0
+Host: <var>SP_API_HOST</var>:<var>SP_API_PORT</var>
+Authorization: Storpool v1:<var>SP_AUTH_TOKEN</var>
+Content-Length: <var>LENGTH</var>
+
+</code></pre></li><li>Method: <em>GET</em></li>
+<li>Path: <em>/ctrl/1.0/SnapshotDescribe/{snapshotName}</em></li>
+<li>Arguments: 
+<ul>
+<li>snapshotName - <strong>SnapshotName</strong>: <em>string(200), matching ^[A-Za-z0-9_\-.@:]+$, except {list, status}</em></li>
+</ul>
+</li>
+<li>Json: <em>Either no JSON or {}</em></li>
+</ul>
+</li>
+<li>Response:
+<ul>
+<li>Example HTTP Response:
+<pre><code>HTTP/1.0 200 OK
+Connection: close
+Content-Type: application/json
+Cache-control: private
+Content-Length: <var>LENGTH</var>
+
+{
+  "generation": <var>generation</var>,
+  "data": {
+    "bw": <var>Bandwidth</var>,
+    "creationTimestamp": <var>long</var>,
+    "flags": <var>int</var>,
+    "id": <var>long</var>,
+    "iops": <var>IOPS</var>,
+    "name": <var>VolumeName</var>,
+    "objects": [[<var>DiskID</var>, ...], ...],
+    "objectsCount": <var>int</var>,
+    "originalParentVolumeId": <var>long</var>,
+    "parentName": Either(<var>&quot;&quot;</var>, <var>SnapshotName</var>),
+    "parentVolumeId": <var>long</var>,
+    "placeAll": <var>PlacementGroupName</var>,
+    "placeTail": <var>PlacementGroupName</var>,
+    "replication": <var>Replication</var>,
+    "size": <var>Size</var>,
+    "targetDiskSets": [[<var>DiskID</var>, ...], ...],
+    "templateName": Either(<var>&quot;&quot;</var>, <var>VolumeTemplateName</var>),
+    "visibleVolumeId": <var>long</var>
+  }
+}
+</code></pre></li>
+<li>Response Data:
+<strong>Volume</strong><ul>
+<li class="attribute">bw: <strong>Bandwidth</strong>, positive integer or &apos;-&apos; for unlimited</li><li class="attribute">creationTimestamp: <strong>long</strong>, A long integer value.</li><li class="attribute">flags: <strong>int</strong>, An integer value.</li><li class="attribute">id: <strong>long</strong>, A long integer value.</li><li class="attribute">iops: <strong>IOPS</strong>, positive integer or &apos;-&apos; for unlimited</li><li class="attribute">name: <strong>VolumeName</strong>, string(200), matching ^[A-Za-z0-9_\-.:]+$, except {list, status}</li><li class="attribute">objects: A list of [DiskID]
+<ul>Element type: A list of DiskID
+<ul>Element type: <strong>DiskID</strong>, integer, 0 &lt;= value &lt;= 4095
+</li></ul>
+
+</li></ul>
+</li><li class="attribute">objectsCount: <strong>int</strong>, An integer value.</li><li class="attribute">originalParentVolumeId: <strong>long</strong>, A long integer value.</li><li class="attribute">parentName: Value must be from one of the following types: &quot;&quot;, SnapshotName.
+<ul><em>Subtypes:</em>
+<li><strong>&quot;&quot;</strong>, The constant value &quot;&quot;.</li>
+<li><strong>SnapshotName</strong>, string(200), matching ^[A-Za-z0-9_\-.@:]+$, except {list, status}</li>
+</ul>
+</li><li class="attribute">parentVolumeId: <strong>long</strong>, A long integer value.</li><li class="attribute">placeAll: <strong>PlacementGroupName</strong>, string(128), matching ^[A-Za-z0-9_\-]+$, except {list}</li><li class="attribute">placeTail: <strong>PlacementGroupName</strong>, string(128), matching ^[A-Za-z0-9_\-]+$, except {list}</li><li class="attribute">replication: <strong>Replication</strong>, integer, 1 &lt;= value &lt;= 3</li><li class="attribute">size: <strong>Size</strong>, positive integer, divisible by 512</li><li class="attribute">targetDiskSets: A list of [DiskID]
+<ul>Element type: A list of DiskID
+<ul>Element type: <strong>DiskID</strong>, integer, 0 &lt;= value &lt;= 4095
+</li></ul>
+
+</li></ul>
+</li><li class="attribute">templateName: Value must be from one of the following types: &quot;&quot;, VolumeTemplateName.
+<ul><em>Subtypes:</em>
+<li><strong>&quot;&quot;</strong>, The constant value &quot;&quot;.</li>
+<li><strong>VolumeTemplateName</strong>, string(200), matching ^[A-Za-z0-9_\-]+$, except {list}</li>
+</ul>
+</li><li class="attribute">visibleVolumeId: <strong>long</strong>, A long integer value.</li></ul>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="SnapshotGetInfo">Get snapshot info (<strong>SnapshotGetInfo</strong>)</h3>
+<ol><li>Request:
+<ul><li>Example HTTP Request:
+<pre><code>GET /ctrl/1.0/SnapshotGetInfo/{snapshotName} HTTP/1.0
+Host: <var>SP_API_HOST</var>:<var>SP_API_PORT</var>
+Authorization: Storpool v1:<var>SP_AUTH_TOKEN</var>
+Content-Length: <var>LENGTH</var>
+
+</code></pre></li><li>Method: <em>GET</em></li>
+<li>Path: <em>/ctrl/1.0/SnapshotGetInfo/{snapshotName}</em></li>
+<li>Arguments: 
+<ul>
+<li>snapshotName - <strong>SnapshotName</strong>: <em>string(200), matching ^[A-Za-z0-9_\-.@:]+$, except {list, status}</em></li>
+</ul>
+</li>
+<li>Json: <em>Either no JSON or {}</em></li>
+</ul>
+</li>
+<li>Response:
+<ul>
+<li>Example HTTP Response:
+<pre><code>HTTP/1.0 200 OK
+Connection: close
+Content-Type: application/json
+Cache-control: private
+Content-Length: <var>LENGTH</var>
+
+{
+  "generation": <var>generation</var>,
+  "data": {
+    "bw": <var>Bandwidth</var>,
+    "creationTimestamp": <var>long</var>,
+    "disksCount": <var>int</var>,
+    "flags": <var>int</var>,
+    "id": <var>long</var>,
+    "iops": <var>IOPS</var>,
+    "name": <var>VolumeName</var>,
+    "objectsCount": <var>int</var>,
+    "objectsPerChain": [{
+      "count": <var>int</var>,
+      "disks": [<var>DiskID</var>, ...]
+    }, ...],
+    "objectsPerDisk": {
+      "<var>DiskID</var>": <var>int</var>, ...},
+    "objectsPerDiskSet": [{
+      "count": <var>int</var>,
+      "disks": [<var>DiskID</var>, ...]
+    }, ...],
+    "originalParentVolumeId": <var>long</var>,
+    "parentName": Either(<var>&quot;&quot;</var>, <var>SnapshotName</var>),
+    "parentVolumeId": <var>long</var>,
+    "placeAll": <var>PlacementGroupName</var>,
+    "placeTail": <var>PlacementGroupName</var>,
+    "replication": <var>Replication</var>,
+    "size": <var>Size</var>,
+    "templateName": Either(<var>&quot;&quot;</var>, <var>VolumeTemplateName</var>),
+    "visibleVolumeId": <var>long</var>
+  }
+}
+</code></pre></li>
+<li>Response Data:
+<strong>VolumeInfo</strong><ul>
+<li class="attribute">bw: <strong>Bandwidth</strong>, positive integer or &apos;-&apos; for unlimited</li><li class="attribute">creationTimestamp: <strong>long</strong>, A long integer value.</li><li class="attribute">disksCount: <strong>int</strong>, An integer value.</li><li class="attribute">flags: <strong>int</strong>, An integer value.</li><li class="attribute">id: <strong>long</strong>, A long integer value.</li><li class="attribute">iops: <strong>IOPS</strong>, positive integer or &apos;-&apos; for unlimited</li><li class="attribute">name: <strong>VolumeName</strong>, string(200), matching ^[A-Za-z0-9_\-.:]+$, except {list, status}</li><li class="attribute">objectsCount: <strong>int</strong>, An integer value.</li><li class="attribute">objectsPerChain: A list of VolumeChainStat
+<ul>Element type: <strong>VolumeChainStat</strong><ul>
+<li class="attribute">count: <strong>int</strong>, An integer value.</li><li class="attribute">disks: A list of DiskID
+<ul>Element type: <strong>DiskID</strong>, integer, 0 &lt;= value &lt;= 4095
+</li></ul>
+</li></ul>
+
+</li></ul>
+</li><li class="attribute">objectsPerDisk: A dict from DiskID to int
+<ul>
+<li>Key type: <strong>DiskID</strong>, integer, 0 &lt;= value &lt;= 4095</li>
+<li>Value type: <strong>int</strong>, An integer value.</li>
+</ul>
+</li><li class="attribute">objectsPerDiskSet: A list of VolumeChainStat
+<ul>Element type: <strong>VolumeChainStat</strong><ul>
+<li class="attribute">count: <strong>int</strong>, An integer value.</li><li class="attribute">disks: A list of DiskID
+<ul>Element type: <strong>DiskID</strong>, integer, 0 &lt;= value &lt;= 4095
+</li></ul>
+</li></ul>
+
+</li></ul>
+</li><li class="attribute">originalParentVolumeId: <strong>long</strong>, A long integer value.</li><li class="attribute">parentName: Value must be from one of the following types: &quot;&quot;, SnapshotName.
+<ul><em>Subtypes:</em>
+<li><strong>&quot;&quot;</strong>, The constant value &quot;&quot;.</li>
+<li><strong>SnapshotName</strong>, string(200), matching ^[A-Za-z0-9_\-.@:]+$, except {list, status}</li>
+</ul>
+</li><li class="attribute">parentVolumeId: <strong>long</strong>, A long integer value.</li><li class="attribute">placeAll: <strong>PlacementGroupName</strong>, string(128), matching ^[A-Za-z0-9_\-]+$, except {list}</li><li class="attribute">placeTail: <strong>PlacementGroupName</strong>, string(128), matching ^[A-Za-z0-9_\-]+$, except {list}</li><li class="attribute">replication: <strong>Replication</strong>, integer, 1 &lt;= value &lt;= 3</li><li class="attribute">size: <strong>Size</strong>, positive integer, divisible by 512</li><li class="attribute">templateName: Value must be from one of the following types: &quot;&quot;, VolumeTemplateName.
+<ul><em>Subtypes:</em>
+<li><strong>&quot;&quot;</strong>, The constant value &quot;&quot;.</li>
+<li><strong>VolumeTemplateName</strong>, string(200), matching ^[A-Za-z0-9_\-]+$, except {list}</li>
+</ul>
+</li><li class="attribute">visibleVolumeId: <strong>long</strong>, A long integer value.</li></ul>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="VolumeSnapshot">Snapshot a volume (<strong>VolumeSnapshot</strong>)</h3>
+<ol><li>Request:
+<ul><li>Example HTTP Request:
+<pre><code>POST /ctrl/1.0/VolumeSnapshot/{volumeName} HTTP/1.0
+Host: <var>SP_API_HOST</var>:<var>SP_API_PORT</var>
+Authorization: Storpool v1:<var>SP_AUTH_TOKEN</var>
+Content-Length: <var>LENGTH</var>
+
+{
+  "name": <var>Optional(VolumeName)</var>
+}</code></pre></li><li>Method: <em>POST</em></li>
+<li>Path: <em>/ctrl/1.0/VolumeSnapshot/{volumeName}</em></li>
+<li>Arguments: 
+<ul>
+<li>volumeName - <strong>VolumeName</strong>: <em>string(200), matching ^[A-Za-z0-9_\-.:]+$, except {list, status}</em></li>
+</ul>
+</li>
+<li>Json: <strong>VolumeSnapshotDesc</strong><ul>
+<li class="attribute">name: <strong>Optional(VolumeName)</strong>, If present must be of type VolumeName</li></ul>
+</li>
+</ul>
+</li>
+<li>Response:
+<ul>
+<li>Example HTTP Response:
+<pre><code>HTTP/1.0 200 OK
+Connection: close
+Content-Type: application/json
+Cache-control: private
+Content-Length: <var>LENGTH</var>
+
+{
+  "generation": <var>generation</var>,
+  "data": {
+    "generation": <var>long</var>,
+    "ok": <var>true</var>
+  }
+}
+</code></pre></li>
+<li>Response Data:
+<strong>ApiOk</strong><ul>
+<li class="attribute">generation: <strong>long</strong>, A long integer value.</li><li class="attribute">ok: <strong>true</strong>, The constant value true.</li></ul>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="SnapshotUpdate">Update snapshot (<strong>SnapshotUpdate</strong>)</h3>
+<ol><li>Request:
+<ul><li>Example HTTP Request:
+<pre><code>POST /ctrl/1.0/SnapshotUpdate/{snapshotName} HTTP/1.0
+Host: <var>SP_API_HOST</var>:<var>SP_API_PORT</var>
+Authorization: Storpool v1:<var>SP_AUTH_TOKEN</var>
+Content-Length: <var>LENGTH</var>
+
+{
+  "bw": <var>Optional(Bandwidth)</var>,
+  "iops": <var>Optional(IOPS)</var>,
+  "placeAll": <var>Optional(PlacementGroupName)</var>,
+  "placeTail": <var>Optional(PlacementGroupName)</var>,
+  "rename": <var>Optional(VolumeName)</var>,
+  "replication": <var>Optional(Replication)</var>,
+  "size": <var>Optional(Size)</var>,
+  "sizeAdd": <var>Optional(SizeAdd)</var>,
+  "template": <var>Optional(VolumeTemplateName)</var>
+}</code></pre></li><li>Method: <em>POST</em></li>
+<li>Path: <em>/ctrl/1.0/SnapshotUpdate/{snapshotName}</em></li>
+<li>Arguments: 
+<ul>
+<li>snapshotName - <strong>SnapshotName</strong>: <em>string(200), matching ^[A-Za-z0-9_\-.@:]+$, except {list, status}</em></li>
+</ul>
+</li>
+<li>Json: <strong>VolumeUpdateDesc</strong><ul>
+<li class="attribute">bw: <strong>Optional(Bandwidth)</strong>, If present must be of type Bandwidth</li><li class="attribute">iops: <strong>Optional(IOPS)</strong>, If present must be of type IOPS</li><li class="attribute">placeAll: <strong>Optional(PlacementGroupName)</strong>, If present must be of type PlacementGroupName</li><li class="attribute">placeTail: <strong>Optional(PlacementGroupName)</strong>, If present must be of type PlacementGroupName</li><li class="attribute">rename: <strong>Optional(VolumeName)</strong>, If present must be of type VolumeName</li><li class="attribute">replication: <strong>Optional(Replication)</strong>, If present must be of type Replication</li><li class="attribute">size: <strong>Optional(Size)</strong>, If present must be of type Size</li><li class="attribute">sizeAdd: <strong>Optional(SizeAdd)</strong>, If present must be of type SizeAdd</li><li class="attribute">template: <strong>Optional(VolumeTemplateName)</strong>, If present must be of type VolumeTemplateName</li></ul>
+</li>
+</ul>
+</li>
+<li>Response:
+<ul>
+<li>Example HTTP Response:
+<pre><code>HTTP/1.0 200 OK
+Connection: close
+Content-Type: application/json
+Cache-control: private
+Content-Length: <var>LENGTH</var>
+
+{
+  "generation": <var>generation</var>,
+  "data": {
+    "generation": <var>long</var>,
+    "ok": <var>true</var>
+  }
+}
+</code></pre></li>
+<li>Response Data:
+<strong>ApiOk</strong><ul>
+<li class="attribute">generation: <strong>long</strong>, A long integer value.</li><li class="attribute">ok: <strong>true</strong>, The constant value true.</li></ul>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="SnapshotRebase">Rebase snapshot (<strong>SnapshotRebase</strong>)</h3>
+<ol><li>Request:
+<ul><li>Example HTTP Request:
+<pre><code>POST /ctrl/1.0/SnapshotRebase/{snapshotName} HTTP/1.0
+Host: <var>SP_API_HOST</var>:<var>SP_API_PORT</var>
+Authorization: Storpool v1:<var>SP_AUTH_TOKEN</var>
+Content-Length: <var>LENGTH</var>
+
+{
+  "parentName": <var>Optional(SnapshotName)</var>
+}</code></pre></li><li>Method: <em>POST</em></li>
+<li>Path: <em>/ctrl/1.0/SnapshotRebase/{snapshotName}</em></li>
+<li>Arguments: 
+<ul>
+<li>snapshotName - <strong>SnapshotName</strong>: <em>string(200), matching ^[A-Za-z0-9_\-.@:]+$, except {list, status}</em></li>
+</ul>
+</li>
+<li>Json: <strong>VolumeRebaseDesc</strong><ul>
+<li class="attribute">parentName: <strong>Optional(SnapshotName)</strong>, If present must be of type SnapshotName</li></ul>
+</li>
+</ul>
+</li>
+<li>Response:
+<ul>
+<li>Example HTTP Response:
+<pre><code>HTTP/1.0 200 OK
+Connection: close
+Content-Type: application/json
+Cache-control: private
+Content-Length: <var>LENGTH</var>
+
+{
+  "generation": <var>generation</var>,
+  "data": {
+    "generation": <var>long</var>,
+    "ok": <var>true</var>
+  }
+}
+</code></pre></li>
+<li>Response Data:
+<strong>ApiOk</strong><ul>
+<li class="attribute">generation: <strong>long</strong>, A long integer value.</li><li class="attribute">ok: <strong>true</strong>, The constant value true.</li></ul>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="SnapshotDelete">Delete snapshot (<strong>SnapshotDelete</strong>)</h3>
+<ol><li>Request:
+<ul><li>Example HTTP Request:
+<pre><code>POST /ctrl/1.0/SnapshotDelete/{snapshotName} HTTP/1.0
+Host: <var>SP_API_HOST</var>:<var>SP_API_PORT</var>
+Authorization: Storpool v1:<var>SP_AUTH_TOKEN</var>
+Content-Length: <var>LENGTH</var>
+
+</code></pre></li><li>Method: <em>POST</em></li>
+<li>Path: <em>/ctrl/1.0/SnapshotDelete/{snapshotName}</em></li>
+<li>Arguments: 
+<ul>
+<li>snapshotName - <strong>SnapshotName</strong>: <em>string(200), matching ^[A-Za-z0-9_\-.@:]+$, except {list, status}</em></li>
+</ul>
+</li>
+<li>Json: <em>Either no JSON or {}</em></li>
+</ul>
+</li>
+<li>Response:
+<ul>
+<li>Example HTTP Response:
+<pre><code>HTTP/1.0 200 OK
+Connection: close
+Content-Type: application/json
+Cache-control: private
+Content-Length: <var>LENGTH</var>
+
+{
+  "generation": <var>generation</var>,
+  "data": {
+    "generation": <var>long</var>,
+    "ok": <var>true</var>
+  }
+}
+</code></pre></li>
+<li>Response Data:
+<strong>ApiOk</strong><ul>
+<li class="attribute">generation: <strong>long</strong>, A long integer value.</li><li class="attribute">ok: <strong>true</strong>, The constant value true.</li></ul>
+</li>
+</ul>
+</li>
+</ol>
+<h2 id="Volume-Rights">Volume Rights</h2>
+<p></p>
+<h3 id="AttachmentsList">List all Attachments (<strong>AttachmentsList</strong>)</h3>
+<ol><li>Request:
+<ul><li>Example HTTP Request:
+<pre><code>GET /ctrl/1.0/AttachmentsList HTTP/1.0
+Host: <var>SP_API_HOST</var>:<var>SP_API_PORT</var>
+Authorization: Storpool v1:<var>SP_AUTH_TOKEN</var>
+Content-Length: <var>LENGTH</var>
+
+</code></pre></li><li>Method: <em>GET</em></li>
+<li>Path: <em>/ctrl/1.0/AttachmentsList</em></li>
+<li>Arguments: <em>No arguments</em></li>
+<li>Json: <em>Either no JSON or {}</em></li>
+</ul>
+</li>
+<li>Response:
+<ul>
+<li>Example HTTP Response:
+<pre><code>HTTP/1.0 200 OK
+Connection: close
+Content-Type: application/json
+Cache-control: private
+Content-Length: <var>LENGTH</var>
+
+{
+  "generation": <var>generation</var>,
+  "data": [{
+    "client": <var>CientID</var>,
+    "pos": <var>AttachmentPos</var>,
+    "rights": <var>AttachmentRights</var>,
+    "snapshot": <var>bool</var>,
+    "volume": <var>VolumeName</var>
+  }, ...]
+}
+</code></pre></li>
+<li>Response Data:
+A list of AttachmentDesc
+<ul>Element type: <strong>AttachmentDesc</strong><ul>
+<li class="attribute">client: <strong>CientID</strong>, integer, 1 &lt;= value &lt;= 32768</li><li class="attribute">pos: <strong>AttachmentPos</strong>, integer, 0 &lt;= value &lt;= 1023</li><li class="attribute">rights: <strong>AttachmentRights</strong>, One of {rw, ro}</li><li class="attribute">snapshot: <strong>bool</strong>, true or false.</li><li class="attribute">volume: <strong>VolumeName</strong>, string(200), matching ^[A-Za-z0-9_\-.:]+$, except {list, status}</li></ul>
+
+</li></ul>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="VolumesReassign">Reassign volumes and/or snapshots (<strong>VolumesReassign</strong>)</h3>
+<ol><li>Request:
+<ul><li>Example HTTP Request:
+<pre><code>POST /ctrl/1.0/VolumesReassign HTTP/1.0
+Host: <var>SP_API_HOST</var>:<var>SP_API_PORT</var>
+Authorization: Storpool v1:<var>SP_AUTH_TOKEN</var>
+Content-Length: <var>LENGTH</var>
+
+[Either({
+  "detach": <var>Optional(Either(&quot;all&quot;, [CientID]))</var>,
+  "force": <var>bool, default=False</var>,
+  "ro": <var>Optional([CientID])</var>,
+  "rw": <var>Optional([CientID])</var>,
+  "volume": <var>VolumeName</var>
+}, {
+  "detach": <var>Optional(Either(&quot;all&quot;, [CientID]))</var>,
+  "force": <var>bool, default=False</var>,
+  "ro": <var>Optional([CientID])</var>,
+  "snapshot": <var>SnapshotName</var>
+}), ...]</code></pre></li><li>Method: <em>POST</em></li>
+<li>Path: <em>/ctrl/1.0/VolumesReassign</em></li>
+<li>Arguments: <em>No arguments</em></li>
+<li>Json: A list of Either(VolumeReassignDesc, SnapshotReassignDesc)
+<ul>Element type: Value must be from one of the following types: VolumeReassignDesc, SnapshotReassignDesc.
+<ul><em>Subtypes:</em>
+<li><strong>VolumeReassignDesc</strong><ul>
+<li class="attribute">detach: <strong>Optional(Either(&quot;all&quot;, [CientID]))</strong>, If present must be of type Either(&quot;all&quot;, [CientID])</li><li class="attribute">force: <strong>bool, default=False</strong>, A value of type bool. Default value = False.</li><li class="attribute">ro: <strong>Optional([CientID])</strong>, If present must be of type [CientID]</li><li class="attribute">rw: <strong>Optional([CientID])</strong>, If present must be of type [CientID]</li><li class="attribute">volume: <strong>VolumeName</strong>, string(200), matching ^[A-Za-z0-9_\-.:]+$, except {list, status}</li></ul>
+</li>
+<li><strong>SnapshotReassignDesc</strong><ul>
+<li class="attribute">detach: <strong>Optional(Either(&quot;all&quot;, [CientID]))</strong>, If present must be of type Either(&quot;all&quot;, [CientID])</li><li class="attribute">force: <strong>bool, default=False</strong>, A value of type bool. Default value = False.</li><li class="attribute">ro: <strong>Optional([CientID])</strong>, If present must be of type [CientID]</li><li class="attribute">snapshot: <strong>SnapshotName</strong>, string(200), matching ^[A-Za-z0-9_\-.@:]+$, except {list, status}</li></ul>
+</li>
+</ul>
+
+</li></ul>
+</li>
+</ul>
+</li>
+<li>Response:
+<ul>
+<li>Example HTTP Response:
+<pre><code>HTTP/1.0 200 OK
+Connection: close
+Content-Type: application/json
+Cache-control: private
+Content-Length: <var>LENGTH</var>
+
+{
+  "generation": <var>generation</var>,
+  "data": {
+    "generation": <var>long</var>,
+    "ok": <var>true</var>
+  }
+}
+</code></pre></li>
+<li>Response Data:
+<strong>ApiOk</strong><ul>
+<li class="attribute">generation: <strong>long</strong>, A long integer value.</li><li class="attribute">ok: <strong>true</strong>, The constant value true.</li></ul>
+</li>
+</ul>
+</li>
+</ol>
+<h2 id="Placement-Groups">Placement Groups</h2>
+<p></p>
+<h3 id="PlacementGroupsList">List all placement groups (<strong>PlacementGroupsList</strong>)</h3>
+<ol><li>Request:
+<ul><li>Example HTTP Request:
+<pre><code>GET /ctrl/1.0/PlacementGroupsList HTTP/1.0
+Host: <var>SP_API_HOST</var>:<var>SP_API_PORT</var>
+Authorization: Storpool v1:<var>SP_AUTH_TOKEN</var>
+Content-Length: <var>LENGTH</var>
+
+</code></pre></li><li>Method: <em>GET</em></li>
+<li>Path: <em>/ctrl/1.0/PlacementGroupsList</em></li>
+<li>Arguments: <em>No arguments</em></li>
+<li>Json: <em>Either no JSON or {}</em></li>
+</ul>
+</li>
+<li>Response:
+<ul>
+<li>Example HTTP Response:
+<pre><code>HTTP/1.0 200 OK
+Connection: close
+Content-Type: application/json
+Cache-control: private
+Content-Length: <var>LENGTH</var>
+
+{
+  "generation": <var>generation</var>,
+  "data": {
+    "<var>PlacementGroupName</var>": {
+      "disks": [<var>DiskID</var>, ...],
+      "id": <var>int</var>,
+      "name": <var>PlacementGroupName</var>,
+      "servers": [<var>ServerID</var>, ...]
+    }, ...}
+}
+</code></pre></li>
+<li>Response Data:
+A dict from PlacementGroupName to PlacementGroup
+<ul>
+<li>Key type: <strong>PlacementGroupName</strong>, string(128), matching ^[A-Za-z0-9_\-]+$, except {list}</li>
+<li>Value type: <strong>PlacementGroup</strong><ul>
+<li class="attribute">disks: A set of DiskID
+<ul>Element type: <strong>DiskID</strong>, integer, 0 &lt;= value &lt;= 4095
+</li></ul>
+</li><li class="attribute">id: <strong>int</strong>, An integer value.</li><li class="attribute">name: <strong>PlacementGroupName</strong>, string(128), matching ^[A-Za-z0-9_\-]+$, except {list}</li><li class="attribute">servers: A set of ServerID
+<ul>Element type: <strong>ServerID</strong>, integer, 1 &lt;= value &lt;= 32768
+</li></ul>
+</li></ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="PlacementGroupDescribe">Describe single placement group (<strong>PlacementGroupDescribe</strong>)</h3>
+<ol><li>Request:
+<ul><li>Example HTTP Request:
+<pre><code>GET /ctrl/1.0/PlacementGroupDescribe/{placementGroupName} HTTP/1.0
+Host: <var>SP_API_HOST</var>:<var>SP_API_PORT</var>
+Authorization: Storpool v1:<var>SP_AUTH_TOKEN</var>
+Content-Length: <var>LENGTH</var>
+
+</code></pre></li><li>Method: <em>GET</em></li>
+<li>Path: <em>/ctrl/1.0/PlacementGroupDescribe/{placementGroupName}</em></li>
+<li>Arguments: 
+<ul>
+<li>placementGroupName - <strong>PlacementGroupName</strong>: <em>string(128), matching ^[A-Za-z0-9_\-]+$, except {list}</em></li>
+</ul>
+</li>
+<li>Json: <em>Either no JSON or {}</em></li>
+</ul>
+</li>
+<li>Response:
+<ul>
+<li>Example HTTP Response:
+<pre><code>HTTP/1.0 200 OK
+Connection: close
+Content-Type: application/json
+Cache-control: private
+Content-Length: <var>LENGTH</var>
+
+{
+  "generation": <var>generation</var>,
+  "data": {
+    "disks": [<var>DiskID</var>, ...],
+    "id": <var>int</var>,
+    "name": <var>PlacementGroupName</var>,
+    "servers": [<var>ServerID</var>, ...]
+  }
+}
+</code></pre></li>
+<li>Response Data:
+<strong>PlacementGroup</strong><ul>
+<li class="attribute">disks: A set of DiskID
+<ul>Element type: <strong>DiskID</strong>, integer, 0 &lt;= value &lt;= 4095
+</li></ul>
+</li><li class="attribute">id: <strong>int</strong>, An integer value.</li><li class="attribute">name: <strong>PlacementGroupName</strong>, string(128), matching ^[A-Za-z0-9_\-]+$, except {list}</li><li class="attribute">servers: A set of ServerID
+<ul>Element type: <strong>ServerID</strong>, integer, 1 &lt;= value &lt;= 32768
+</li></ul>
+</li></ul>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="PlacementGroupUpdate">Create and/or update placement group (<strong>PlacementGroupUpdate</strong>)</h3>
+<ol><li>Request:
+<ul><li>Example HTTP Request:
+<pre><code>POST /ctrl/1.0/PlacementGroupUpdate/{placementGroupName} HTTP/1.0
+Host: <var>SP_API_HOST</var>:<var>SP_API_PORT</var>
+Authorization: Storpool v1:<var>SP_AUTH_TOKEN</var>
+Content-Length: <var>LENGTH</var>
+
+{
+  "addDisks": [<var>DiskID</var>, ...],
+  "addServers": [<var>ServerID</var>, ...],
+  "rename": <var>Optional(PlacementGroupName)</var>,
+  "rmDisks": [<var>DiskID</var>, ...],
+  "rmServers": [<var>ServerID</var>, ...]
+}</code></pre></li><li>Method: <em>POST</em></li>
+<li>Path: <em>/ctrl/1.0/PlacementGroupUpdate/{placementGroupName}</em></li>
+<li>Arguments: 
+<ul>
+<li>placementGroupName - <strong>PlacementGroupName</strong>: <em>string(128), matching ^[A-Za-z0-9_\-]+$, except {list}</em></li>
+</ul>
+</li>
+<li>Json: <strong>PlacementGroupUpdateDesc</strong><ul>
+<li class="attribute">addDisks: A set of DiskID
+<ul>Element type: <strong>DiskID</strong>, integer, 0 &lt;= value &lt;= 4095
+</li></ul>
+</li><li class="attribute">addServers: A set of ServerID
+<ul>Element type: <strong>ServerID</strong>, integer, 1 &lt;= value &lt;= 32768
+</li></ul>
+</li><li class="attribute">rename: <strong>Optional(PlacementGroupName)</strong>, If present must be of type PlacementGroupName</li><li class="attribute">rmDisks: A set of DiskID
+<ul>Element type: <strong>DiskID</strong>, integer, 0 &lt;= value &lt;= 4095
+</li></ul>
+</li><li class="attribute">rmServers: A set of ServerID
+<ul>Element type: <strong>ServerID</strong>, integer, 1 &lt;= value &lt;= 32768
+</li></ul>
+</li></ul>
+</li>
+</ul>
+</li>
+<li>Response:
+<ul>
+<li>Example HTTP Response:
+<pre><code>HTTP/1.0 200 OK
+Connection: close
+Content-Type: application/json
+Cache-control: private
+Content-Length: <var>LENGTH</var>
+
+{
+  "generation": <var>generation</var>,
+  "data": {
+    "generation": <var>long</var>,
+    "ok": <var>true</var>
+  }
+}
+</code></pre></li>
+<li>Response Data:
+<strong>ApiOk</strong><ul>
+<li class="attribute">generation: <strong>long</strong>, A long integer value.</li><li class="attribute">ok: <strong>true</strong>, The constant value true.</li></ul>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="PlacementGroupDelete">Delete placement group (<strong>PlacementGroupDelete</strong>)</h3>
+<ol><li>Request:
+<ul><li>Example HTTP Request:
+<pre><code>POST /ctrl/1.0/PlacementGroupDelete/{placementGroupName} HTTP/1.0
+Host: <var>SP_API_HOST</var>:<var>SP_API_PORT</var>
+Authorization: Storpool v1:<var>SP_AUTH_TOKEN</var>
+Content-Length: <var>LENGTH</var>
+
+</code></pre></li><li>Method: <em>POST</em></li>
+<li>Path: <em>/ctrl/1.0/PlacementGroupDelete/{placementGroupName}</em></li>
+<li>Arguments: 
+<ul>
+<li>placementGroupName - <strong>PlacementGroupName</strong>: <em>string(128), matching ^[A-Za-z0-9_\-]+$, except {list}</em></li>
+</ul>
+</li>
+<li>Json: <em>Either no JSON or {}</em></li>
+</ul>
+</li>
+<li>Response:
+<ul>
+<li>Example HTTP Response:
+<pre><code>HTTP/1.0 200 OK
+Connection: close
+Content-Type: application/json
+Cache-control: private
+Content-Length: <var>LENGTH</var>
+
+{
+  "generation": <var>generation</var>,
+  "data": {
+    "generation": <var>long</var>,
+    "ok": <var>true</var>
+  }
+}
+</code></pre></li>
+<li>Response Data:
+<strong>ApiOk</strong><ul>
+<li class="attribute">generation: <strong>long</strong>, A long integer value.</li><li class="attribute">ok: <strong>true</strong>, The constant value true.</li></ul>
+</li>
+</ul>
+</li>
+</ol>
+<h2 id="Volume-Templates">Volume Templates</h2>
+<p></p>
+<h3 id="VolumeTemplatesList">List all volume templates (<strong>VolumeTemplatesList</strong>)</h3>
+<ol><li>Request:
+<ul><li>Example HTTP Request:
+<pre><code>GET /ctrl/1.0/VolumeTemplatesList HTTP/1.0
+Host: <var>SP_API_HOST</var>:<var>SP_API_PORT</var>
+Authorization: Storpool v1:<var>SP_AUTH_TOKEN</var>
+Content-Length: <var>LENGTH</var>
+
+</code></pre></li><li>Method: <em>GET</em></li>
+<li>Path: <em>/ctrl/1.0/VolumeTemplatesList</em></li>
+<li>Arguments: <em>No arguments</em></li>
+<li>Json: <em>Either no JSON or {}</em></li>
+</ul>
+</li>
+<li>Response:
+<ul>
+<li>Example HTTP Response:
+<pre><code>HTTP/1.0 200 OK
+Connection: close
+Content-Type: application/json
+Cache-control: private
+Content-Length: <var>LENGTH</var>
+
+{
+  "generation": <var>generation</var>,
+  "data": [{
+    "bw": <var>Bandwidth</var>,
+    "iops": <var>IOPS</var>,
+    "name": <var>VolumeTemplateName</var>,
+    "parentName": Either(<var>&quot;&quot;</var>, <var>SnapshotName</var>),
+    "placeAll": <var>PlacementGroupName</var>,
+    "placeTail": <var>PlacementGroupName</var>,
+    "replication": Either(<var>&quot;-&quot;</var>, <var>Replication</var>),
+    "size": Either(<var>&quot;-&quot;</var>, <var>Size</var>)
+  }, ...]
+}
+</code></pre></li>
+<li>Response Data:
+A list of VolumeTemplateDesc
+<ul>Element type: <strong>VolumeTemplateDesc</strong><ul>
+<li class="attribute">bw: <strong>Bandwidth</strong>, positive integer or &apos;-&apos; for unlimited</li><li class="attribute">iops: <strong>IOPS</strong>, positive integer or &apos;-&apos; for unlimited</li><li class="attribute">name: <strong>VolumeTemplateName</strong>, string(200), matching ^[A-Za-z0-9_\-]+$, except {list}</li><li class="attribute">parentName: Value must be from one of the following types: &quot;&quot;, SnapshotName.
+<ul><em>Subtypes:</em>
+<li><strong>&quot;&quot;</strong>, The constant value &quot;&quot;.</li>
+<li><strong>SnapshotName</strong>, string(200), matching ^[A-Za-z0-9_\-.@:]+$, except {list, status}</li>
+</ul>
+</li><li class="attribute">placeAll: <strong>PlacementGroupName</strong>, string(128), matching ^[A-Za-z0-9_\-]+$, except {list}</li><li class="attribute">placeTail: <strong>PlacementGroupName</strong>, string(128), matching ^[A-Za-z0-9_\-]+$, except {list}</li><li class="attribute">replication: Value must be from one of the following types: &quot;-&quot;, Replication.
+<ul><em>Subtypes:</em>
+<li><strong>&quot;-&quot;</strong>, The constant value &quot;-&quot;.</li>
+<li><strong>Replication</strong>, integer, 1 &lt;= value &lt;= 3</li>
+</ul>
+</li><li class="attribute">size: Value must be from one of the following types: &quot;-&quot;, Size.
+<ul><em>Subtypes:</em>
+<li><strong>&quot;-&quot;</strong>, The constant value &quot;-&quot;.</li>
+<li><strong>Size</strong>, positive integer, divisible by 512</li>
+</ul>
+</li></ul>
+
+</li></ul>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="VolumeTemplateDescribe">Describe single volume template (<strong>VolumeTemplateDescribe</strong>)</h3>
+<ol><li>Request:
+<ul><li>Example HTTP Request:
+<pre><code>GET /ctrl/1.0/VolumeTemplateDescribe/{templateName} HTTP/1.0
+Host: <var>SP_API_HOST</var>:<var>SP_API_PORT</var>
+Authorization: Storpool v1:<var>SP_AUTH_TOKEN</var>
+Content-Length: <var>LENGTH</var>
+
+</code></pre></li><li>Method: <em>GET</em></li>
+<li>Path: <em>/ctrl/1.0/VolumeTemplateDescribe/{templateName}</em></li>
+<li>Arguments: 
+<ul>
+<li>templateName - <strong>VolumeTemplateName</strong>: <em>string(200), matching ^[A-Za-z0-9_\-]+$, except {list}</em></li>
+</ul>
+</li>
+<li>Json: <em>Either no JSON or {}</em></li>
+</ul>
+</li>
+<li>Response:
+<ul>
+<li>Example HTTP Response:
+<pre><code>HTTP/1.0 200 OK
+Connection: close
+Content-Type: application/json
+Cache-control: private
+Content-Length: <var>LENGTH</var>
+
+{
+  "generation": <var>generation</var>,
+  "data": {
+    "bw": <var>Bandwidth</var>,
+    "iops": <var>IOPS</var>,
+    "name": <var>VolumeTemplateName</var>,
+    "parentName": Either(<var>&quot;&quot;</var>, <var>SnapshotName</var>),
+    "placeAll": <var>PlacementGroupName</var>,
+    "placeTail": <var>PlacementGroupName</var>,
+    "replication": Either(<var>&quot;-&quot;</var>, <var>Replication</var>),
+    "size": Either(<var>&quot;-&quot;</var>, <var>Size</var>)
+  }
+}
+</code></pre></li>
+<li>Response Data:
+<strong>VolumeTemplateDesc</strong><ul>
+<li class="attribute">bw: <strong>Bandwidth</strong>, positive integer or &apos;-&apos; for unlimited</li><li class="attribute">iops: <strong>IOPS</strong>, positive integer or &apos;-&apos; for unlimited</li><li class="attribute">name: <strong>VolumeTemplateName</strong>, string(200), matching ^[A-Za-z0-9_\-]+$, except {list}</li><li class="attribute">parentName: Value must be from one of the following types: &quot;&quot;, SnapshotName.
+<ul><em>Subtypes:</em>
+<li><strong>&quot;&quot;</strong>, The constant value &quot;&quot;.</li>
+<li><strong>SnapshotName</strong>, string(200), matching ^[A-Za-z0-9_\-.@:]+$, except {list, status}</li>
+</ul>
+</li><li class="attribute">placeAll: <strong>PlacementGroupName</strong>, string(128), matching ^[A-Za-z0-9_\-]+$, except {list}</li><li class="attribute">placeTail: <strong>PlacementGroupName</strong>, string(128), matching ^[A-Za-z0-9_\-]+$, except {list}</li><li class="attribute">replication: Value must be from one of the following types: &quot;-&quot;, Replication.
+<ul><em>Subtypes:</em>
+<li><strong>&quot;-&quot;</strong>, The constant value &quot;-&quot;.</li>
+<li><strong>Replication</strong>, integer, 1 &lt;= value &lt;= 3</li>
+</ul>
+</li><li class="attribute">size: Value must be from one of the following types: &quot;-&quot;, Size.
+<ul><em>Subtypes:</em>
+<li><strong>&quot;-&quot;</strong>, The constant value &quot;-&quot;.</li>
+<li><strong>Size</strong>, positive integer, divisible by 512</li>
+</ul>
+</li></ul>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="VolumeTemplateCreate">Create volume template (<strong>VolumeTemplateCreate</strong>)</h3>
+<ol><li>Request:
+<ul><li>Example HTTP Request:
+<pre><code>POST /ctrl/1.0/VolumeTemplateCreate HTTP/1.0
+Host: <var>SP_API_HOST</var>:<var>SP_API_PORT</var>
+Authorization: Storpool v1:<var>SP_AUTH_TOKEN</var>
+Content-Length: <var>LENGTH</var>
+
+{
+  "bw": <var>Optional(Bandwidth)</var>,
+  "iops": <var>Optional(IOPS)</var>,
+  "name": <var>VolumeTemplateName</var>,
+  "parent": <var>Optional(SnapshotName)</var>,
+  "placeAll": <var>Optional(PlacementGroupName)</var>,
+  "placeTail": <var>Optional(PlacementGroupName)</var>,
+  "replication": <var>Optional(Replication)</var>,
+  "size": <var>Optional(Size)</var>
+}</code></pre></li><li>Method: <em>POST</em></li>
+<li>Path: <em>/ctrl/1.0/VolumeTemplateCreate</em></li>
+<li>Arguments: <em>No arguments</em></li>
+<li>Json: <strong>VolumeTemplateCreateDesc</strong><ul>
+<li class="attribute">bw: <strong>Optional(Bandwidth)</strong>, If present must be of type Bandwidth</li><li class="attribute">iops: <strong>Optional(IOPS)</strong>, If present must be of type IOPS</li><li class="attribute">name: <strong>VolumeTemplateName</strong>, string(200), matching ^[A-Za-z0-9_\-]+$, except {list}</li><li class="attribute">parent: <strong>Optional(SnapshotName)</strong>, If present must be of type SnapshotName</li><li class="attribute">placeAll: <strong>Optional(PlacementGroupName)</strong>, If present must be of type PlacementGroupName</li><li class="attribute">placeTail: <strong>Optional(PlacementGroupName)</strong>, If present must be of type PlacementGroupName</li><li class="attribute">replication: <strong>Optional(Replication)</strong>, If present must be of type Replication</li><li class="attribute">size: <strong>Optional(Size)</strong>, If present must be of type Size</li></ul>
+</li>
+</ul>
+</li>
+<li>Response:
+<ul>
+<li>Example HTTP Response:
+<pre><code>HTTP/1.0 200 OK
+Connection: close
+Content-Type: application/json
+Cache-control: private
+Content-Length: <var>LENGTH</var>
+
+{
+  "generation": <var>generation</var>,
+  "data": {
+    "generation": <var>long</var>,
+    "ok": <var>true</var>
+  }
+}
+</code></pre></li>
+<li>Response Data:
+<strong>ApiOk</strong><ul>
+<li class="attribute">generation: <strong>long</strong>, A long integer value.</li><li class="attribute">ok: <strong>true</strong>, The constant value true.</li></ul>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="VolumeTemplateUpdate">Update volume template (<strong>VolumeTemplateUpdate</strong>)</h3>
+<ol><li>Request:
+<ul><li>Example HTTP Request:
+<pre><code>POST /ctrl/1.0/VolumeTemplateUpdate/{templateName} HTTP/1.0
+Host: <var>SP_API_HOST</var>:<var>SP_API_PORT</var>
+Authorization: Storpool v1:<var>SP_AUTH_TOKEN</var>
+Content-Length: <var>LENGTH</var>
+
+{
+  "bw": <var>Optional(Bandwidth)</var>,
+  "iops": <var>Optional(IOPS)</var>,
+  "parent": <var>Optional(SnapshotName)</var>,
+  "placeAll": <var>Optional(PlacementGroupName)</var>,
+  "placeTail": <var>Optional(PlacementGroupName)</var>,
+  "rename": <var>Optional(VolumeTemplateName)</var>,
+  "replication": <var>Optional(Replication)</var>,
+  "size": <var>Optional(Size)</var>
+}</code></pre></li><li>Method: <em>POST</em></li>
+<li>Path: <em>/ctrl/1.0/VolumeTemplateUpdate/{templateName}</em></li>
+<li>Arguments: 
+<ul>
+<li>templateName - <strong>VolumeTemplateName</strong>: <em>string(200), matching ^[A-Za-z0-9_\-]+$, except {list}</em></li>
+</ul>
+</li>
+<li>Json: <strong>VolumeTemplateUpdateDesc</strong><ul>
+<li class="attribute">bw: <strong>Optional(Bandwidth)</strong>, If present must be of type Bandwidth</li><li class="attribute">iops: <strong>Optional(IOPS)</strong>, If present must be of type IOPS</li><li class="attribute">parent: <strong>Optional(SnapshotName)</strong>, If present must be of type SnapshotName</li><li class="attribute">placeAll: <strong>Optional(PlacementGroupName)</strong>, If present must be of type PlacementGroupName</li><li class="attribute">placeTail: <strong>Optional(PlacementGroupName)</strong>, If present must be of type PlacementGroupName</li><li class="attribute">rename: <strong>Optional(VolumeTemplateName)</strong>, If present must be of type VolumeTemplateName</li><li class="attribute">replication: <strong>Optional(Replication)</strong>, If present must be of type Replication</li><li class="attribute">size: <strong>Optional(Size)</strong>, If present must be of type Size</li></ul>
+</li>
+</ul>
+</li>
+<li>Response:
+<ul>
+<li>Example HTTP Response:
+<pre><code>HTTP/1.0 200 OK
+Connection: close
+Content-Type: application/json
+Cache-control: private
+Content-Length: <var>LENGTH</var>
+
+{
+  "generation": <var>generation</var>,
+  "data": {
+    "generation": <var>long</var>,
+    "ok": <var>true</var>
+  }
+}
+</code></pre></li>
+<li>Response Data:
+<strong>ApiOk</strong><ul>
+<li class="attribute">generation: <strong>long</strong>, A long integer value.</li><li class="attribute">ok: <strong>true</strong>, The constant value true.</li></ul>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="VolumeTemplateDelete">Delete volume template (<strong>VolumeTemplateDelete</strong>)</h3>
+<ol><li>Request:
+<ul><li>Example HTTP Request:
+<pre><code>POST /ctrl/1.0/VolumeTemplateDelete/{templateName} HTTP/1.0
+Host: <var>SP_API_HOST</var>:<var>SP_API_PORT</var>
+Authorization: Storpool v1:<var>SP_AUTH_TOKEN</var>
+Content-Length: <var>LENGTH</var>
+
+</code></pre></li><li>Method: <em>POST</em></li>
+<li>Path: <em>/ctrl/1.0/VolumeTemplateDelete/{templateName}</em></li>
+<li>Arguments: 
+<ul>
+<li>templateName - <strong>VolumeTemplateName</strong>: <em>string(200), matching ^[A-Za-z0-9_\-]+$, except {list}</em></li>
+</ul>
+</li>
+<li>Json: <em>Either no JSON or {}</em></li>
+</ul>
+</li>
+<li>Response:
+<ul>
+<li>Example HTTP Response:
+<pre><code>HTTP/1.0 200 OK
+Connection: close
+Content-Type: application/json
+Cache-control: private
+Content-Length: <var>LENGTH</var>
+
+{
+  "generation": <var>generation</var>,
+  "data": {
+    "generation": <var>long</var>,
+    "ok": <var>true</var>
+  }
+}
+</code></pre></li>
+<li>Response Data:
+<strong>ApiOk</strong><ul>
+<li class="attribute">generation: <strong>long</strong>, A long integer value.</li><li class="attribute">ok: <strong>true</strong>, The constant value true.</li></ul>
+</li>
+</ul>
+</li>
+</ol>
+<h2 id="Volume-Relocator">Volume Relocator</h2>
+<p></p>
+<h3 id="VolumeRelocatorOn">Turn-ON relocator (<strong>VolumeRelocatorOn</strong>)</h3>
+<ol><li>Request:
+<ul><li>Example HTTP Request:
+<pre><code>POST /ctrl/1.0/VolumeRelocatorOn HTTP/1.0
+Host: <var>SP_API_HOST</var>:<var>SP_API_PORT</var>
+Authorization: Storpool v1:<var>SP_AUTH_TOKEN</var>
+Content-Length: <var>LENGTH</var>
+
+</code></pre></li><li>Method: <em>POST</em></li>
+<li>Path: <em>/ctrl/1.0/VolumeRelocatorOn</em></li>
+<li>Arguments: <em>No arguments</em></li>
+<li>Json: <em>Either no JSON or {}</em></li>
+</ul>
+</li>
+<li>Response:
+<ul>
+<li>Example HTTP Response:
+<pre><code>HTTP/1.0 200 OK
+Connection: close
+Content-Type: application/json
+Cache-control: private
+Content-Length: <var>LENGTH</var>
+
+{
+  "generation": <var>generation</var>,
+  "data": {
+    "generation": <var>long</var>,
+    "ok": <var>true</var>
+  }
+}
+</code></pre></li>
+<li>Response Data:
+<strong>ApiOk</strong><ul>
+<li class="attribute">generation: <strong>long</strong>, A long integer value.</li><li class="attribute">ok: <strong>true</strong>, The constant value true.</li></ul>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="VolumeRelocatorOff">Turn-OFF relocator (<strong>VolumeRelocatorOff</strong>)</h3>
+<ol><li>Request:
+<ul><li>Example HTTP Request:
+<pre><code>POST /ctrl/1.0/VolumeRelocatorOff HTTP/1.0
+Host: <var>SP_API_HOST</var>:<var>SP_API_PORT</var>
+Authorization: Storpool v1:<var>SP_AUTH_TOKEN</var>
+Content-Length: <var>LENGTH</var>
+
+</code></pre></li><li>Method: <em>POST</em></li>
+<li>Path: <em>/ctrl/1.0/VolumeRelocatorOff</em></li>
+<li>Arguments: <em>No arguments</em></li>
+<li>Json: <em>Either no JSON or {}</em></li>
+</ul>
+</li>
+<li>Response:
+<ul>
+<li>Example HTTP Response:
+<pre><code>HTTP/1.0 200 OK
+Connection: close
+Content-Type: application/json
+Cache-control: private
+Content-Length: <var>LENGTH</var>
+
+{
+  "generation": <var>generation</var>,
+  "data": {
+    "generation": <var>long</var>,
+    "ok": <var>true</var>
+  }
+}
+</code></pre></li>
+<li>Response Data:
+<strong>ApiOk</strong><ul>
+<li class="attribute">generation: <strong>long</strong>, A long integer value.</li><li class="attribute">ok: <strong>true</strong>, The constant value true.</li></ul>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="VolumeRelocatorStatus">Get relocator status (<strong>VolumeRelocatorStatus</strong>)</h3>
+<ol><li>Request:
+<ul><li>Example HTTP Request:
+<pre><code>GET /ctrl/1.0/VolumeRelocatorStatus HTTP/1.0
+Host: <var>SP_API_HOST</var>:<var>SP_API_PORT</var>
+Authorization: Storpool v1:<var>SP_AUTH_TOKEN</var>
+Content-Length: <var>LENGTH</var>
+
+</code></pre></li><li>Method: <em>GET</em></li>
+<li>Path: <em>/ctrl/1.0/VolumeRelocatorStatus</em></li>
+<li>Arguments: <em>No arguments</em></li>
+<li>Json: <em>Either no JSON or {}</em></li>
+</ul>
+</li>
+<li>Response:
+<ul>
+<li>Example HTTP Response:
+<pre><code>HTTP/1.0 200 OK
+Connection: close
+Content-Type: application/json
+Cache-control: private
+Content-Length: <var>LENGTH</var>
+
+{
+  "generation": <var>generation</var>,
+  "data": {
+    "status": <var>RelocatorStatus</var>
+  }
+}
+</code></pre></li>
+<li>Response Data:
+<strong>VolumeRelocatorStatus</strong><ul>
+<li class="attribute">status: <strong>RelocatorStatus</strong>, One of {on, off, blocked}</li></ul>
+</li>
+</ul>
+</li>
+</ol>
+<h2 id="Balancer">Balancer</h2>
+<p></p>
+<h3 id="VolumeBalancerOn">Turn-ON balancer (<strong>VolumeBalancerOn</strong>)</h3>
+<ol><li>Request:
+<ul><li>Example HTTP Request:
+<pre><code>POST /ctrl/1.0/VolumeBalancerOn HTTP/1.0
+Host: <var>SP_API_HOST</var>:<var>SP_API_PORT</var>
+Authorization: Storpool v1:<var>SP_AUTH_TOKEN</var>
+Content-Length: <var>LENGTH</var>
+
+</code></pre></li><li>Method: <em>POST</em></li>
+<li>Path: <em>/ctrl/1.0/VolumeBalancerOn</em></li>
+<li>Arguments: <em>No arguments</em></li>
+<li>Json: <em>Either no JSON or {}</em></li>
+</ul>
+</li>
+<li>Response:
+<ul>
+<li>Example HTTP Response:
+<pre><code>HTTP/1.0 200 OK
+Connection: close
+Content-Type: application/json
+Cache-control: private
+Content-Length: <var>LENGTH</var>
+
+{
+  "generation": <var>generation</var>,
+  "data": {
+    "generation": <var>long</var>,
+    "ok": <var>true</var>
+  }
+}
+</code></pre></li>
+<li>Response Data:
+<strong>ApiOk</strong><ul>
+<li class="attribute">generation: <strong>long</strong>, A long integer value.</li><li class="attribute">ok: <strong>true</strong>, The constant value true.</li></ul>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="VolumeBalancerOff">Turn-OFF balancer (<strong>VolumeBalancerOff</strong>)</h3>
+<ol><li>Request:
+<ul><li>Example HTTP Request:
+<pre><code>POST /ctrl/1.0/VolumeBalancerOff HTTP/1.0
+Host: <var>SP_API_HOST</var>:<var>SP_API_PORT</var>
+Authorization: Storpool v1:<var>SP_AUTH_TOKEN</var>
+Content-Length: <var>LENGTH</var>
+
+</code></pre></li><li>Method: <em>POST</em></li>
+<li>Path: <em>/ctrl/1.0/VolumeBalancerOff</em></li>
+<li>Arguments: <em>No arguments</em></li>
+<li>Json: <em>Either no JSON or {}</em></li>
+</ul>
+</li>
+<li>Response:
+<ul>
+<li>Example HTTP Response:
+<pre><code>HTTP/1.0 200 OK
+Connection: close
+Content-Type: application/json
+Cache-control: private
+Content-Length: <var>LENGTH</var>
+
+{
+  "generation": <var>generation</var>,
+  "data": {
+    "generation": <var>long</var>,
+    "ok": <var>true</var>
+  }
+}
+</code></pre></li>
+<li>Response Data:
+<strong>ApiOk</strong><ul>
+<li class="attribute">generation: <strong>long</strong>, A long integer value.</li><li class="attribute">ok: <strong>true</strong>, The constant value true.</li></ul>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="VolumeBalancerStatus">Get balancer status (<strong>VolumeBalancerStatus</strong>)</h3>
+<ol><li>Request:
+<ul><li>Example HTTP Request:
+<pre><code>GET /ctrl/1.0/VolumeBalancerStatus HTTP/1.0
+Host: <var>SP_API_HOST</var>:<var>SP_API_PORT</var>
+Authorization: Storpool v1:<var>SP_AUTH_TOKEN</var>
+Content-Length: <var>LENGTH</var>
+
+</code></pre></li><li>Method: <em>GET</em></li>
+<li>Path: <em>/ctrl/1.0/VolumeBalancerStatus</em></li>
+<li>Arguments: <em>No arguments</em></li>
+<li>Json: <em>Either no JSON or {}</em></li>
+</ul>
+</li>
+<li>Response:
+<ul>
+<li>Example HTTP Response:
+<pre><code>HTTP/1.0 200 OK
+Connection: close
+Content-Type: application/json
+Cache-control: private
+Content-Length: <var>LENGTH</var>
+
+{
+  "generation": <var>generation</var>,
+  "data": {
+    "status": <var>BalancerStatus</var>
+  }
+}
+</code></pre></li>
+<li>Response Data:
+<strong>VolumeBalancerStatus</strong><ul>
+<li class="attribute">status: <strong>BalancerStatus</strong>, One of {on, off, blocked}</li></ul>
+</li>
+</ul>
+</li>
+</ol>
+
+	
+	</body>
+</html>
+
