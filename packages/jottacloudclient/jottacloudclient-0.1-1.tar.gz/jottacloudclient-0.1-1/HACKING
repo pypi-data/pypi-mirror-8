@@ -1,0 +1,42 @@
+*HACKING*
+
+Here's a quick rundown on what's what in this project.
+
+Patches and pull requests are more than welcome!
+
+
+
+**jottaboxscanner.py**
+
+A service to parse through a file structure and pass the tree to jottabox.util.compare. Run by crontab at some interval.
+
+
+**jottaboxmonitor.py**
+
+A service to act on changes on local tree (using inotify) and update JottaCloud tree accordingly.
+
+
+**jottabox/util.py**
+
+
+*** jottabox.util.compare ***
+Get a tree of local files and folders and compare it with what's currently on JottaCloud.
+
+
+*** jottabox.util.new ***
+
+Upload a new file from local disk (doesn't exist on JottaCloud)
+
+
+*** jottabox.util.replace_if_changed ***
+
+Compare md5 hash to determine if contents have changed. Upload a file from local disk and replace file on JottaCloud
+
+
+*** jottabox.util.delete ***
+
+Remove file from JottaCloud because it is no longer present on local disk.
+
+
+
+
