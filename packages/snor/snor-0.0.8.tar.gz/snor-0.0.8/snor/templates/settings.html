@@ -1,0 +1,303 @@
+{% extends "base.html" %}
+
+{% block title %}Settings{% endblock %}
+
+{% block container %}
+<div class="row">
+    <div class="span11 left">
+      <div class="white-panel">
+
+        <div class="page-header">
+            <h2>Settings</h2>
+        </div>
+
+        
+        
+        <div id="main_alert" class="alert{% if not msg %} hide{% endif %}">
+            <strong>{{msg}}</strong>
+        </div>
+
+        <form id="id_form_settings" name="form_settings" class="form-horizontal" method="POST" action=".">
+
+            <input type="hidden" name="default_filters" value="">
+
+            <div class="control-group">
+                <label class="control-label" for="login">Login:</label>
+                <div class="controls">
+                <label class="radio">
+                    <input type="radio" name="login_required" value="nologin" {% if not settings.login_required %}checked{% endif %}>
+                    No login required
+                </label>
+                <label class="radio">
+                    <input type="radio" name="login_required" value="login" {% if settings.login_required %}checked{% endif %}>
+                    Require username and password
+                </label>
+
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label" for="username">Username:</label>
+                <div class="controls">
+                    <input class="span3 login" type="text" name="username" placeholder="username" value="{{settings.username}}" {% if not settings.login_required %}readonly="true"{% endif %}/>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label" for="password">Password:</label>
+                <div class="controls">
+                    <input class="span3 login" type="password" name="password" value="{{settings.password}}" {% if not settings.login_required %}readonly="true"{% endif %}/>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <div class="controls">
+                    <input class="span3 login" type="password" name="passwordconfirm" value="{{settings.password}}" {% if not settings.login_required %}readonly="true"{% endif %}/>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label" for="api_key">API key:</label>
+                <div class="controls">
+                    <input class="span3" type="text" name="api_key" placeholder="API key" value="{{settings.api_key}}" />
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label" for="client">Torrent client:</label>
+                <div class="controls">
+                    <select id="id_client" name="client">
+                    {% for c in clients %}
+                    <option {% if settings.client == c%}selected{% endif %}>{{c}}</option>
+                    {% endfor %}
+                    </select>
+                    <button type="button" id="id_client_settings" class="btn"><i class="icon-wrench"></i> Settings</button>
+                </div>
+            </div>
+
+
+            <div class="control-group">
+                <label class="control-label" for="search_client">Search client:</label>
+                <div class="controls">                    
+                    <select id="id_search_client" name="search_client" {% if search_clients|length == 1 %}readonly="true"{% endif %}>
+                        {% for c in search_clients %}<option {% if settings.search_client == c%}selected{% endif %}>{{c}}</option>{% endfor %}
+                    </select>
+                </div>
+            </div>
+
+
+            <div class="control-group">
+                <label class="control-label" for="folder">Starting folder:</label>
+                <div class="controls">
+                    <input class="span3" type="text" name="folder" placeholder="Select folder" value="{{settings.folder}}" readonly="true"/>
+                    <button type="button" id="id_browse" class="btn"><i class="icon-search"></i> Browse</button>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label" for="log">Logfile:</label>
+                <div class="controls">
+                    <input class="span3" type="text" name="folder" value="/log/debug.log" disabled="true" />
+                    <a href="/log/" target="_blank" class="btn"><i class="icon-search"></i> View log </a>
+                </div>
+            </div>
+            
+            <div class="control-group hidden-phone">
+                <label class="control-label">Filters:</label>
+                <div class="controls">
+
+               <table id="id_table_filters" class="table table-bordered" style="width:500px;">    
+                  <tbody>
+                    <tr class="filter-form">                
+                      <td>
+                        <select id="id_key" name="key" class="input-medium">
+                            <option value="size">Size in MB</option>
+                            <option value="name">Name</option>
+                            <option value="peers">Number of peers</option>
+                            <option value="seeds">Number of seeders</option>
+                        </select>
+                      </td>
+                      <td>
+                        <select id="id_operator" name="operator" class="input-medium">
+                            <option value="gt">Greater then</option>
+                            <option value="st">Smaller then</option>
+                        </select>
+                      </td>
+                      <td>
+                        <div class="control-group" style="margin-bottom:0px;">
+                            <input type="text" id="id_filter_value" class="input-medium" name="value" placeholder="Value..." />
+                        </div>
+                      </td>
+                      <td>
+                        <div class="btn-group">
+                            <button class="btn disabled btn-mini" disabled="disabled"><i class="icon-minus"></i></button>
+                            <button id="id_add_filter" type="button" class="btn btn-mini"><i class="icon-plus"></i></button>
+                        </div>
+                      </td>
+                    </tr>           
+                  </tbody>
+                </table>
+
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">Other options:</label>
+                <div class="controls">
+                    <label class="checkbox">
+                        <input type="checkbox" name="use_season_folders" {% if settings.use_season_folders %}checked{% endif %}> Use season folders
+                    </label>
+                    <label class="checkbox">
+                        <input type="checkbox" name="download_new_only" {% if settings.download_new_only %}checked{% endif %}/> 
+                        Only download new episodes <em>(Skip aired episodes)</em>
+                    </label>
+                </div>
+            </div>
+            <div class="control-group">
+                <div class="controls">
+                    <button type="submit" class="btn btn-success"><i class="icon-ok icon-white"></i> Save settings</button>
+                </div>
+            </div>
+
+        </form>
+        </div>
+    </div>
+</div>
+
+<div id="modalsettings" class="modal hide fade">
+  <div class="modal-header">
+    <button type="button" class="close cancel_modal" data-dismiss="modal" aria-hidden="true">&times;</button>
+    <h3></h3>
+  </div>
+  <div class="modal-body">
+    <div class="control-group">
+      <label class="control-label">
+        Setting should be valid <a href="http://json.org" target="_blank">JSON</a>
+      </label>
+      <div class="controls">
+        <textarea id="id_client_settings_json" rows="8" class="input-block-level" name="value"></textarea>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn cancel_modal" data-dismiss="modal">Cancel</button>
+    <button id="id_save_client_settings" class="btn btn-primary">Save</button>
+  </div>
+</div>
+        
+{% include "modal_browse.html" %}
+
+{% endblock %}
+
+{% block script %}
+<script id="filter-template" type="text/x-handlebars-template">
+{% raw %}
+<tr data-filter='{"key":"{{key}}","operator":"{{operator}}","value":"{{value}}"}'>                
+  <td><em>{{keyFull}}</em></td>
+  <td><em>{{operatorFull}}</em></td>
+  <td><em>{{value}}</em></td>
+  <td>
+    <div class="btn-group">
+        <button type="button" class="btn btn-mini action_remove_filter"><i class="icon-minus"></i></button>
+        <button class="btn btn-mini disabled" disabled="disabled"><i class="icon-plus"></i></button>
+    </div>
+  </td>
+</tr>
+{% endraw %}
+</script>
+
+<script>
+$(document).ready(function(){
+    $('#id_form_settings').on('submit', function () {
+        var p = $('input[name=password]').val();
+        var pc = $('input[name=passwordconfirm]').val();
+        if(p != pc){
+            $('#main_alert').removeClass('hide').addClass('alert-error');;
+            $('#main_alert strong').html('Passwords don&#39;t match');
+            $('input[name=password],input[name=passwordconfirm]').parents('.control-group').addClass('error');
+            return false;
+        }
+
+        // Save filters
+        var filters =[];
+        $("#id_table_filters tr").each(function(){
+            if($(this).attr('data-filter')){
+                filters.push(JSON.parse($(this).attr('data-filter')));
+            }
+        });
+        $('input[name=default_filters]').val(JSON.stringify(filters));
+
+        $('#main_alert strong').addClass('hide');
+        $('input[name=password],input[name=passwordconfirm]').parents('.control-group').removeClass('error');
+        return true;
+    });
+
+    $('input[name=login_required]').change(function () {
+        var v = $('input[name=login_required]:radio:checked').val();
+        if(v == "nologin"){
+            $('.login').attr('readonly','true')
+        }
+        else{
+            $('.login').removeAttr('readonly');
+        }
+    });
+
+    $('#id_browse').on('click',function(e){
+        e.preventDefault();
+        filePicker({ 
+                startPath : '', 
+                show : true
+            }, 
+            function(folder){ 
+                $('input[name=folder]').val(folder);
+            }
+        );  
+    });
+
+    $('#id_client_settings').on('click',function(e){
+        var client = $('#id_client').val();
+        var url = '/settings/client/' + client + '/';
+
+        $('#modalsettings h3').html('Settings for ' + client)
+        $.getJSON(url, function(data) {
+            var str = JSON.stringify(data.result, undefined, 2);
+            $('#id_client_settings_json').val(str);
+        });
+        $('#modalsettings').modal();
+    });
+
+    function isJsonString(str) {
+        try {
+            JSON.parse(str);
+        } catch (e) {
+            return false;
+        }
+        return true;
+    }
+
+    $('#id_save_client_settings').on('click',function(e){
+        var client = $('#id_client').val();
+        var url = '/settings/client/' + client + '/';
+        var val = $('#id_client_settings_json').val();
+
+        if(isJsonString(val)){
+            $('#modalsettings div.alert').addClass('hide');
+            $('#id_client_settings_json').parents('.control-group').removeClass('error');
+            $.post(url, {'value': val}, function( data ) {
+              $('#modalsettings').modal('hide');
+            });
+        }
+        else{
+            $('#id_client_settings_json').parents('.control-group').addClass('error');
+        }
+    });
+
+
+    var filters = {{settings.default_filters|safe}};
+
+    $.each(filters, function(index, filter){
+        addFilter(filter);
+    });
+});
+
+</script>
+{% endblock %}

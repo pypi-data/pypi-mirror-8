@@ -1,0 +1,210 @@
+{% extends "base.html" %}
+
+{% block title %}Settings for {% if choice == "saved_show" %}{{show.seriesname}}{% else %}{{request.args.name}}{% endif %}{% endblock %}
+
+{% block container %}
+<div class="row">
+    <div class="span11 left">
+      <div class="white-panel">
+
+        <div class="page-header">
+            {% if choice == "saved_show" %}
+            <h2>Settings for {{show.seriesname}}</h2>
+            {% else %}
+            <h2>Settings for {{request.args.name}}</h2>
+            {% endif %}
+        </div>
+
+        <div class="alert alert-error hide">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            <strong>Warning!</strong> Best check yo self, you're not looking too good.
+        </div>
+
+
+        <form id="id_form_add_show" name="form_add_show" class="form-horizontal" method="POST" action=".">
+
+            <input type="hidden" name="tvdb_id" value="{{show_id}}">
+            <input type="hidden" name="filters" value="">
+            {% if choice == "existing" %}
+            <input type="hidden" name="folder" value="{{request.args.folder}}">
+            <div class="control-group">
+                <label class="control-label" for="folder">Folder:</label>
+                <div class="controls">
+                    <strong>{{request.args.folder}}</strong>
+                </div>
+            </div>
+            {% elif choice == "saved_show" %}
+            <div class="control-group">
+                <label class="control-label" for="folder">Folder:</label>
+                <div class="controls">
+                    <input id="id_folder" class="span3" type="text" name="folder" value="{{show.folder}}" placeholder="Select folder" readonly="true"/>
+                    <button type="button" id="id_browse" class="btn"><i class="icon-search"></i> Browse</button>
+                </div>
+            </div>            
+            {% else %}
+            <div class="control-group">
+                <label class="control-label" for="folder">Folder:</label>
+                <div class="controls">
+                    <input id="id_folder" class="span3" type="text" name="folder" placeholder="Select folder" readonly="true"/>
+                    <button type="button" id="id_browse" class="btn"><i class="icon-search"></i> Browse</button>
+                </div>
+            </div>
+            {% endif %}
+            <div class="control-group">
+                <div class="controls">
+                    <h5>Only download items matching the following rules:</h5>
+                </div>
+            </div>                
+            <div class="control-group hidden-phone">
+                <label class="control-label">Rules:</label>
+                <div class="controls">
+                
+                <table id="id_table_filters" class="table table-bordered" style="width:500px;">    
+                  <tbody>
+                    <tr class="filter-form">                
+                      <td>
+                        <select id="id_key" name="key" class="input-medium">
+                            <option value="size">Size in MB</option>
+                            <option value="name">Name</option>
+                            <option value="peers">Number of peers</option>
+                            <option value="seeds">Number of seeders</option>
+                        </select>
+                      </td>
+                      <td>
+                        <select id="id_operator" name="operator" class="input-medium">
+                            <option value="gt">Greater then</option>
+                            <option value="st">Smaller then</option>
+                        </select>
+                      </td>
+                      <td>
+                        <div class="control-group" style="margin-bottom:0px;">
+                            <input type="text" id="id_filter_value" class="input-medium" name="value" placeholder="Value..." />
+                        </div>
+                      </td>
+                      <td>
+                        <div class="btn-group">
+                            <button class="btn disabled btn-mini" disabled="disabled"><i class="icon-minus"></i></button>
+                            <button id="id_add_filter" type="button" class="btn btn-mini"><i class="icon-plus"></i></button>
+                        </div>
+                      </td>
+                    </tr>           
+                  </tbody>
+                </table>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">Other options:</label>
+                <div class="controls">
+                    <label class="checkbox">
+                        {% if choice == "saved_show" %}
+                        <input type="checkbox" name="use_season_folders" {% if show.use_season_folders %}checked{% endif %}>
+                        {% else %}
+                        <input type="checkbox" name="use_season_folders" {% if settings.use_season_folders %}checked{% endif %}>
+                        {% endif %}
+                         Use season folders
+                    </label>
+                    <label class="checkbox">
+                        {% if choice != "saved_show" %}
+                        <input type="checkbox" name="download_new_only" {% if settings.download_new_only %}checked{% endif %}>
+                        Only download new episodes <em>(Skip aired episodes)</em>
+                        {% endif %}
+                        
+                    </label>
+                    <label class="checkbox">
+                        <input type="checkbox" name="skip_specials" checked>
+                        Don&#39;t download serie specials
+                    </label>                    
+                </div>
+            </div>
+            <div class="control-group">
+                <div class="controls">
+                    <button type="submit" class="btn btn-success">
+                        <i class="icon-ok icon-white"></i> {% if choice == "saved_show" %}Save  {% else%}Add show{% endif%}
+                    </button>
+                    {% if choice == "saved_show" %}
+                    <a class="btn" href="/show/{{show.id}}/">
+                        <i class="icon-remove"></i> Cancel
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+
+        </form>
+        </div>
+    </div>
+</div>
+        
+    {% include "modal_browse.html" %}
+
+{% endblock %}
+
+{% block script %}
+
+<script id="filter-template" type="text/x-handlebars-template">
+{% raw %}
+<tr data-filter='{"key":"{{key}}","operator":"{{operator}}","value":"{{value}}"}'>                
+  <td><em>{{keyFull}}</em></td>
+  <td><em>{{operatorFull}}</em></td>
+  <td><em>{{value}}</em></td>
+  <td>
+    <div class="btn-group">
+        <button type="button" class="btn btn-mini action_remove_filter"><i class="icon-minus"></i></button>
+        <button class="btn btn-mini disabled" disabled="disabled"><i class="icon-plus"></i></button>
+    </div>
+  </td>
+</tr>
+{% endraw %}
+</script>
+
+<script>
+
+$(document).ready(function(){
+    $('#id_browse').on('click',function(e){
+        e.preventDefault();
+        filePicker({ 
+                startPath : '', 
+                show : true
+            }, 
+            function(folder){ 
+                $('input[name=folder]').val(folder);
+            }
+        );  
+    });
+
+    $('#id_form_add_show').submit(function() {
+        $('div.alert').addClass('hide');
+        //
+        $('#id_folder').parents('.control-group').removeClass('error');
+        if($('input[name="folder"]').val().length == 0){
+            var msg = "<strong>Please select a folder</strong>";
+            $('#id_folder').parents('.control-group').addClass('error');
+            $('div.alert').html(msg).removeClass('hide');
+            return false;
+        }
+
+        // Save filters
+        var filters =[];
+        $("#id_table_filters tr").each(function(){
+            if($(this).attr('data-filter')){
+                filters.push(JSON.parse($(this).attr('data-filter')));
+            }
+        });
+        $('input[name=filters]').val(JSON.stringify(filters));
+
+        return true;
+    });
+
+    {% if choice == "saved_show" %}
+    var filters = {{show.filters|safe}};
+    {% else %}
+    var filters = {{settings.default_filters|safe}}; //ELSE
+    {% endif %}
+
+    $.each(filters, function(index, filter){
+        addFilter(filter);
+    });
+});
+
+
+</script>
+{% endblock %}
