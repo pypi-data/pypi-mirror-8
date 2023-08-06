@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load translations %}
+{% load url from future %}
+
+{% block breadcrumbs %}
+<li><a href="{{ page_profile.get_absolute_url }}">{{ page_profile.get_user_name }}</a></li>
+{% endblock %}
+
+{% block content %}
+
+<div class="panel panel-primary">
+  <div class="panel-heading"><h4 class="panel-title">{{ page_profile.get_user_name }}</h4></div>
+  <div class="panel-body">
+
+<div class="row">
+{% if enable_avatars %}
+<div class="col-lg-2">
+<img src="{% url 'user_avatar' user=page_user.username size=128 %}" />
+</div>
+{% endif %}
+
+<div class="col-lg-10">
+{% with page_profile as profile and page_user as user %}
+<table class="table table-condensed">
+{% include 'user-activity.html' %}
+</table>
+{% endwith %}
+</div>
+
+</div>
+
+{% if user_projects %}
+
+<h4>{% trans "Projects" %}</h4>
+<div class="list-group">
+{% for project in user_projects %}
+<a class="list-group-item" href="{{ project.get_absolute_url }}">{{ project }}</a>
+{% endfor %}
+</div>
+
+{% endif %}
+
+<h4>{% trans "Activity in last 30 days" %}</h4>
+<img src="{% url 'monthly_user_activity' user=page_user.username %}">
+
+<h4>{% trans "Activity in last year" %}</h4>
+<img src="{% url 'yearly_user_activity' user=page_user.username %}">
+
+</div>
+</div>
+
+{% include "last-changes.html" %}
+
+{% endblock %}

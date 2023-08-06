@@ -1,0 +1,35 @@
+language: python
+python:
+  - "2.7"
+# - Test against all supported Django versions with sqlite
+# - Test against all supported databases with current Django
+# - Run Selenium tests on current Django
+# - Run pylint/pep8 checker
+env:
+  matrix:
+    - CI_DJANGO="Django>=1.6,<1.7" CI_LINT=1
+    - CI_DJANGO="Django>=1.7,<1.8" CI_LINT=1
+    - CI_DJANGO="Django>=1.7,<1.8" CI_DATABASE=mysql
+    - CI_DJANGO="Django>=1.7,<1.8" CI_DATABASE=postgresql
+    - CI_DJANGO="Django>=1.7,<1.8"
+    - CI_DJANGO="Django>=1.6,<1.7"
+    - CI_DJANGO="Django>=1.7,<1.8" CI_DATABASE=postgresql CI_RUN_TESTS="-p test_selenium.py" CI_SELENIUM=1
+  global:
+    - DJANGO_SETTINGS_MODULE=weblate.settings_test
+    - CI_REQUIREMENTS=travis
+# commands to install dependencies
+install:
+  - ./ci/install
+# create databases
+before_script:
+  - ./ci/setup-env
+# commands to run tests
+script:
+  - if [ -z "$CI_LINT" ] ; then ./ci/run-test ; else ./ci/run-lint ; fi
+after_script:
+  - if [ -z "$CI_LINT" ] ; then coveralls ; fi
+  - if [ -z "$CI_LINT" ] ; then ocular --data-file ".coverage" --config-file ".coveragerc" ; fi
+cache:
+  directories:
+    - $HOME/.pip-cache/
+sudo: false
