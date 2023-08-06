@@ -1,0 +1,112 @@
+[app:main]
+
+#################################################################################
+# Basic setup
+#
+# the directory to be served. Either a python module asset path, relative path
+# or absolute path
+server.directory = {{root}}
+server.defaultfile = index.html
+
+# The domain to connect to. Ajax calls and urls can use a domain
+# placeholder to be inserted by outpost before proxying the request.
+# By default the placeholder is '__domain'. The string will
+# replaced with the following configuration setting.
+proxy.domain = {{domain}}
+
+server.log_notfound = True
+server.content_type = text/html; charset=UTF-8
+
+# The url prefix used to route request through the proxy. By default
+# urls starting with `http://127.0.0.1:5556/__proxy/` will be handled by the
+# proxy
+proxy.route = __proxy
+
+
+#################################################################################
+# Debugging options
+#
+# Activate interactive commandline request tracing in python debugger. 
+# Allows you to modify and pause requests before being returned to the browser.
+# Takes a regular expression as parameter, the server breaks only if the re matches.
+# e.g. \.html for html files.
+server.trace = 
+
+# Activate interactive commandline request tracing in python debugger.
+# Allows you to modify and pause calls to the webservice. Takes a regular
+# expression as parameter, the server breaks only if the re matches.
+# e.g. datastore/api/setItem.
+proxy.trace =
+
+
+#################################################################################
+# Filter and templating
+#
+# filter configuration. filters are loaded based on file extensions.
+# <empty> means files without extension are filtered, too.
+filter.extensions = .html <empty>
+
+# Points to a file and inserts the contents at the end of the html-head
+# section of the served file. e.g. files/header.html
+filter.appendhead = 
+
+# Points to a file and inserts the contents at the end of the html-body
+# section of the served file. e.g. files/body.html
+filter.appendbody = 
+
+# string replacement directive in json (can also be a list of directives):  
+# e.g. {"str": "old string", "new": "new string", "codepage": "utf-8"}
+filter.replacestr = 
+
+
+#################################################################################
+# Server setup
+
+use = call:outpost.server:main
+
+debugtoolbar.enabled = false
+debugtoolbar.panels =
+    pyramid_debugtoolbar.panels.headers.HeaderDebugPanel
+    pyramid_debugtoolbar.panels.request_vars.RequestVarsDebugPanel
+    pyramid_debugtoolbar.panels.performance.PerformanceDebugPanel
+    pyramid_debugtoolbar.panels.logger.LoggingPanel
+    pyramid_debugtoolbar.panels.settings.SettingsDebugPanel
+pyramid.includes = pyramid_debugtoolbar
+pyramid.default_locale_name = en
+
+
+[server:main]
+use = egg:waitress#main
+host = 127.0.0.1
+port = 5556
+threads = 2
+
+
+# Begin logging configuration
+[loggers]
+keys = root, staticserver
+
+[handlers]
+keys = console
+
+[formatters]
+keys = generic
+
+[logger_root]
+level = INFO
+handlers = console
+
+[logger_staticserver]
+level = DEBUG
+handlers =
+qualname = staticserver
+
+[handler_console]
+class = StreamHandler
+args = (sys.stderr,)
+level = NOTSET
+formatter = generic
+
+[formatter_generic]
+format = %(asctime)s %(levelname)-5.5s [%(name)s][%(threadName)s] %(message)s
+# End logging configuration
