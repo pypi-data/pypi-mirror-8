@@ -1,0 +1,22 @@
+{% extends 'admin/change_list.html' %}
+{% load i18n %}
+
+{% block object-tools-items %}
+    {% if Clean %}
+	<li>
+		<a href="./clean_proxies/">{% trans 'Clean Proxies' %}</a>
+	</li>
+    {% endif %}
+    {% if Check %}
+	<li>
+		<a href="./check_proxies/">{% trans 'Check Proxies' %}</a>
+	</li>
+    {% endif %}
+    {% if Grab %}
+	<li>
+		<a href="./grab_proxies/">{% trans 'Grab Proxies' %}</a>
+	</li>
+    {% endif %}
+
+	{{ block.super }}
+{% endblock %}
