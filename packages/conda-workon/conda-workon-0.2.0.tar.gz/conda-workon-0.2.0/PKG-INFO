@@ -1,0 +1,114 @@
+Metadata-Version: 1.1
+Name: conda-workon
+Version: 0.2.0
+Summary: Activate conda environments in subshells
+Home-page: https://bitbucket.org/flub/conda-workon
+Author: Floris Bruynooghe
+Author-email: flub@devork.be
+License: BSD
+Description: ============
+        conda-workon
+        ============
+        
+        This is a small tool which can be used to activate conda environments.
+        It is an alternative to using ``source activate <env>`` and instead
+        uses a conda sub-command to spawn a new shell with the environment
+        activated.  Deactivating the environment is simply done by exiting
+        this sub-shell.  This is very similar to, and based on, the ``pew
+        workon`` command from pew_.  One major advantage of this is that it
+        does not depend on the shell you use nor does it interact with the
+        shell at all.  This means it is not restricted to bash and zsh.
+        
+        .. _pew: https://pypi.python.org/pypi/pew
+        
+        Activating an environment simply looks like this::
+        
+           $ conda create -n py26 python=2.6
+           ...
+           $ conda info -e
+           # conda environments:
+           #
+           py26                     /home/flub/miniconda3/envs/py26
+           root                  *  /home/flub/miniconda3
+           $ conda workon py26
+           Launching subshell in conda environment.  Type "exit" or "Ctr-D" to return.
+           (py26) $ conda info -e
+           # conda environments:
+           #
+           py26                  *  /home/flub/miniconda3/envs/py26
+           root                     /home/flub/miniconda3
+           (py26) $ exit
+           $ conda info -e
+           # conda environments:
+           #
+           py26                     /home/flub/miniconda3/envs/py26
+           root                  *  /home/flub/miniconda3
+        
+        Another feature is that it provides an easy throw-away temporary
+        environment::
+        
+           $ conda workon -t python=3.4
+           Fetching package metadata: ..
+           Solving package specifications: .
+           Package plan for installation in environment /tmp/tmp7ua0_le9/env:
+           ...
+           Proceed ([y]/n)? y
+           ...
+           Launching subshell in conda environment.  Type "exit" or "Ctr-D" to return.
+           $ conda info | grep default
+             default environment : /tmp/tmp7ua0_le9/env
+           $ exit
+           $ conda info | grep default
+             default environment : /home/flub/miniconda3
+           $
+        
+        
+        Installation
+        ============
+        
+        The ``conda-workon`` command needs to be installed in the root conda
+        environment.  Currently it can only be installed using setuptools into
+        the root environment.  The easiest is to use ``pip``.
+        
+        Using pip
+        ---------
+        
+        Ensure you have ``pip`` installed in the conda root environment using
+        ``conda install pip``.  Then making sure to use this version of pip
+        install ``conda-workon`` using::
+        
+          $ pip install conda-workon
+        
+        Using conda
+        -----------
+        
+        XXX
+        
+        
+        Configuring the Prompt
+        ======================
+        
+        The ``conda-workon`` command does not interfere with the shell at all,
+        it simply starts a new sub-shell with a modified path.  This means
+        that by default the prompt of the shell will not indicate which conda
+        environment you are using.  However the currently activated conda
+        environment is available in the ``CONDA_DEFAULT_ENV`` environment
+        variable, which allows you to easily configure your shell as you
+        prefer.  A simple example using the fish shell is to include the
+        following fragment in the ``fish_prompt`` function::
+        
+           # Show the conda environment, calculate __fish_prompt_conda only once
+           if set -q CONDA_DEFAULT_ENV
+               if not set -q __fish_prompt_conda
+                   set -g __fish_prompt_conda (set_color --bold -b blue red)$CONDA_DEFAULT_ENV"$__fish_prompt_normal "
+               end
+               echo -n $__fish_prompt_conda
+           end
+        
+Platform: UNKNOWN
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 2
+Classifier: Programming Language :: Python :: 3
+Classifier: Environment :: Console
