@@ -1,0 +1,7 @@
+.. _api-kotti.testing:
+
+kotti.testing
+-------------
+
+.. automodule:: kotti.testing
+   :members:
