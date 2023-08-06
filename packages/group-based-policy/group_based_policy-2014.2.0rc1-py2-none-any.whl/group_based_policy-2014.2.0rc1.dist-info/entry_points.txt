@@ -1,0 +1,29 @@
+[console_scripts]
+gbp-db-manage = gbp.neutron.db.migration.cli:main
+
+[gbp.neutron.group_policy.extension_drivers]
+test = gbp.neutron.tests.unit.services.grouppolicy.test_extension_driver_api:TestExtensionDriver
+
+[gbp.neutron.group_policy.policy_drivers]
+apic = gbp.neutron.services.grouppolicy.drivers.cisco.apic.apic_mapping:ApicMappingDriver
+dummy = gbp.neutron.services.grouppolicy.drivers.dummy_driver:NoopDriver
+implicit_policy = gbp.neutron.services.grouppolicy.drivers.implicit_policy:ImplicitPolicyDriver
+nuage_gbp_driver = gbp.neutron.services.grouppolicy.drivers.nuage.driver:NuageGBPDriver
+odl = gbp.neutron.services.grouppolicy.drivers.odl.odl_mapping:OdlMappingDriver
+oneconvergence_gbp_driver = gbp.neutron.services.grouppolicy.drivers.oneconvergence.nvsd_gbp_driver:NvsdGbpDriver
+resource_mapping = gbp.neutron.services.grouppolicy.drivers.resource_mapping:ResourceMappingDriver
+
+[gbp.neutron.servicechain.servicechain_drivers]
+dummy = gbp.neutron.services.servicechain.drivers.dummy_driver:NoopDriver
+oneconvergence_servicechain_driver = gbp.neutron.services.servicechain.drivers.oneconvergence_servicechain_driver:OneconvergenceServiceChainDriver
+simplechain_driver = gbp.neutron.services.servicechain.drivers.simplechain_driver:SimpleChainDriver
+
+[neutron.ml2.mechanism_drivers]
+apic_gbp = gbp.neutron.plugins.ml2.drivers.grouppolicy.apic.driver:APICMechanismGBPDriver
+nuage_gbp = gbp.neutron.plugins.ml2.drivers.grouppolicy.nuage.driver:NuageMechanismGBPDriver
+odl_gbp = gbp.neutron.plugins.ml2.drivers.grouppolicy.odl.driver:OdlMechanismGBPDriver
+
+[neutron.service_plugins]
+group_policy = gbp.neutron.services.grouppolicy.plugin:GroupPolicyPlugin
+servicechain = gbp.neutron.services.servicechain.servicechain_plugin:ServiceChainPlugin
+
