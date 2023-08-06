@@ -1,0 +1,93 @@
+{%extends 'base.html' %}
+{% load staticfiles sekizai_tags load_fields_assets %}
+
+{%block content%}
+    {% verbatim %} 
+    <div id="page-wrapper" ng-controller="statisticsCtrl as s">
+        <div class="container-fluid">
+            <div class="row" style="margin-bottom:50px">
+                <div class="col-md-2">
+                    <label>Field: </label>
+                </div>
+                <div class="col-md-2">
+                     <select  class="form-control" ng-options="id as value.conf.title for (id,value) in s.values" ng-model="s.filter_id" >    
+                    </select> 
+                </div>
+                <div class="col-md-2">
+                    <h4 class="text-center">Filter type:</h4>
+                </div>
+                <div class="col-md-2">
+                    <select  class="form-control" ng-options="option for option in ['contains', 'equals']" ng-model="s.filter_type">
+                    </select> 
+                </div>
+                <div class="col-md-2"> 
+                    <h4> value: </h4>
+                </div> 
+                <div class="col-md-2"> 
+                    <input  class="form-control" type="text" ng-model="s.filter_value" /> 
+                </div>        
+            </div>     
+            <div class="row" style="margin-bottom:50px">
+                <div class="col-md-2">
+                    <button ng-click="s.getF()">Apply</button>
+                </div>
+                <div class="col-md-2">
+                    <button ng-click="s.Discard()">Discard</button>
+                </div>                                              
+            </div>            
+            <div class="list-group">
+                <ul>
+                    <li ng-cloak ng-repeat="field in s.values">
+                        <h2>Field {{field.id}}  
+                            <select class="btn btn-primary col-md-offset-1" ng-model="field.chart" ng-options="type for type in chart_types"></select>
+                        </h2>
+                        <div class="row" ng-include="'../field_statistic/'+field.field_type"></div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    {%endverbatim%}
+{%endblock%}
+
+{% block scripts  %}
+    {% addtoblock "js" %}
+    <script src={% static "angular/lodash.min.js" %}></script>
+    {% endaddtoblock %}
+    {% addtoblock "js" %}
+    <script src={% static "angular/bluebird.js" %}></script>
+    {% endaddtoblock %}
+    {% addtoblock "js" %}
+    <script src={% static "bootstrap/js/ui-bootstrap.min.js" %}></script>
+    {% endaddtoblock %}
+    {% addtoblock "js" %}
+    <script src={% static "angular/FileSaver.js" %}></script>
+    {% endaddtoblock %}
+    {% addtoblock "js" %}
+    <script src={% static "angular/jspdf.js" %}></script>
+    {% endaddtoblock %}
+    {% addtoblock "js" %}
+    <script src={% static "angular/jspdf.plugin.table.js" %}></script>
+    {% endaddtoblock %}
+    {% addtoblock "js" %}
+    <script src={% static "angular/sortable.js" %}></script>
+    {% endaddtoblock %}
+    {% addtoblock "js" %}
+    <script src={% static "js/app.js" %}></script>
+    {% endaddtoblock %}
+    {% addtoblock "js" %}
+    <script src={% static "js/statisticsCtrl.js" %}></script>
+    {% endaddtoblock %}
+    
+    {% fields_assets_block %}
+{%endblock%}   
+        
+
+
+
+ 
+
+
+                                
+
+

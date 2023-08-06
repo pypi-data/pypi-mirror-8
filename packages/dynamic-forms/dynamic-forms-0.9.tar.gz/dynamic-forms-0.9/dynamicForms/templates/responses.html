@@ -1,0 +1,61 @@
+{%extends 'base.html' %}
+{% load staticfiles sekizai_tags %}
+
+{%block content%}
+    {% verbatim %}
+    <div id="page-wrapper" ng-controller="ResponsesCtrl as responses">
+        <div class="container-fluid">
+            <!-- Page Heading -->
+            <div class="row">
+                 <div class="col-lg-12">
+                    <h1 class="page-header">
+                        Responses: Form: {{responses.formId}} - version: {{responses.versionNumber}}
+                    </h1>
+                </div>
+            </div>
+
+            <div>
+                <a type="button" class="btn btn-default btn-sm" href= "{{urlBase}}export-csv/{{responses.formId}}/{{responses.versionNumber}}">
+                    EXPORT CSV
+                </a>
+                <br />
+                <br /> 
+              
+            </div>
+
+            <div class="row">
+                <div class="col-sm-10">
+                     <div class="list-group">
+                        <ul>
+                            <li ng-repeat="response in responses.json">
+                                <p>Entry: {{response.entry_time}}</p>
+                                <ul>
+                                    <li ng-repeat="field in response.fields">
+                                            <div ng-show="responses.isFile(field)">
+                                                 <a ng-href="{{responses.downloadLink(field)}}">{{responses.fieldResponse(field)}}</a>                                                
+                                            </div>
+                                            <div ng-hide="responses.isFile(field)">
+                                                 {{responses.fieldResponse(field)}}
+                                            </div>   
+                                        </li>
+                                </ul>
+                            </li>
+                        </ul>
+                            
+                     </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+    {% endverbatim %}
+{%endblock%}
+
+{%block scripts%}
+    {% addtoblock "js" %}
+    <script src={% static "js/app.js" %}></script>
+    {% endaddtoblock %}
+    {% addtoblock "js" %}
+    <script src={% static "js/responsesCtrl.js" %}></script>
+    {% endaddtoblock %}
+{%endblock%}
