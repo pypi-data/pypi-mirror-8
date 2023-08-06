@@ -1,0 +1,45 @@
+
+streamcorpus_pipeline:
+  root_path:
+  tmp_dir_path:  tmp
+  reader: from_local_chunks
+
+  log_level: DEBUG
+
+  external_stages_modules:
+  - streamcorpus_basis
+
+  incremental_transforms: []
+
+  output_chunk_max_count: 10000
+
+  batch_transforms: 
+  - serif
+  - multi_token_match_align_labels
+
+  multi_token_match_align_labels:
+    update_labels: true
+    annotator_id: KBP
+    tagger_id: serif
+
+
+  writers: [to_local_chunks]
+
+  to_local_chunks:
+    output_type: otherdir
+    output_path: foo
+    output_name: "%(source)s-%(num)d-%(md5)s"
+
+
+  serif:
+    exit_code_on_out_of_memory: 1
+    path_in_third: /third/serif/serif-latest
+    offset_types: [CHARS]
+    offset_debugging: true
+    cleanup_tmp_files: true
+
+    par: streamcorpus_one_step           ## performs tagging and constructs tokens with attrs
+
+    #align_labels_by: char_offset_align_labels
+    #aligner_data:
+    #  annotator_id: author
