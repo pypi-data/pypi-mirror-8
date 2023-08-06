@@ -1,0 +1,184 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>FormulaCalculator &mdash; decida 1.0.2 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.0.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="decida 1.0.2 documentation" href="index.html" />
+    <link rel="up" title="DeCiDa classes" href="decida_classes.html" />
+    <link rel="next" title="FrameNotebook" href="FrameNotebook.html" />
+    <link rel="prev" title="Fitter" href="Fitter.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="FrameNotebook.html" title="FrameNotebook"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Fitter.html" title="Fitter"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">decida 1.0.2 documentation</a> &raquo;</li>
+          <li><a href="decida_classes.html" accesskey="U"><strong>DeCiDa classes</strong></a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="formulacalculator">
+<h1>FormulaCalculator<a class="headerlink" href="#formulacalculator" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="decida.FormulaCalculator.FormulaCalculator">
+<em class="property">class </em><tt class="descclassname">decida.FormulaCalculator.</tt><tt class="descname">FormulaCalculator</tt><big>(</big><em>parent=None</em>, <em>par_specs=None</em>, <em>recalc_specs=None</em>, <em>title=''</em><big>)</big><a class="headerlink" href="#decida.FormulaCalculator.FormulaCalculator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simple formula calculator.</p>
+<p><strong>synopsis</strong>:</p>
+<p>A small calculator can be useful to evaluate a single formula involving
+a few parameters/variables. This formula calculator class constructs
+a small calculator which evaluates the formula or its inverse with
+respect to a particular parameter, according to specified code
+for each result. (originally posted as a Tcl/Tk application on wiki.tcl.tk)</p>
+<p><strong>constructor arguments</strong>:</p>
+<blockquote>
+<div><dl class="option">
+<dt>
+<tt class="descname">parent (Tkinter handle) (default=None)</tt></dt>
+<dd><p>handle of frame or other widget to pack plot in.
+if this is not specified, top-level is created.</p>
+</dd></dl>
+
+<dl class="option">
+<dt>
+<tt class="descname">par_specs (list of lists of parameter specifications)</tt></dt>
+<dd><p>each list of parameter specifications is: parameter name,
+text to be displayed for the parameter label in the GUI,
+units, initial value, key of equation recalculation formula.</p>
+</dd></dl>
+
+<dl class="option">
+<dt>
+<tt class="descname">recalc_specs (list of lists of formula specifications)</tt></dt>
+<dd><p>each list of recalculation specifications is: recalculation key,
+formula.</p>
+</dd></dl>
+
+</div></blockquote>
+<p><strong>results</strong>:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Sets up GUI for formula recalculation.</li>
+<li>Changing and typing return in a parameter entry box re-evaluates
+the respective formula.</li>
+<li>Emacs-style bindings switch between entry boxes:
+^n and ^p  focus on next or previous entry windows, respectively</li>
+</ul>
+</div></blockquote>
+<p><strong>example</strong> (from test_FormulaCalculator_1):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">decida.FormulaCalculator</span> <span class="kn">import</span> <span class="n">FormulaCalculator</span>
+<span class="n">fc</span> <span class="o">=</span> <span class="n">FormulaCalculator</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span>
+    <span class="n">title</span><span class="o">=</span><span class="s">&quot;L-C oscillator&quot;</span><span class="p">,</span>
+    <span class="n">par_specs</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">[</span><span class="s">&quot;L&quot;</span><span class="p">,</span>    <span class="s">&quot;Inductance&quot;</span><span class="p">,</span>  <span class="s">&quot;pH&quot;</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">,</span> <span class="s">&quot;f&quot;</span><span class="p">],</span>
+        <span class="p">[</span><span class="s">&quot;C&quot;</span><span class="p">,</span>    <span class="s">&quot;Capacitance&quot;</span><span class="p">,</span> <span class="s">&quot;pF&quot;</span><span class="p">,</span>  <span class="mf">25.00</span><span class="p">,</span> <span class="s">&quot;f&quot;</span><span class="p">],</span>
+        <span class="p">[</span><span class="s">&quot;freq&quot;</span><span class="p">,</span> <span class="s">&quot;Frequency&quot;</span><span class="p">,</span>   <span class="s">&quot;GHz&quot;</span><span class="p">,</span>  <span class="mf">1.00</span><span class="p">,</span> <span class="s">&quot;L&quot;</span><span class="p">],</span>
+    <span class="p">],</span>
+    <span class="n">recalc_specs</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">[</span><span class="s">&quot;f&quot;</span><span class="p">,</span> <span class="s">&quot;freq = 1e3/(2*pi*sqrt(L*C))&quot;</span><span class="p">],</span>
+        <span class="p">[</span><span class="s">&quot;L&quot;</span><span class="p">,</span> <span class="s">&quot;L    = 1e6/(C*pow(2*pi*freq, 2))&quot;</span><span class="p">],</span>
+        <span class="p">[</span><span class="s">&quot;C&quot;</span><span class="p">,</span> <span class="s">&quot;C    = 1e6/(L*pow(2*pi*freq, 2))&quot;</span><span class="p">],</span>
+    <span class="p">]</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="decida.FormulaCalculator.FormulaCalculator.recalculate">
+<tt class="descname">recalculate</tt><big>(</big><em>par_changed</em><big>)</big><a class="headerlink" href="#decida.FormulaCalculator.FormulaCalculator.recalculate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Fitter.html"
+                        title="previous chapter">Fitter</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="FrameNotebook.html"
+                        title="next chapter">FrameNotebook</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/FormulaCalculator.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="FrameNotebook.html" title="FrameNotebook"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Fitter.html" title="Fitter"
+             >previous</a> |</li>
+        <li><a href="index.html">decida 1.0.2 documentation</a> &raquo;</li>
+          <li><a href="decida_classes.html" ><strong>DeCiDa classes</strong></a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Richard Booth.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>
