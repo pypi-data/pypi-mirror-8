@@ -1,0 +1,71 @@
+Metadata-Version: 1.1
+Name: log_calls
+Version: 0.1.14
+Summary: Debugging and profiling decorator that logs caller name(s), args+values, execution time, and more. Eliminates reams of boilerplate code.
+Home-page: http://github.com/Twangist/log_calls
+Author: Brian O'Neill
+Author-email: twangist@gmail.com
+License: MIT
+Description: 
+        `log_calls` is a Python 3 decorator that can print much useful information
+        about calls to a decorated function. It can write to `stdout`, to another
+        stream, or to a logger. It can save you from writing, rewriting, copying,
+        pasting and tweaking a lot of ad hoc, boilerplate code - and it can keep
+        your codebase free of that clutter.
+        
+        For each call of a decorated function, `log_calls` can show you:
+        
+        * the caller,
+        * the arguments passed to the function, and any default values used,
+        * the time the function took to execute,
+        * the complete call chain back to another `log_calls`-decorated caller,
+        * the number of the call,
+        * indentation by call level,
+        * the function's return value,
+        * and more!
+        
+        These and other features are optional and configurable settings, which
+        can be specified for each decorated function via keyword parameters.
+        You can also dynamically get and set these settings using attributes
+        with the same names as the keywords, or using a dict-like interface
+        whose keys are the keywords.
+        
+        `log_calls`` can also collect profiling data and statistics, accessible dynamically:
+        
+        * number of calls to a function,
+        * total time taken by the function,
+        * the function's entire call history (arguments, time elapsed, return values,
+          callers, and more), optionally as text in CSV format.
+        
+        These features and others are optional and configurable settings,
+        which can be specified for each decorated function via keyword parameters of
+        the decorator. You can also dynamically get and set these settings using attributes
+        with the same names as the keywords, or using a dict-like interface whose keys
+        are the keywords. In fact, through a mechanism of "indirect parameter values",
+        with just a modest amount of cooperation between decorated functions a calling
+        function can ensure uniform settings for all log_calls-decorated functions in
+        call chains beneath it.
+        
+        The package contains another decorator, `record_history`, a stripped-down version
+        of `log_calls` which only collects call history and statistics, and outputs no messages.
+        
+        NOTE: This package requires the CPython implementation, as it makes assumptions
+        about stack frame internals which may not be valid in other interpreters.
+        
+        See docs/log_calls.md for details, usage info and examples.
+        
+Keywords: decorator debugging profiling logging function call caller stack recursion teaching
+Platform: UNKNOWN
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.3
+Classifier: Programming Language :: Python :: 3.4
+Classifier: Programming Language :: Python :: Implementation :: CPython
+Classifier: Intended Audience :: Developers
+Classifier: Operating System :: OS Independent
+Classifier: Topic :: Software Development :: Libraries
+Classifier: Topic :: Software Development :: Code Generators
+Classifier: Topic :: Utilities
+Classifier: Topic :: System :: Logging

@@ -1,0 +1,1275 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<style>
+/* Customized "Clearness.css" (.TOC) */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote {
+    margin: 0;
+    padding: 0;
+}
+body {
+    font-family: "Helvetica Neue", Helvetica, "Hiragino Sans GB", Arial, sans-serif;
+    font-size: 13px;
+    line-height: 18px;
+    color: black;
+    background-color: white;
+    margin: 10px 13px 10px 13px;
+}
+table {
+	margin: 10px 0 15px 0;
+	border-collapse: collapse;
+}
+td,th {	
+	border: 1px solid #ddd;
+	padding: 3px 10px;
+}
+th {
+	padding: 5px 10px;	
+}
+
+a {
+    color: #0069d6;
+}
+a:hover {
+    color: #0050a3;
+    text-decoration: none;
+}
+a img {
+    border: none;
+}
+p {
+    margin-bottom: 9px;
+    color: black;
+    font-size: 13px;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    color: #404040;
+    line-height: 36px;
+}
+h1 {
+    margin-bottom: 18px;
+    font-size: 30px;
+}
+h2 {
+    font-size: 24px;
+}
+h3 {
+    font-size: 18px;
+}
+h4 {
+    font-size: 16px;
+}
+h5 {
+    font-size: 14px;
+}
+h6 {
+    font-size: 13px;
+}
+hr {
+    margin: 0 0 19px;
+    border: 0;
+    border-bottom: 1px solid #ccc;
+}
+
+div.TOC {
+    background-color: rgba(232, 232, 232, 0.81);    /*#fee9cc;*/
+}
+div.TOC h5 {
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+div.TOC > ul, div.TOC > ul + li {
+    margin-top: 0px;
+}
+
+blockquote {
+    padding: 13px 13px 21px 15px;
+    margin-bottom: 18px;
+    font-family:georgia,serif;
+    font-style: italic;
+}
+blockquote:before {
+    content:"\201C";
+    font-size:40px;
+    margin-left:-10px;
+    font-family:georgia,serif;
+    color:#eee;
+}
+blockquote p {
+    font-size: 14px;
+    font-weight: 300;
+    line-height: 18px;
+    margin-bottom: 0;
+    font-style: italic;
+}
+code, pre {
+    font-family: Monaco, Andale Mono, Courier New, monospace;
+}
+code {
+    background-color: rgba(232, 232, 232, 0.81);    // #fee9cc;
+    color: rgba(0, 0, 0, 0.95);
+    padding: 1px 3px;
+    font-size: 12px;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+}
+pre {
+    background-color: #e8e8e8;
+
+    display: block;
+    padding: 14px;
+    margin: 0 0 18px;
+    line-height: 16px;
+    font-size: 11px;
+    border: 1px solid #d9d9d9;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+pre code {
+    background-color: #e8e8e8;  // #fff;
+    color:#101010;              // #737373
+    font-size: 11px;
+    padding: 0;
+}
+sup {
+    font-size: 0.83em;
+    vertical-align: super;
+    line-height: 0;
+}
+* {
+	-webkit-print-color-adjust: exact;
+}
+@media screen and (min-width: 914px) {
+    body {
+        width: 854px;
+        margin:10px auto;
+    }
+}
+@media print {
+	body,code,pre code,h1,h2,h3,h4,h5,h6 {
+		color: black;
+	}
+	table, pre {
+		page-break-inside: avoid;
+	}
+}
+
+</style>
+<title>*log_calls* — A decorator for debugging and profiling</title>
+
+</head>
+<body>
+<h1><em>log_calls</em> — A decorator for debugging and profiling</h1>
+
+<hr />
+
+<p><code>log_calls</code> is a Python 3 decorator that can print much useful information
+about calls to a decorated function. It can write to <code>stdout</code>, to another
+stream, or to a logger. It can save you from writing, rewriting, copying,
+pasting and tweaking a lot of ad hoc, boilerplate code - and it can keep
+your codebase free of that clutter.</p>
+
+<p>For each call of a decorated function, <code>log_calls</code> can show you:</p>
+
+<ul>
+<li>the caller,</li>
+<li>the arguments passed to the function, and any default values used,</li>
+<li>the time the function took to execute,</li>
+<li>the complete call chain back to another <code>log_calls</code>-decorated caller,</li>
+<li>the number of the call,</li>
+<li>indentation by call level,</li>
+<li>the function's return value,</li>
+<li>and more!</li>
+</ul>
+
+
+<p>These and other features are optional and configurable settings, which can be specified for each decorated function via keyword parameters. You can also dynamically get and set these settings using attributes with the same names as the keywords, or using a dict-like interface whose keys are the keywords.</p>
+
+<p><code>log_calls</code> can also collect profiling data and statistics, accessible dynamically:</p>
+
+<ul>
+<li>the number of calls to a function,</li>
+<li>total time taken by the function,</li>
+<li>the function's entire call history (arguments, time elapsed, return values, callers, and more), optionally as text in CSV format.</li>
+</ul>
+
+
+<p>The package contains another decorator, <code>record_history</code>, a stripped-down version
+of <code>log_calls</code> which only collects call history and statistics, and outputs no messages.</p>
+
+<p>This document gives an overview of the decorator's features and their use. A thorough account, including many useful examples, can be found in the complete documentation, <code>log_calls/docs/log_calls.html</code> and <code>log_calls/docs/record_history.html</code>.</p>
+
+<h2><span id="Preliminaries">Preliminaries</span></h2>
+
+<h3><span id="Version">Version</span></h3>
+
+<p>This document describes version <code>0.1.14</code> of <code>log_calls</code>.</p>
+
+<h3><span id="Dependencies-requirements">Dependencies and requirements</span></h3>
+
+<p>The log_calls package has no dependencies - it requires no other packages. All it does require is a standard distribution of Python 3.2+. (The software proper probably works with 3.0 and 3.1, but hasn't been tested with those earlier versions.)</p>
+
+<p>NOTE: This package does require the CPython implementation, as it uses internals
+of stack frames which may well differ in other interpreters.</p>
+
+<h3><span id="Installation">Installation</span></h3>
+
+<p>You have two simple options:</p>
+
+<ol>
+<li><p>Download the compressed repository, uncompress it into a directory, and run:</p>
+
+<p> <code>$ python setup.py install</code></p>
+
+<p> in that directory, or</p></li>
+<li><p>run</p>
+
+<p> <code>$ pip install log_calls</code></p></li>
+</ol>
+
+
+<p>  to install log_calls from PyPI (the Python Package Index). Here and elsewhere, <code>$</code> at the <em>beginning</em> of a line indicates your command prompt, whatever it may be.</p>
+
+<p>Whichever you choose, ideally you'll do it in a virtual environment (a <em>virtualenv</em>).</p>
+
+<h3><span id="Testing">Running the tests</span></h3>
+
+<p>Each <code>*.py</code> file in the log_calls directory has a corresponding test file <code>test_*.py</code> in the <code>log_calls/tests/</code> directory; <code>log_calls.py</code> has a second, <code>test_log_calls_more.py</code>. The tests provide essentially 100% coverage (98% for <code>log_calls.py</code>, 100% for the others). All tests have passed on every tested platform + Python version; however, that's a sparse matrix :) If you encounter any turbulence, do let us know.</p>
+
+<p>You can run the test suites either before or after installing <code>log_calls</code>.</p>
+
+<h4><span id="tests-before-install">Running the tests before installation</span></h4>
+
+<p>To do this, download the compressed repository, as in 1. above.
+After you uncompress the archive into a directory, and before you run the install command, first run one of the following commands:</p>
+
+<pre><code>$ python setup.py test [-q]
+</code></pre>
+
+<p>(<code>-q</code> for "quiet", recommended) or</p>
+
+<pre><code>$ python run_tests.py [-q | -v | -h]
+</code></pre>
+
+<p>which takes switches <code>-q</code> for "quiet", <code>-v</code> for "verbose", and <code>-h</code> for "help".</p>
+
+<h4><span id="tests-after-install">Running the tests after installation</span></h4>
+
+<p>You can run the tests for <code>log_calls</code> after installing it, by using the command:</p>
+
+<pre><code>$ python -m unittest discover log_calls.tests
+</code></pre>
+
+<h4><span id="tests-ok">What to expect</span></h4>
+
+<p>All the above commands run all tests in the <code>log_calls/tests/</code> directory. If you run any of them, the output you see should end like so:</p>
+
+<pre><code>----------------------------------------------------------------------
+Ran 48 tests in 0.122s
+
+OK
+</code></pre>
+
+<p>indicating that all went well. If any test fails, it will say so.</p>
+
+<h2><span id="Basic-usage">Basic usage</span></h2>
+
+<p><code>log_calls</code> has many features, and thus many, mostly independent, keyword parameters (14 in all). This section introduces all but four of them, one at a time, though of course you can use multiple parameters in any call to the decorator:</p>
+
+<ul>
+<li><a href="#enabled-parameter"><code>enabled</code></a></li>
+<li><a href="#args_sep-parameter"><code>args_sep</code></a></li>
+<li><a href="#log_args-parameter"><code>log_args</code></a></li>
+<li><a href="#log_retval-parameter"><code>log_retval</code></a></li>
+<li><a href="#log_exit-parameter"><code>log_exit</code></a></li>
+<li><a href="#log_call_numbers-parameter"><code>log_call_numbers</code></a></li>
+<li><a href="#log_elapsed-parameter"><code>log_elapsed</code></a></li>
+<li><a href="#indent-parameter"><code>indent</code></a></li>
+<li><a href="#prefix-parameter"><code>prefix</code></a></li>
+<li><a href="#file-parameter"><code>file</code></a></li>
+</ul>
+
+
+<p>The two parameters that let you output <code>log_calls</code> messages to a <code>Logger</code> (<a href="#logger-parameter"><code>logger</code></a> and <a href="#loglevel-parameter"><code>loglevel</code></a>) are discussed in <a href="#Logging">Using loggers</a>. The two that determine whether call history is retained (<a href="#record_history-parameter">record_history</a>), and then how much of it (<a href="#max_history-parameter">max_history</a>), are discussed in <a href="#call-history-and-statistics">Call history and statistics</a>.</p>
+
+<p>Every example in this document uses <code>log_calls</code>, so without further ado:</p>
+
+<pre><code>&gt;&gt;&gt; from log_calls import log_calls
+</code></pre>
+
+<h3><span id="No-parameters">Using no parameters</span></h3>
+
+<p>First, let's see the simplest possible examples, using no parameters at all:</p>
+
+<pre><code>&gt;&gt;&gt; @log_calls()
+... def f(a, b, c):
+...     pass
+&gt;&gt;&gt; f(1, 2, 3)
+f &lt;== called by &lt;module&gt;
+    arguments: a=1, b=2, c=3
+f ==&gt; returning to &lt;module&gt;
+</code></pre>
+
+<p>Adding another decorated function to the call chain gives useful information too:</p>
+
+<pre><code>&gt;&gt;&gt; @log_calls()
+... def g(a):
+...     f(a, 2*a, 3*a)
+&gt;&gt;&gt; g(3)
+g &lt;== called by &lt;module&gt;
+    arguments: a=3
+f &lt;== called by g
+    arguments: a=3, b=6, c=9
+f ==&gt; returning to g
+g ==&gt; returning to &lt;module&gt;
+</code></pre>
+
+<h3><span id="enabled-parameter">The <em>enabled</em> parameter (default – <em>True</em>)</span></h3>
+
+<p>The next most basic example:</p>
+
+<pre><code>&gt;&gt;&gt; @log_calls(enabled=False)
+... def f(a, b, c):
+...     pass
+&gt;&gt;&gt; f(1, 2, 3)                # no output
+</code></pre>
+
+<h3><span id="args_sep-parameter">The <em>args_sep</em> parameter (default – <code>', '</code>)</span></h3>
+
+<p>The <code>args_sep</code> parameter specifies the character or string used to separate
+arguments. If the string ends in  (or is) <code>\n</code>, additional whitespace
+is appended so that arguments line up nicely:</p>
+
+<pre><code>&gt;&gt;&gt; @log_calls(args_sep='\\n')
+... def f(a, b, c, **kwargs):
+...     print(a + b + c)
+&gt;&gt;&gt; f(1, 2, 3, u='you')       # doctest: +NORMALIZE_WHITESPACE, +SKIP
+f &lt;== called by &lt;module&gt;
+    arguments:
+        a=1
+        b=2
+        c=3
+        [**]kwargs={'u': 'you'}
+6
+f ==&gt; returning to &lt;module&gt;
+</code></pre>
+
+<p><strong>NOTE</strong>: <em>In all the doctest examples in this document, you'll see</em> <code>'\\n'</code>
+<em>where in actual code you'd write</em> <code>'\n'</code>. <em>This is a <code>doctest</code> quirk: all
+the examples herein work (as tests, they pass), and they would fail if</em>
+<code>'\n'</code> <em>were used. The only alternative would be to use raw character strings
+and write</em> <code>r'\n'</code>, <em>which is not obviously better.</em></p>
+
+<h3><span id="log_args-parameter">The <em>log_args</em> parameter (default – <em>True</em>)</span></h3>
+
+<p>When true, as seen above, arguments passed to the decorated function are
+logged. If the function's signature contains positional and/or keyword
+"varargs" (<code>*args</code> and/or <code>**kwargs</code>), these are included if they're nonempty.
+Any default values of keyword parameters with no corresponding argument are also
+logged, on a separate line.</p>
+
+<pre><code>&gt;&gt;&gt; @log_calls()
+... def f_a(a, *args, something='that thing', **kwargs): pass
+&gt;&gt;&gt; f_a(1, 2, 3, foo='bar')
+f_a &lt;== called by &lt;module&gt;
+    arguments: a=1, [*]args=(2, 3), [**]kwargs={'foo': 'bar'}
+    defaults:  something='that thing'
+f_a ==&gt; returning to &lt;module&gt;
+</code></pre>
+
+<p>Here, no argument information is logged at all:</p>
+
+<pre><code>&gt;&gt;&gt; @log_calls(log_args=False)
+... def f_b(a, *args, something='that thing', **kwargs): pass
+&gt;&gt;&gt; f_b(1, 2, 3, foo='bar')
+f_b &lt;== called by &lt;module&gt;
+f_b ==&gt; returning to &lt;module&gt;
+</code></pre>
+
+<p>If a function has no parameters, <code>log_calls</code> won't display any "arguments"
+section:</p>
+
+<pre><code>&gt;&gt;&gt; @log_calls()
+... def f(): pass
+&gt;&gt;&gt; f()
+f &lt;== called by &lt;module&gt;
+f ==&gt; returning to &lt;module&gt;
+</code></pre>
+
+<p>If a function has parameters but is passed no arguments, <code>log_calls</code>
+will display <code>arguments: &lt;none&gt;</code>, plus any default values used:</p>
+
+<pre><code>&gt;&gt;&gt; @log_calls()
+... def ff(*args, **kwargs): pass
+&gt;&gt;&gt; ff()
+ff &lt;== called by &lt;module&gt;
+    arguments: &lt;none&gt;
+ff ==&gt; returning to &lt;module&gt;
+
+&gt;&gt;&gt; @log_calls()
+... def fff(*args, kw='doh', **kwargs): pass
+&gt;&gt;&gt; fff()
+fff &lt;== called by &lt;module&gt;
+    arguments: &lt;none&gt;
+    defaults:  kw='doh'
+fff ==&gt; returning to &lt;module&gt;
+</code></pre>
+
+<h3><span id="log_retval-parameter">The <em>log_retval</em> parameter (default – <em>False</em>)</span></h3>
+
+<p>When true, this parameter displays the value returned by the function:</p>
+
+<pre><code>&gt;&gt;&gt; @log_calls(log_retval=True)
+... def f(a, b, c):
+...     return a + b + c
+&gt;&gt;&gt; _ = f(1, 2, 3)
+f &lt;== called by &lt;module&gt;
+    arguments: a=1, b=2, c=3
+    f return value: 6
+f ==&gt; returning to &lt;module&gt;
+</code></pre>
+
+<h3><span id="log_exit-parameter">The <em>log_exit</em> parameter (default – <em>True</em>)</span></h3>
+
+<p>When false, this parameter suppresses the <code>... ==&gt; returning to ...</code> line
+that indicates the function's return to its caller.</p>
+
+<pre><code>&gt;&gt;&gt; @log_calls(log_exit=False)
+... def f(a, b, c):
+...     return a + b + c
+&gt;&gt;&gt; _ = f(1, 2, 3)
+f &lt;== called by &lt;module&gt;
+    arguments: a=1, b=2, c=3
+</code></pre>
+
+<h3><span id="log_call_numbers-parameter">The <em>log_call_numbers</em> parameter (default – <em>False</em>)</span></h3>
+
+<p><code>log_calls</code> keeps a running tally of the number of times a decorated function
+is called. You can display this (1-based) number using the <code>log_call_numbers</code> parameter:</p>
+
+<pre><code>&gt;&gt;&gt; @log_calls(log_call_numbers=True)
+... def f(): pass
+&gt;&gt;&gt; for i in range(2): f()
+f [1] &lt;== called by &lt;module&gt;
+f [1] ==&gt; returning to &lt;module&gt;
+f [2] &lt;== called by &lt;module&gt;
+f [2] ==&gt; returning to &lt;module&gt;
+</code></pre>
+
+<p>The call number is also displayed when <code>log_retval</code> is true:</p>
+
+<pre><code>&gt;&gt;&gt; @log_calls(log_call_numbers=True, log_retval=True)
+... def f():
+...     return 81
+&gt;&gt;&gt; _ = f()
+f [1] &lt;== called by &lt;module&gt;
+    f [1] return value: 81
+f [1] ==&gt; returning to &lt;module&gt;
+</code></pre>
+
+<p>This is particularly valuable in the presence of recursion, for example.
+See the <a href="#recursion-example">recursion example</a> later, where the feature
+is used to good effect.</p>
+
+<h3><span id="log_elapsed-parameter">The <em>log_elapsed</em> parameter (default – <em>False</em>)</span></h3>
+
+<p>For performance profiling, you can measure the time it took a function to execute by using the <code>log_elapsed</code> keyword. When true, <code>log_calls</code> reports the time the decorated function took to complete, in seconds:</p>
+
+<pre><code>&gt;&gt;&gt; @log_calls(log_elapsed=True)
+... def f(n):
+...     for i in range(n):
+...         # do something time-critical
+...         pass
+&gt;&gt;&gt; f(5000)                 # doctest: +ELLIPSIS
+f &lt;== called by &lt;module&gt;
+    arguments: n=5000
+    elapsed time: ... [secs]
+f ==&gt; returning to &lt;module&gt;
+</code></pre>
+
+<h3><span id="indent-parameter">The <em>indent</em> parameter (default - <em>False</em>)</span></h3>
+
+<p>The <code>indent</code> parameter, when true, indents each new level of logged messages by 4 spaces, providing a visualization of the call hierarchy.
+(<code>log_calls</code> indents only when using <code>print</code>, not when <a href="#Logging">using loggers</a>.)</p>
+
+<p>A decorated function's logged output is indented only as much as is necessary. Here, the even numbered functions don't indent, so the indented functions that they call are indented just one level more than their "inherited" indentation level:</p>
+
+<pre><code>&gt;&gt;&gt; @log_calls(indent=True)
+... def g1():
+...     pass
+&gt;&gt;&gt; @log_calls()    # no extra indentation for g1
+... def g2():
+...     g1()
+&gt;&gt;&gt; @log_calls(indent=True)
+... def g3():
+...     g2()
+&gt;&gt;&gt; @log_calls()    # no extra indentation for g3
+... def g4():
+...     g3()
+&gt;&gt;&gt; @log_calls(indent=True)
+... def g5():
+...     g4()
+&gt;&gt;&gt; g5()
+g5 &lt;== called by &lt;module&gt;
+g4 &lt;== called by g5
+    g3 &lt;== called by g4
+    g2 &lt;== called by g3
+        g1 &lt;== called by g2
+        g1 ==&gt; returning to g2
+    g2 ==&gt; returning to g3
+    g3 ==&gt; returning to g4
+g4 ==&gt; returning to g5
+g5 ==&gt; returning to &lt;module&gt;
+</code></pre>
+
+<h3><span id="prefix-parameter">The <em>prefix</em> parameter (default - <code>''</code>): decorating methods</span></h3>
+
+<p>Especially useful for clarity when decorating methods, the <code>prefix</code> keyword
+parameter lets you specify a string with which to prefix the name of the
+method. <code>log_calls</code> uses the prefixed name in its output: when logging
+a call to, and a return from, the method; when reporting the method's return value; and when the method is at the end of a <a href="#Call-chains">call or return chain</a>.</p>
+
+<pre><code>&gt;&gt;&gt; import math
+&gt;&gt;&gt; class Point():
+...     # NOTE: You can't decorate __init__ :D
+...     def __init__(self, x, y):
+...         self.x = x
+...         self.y = y
+...     @staticmethod
+...     @log_calls(prefix='Point.')
+...     def distance(pt1, pt2):
+...         return math.sqrt((pt1.x - pt2.x)**2 + (pt1.y - pt2.y)**2)
+...     @log_calls(log_retval=True, prefix='Point.')
+...     def length(self):
+...         return self.distance(self, Point(0, 0))
+...     @log_calls(prefix='Point.')
+...     def diag_reflect(self):
+...         self.x, self.y = self.y, self.x
+...         return self
+...     def __repr__(self):
+...         return "Point" + str((self.x, self.y))
+
+&gt;&gt;&gt; print("Point(1, 2).diag_reflect() =", Point(1, 2).diag_reflect())
+Point.diag_reflect &lt;== called by &lt;module&gt;
+    arguments: self=Point(1, 2)
+Point.diag_reflect ==&gt; returning to &lt;module&gt;
+Point(1, 2).diag_reflect() = Point(2, 1)
+
+&gt;&gt;&gt; print("length of Point(1, 2) =", round(Point(1, 2).length(), 2))  # doctest: +ELLIPSIS
+Point.length &lt;== called by &lt;module&gt;
+    arguments: self=Point(1, 2)
+Point.distance &lt;== called by Point.length
+    arguments: pt1=Point(1, 2), pt2=Point(0, 0)
+Point.distance ==&gt; returning to Point.length
+    Point.length return value: 2.236...
+Point.length ==&gt; returning to &lt;module&gt;
+length of Point(1, 2) = 2.24
+</code></pre>
+
+<h3><span id="file-parameter">The <em>file</em> parameter (default - <em>sys.stdout</em>)</span></h3>
+
+<p>The <code>file</code> parameter specifies a stream (an instance of <code>io.TextIOBase</code>) to which <code>log_calls</code> will print its messages. This value is supplied to the <code>file</code> keyword parameter of the <code>print</code> function, and, like that parameter, its default value is <code>sys.stdout</code>. This parameter is ignored if you've supplied a logger for output using the <a href="#logger-parameter"><code>logger</code></a> parameter.</p>
+
+<p>If your program writes to the console a lot, you may not want <code>log_calls</code> messages interspersed with your real output: your understanding of both logically distinct streams can be compromised, so, better to make them two actually distinct streams. It can also be advantageous to gather all, and only all, of the log_calls messages in one place. You can use <code>indent=True</code> with a file, and the indentations will appear as intended, whereas that's not possible with loggers.</p>
+
+<p>It's not possible to test this feature with doctest (in fact, there are subtleties to supporting this feature and using doctest at all), so we'll just give an example of writing to <code>stderr</code>, and reproduce the output:</p>
+
+<pre><code>&gt;&gt;&gt; import sys
+&gt;&gt;&gt; @log_calls(file=sys.stderr, indent=True)
+... def f(n):
+...     if n &lt;= 0:
+...         return 'a'
+...     return '(' + f(n-1) + ')'
+</code></pre>
+
+<p>Running <code>&gt;&gt;&gt; f(2)</code> will return '((a))' and will write the following to <code>stderr</code>:</p>
+
+<pre><code>f &lt;== called by &lt;module&gt;
+    f &lt;== called by f
+        arguments: n=1
+        f &lt;== called by f
+            arguments: n=0
+        f ==&gt; returning to f
+    f ==&gt; returning to f
+f ==&gt; returning to &lt;module&gt;
+</code></pre>
+
+<h2><span id="Logging">Using loggers</span></h2>
+
+<p><code>log_calls</code> works well with loggers obtained from Python's <code>logging</code> module. First, we'll set up a logger with a single handler that writes to the console. Because <code>doctest</code> doesn't capture output written to <code>stderr</code> (the default stream to which console handlers write), we'll send the console handler's output to <code>stdout</code>, using the format <code>&lt;loglevel&gt;:&lt;loggername&gt;:&lt;message&gt;</code>.</p>
+
+<pre><code>&gt;&gt;&gt; import logging
+&gt;&gt;&gt; import sys
+&gt;&gt;&gt; ch = logging.StreamHandler(stream=sys.stdout)
+&gt;&gt;&gt; c_formatter = logging.Formatter('%(levelname)8s:%(name)s:%(message)s')
+&gt;&gt;&gt; ch.setFormatter(c_formatter)
+&gt;&gt;&gt; logger = logging.getLogger('a_logger')
+&gt;&gt;&gt; logger.addHandler(ch)
+&gt;&gt;&gt; logger.setLevel(logging.DEBUG)
+</code></pre>
+
+<h3><span id="logger-parameter">The <em>logger</em> parameter (default – <em>None</em>)</span></h3>
+
+<p>The <code>logger</code> keyword parameter tells <code>log_calls</code> to write its output using
+that logger rather than the <code>print</code> function:</p>
+
+<pre><code>&gt;&gt;&gt; @log_calls(logger=logger)
+... def somefunc(v1, v2):
+...     logger.debug(v1 + v2)
+&gt;&gt;&gt; @log_calls(logger=logger)
+... def anotherfunc():
+...     somefunc(17, 19)
+&gt;&gt;&gt; anotherfunc()       # doctest: +NORMALIZE_WHITESPACE
+DEBUG:a_logger:anotherfunc &lt;== called by &lt;module&gt;
+DEBUG:a_logger:somefunc &lt;== called by anotherfunc
+DEBUG:a_logger:    arguments: v1=17, v2=19
+DEBUG:a_logger:36
+DEBUG:a_logger:somefunc ==&gt; returning to anotherfunc
+DEBUG:a_logger:anotherfunc ==&gt; returning to &lt;module&gt;
+</code></pre>
+
+<h3><span id="loglevel-parameter">The <em>loglevel</em> parameter (default – <em>logging.DEBUG</em>)</span></h3>
+
+<p><code>log_calls</code> also takes a <code>loglevel</code> keyword parameter, whose value must be
+one of the <code>logging</code> module's constants - <code>logging.DEBUG</code>, <code>logging.INFO</code>, etc.
+– or a custom logging level if you've added any. <code>log_calls</code> writes output messages
+using <code>logger.log(loglevel, …)</code>. Thus, if the <code>logger</code>'s log level is higher than
+<code>loglevel</code>, no output will appear:</p>
+
+<pre><code>&gt;&gt;&gt; logger.setLevel(logging.INFO)   # raise logger's level to INFO
+&gt;&gt;&gt; @log_calls(logger='logger_=', loglevel=logging.DEBUG)
+... def f(x, y, z, **kwargs):
+...     return y + z
+&gt;&gt;&gt; # No log_calls output from f
+&gt;&gt;&gt; # because loglevel for f &lt; level of logger
+&gt;&gt;&gt; f(1,2,3, enable=True, sep_='\\n', logger_=logger)       # doctest: +NORMALIZE_WHITESPACE, +ELLIPSIS
+5
+</code></pre>
+
+<p>The use of loggers, and of these parameters, is explored further in the main documentation, which contains an example of using a logger with multiple handlers that have different loglevels.</p>
+
+<h2><span id="Call-chains">Call chains</span></h2>
+
+<p><code>log_calls</code> does its best to chase back along the call chain to find
+the first <em>enabled</em> <code>log_calls</code>-decorated function on the stack.
+If there's no such function, it just displays the immediate caller.
+If there is such a function, however, it displays the entire list of
+functions on the stack up to and including that function when reporting
+calls and returns. Without this, you'd have to guess at what was called
+in between calls to functions decorated by <code>log_calls</code>. If you specified
+a prefix for the decorated caller on the end of a call chain, <code>log_calls</code>
+will use the prefixed name:</p>
+
+<pre><code>&gt;&gt;&gt; @log_calls()
+... def g1():
+...     pass
+&gt;&gt;&gt; def g2():
+...     g1()
+&gt;&gt;&gt; @log_calls(prefix='mid.')
+... def g3():
+...     g2()
+&gt;&gt;&gt; def g4():
+...     g3()
+&gt;&gt;&gt; @log_calls()
+... def g5():
+...     g4()
+&gt;&gt;&gt; g5()
+g5 &lt;== called by &lt;module&gt;
+mid.g3 &lt;== called by g4 &lt;== g5
+g1 &lt;== called by g2 &lt;== mid.g3
+g1 ==&gt; returning to g2 ==&gt; mid.g3
+mid.g3 ==&gt; returning to g4 ==&gt; g5
+g5 ==&gt; returning to &lt;module&gt;
+</code></pre>
+
+<p>In the next example, <code>g</code> is <code>log_calls</code>-decorated but logging is disabled,
+so the reported call chain for <code>f</code> stops at its immediate caller:</p>
+
+<pre><code>&gt;&gt;&gt; @log_calls()
+... def f(): pass
+&gt;&gt;&gt; def not_decorated(): f()
+&gt;&gt;&gt; @log_calls(enabled=False, log_call_numbers=True)
+... def g(): not_decorated()
+&gt;&gt;&gt; g()
+f &lt;== called by not_decorated
+f ==&gt; returning to not_decorated
+</code></pre>
+
+<p>Elaborating on the previous example, here are longer call chains with an
+intermediate decorated function that has logging disabled. We've also enabled indentation:</p>
+
+<pre><code>&gt;&gt;&gt; @log_calls(indent=True)
+... def e(): pass
+&gt;&gt;&gt; def not_decorated_call_e(): e()
+&gt;&gt;&gt; @log_calls(indent=True)
+... def f(): not_decorated_call_e()
+&gt;&gt;&gt; def not_decorated_call_f(): f()
+&gt;&gt;&gt; @log_calls(enabled=False, log_call_numbers=True, indent=True)
+... def g(): not_decorated_call_f()
+&gt;&gt;&gt; @log_calls(indent=True)
+... def h(): g()
+&gt;&gt;&gt; h()
+h &lt;== called by &lt;module&gt;
+    f &lt;== called by not_decorated_call_f &lt;== g &lt;== h
+        e &lt;== called by not_decorated_call_e &lt;== f
+        e ==&gt; returning to not_decorated_call_e ==&gt; f
+    f ==&gt; returning to not_decorated_call_f ==&gt; g ==&gt; h
+h ==&gt; returning to &lt;module&gt;
+</code></pre>
+
+<p><code>log_calls</code> chases back to the nearest <em>enabled</em> decorated function, so that there aren't gaps between call chains.</p>
+
+<h3><span id="recursion-example">Indentation and call numbers with recursion</span></h3>
+
+<p>These features are especially useful in recursive and mutually recursive situations. We have to use <code>OrderedDict</code>s here because of doctest:</p>
+
+<pre><code>&gt;&gt;&gt; from collections import OrderedDict
+&gt;&gt;&gt; @log_calls(log_call_numbers=True, log_retval=True, indent=True)
+... def depth(d, key=None):
+...     if not isinstance(d, dict):
+...         return 0    # base case
+...     elif not d:
+...         return 1
+...     else:
+...         return max(map(depth, d.values(), d.keys())) + 1
+&gt;&gt;&gt; depth(
+...     OrderedDict(
+...         (('a', 0),
+...          ('b', OrderedDict( (('c1', 10), ('c2', 11)) )),
+...          ('c', 'text'))
+...     )
+... )
+depth [1] &lt;== called by &lt;module&gt;
+    arguments: d=OrderedDict([('a', 0), ('b', OrderedDict([('c1', 10), ('c2', 11)])), ('c', 'text')])
+    defaults:  key=None
+    depth [2] &lt;== called by depth [1]
+        arguments: d=0, key='a'
+        depth [2] return value: 0
+    depth [2] ==&gt; returning to depth [1]
+    depth [3] &lt;== called by depth [1]
+        arguments: d=OrderedDict([('c1', 10), ('c2', 11)]), key='b'
+        depth [4] &lt;== called by depth [3]
+            arguments: d=10, key='c1'
+            depth [4] return value: 0
+        depth [4] ==&gt; returning to depth [3]
+        depth [5] &lt;== called by depth [3]
+            arguments: d=11, key='c2'
+            depth [5] return value: 0
+        depth [5] ==&gt; returning to depth [3]
+        depth [3] return value: 1
+    depth [3] ==&gt; returning to depth [1]
+    depth [6] &lt;== called by depth [1]
+        arguments: d='text', key='c'
+        depth [6] return value: 0
+    depth [6] ==&gt; returning to depth [1]
+    depth [1] return value: 2
+depth [1] ==&gt; returning to &lt;module&gt;
+2
+</code></pre>
+
+<p><strong>NOTE</strong>: <em>The optional</em> <code>key</code> <em>parameter is for instructional purposes, so you can see the key that's paired with the value of</em> <code>d</code> <em>in the caller's dictionary. Typically the signature of this function would be just</em> <code>def depth(d)</code>, <em>and the recursive case would return</em> <code>max(map(depth, d.values())) + 1</code>.</p>
+
+<h2><span id="Advanced-features">Advanced Features</span></h2>
+
+<p><code>log_calls</code> provides a number of features beyond those already described. We'll only give an overview of them here. For a full account, see the complete documentation.</p>
+
+<h3><span id="dynamic-control-of-settings">Dynamic control of settings</span></h3>
+
+<p>Sometimes, you'll need or want to change the value of a <code>log_calls</code> setting for a decorated function at runtime. The major impediment to doing so is that the values  of the <code>log_calls</code> parameters are set once the decorated function is interpreted.
+Those values are established once and for all when the Python interpreter
+parses the definition of a decorated function and creates a function object.</p>
+
+<h4><span id="log_call_settings">The problem, and two <em>log_calls</em> solutions</span></h4>
+
+<p>Even if a variable is used as a parameter value, its value at the time
+Python processes the definition is "frozen" for the created function object.
+Subsequently changing the value of the variable will <em>not</em> affect the behavior
+of the decorator.</p>
+
+<p>For example, suppose <code>DEBUG</code> is a module-level variable initialized to <code>False</code>:</p>
+
+<pre><code>&gt;&gt;&gt; DEBUG = False
+</code></pre>
+
+<p>and you use this code:</p>
+
+<pre><code>&gt;&gt;&gt; @log_calls(enabled=DEBUG)
+... def foo(**kwargs):
+...     pass
+&gt;&gt;&gt; foo()       # No log_calls output: DEBUG is False
+</code></pre>
+
+<p>If later you set <code>Debug = True</code> and call <code>foo</code>, that call won't be logged,
+because the decorated <code>foo</code>'s <em>enabled</em> setting is bound to the original value
+of <code>DEBUG</code>, established when the definition was processed:</p>
+
+<pre><code>&gt;&gt;&gt; DEBUG = True
+&gt;&gt;&gt; foo()       # Still no log_calls output
+</code></pre>
+
+<p><code>log_calls</code> provides <em>two</em> ways to overcome this limitation and dynamically control the settings of a decorated function:</p>
+
+<ul>
+<li>the <code>log_calls_settings</code> attribute, which provides a mapping interface and an attribute-based interface to settings, and</li>
+<li>*indirect values.</li>
+</ul>
+
+
+<p>The following two subsections give a brief introduction to these features, which the main documentation, <code>log_calls/docs/log_calls.html</code> (or .md), presents in depth.</p>
+
+<h4><span id="log_call_settings">The <em>log_calls_settings</em> attribute</span></h4>
+
+<p><code>log_calls</code> adds an attribute <code>log_calls_settings</code>
+to a decorated function, through which you can access the decorator settings for that function. This attribute is an object which lets you control the settings for a decorated function via a mapping (<code>dict</code>-like) interface, and equivalently, via attributes of the object. The mapping keys and the attribute names are simply the <code>log_calls</code> keywords. <code>log_calls_settings</code> also implements many of the standard <code>dict</code> methods for interacting with the settings in familiar ways.</p>
+
+<h5><span id="mapping-interface">The mapping interface and the attribute interface to settings</span></h5>
+
+<p>Once you've decorated a function with <code>log_calls</code>,</p>
+
+<pre><code>&gt;&gt;&gt; @log_calls()
+... def f(*args, **kwargs):
+...     return 91
+</code></pre>
+
+<p>you can access and change its settings via the <code>log_calls_settings</code> attribute
+of the decorated function, which behaves like a dictionary. You can read and
+write settings using the <code>log_calls</code> keywords as keys:</p>
+
+<pre><code>&gt;&gt;&gt; f.log_calls_settings['enabled']
+True
+&gt;&gt;&gt; f.log_calls_settings['enabled'] = False
+&gt;&gt;&gt; _ = f()                   # no output (not even 91, because of "_ = ")
+&gt;&gt;&gt; f.log_calls_settings['enabled']
+False
+&gt;&gt;&gt; f.log_calls_settings['log_retval']
+False
+&gt;&gt;&gt; f.log_calls_settings['log_retval'] = True
+&gt;&gt;&gt; f.log_calls_settings['log_elapsed']
+False
+&gt;&gt;&gt; f.log_calls_settings['log_elapsed'] = True
+</code></pre>
+
+<p>The <code>log_calls_settings</code> attribute has a length (14), its keys and <code>items()</code> can be iterated through, you can use <code>in</code> to test for key membership, it has an <code>update()</code> method. As with an ordinary dictionary, attempting to access a nonexistent setting
+raises <code>KeyError</code>. Unlike an ordinary dictionary, you can't add new keys – the <code>log_calls_settings</code> dictionary is closed to new members, and attempts to add one will also raise <code>KeyError</code>.</p>
+
+<h6><span id="attribute-interface">The attribute interface to settings</span></h6>
+
+<p>You can use the same keywords as attributes of <code>log_calls_settings</code>
+instead of as keywords to the mapping interface; they're completely
+equivalent:</p>
+
+<pre><code>&gt;&gt;&gt; f.log_calls_settings.log_elapsed
+True
+&gt;&gt;&gt; f.log_calls_settings.log_call_numbers
+False
+&gt;&gt;&gt; f.log_calls_settings.log_call_numbers = True
+&gt;&gt;&gt; f.log_calls_settings.enabled = True     # turn it back on!
+&gt;&gt;&gt; _ = f()                                 # doctest: +ELLIPSIS
+f [1] &lt;== called by &lt;module&gt;
+    arguments: &lt;none&gt;
+    f [1] return value: 91
+    elapsed time: ... [secs]
+f [1] ==&gt; returning to &lt;module&gt;
+&gt;&gt;&gt; f.log_calls_settings.log_args = False
+&gt;&gt;&gt; f.log_calls_settings.log_elapsed = False
+&gt;&gt;&gt; f.log_calls_settings.log_retval = False
+&gt;&gt;&gt; _ = f()                                 # doctest: +ELLIPSIS
+f [2] &lt;== called by &lt;module&gt;
+f [2] ==&gt; returning to &lt;module&gt;
+</code></pre>
+
+<h6><span id="update-as_etc">The <em>update()</em>, <em>as_OrderedDict()</em> and <em>as_dict()</em> methods – and a typical use-case</span></h6>
+
+<p>The <code>update()</code> method of the <code>log_calls_settings</code> object lets you update several settings at once:</p>
+
+<pre><code>&gt;&gt;&gt; f.log_calls_settings.update(
+...     log_args=True, log_elapsed=False, log_call_numbers=False,
+...     log_retval=False)
+&gt;&gt;&gt; _ = f()
+f &lt;== called by &lt;module&gt;
+    arguments: &lt;none&gt;
+f ==&gt; returning to &lt;module&gt;
+</code></pre>
+
+<p>You can retrieve the entire collection of settings as either an <code>OrderedDict</code> using the <code>as_OrderedDict()</code> method, or as a <code>dict</code> using <code>as_dict()</code>.
+Either can serve as a snapshot of the settings, so that you can change settings temporarily, use the new settings, and then restore settings from the snapshot.
+in addition to taking keyword arguments, as shown above, the <code>update()</code> method can take one or more dicts – in particular, a dictionary retrieved from one of the <code>as_*</code> methods. For example:</p>
+
+<p>Retrieve settings (as an <code>OrderedDict</code> because it's more doctest-friendly,
+but using <code>as_dict()</code> is sufficient):</p>
+
+<pre><code>&gt;&gt;&gt; od = f.log_calls_settings.as_OrderedDict()
+&gt;&gt;&gt; od                      # doctest: +NORMALIZE_WHITESPACE
+OrderedDict([('enabled', True),           ('args_sep', ', '),
+             ('log_args', True),          ('log_retval', False),
+             ('log_elapsed', False),      ('log_exit', True),
+             ('indent', False),           ('log_call_numbers', False),
+             ('prefix', ''),              ('file', None),
+             ('logger', None),            ('loglevel', 10),
+             ('record_history', False),   ('max_history', 0)])
+</code></pre>
+
+<p>change settings temporarily:</p>
+
+<pre><code>&gt;&gt;&gt; f.log_calls_settings.update(
+...     log_args=False, log_elapsed=True, log_call_numbers=True,
+...     log_retval=True)
+</code></pre>
+
+<p>use the new settings for <code>f</code>:</p>
+
+<pre><code>&gt;&gt;&gt; _ = f()                     # doctest: +ELLIPSIS
+f [4] &lt;== called by &lt;module&gt;
+    f [4] return value: 91
+    elapsed time: ... [secs]
+f [4] ==&gt; returning to &lt;module&gt;
+</code></pre>
+
+<p>and restore original settings, this time passing the retrieved settings
+dictionary rather than keywords:</p>
+
+<pre><code>&gt;&gt;&gt; f.log_calls_settings.update(od)
+&gt;&gt;&gt; od == f.log_calls_settings.as_OrderedDict()
+True
+</code></pre>
+
+<h4><span id="Indirect-values">Indirect values</span></h4>
+
+<p><code>log_calls</code> provides a second way to access and change settings dynamically. The decorator lets you specify any parameter
+except <code>prefix</code> or <code>max_history</code> with one level of indirection, by using
+<em>indirect values</em>: an indirect value is a string that names a keyword argument
+<em>of the decorated function</em>. It can be an explicit keyword argument present
+in the signature of the function, or an implicit keyword argument that ends up
+in <code>**kwargs</code> (if that's present in the function's signature). When the decorated
+function is called, the arguments passed by keyword, and the decorated function's
+explicit keyword parameters with default values, are both searched for the named
+parameter; if it is found and of the correct type, <em>its</em> value is used; otherwise
+a default value is used.</p>
+
+<p>To specify an indirect value for a parameter whose normal type is <code>str</code> (only
+<code>args_sep</code>, at present), append an <code>'='</code> to the value.  For consistency's sake,
+any indirect value can end in a trailing <code>'='</code>, which is stripped. Thus,
+<code>enabled='enable_='</code> indicates an indirect value supplied by the keyword (argument or
+parameter) <code>enable_</code> of the decorated function.</p>
+
+<p>Thus, in:</p>
+
+<pre><code>&gt;&gt;&gt; @log_calls(args_sep='sep=', prefix="*** ")
+... def f(a, b, c, sep='|'): pass
+</code></pre>
+
+<p><code>args_sep</code> has an indirect value which names <code>f</code>'s explicit keyword parameter <code>sep</code>,
+and <code>prefix</code> has a direct value. A call can dynamically override the default
+value '|' in the signature of <code>f</code> by supplying a value:</p>
+
+<pre><code>&gt;&gt;&gt; f(1, 2, 3, sep=' / ')
+*** f &lt;== called by &lt;module&gt;
+    arguments: a=1 / b=2 / c=3 / sep=' / '
+*** f ==&gt; returning to &lt;module&gt;
+</code></pre>
+
+<p>or it can use <code>f</code>'s default value by not supplying a <code>sep</code> argument:</p>
+
+<pre><code>&gt;&gt;&gt; f(1, 2, 3)
+*** f &lt;== called by &lt;module&gt;
+    arguments: a=1|b=2|c=3
+    defaults:  sep='|'
+*** f ==&gt; returning to &lt;module&gt;
+</code></pre>
+
+<p><em>A decorated function doesn't have to explicitly declare the parameter
+named as an indirect value</em>, if its signature includes <code>**kwargs</code>:
+the intermediate parameter can be an implicit keyword parameter,
+passed by a caller but not present in the function's signature.
+Consider:</p>
+
+<pre><code>&gt;&gt;&gt; @log_calls(enabled='enable')
+... def func1(a, b, c, **kwargs): pass
+&gt;&gt;&gt; @log_calls(enabled='enable')
+... def func2(z, **kwargs): func1(z, z+1, z+2, **kwargs)
+</code></pre>
+
+<p>When the following statement is executed, the calls to both <code>func1</code> and <code>func2</code> will be logged:</p>
+
+<pre><code>&gt;&gt;&gt; func2(17, enable=True)
+func2 &lt;== called by &lt;module&gt;
+    arguments: z=17, [**]kwargs={'enable': True}
+func1 &lt;== called by func2
+    arguments: a=17, b=18, c=19, [**]kwargs={'enable': True}
+func1 ==&gt; returning to func2
+func2 ==&gt; returning to &lt;module&gt;
+</code></pre>
+
+<p>whereas neither of the following two statements will trigger logging:</p>
+
+<pre><code>&gt;&gt;&gt; func2(42, enable=False)     # no log_calls output
+&gt;&gt;&gt; func2(99)                   # no log_calls output
+</code></pre>
+
+<p>See the complete documentation <code>log_calls/docs/log_calls.html</code>, as well as <code>log_calls/tests/test_log_calls_more.py</code>, for more examples and useful techniques involving indirect values.</p>
+
+<h3><span id="call-history-and-statistics">Call history and statistics</span></h3>
+
+<p><code>log_calls</code> always collects a few basic statistics about calls to a decorated
+function. It can collect the entire history of calls to a function if asked
+to, or just the most recent <code>n</code> calls; the *_history parameters, discussed next, determine these settings. The statistics and history are accessible via the <code>stats</code> attribute which <code>log_calls</code> adds to a decorated function.</p>
+
+<h4><span id="_history-parameters">The <em>*_history</em> parameters</span></h4>
+
+<p>The two parameters we haven't yet discussed govern the recording of a decorated function's call history.</p>
+
+<h5><span id="record_history-parameter">The <em>record_history</em> parameter (default – <em>False</em>)</span></h5>
+
+<p>When the <code>record_history</code> setting is true for a decorated function <code>f</code>, <code>log_calls</code> will retain a sequence of records holding the details of each logged call to that function. That history is accessible via attributes of the <code>stats</code> object.</p>
+
+<p>Let's define a function <code>f</code> with <code>record_history</code> set to true:</p>
+
+<pre><code>&gt;&gt;&gt; @log_calls(record_history=True, log_call_numbers=True, log_exit=False)
+... def f(a, *args, x=1, **kwargs): pass
+</code></pre>
+
+<p>We'll call this function f in the following subsections, manipulate its settings, and examine its statistics.</p>
+
+<h5><span id="max_history-parameter">The <em>max_history</em> parameter (default – 0)</span></h5>
+
+<p>The <code>max_history</code> parameter determines how many call history records are retained for a decorated function whose call history is recorded. If this value is 0 or negative, unboundedly many records are retained (unless or until
+you set the <code>record_history</code> setting to false, or call the
+<a href="#stats.clear_history"><code>stats.clear_history()</code></a> method). If the value of <code>max_history</code> is > 0, <code>log_calls</code> will retain at most that many records, discarding the oldest records to make room for newer ones if the history reaches capacity.</p>
+
+<p>You cannot change <code>max_history</code> using the mapping interface or the attribute
+of the same name; attempts to do so raise <code>ValueError</code>. The only way to change its value is with the <a href="#stats.clear_history"><code>stats.clear_history()</code></a> method, discussed below.</p>
+
+<h4><span id="stats-attribute">The <em>stats</em> attribute and <em>its</em> attributes</span></h4>
+
+<p>The <code>stats</code> attribute of a decorated function is an object which statistics and data about calls to a decorated function:</p>
+
+<ul>
+<li><a href="#stats.num_calls_logged"><code>stats.num_calls_logged</code></a></li>
+<li><a href="#stats.num_calls_total"><code>stats.num_calls_total</code></a></li>
+<li><a href="#elapsed_secs_logged"><code>stats.elapsed_secs_logged</code></a></li>
+<li><a href="#stats.call_history"><code>stats.call_history</code></a></li>
+<li><a href="#stats.call_history_as_csv"><code>stats.call_history_as_csv</code></a></li>
+</ul>
+
+
+<p>The last two yield empty results unless the <code>record_history</code> setting is true. The first three don't depend on <code>record_history</code> at all.</p>
+
+<p>The <code>stats</code> attribute also provides one method, <a href="#stats.clear_history"><code>stats.clear_history()</code></a>.</p>
+
+<p>Let's call the function <code>f</code> defined above twice:</p>
+
+<pre><code>&gt;&gt;&gt; f(0)
+f [1] &lt;== called by &lt;module&gt;
+    arguments: a=0
+    defaults:  x=1
+&gt;&gt;&gt; f(1, 100, 101, x=1000, y=1001)
+f [2] &lt;== called by &lt;module&gt;
+    arguments: a=1, [*]args=(100, 101), x=1000, [**]kwargs={'y': 1001}
+</code></pre>
+
+<p>and look at its <code>stats</code>.</p>
+
+<h5><span id="stats.num_calls_logged">The <em>num_calls_logged</em> attribute</span></h5>
+
+<p>The <code>stats.num_calls_logged</code> attribute contains the number of the most
+recent logged call to a decorated function. Thus, f.stats.num_calls_logged`
+will equal 2:</p>
+
+<pre><code>&gt;&gt;&gt; f.stats.num_calls_logged
+2
+</code></pre>
+
+<p>This counter gets incremented when a decorated function is called that has logging enabled, even if its <code>log_call_numbers</code> setting is false.</p>
+
+<h5><span id="stats.num_calls_total">The <em>num_calls_total</em> attribute</span></h5>
+
+<p>The <code>stats.num_calls_total</code> attribute holds the <em>total</em> number of calls
+to a decorated function. This counter gets incremented even when logging
+is disabled for a function.</p>
+
+<p>For example, let's now <em>disable</em> logging for <code>f</code> and call it 3 more times:</p>
+
+<pre><code>&gt;&gt;&gt; f.log_calls_settings.enabled = False
+&gt;&gt;&gt; for i in range(3): f(i)
+</code></pre>
+
+<p>Now <code>stats.num_calls_total</code> will equal 5, but <code>f.stats.num_calls_logged</code>
+will still equal 2:</p>
+
+<pre><code>&gt;&gt;&gt; f.stats.num_calls_total
+5
+&gt;&gt;&gt; f.stats.num_calls_logged
+2
+</code></pre>
+
+<p>Finally, if we re-enable logging for <code>f</code> and call it again.
+The displayed call number will the number of the <em>logged</em> call, 3, the same
+value as <code>f.stats.num_calls_logged</code> after the call:</p>
+
+<pre><code>&gt;&gt;&gt; f.log_calls_settings.enabled = True
+&gt;&gt;&gt; f(10, 20, z=5000)
+f [3] &lt;== called by &lt;module&gt;
+    arguments: a=10, [*]args=(20,), [**]kwargs={'z': 5000}
+    defaults:  x=1
+
+&gt;&gt;&gt; f.stats.num_calls_total
+6
+&gt;&gt;&gt; f.stats.num_calls_logged
+3
+</code></pre>
+
+<h5><span id="elapsed_secs_logged">The <em>elapsed_secs_logged</em> attribute</span></h5>
+
+<p>The <code>stats.elapsed_secs_logged</code> attribute holds the sum of the elapsed times of
+all logged calls to a decorated function, in seconds. It's not possible to doctest this so we'll just exhibit its value for the 3 logged calls to <code>f</code> above:</p>
+
+<pre><code>&gt;&gt;&gt; f.stats.elapsed_secs_logged   # doctest: +SKIP
+6.67572021484375e-06
+</code></pre>
+
+<h5><span id="stats.call_history">The <em>call_history</em> attribute</span></h5>
+
+<p>The <code>stats.call_history</code> attribute of a decorated function provides the call history
+of logged calls to the function as a tuple of records. Each record is a <code>namedtuple</code>of type <code>CallRecord</code>. Here's <code>f</code>'s call history,
+in (almost) human-readable form:</p>
+
+<pre><code>&gt;&gt;&gt; print('\\n'.join(map(str, f.stats.call_history)))   # doctest: +SKIP
+CallRecord(call_num=1, argnames=['a'], argvals=(0,), varargs=(),
+                       explicit_kwargs=OrderedDict(),
+                       defaulted_kwargs=OrderedDict([('x', 1)]), implicit_kwargs={},
+                       retval=None, elapsed_secs=2.1457672119140625e-06,
+                       timestamp='10/28/14 15:56:13.733763',
+                       prefixed_func_name='f', caller_chain=['&lt;module&gt;'])
+CallRecord(call_num=2, argnames=['a'], argvals=(1,), varargs=(100, 101),
+                       explicit_kwargs=OrderedDict([('x', 1000)]),
+                       defaulted_kwargs=OrderedDict(), implicit_kwargs={'y': 1001},
+                       retval=None, elapsed_secs=1.9073486328125e-06,
+                       timestamp='10/28/14 15:56:13.734102',
+                       prefixed_func_name='f', caller_chain=['&lt;module&gt;'])
+CallRecord(call_num=3, argnames=['a'], argvals=(10,), varargs=(20,),
+                       explicit_kwargs=OrderedDict(),
+                       defaulted_kwargs=OrderedDict([('x', 1)]), implicit_kwargs={'z': 5000},
+                       retval=None, elapsed_secs=2.1457672119140625e-06,
+                       timestamp='10/28/14 15:56:13.734412',
+                       prefixed_func_name='f', caller_chain=['&lt;module&gt;'])
+</code></pre>
+
+<p>The CSV representation pairs
+the <code>argnames</code> with their values in <code>argvals</code> (the <code>argnames</code> become column headings),
+making it even more human-readable, especially when viewed in a program that
+presents CSVs nicely.</p>
+
+<h5><span id="stats.call_history_as_csv">The <em>call_history_as_csv</em> attribute</span></h5>
+
+<p>The value <code>stats.call_history_as_csv</code> attribute is a text representation in CSV format
+of a decorated function's call history. You can save this string
+and import it into the program or tool of your choice for further analysis.
+This representation breaks out each argument into its own column, throwing away
+information about whether an argument's value was passed or is a default.</p>
+
+<p>The CSV separator is '|' rather than ',' because some of the fields – <code>args</code>,  <code>kwargs</code>
+and <code>caller_chain</code> – use commas intrinsically. Let's examine one more
+<code>call_history_as_csv</code> for a function that has all of those fields:</p>
+
+<pre><code>&gt;&gt;&gt; @log_calls(record_history=True, log_call_numbers=True,
+...            log_exit=False, log_args=False)
+... def f(a, *extra_args, x=1, **kw_args): pass
+&gt;&gt;&gt; def g(a, *args, **kwargs): f(a, *args, **kwargs)
+&gt;&gt;&gt; @log_calls(log_exit=False, log_args=False)
+... def h(a, *args, **kwargs): g(a, *args, **kwargs)
+&gt;&gt;&gt; h(0)
+h &lt;== called by &lt;module&gt;
+f [1] &lt;== called by g &lt;== h
+&gt;&gt;&gt; h(10, 17, 19, z=100)
+h &lt;== called by &lt;module&gt;
+f [2] &lt;== called by g &lt;== h
+&gt;&gt;&gt; h(20, 3, 4, 6, x=5, y='Yarborough', z=100)
+h &lt;== called by &lt;module&gt;
+f [3] &lt;== called by g &lt;== h
+</code></pre>
+
+<p>Here's the call history in CSV format:</p>
+
+<pre><code>&gt;&gt;&gt; print(f.stats.call_history_as_csv)        # doctest: +NORMALIZE_WHITESPACE, +ELLIPSIS
+'call_num'|'a'|'extra_args'|'x'|'kw_args'|'retval'|'elapsed_secs'|'timestamp'|'prefixed_fname'|'caller_chain'
+1|0|()|1|{}|None|...|...|'f'|['g', 'h']
+2|10|(17, 19)|1|{'z': 100}|None|...|...|'f'|['g', 'h']
+3|20|(3, 4, 6)|5|{'y': 'Yarborough', 'z': 100}|None|...|...|'f'|['g', 'h']
+&lt;BLANKLINE&gt;
+</code></pre>
+
+<p>Ellipses are for the <code>elapsed_secs</code> and <code>timestamp</code> fields. As usual, <code>log_calls</code> will use whatever names you use for <em>varargs</em> parameters
+(here, <code>extra_args</code> and <code>kw_args</code>). Whatever the name of the <code>kwargs</code> parameter,
+items within that field are guaranteed to be in sorted order.</p>
+
+<h5><span id="stats.clear_history">The <em>clear_history(max_history=0)</em> method</span></h5>
+
+<p>As you might expect, the <code>stats.clear_history(max_history=0)</code> method clears
+the call history of a decorated function. In addition, it resets all running sums:
+<code>num_calls_total</code> and <code>num_calls_logged</code> are reset to 0, and
+<code>elapsed_secs_logged</code> is reset to 0.0.</p>
+
+<p><strong>It is the only way to change the value of the <code>max_history</code> setting</strong>, via
+the optional keyword parameter for which you can supply any (integer) value,
+by default 0.</p>
+
+<p>The function <code>f</code> has a nonempty history, as we just saw. Let's clear <code>f</code>'s history, setting <code>max_history</code> to 33, and check that settings
+and <code>stats</code> tallies are reset:</p>
+
+<pre><code>&gt;&gt;&gt; f.stats.clear_history(max_history=33)
+&gt;&gt;&gt; f.log_calls_settings.max_history
+33
+&gt;&gt;&gt; f.stats.num_calls_logged
+0
+&gt;&gt;&gt; f.stats.num_calls_total
+0
+&gt;&gt;&gt; f.stats.elapsed_secs_logged
+0.0
+</code></pre>
+
+<h2><span id="record_history-decorator">The <em>record_history</em> decorator</span></h2>
+
+<p>The <code>record_history</code> decorator is a stripped-down version of <code>log_calls</code> which
+records calls to a decorated function but writes no messages. You can think
+of it as <code>log_calls</code> with the <code>record_history</code> and <code>log_call_numbers</code> settings
+always true, and without any of the message-logging apparatus.</p>
+
+<p><code>record_history</code> has only three keyword parameters:</p>
+
+<ul>
+<li><code>enabled</code></li>
+<li><code>prefix</code></li>
+<li><code>max_history</code></li>
+</ul>
+
+
+<p>Just as the settings of <code>log_calls</code> for a decorated function are accessible
+dynamically through the <code>log_calls_settings</code> attribute, these settings of
+<code>record_history</code> are exposed via a <code>record_history_settings</code> attribute.
+<code>record_history_settings</code> is an object of the same type as <code>log_calls_settings</code>,
+so it has the same methods and behaviors described in the <a href="#log_call_settings"><code>log_calls_settings</code></a> section.</p>
+
+<p>Functions decorated by <code>record_history</code> have a full-featured <code>stats</code> attribute,
+as described in the <a href="#call-history-and-statistics">Call history and statistics</a> section.</p>
+
+<p>See the <a href="./record_history.html">documentation for <code>record_history</code></a> for examples and tests.</p>
+
+<h4>— Brian O'Neill, October 2014, NYC</h4>
+</body>
+</html>
