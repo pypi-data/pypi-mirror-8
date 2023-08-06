@@ -1,0 +1,99 @@
+#!/usr/bin/env python
+#
+# Copyright 2014 the original author or authors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+"""
+A command line version of silla de montar.
+"""
+
+
+def install():
+    """Install"""
+    pass
+
+
+def start():
+    """Start"""
+    pass
+
+
+def stop():
+    """Stop"""
+    pass
+
+
+def restart():
+    """Restart"""
+    pass
+
+
+def kill():
+    """Kill"""
+    pass
+
+
+def uninstall():
+    """Uninstall"""
+    pass
+
+
+def help(fnc=None):
+    """Prints this help message"""
+    import inspect
+
+    self = sys.modules['__main__']
+    if fnc:
+        try:
+            cmd = getattr(self, fnc)
+        except:
+            cmd = None
+        if not inspect.isfunction(cmd):
+            print 'No function named: %s found' % fnc
+            sys.exit(2)
+        (args, varargs, varkw, defaults) = inspect.getargspec(cmd)
+        print cmd.__doc__
+        print 'Usage: %s %s' % (fnc, ' '.join(['[%s]' % a for a in args[1:]]))
+    else:
+        print 'Usage: calbagata [command]'
+        for cname in dir(self):
+            if not cname.startswith('_'):
+                cmd = getattr(self, cname)
+                if inspect.isfunction(cmd):
+                    doc = cmd.__doc__
+                    print '\t%-20s  %s' % (cname, doc)
+    sys.exit(1)
+
+
+if __name__ == '__main__':
+    import sys
+
+    self = sys.modules['__main__']
+    if len(sys.argv) >= 2:
+        try:
+            _cmd = getattr(self, sys.argv[1])
+        except:
+            _cmd = None
+        args = sys.argv[2:]
+    else:
+        _cmd = help
+        args = []
+    if not _cmd:
+        _cmd = help
+    try:
+        _cmd(*args)
+    except TypeError, e:
+        print e
+        help(_cmd.__name__)
