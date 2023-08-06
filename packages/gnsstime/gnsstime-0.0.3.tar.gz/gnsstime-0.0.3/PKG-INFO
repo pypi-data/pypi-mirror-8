@@ -1,0 +1,62 @@
+Metadata-Version: 1.1
+Name: gnsstime
+Version: 0.0.3
+Summary: Extended datetime for the gnss analysis.
+Home-page: None
+Author: Satoshi Kawamoto
+Author-email: satoshi.pes@gmail.com
+License: PSL
+Description: `gnsstime` is a extended datetime for the gnss analysis.
+        
+        Requirements
+        ------------
+        * Python 3.3 or later (not support 2.x)
+        
+        History
+        -------
+        0.0.3 (2014-12-04)
+        ~~~~~~~~~~~~~~~~~~
+        * first release
+        
+        Example
+        -------
+        ::
+        
+            >>> import gnsstime as gt
+            >>> gt1 = gt.gnsstime(2011, 1, 1)
+            >>> print('')
+            >>> print('gpscal()                        -> ', gt1.gpscal())
+            >>> print('gpscal(2013,12,31)              -> ', gt1.gpscal(2013, 12, 31))
+            >>> print('gpscal(ymd='2013/12/31')        -> ', gt1.gpscal(ymd='2013/12/31'))
+            >>> print('gpscal(dt.datetime(2013,12,31)) -> ', gt1.gpscal(dt.datetime(2013, 12, 31)))
+            gpscal()                        ->  (1, 1616, 6)
+            gpscal(2013,12,31)              ->  (365, 1773, 2)
+            gpscal(ymd='2013/12/31')        ->  (365, 1773, 2)
+            gpscal(dt.datetime(2013,12,31)) ->  (365, 1773, 2)
+        
+            >>> print('date    :', gt1.isoformat())
+            >>> print('doy     :', gt1.doy)
+            >>> print('gpsw    :', gt1.gpsw)
+            >>> print('gpswd   :', gt1.gpswd)
+            >>> print('gpst    :', gt1.gpst.isoformat())
+            >>> print('leapsec :', gt1.leapsec)
+            date    : 2011-01-01T00:00:00
+            doy     : 1
+            gpsw    : 1616
+            gpswd   : 6
+            gpst    : 2010-12-31T23:59:45
+            leapsec : -15
+        
+            >>> import datetime as dt
+            >>> print('gt1 + dt.timedelta(days=2) :', (gt1 + dt.timedelta(days=2)).isoformat())
+            >>> print('gt1 - dt.timedelta(days=2) :', (gt1 - dt.timedelta(days=2)).isoformat())
+            gt1 + dt.timedelta(days=2) : 2011-01-03T00:00:00
+            gt1 - dt.timedelta(days=2) : 2010-12-30T00:00:00
+        
+        
+Keywords: gps,gnss,datetime
+Platform: UNKNOWN
+Classifier: Development Status :: 3 - Alpha
+Classifier: License :: OSI Approved :: Python Software Foundation License
+Classifier: Programming Language :: Python
+Classifier: Topic :: Scientific/Engineering
