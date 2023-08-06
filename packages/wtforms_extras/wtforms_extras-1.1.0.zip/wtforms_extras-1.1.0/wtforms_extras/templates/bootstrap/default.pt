@@ -1,0 +1,25 @@
+<tal:wrap tal:define="klass string:form-group;
+                      klass python: errors and klass + ' has-error has-feedback' or klass;
+                      klass python: required and klass + ' required' or klass;">
+<div class="form-group" id="${field.id}-wrapper"
+     tal:attributes="class klass">
+  <label for="${field.id}" class="col-sm-2 control-label">${python: field.label.text}</label>
+  <div class="col-sm-10">
+    <div tal:replace="structure python: field(id=field.id, class_='form-control', **field_options)" />
+    <tal:error tal:condition="errors">
+      <span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
+      <span id="inputError2Status" class="sr-only">(error)</span>
+    </tal:error>
+    <p class="help-block">
+      ${field.description}
+      <ul tal:condition="errors">
+        <tal:errors tal:repeat="error errors">
+          <li>${error}</li>
+        </tal:errors>
+      </ul>
+    </p>
+    <div class="clearfix visible-xs"></div>
+  </div>
+  <div class="clearfix visible-xs"></div>
+</div>
+</tal:wrap>
