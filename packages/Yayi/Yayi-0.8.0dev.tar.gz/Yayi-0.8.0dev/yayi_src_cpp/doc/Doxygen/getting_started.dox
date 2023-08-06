@@ -1,0 +1,30 @@
+/*! @page start Getting started
+Let's start by a simple example.
+
+@section simple_ex Simple example
+
+@code{.cpp}
+#include <Yayi/core/yayiImageCore/include/yayiImageCore_Impl.hpp>
+
+void create_image() 
+{
+  // 2D image of unsigned short, size 20(x), 30(y)
+  Image<yaUINT16> im2D_ui16;
+
+  // Sets the size of the image
+  yaRC res = im2D_ui16.SetSize(c2D(20, 30));
+
+  // tests the return code
+  if(res != yaRC_ok)
+    std::cerr << "Error" << std::endl;
+  
+  // Allocates the pixel buffer
+  res = im2D_ui16.Allocate();
+  if(res != yaRC_ok)
+    std::cerr << "Error" << std::endl;
+
+  // the buffer is freed when im2D_ui16 gets out of the scope.
+}
+@endcode
+*/
+  

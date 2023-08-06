@@ -1,0 +1,45 @@
+
+\section{Numpy}
+
+\section{OpenCV}
+\label{sec:link_opencv}
+Since Yayi and OpenCV possess both Numpy binding, creating an OpenCV image from a Yayi image is straightforward. An example of code may be:
+
+\begin{python}
+yayi_data_t_to_open_cv = {
+  YAYI.COM.s_ui8:   cv.IPL_DEPTH_8U, 
+  YAYI.COM.s_i8:    cv.IPL_DEPTH_8S, 
+  YAYI.COM.s_ui16:  cv.IPL_DEPTH_16U, 
+  YAYI.COM.s_i16:   cv.IPL_DEPTH_16S, 
+  YAYI.COM.s_float: cv.IPL_DEPTH_32F, 
+  YAYI.COM.s_double:cv.IPL_DEPTH_64F}
+
+ 
+yayi_data_t_to_nb_channels = {
+  YAYI.COM.c_scalar: 1, 
+  YAYI.COM.c_3: 3, 
+  YAYI.COM.c_4:4, 
+  YAYI.COM.c_complex:2}
+
+cv_im = cv.CreateImage(
+  tuple([int(i) for i in im1.Size]), 
+  yayi_data_t_to_open_cv[im1.DynamicType().s_type], 
+  yayi_data_t_to_nb_channels[im1.DynamicType().c_type])
+
+\end{python}
+
+The map \lstinline|yayi_data_t_to_open_cv| translates Yayi image data types into OpenCV image ones. 
+
+\section{Mathplotlib}
+
+\begin{python}
+def plot_image(x):
+  """Plots a Yayi image using mathplotlib. The provided image may be a numpy image as well"""
+  fig = plt.figure()
+  sub = fig.add_subplot(111)
+  if(isinstance(x , YAYI.CORE.Image)):
+    sub.imshow(YAYI.IO.image_to_numpy(x), cmap = cm.gray)
+  else:
+    sub.imshow(x, cmap = cm.gray)
+  return plt
+\end{python}
