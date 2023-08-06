@@ -1,0 +1,31 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:five="http://namespaces.zope.org/five"
+    xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    i18n_domain="collective.js.knockout">
+
+  <five:registerPackage package="." initialize=".initialize" />
+
+  <browser:resourceDirectory
+     name="collective.js.knockout"
+     directory="resources"
+     />
+
+  <genericsetup:registerProfile
+      name="default"
+      title="collective.js.knockout"
+      directory="profiles/default"
+      description="Install knockout.js in Plone site"
+      provides="Products.GenericSetup.interfaces.EXTENSION"
+      />
+
+  <genericsetup:registerProfile
+      name="uninstall"
+      title="collective.js.knockout: uninstall"
+      directory="profiles/uninstall"
+      description="Remove collective.js.knockout"
+      provides="Products.GenericSetup.interfaces.EXTENSION"
+      />
+
+</configure>
