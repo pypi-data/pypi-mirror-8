@@ -1,0 +1,274 @@
+Metadata-Version: 1.0
+Name: zopyx.existdb
+Version: 0.2.11.1
+Summary: Plone-ExistDB integration
+Home-page: http://pypi.python.org/pypi/zopyx.existdb
+Author: Andreas Jung
+Author-email: info@zopyx.com
+License: GPL
+Description: zopyx.existdb
+        =============
+        
+        .. note:: This module  
+        
+          - *is not* a replacement for the ZODB or any other Plone storage (never was, never will)
+          - *is not* a storage layer for Archetypes or Dexterity content (never was, never will)
+          - *is* a solution for mounting XML databases like eXist-db or
+            BaseX into Plone through their WebDAV port
+          - *is* an _experimental_ solution for mounting general WebDAV 
+            services into Plone
+        
+        ``zopyx.existdb`` integrates  Plone 4.3 and higher with 
+        eXist-db providing the following features:
+        
+        - mounts an arbitary eXist-db collection into Plone
+        - ACE editor integration
+        - ZIP export from eXist-db
+        - ZIP import into eXist-db
+        - pluggable view mechanism for configuring custom views for XML database  
+          content by filename and view name
+        - create, rename or delete collections through the web
+        - extensible architecture through Plone Dexterity behaviors
+        - support for XQuery scripts called through the RESTXQ layer of eXist-db
+          (allows you to call XQuery scripts and return the output format (JSON,
+          HTML, XML) depending on your application requirements)
+        - dedicated per-connector logging facility
+        - small and extensible
+        - experimental support for mounting arbitrary WebDAV service into Plone (set
+          the emulation mode to ``webdav`` in the eXist-db control panel of Plone)
+        
+        The primary usecase for ``zopyx.existdb`` is the integration of XML document
+        collections into Plone using eXist-db as storage layer. ``zopyx.existdb`` is
+        not storage layer for Plone content in the first place although it could be
+        used in some way for storing primary Plone content (or parts of the content)
+        inside eXist-db. There is no build-in support for mapping metadata as stored in
+        XML documents to Plone metadata or vice versa. However this could be
+        implemented easily in application specific code build on top of
+        ``zopyx.existdb``. The design goal of ``zopyx.existdb`` is to provide the basic
+        functionality for integrating Plone with eXist-db without implementing any
+        further specific application requirements.  Additional functionality can be
+        added through Dexterity behaviors, supplementary browser views, event lifecycle
+        subscribers and related technology.
+        
+        Installation
+        ------------
+        
+        Add ``zopyx.existdb`` to the ``eggs`` and ``zcml`` options of your buildout
+        configuration, re-run buildout and install the connector through the add-ons
+        management of Plone.
+        
+        Configuration
+        -------------
+        
+        Goto the Plone control panel and click on the ``Exist-DB`` configlet and
+        configure the 
+        
+        - eXist-db server url e.g. ``http://localhost:6080``
+        
+          The eXist-db subpath ``/exist/webdav/db`` will be added internally.
+        
+        - eXist-db username
+        
+        - eXist-db password
+        
+        - eXist-db emulation mode. Set the emulation mode to ``webdav`` for the integration of
+          arbitrary WebDAV services.
+        
+        
+        Using zopyx.existdb
+        -------------------
+        The package provides a new content-types ``Connector`` that will include
+        eXist-db into Plone - either from the top-level collection of your eXist-db
+        database or from a subcollection. You can browse and traverse into
+        subcollections, view single documents or edit text-ish content through the web
+        (using the build-in ACE editor integration).
+        
+        All connection settings (URL, username and password can be overriden on 
+        the connector level) in order to ignore the Plone site-wide eXist-db
+        settings).
+        
+        .. note:: This module provides a generic integration of arbitrary 
+           WebDAV services like OwnCloud, BaseX (over WebDAV) or even other Plone
+           serves (exposed through the Plone WebDAV source port) with Plone.
+           This integration is highly experimental and not the primary purpose
+           of ``zopyx.existdb``. Use the functionality at your own risk.
+           In order to use this module together with WebDAV services other than the
+           XML database eXist-db: you have to set the emulation mode to ``webdav``
+           inside the eXist-db control panel of Plone
+        
+        License
+        -------
+        This package is published under the GNU Public License V2 (GPL 2)
+        
+        Source code
+        -----------
+        See https://bitbucket.org/onkopedia/zopyx.existdb
+        
+        Bugtracker
+        ----------
+        See https://bitbucket.org/onkopedia/zopyx.existdb
+        
+        Credits
+        -------
+        The development of ``zopyx.existdb`` was funded as part of a customer project
+        by Deutsche Gesellschaft für Hämatologie und medizinische Onkologie (DGHO).
+        
+        
+        Author
+        ------
+        | Andreas Jung/ZOPYX
+        | Hundskapfklinge 33
+        | D-72074 Tuebingen, Germany
+        | info@zopyx.com
+        | www.zopyx.com
+        
+        
+        Changelog
+        =========
+        
+        0.2.11 (2014-11-08)
+        -------------------
+        - updated documentation
+        
+        0.2.10 (2014-11-08)
+        -------------------
+        - bugfix release
+        
+        0.2.9 (2014-11-01)
+        ------------------
+        - support for overriding credentials locally 
+        
+        0.2.8 (2014-11-01)
+        ------------------
+        - minor fix for mounting Plone sites over WebDAV into another Plone site
+        
+        0.2.7 (2014-11-01)
+        ------------------
+        - experimental support for BaseX XML database through the WebDAV API.
+          Limitations: REMOVE operations over WebDAV do not seem to work 
+          against BaseX 7.9
+        
+        
+        0.2.6 (2014-11-01)
+        ------------------
+        - more tests
+        
+        0.2.5 (2014-10-30)
+        ------------------
+        - experimental traversal support for accessing WebDAV resources by path
+          using (un)restrictedTraverse()
+        - minor URL fixes
+        - more tests  
+        
+        0.2.4 (2014-10-22)
+        -------------------
+        - configuration option for default view for authenticated site visitors
+        
+        
+        0.2.3 (2014-10-13)
+        -------------------
+        - fix in saving ACE editor content
+        
+        0.2.2 (2014-10-12)
+        -------------------
+        - typo in page template
+        
+        0.2.1 (2014-10-12)
+        -------------------
+        
+        - added support for renaming a collection through the web
+        
+        0.2.0 (2014-10-02)
+        -------------------
+        
+        - various minor bug fixes
+        - added basic tests 
+        
+        0.1.17 (2014-09-25)
+        -------------------
+        
+        - fixed action links
+        
+        
+        0.1.16 (2014-09-25)
+        -------------------
+        
+        - Connector is no longer a folderish object
+        
+        0.1.15 (2014-09-22)
+        -------------------
+        
+        - removed indexing support completely (leaving a specific
+          indexing functionality to policy packages using zopyx.existdb)
+        
+        0.1.14 (2014-09-15)
+        -------------------
+        
+        - fixed subpath handling in create/remove collections
+        
+        0.1.13 (2014-09-07)
+        -------------------
+        - support for removing collections TTW
+        
+        0.1.12 (2014-09-05)
+        -------------------
+        - support for creating new collections TTW
+        
+        0.1.11 (2014-08-21)
+        -------------------
+        - action "Clear log" added 
+        
+        0.1.10 (2014-08-05)
+        -------------------
+        - log() got a new 'details' parameter for adding extensive logging information
+        
+        0.1.9 (2014-08-01)
+        ------------------
+        - human readable timestamps
+        
+        0.1.8 (2014-07-31)
+        ------------------
+        - minor visual changes
+        
+        0.1.7 (2014-07-29)
+        ------------------
+        - rewritten code exist-db browser code (dealing the correct
+          way with paths, filenames etc.)
+        
+        0.1.6 (2014-07-29)
+        ------------------
+        - fixed improper view prefix in directory browser
+        
+        0.1.5 (2014-07-13)
+        ------------------
+        - minor fixes and cleanup
+        
+        0.1.4 (2014-07-12)
+        ------------------
+        - made webservice query API aware of all output formats (xml, html, json) 
+          
+        - timezone handling: using environment variable TZ for converting eXist-db UTC
+          timestamps to the TZ timezone (or UTC as default) for display purposes with
+          Plone
+        
+        0.1.3 (2014-07-07)
+        ------------------
+        - added webservice API interface
+        - various bug fixes
+        
+        0.1.2 (2014-06-30)
+        ------------------
+        - various bug fixes
+        
+        0.1.0 (2014-06-20)
+        ------------------
+        - initial release
+        
+Keywords: exist-db basex existdb Plone XML Python WebDAV
+Platform: UNKNOWN
+Classifier: Programming Language :: Python
+Classifier: Framework :: Plone
+Classifier: Framework :: Plone :: 4.3
+Classifier: Framework :: Plone :: 5.0
+Classifier: Framework :: Zope2
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
