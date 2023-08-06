@@ -1,0 +1,179 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>spacepy.plot.utils.smartTimeTicks &mdash; SpacePy v0.1.5 Manual</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/copybutton.js"></script>
+    <link rel="shortcut icon" href="../../_static/lanl_favicon.ico"/>
+    <link rel="top" title="SpacePy v0.1.5 Manual" href="../../index.html" />
+    <link rel="up" title="spacepy.plot.utils" href="../spacepy.plot.utils.html" />
+    <link rel="next" title="spacepy.plot.utils.timestamp" href="spacepy.plot.utils.timestamp.html" />
+    <link rel="prev" title="spacepy.plot.utils.show_used" href="spacepy.plot.utils.show_used.html" /> 
+  </head>
+  <body>
+
+<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../../index.html"><img src="../../_static/spacepy_logo.jpg" border="0" alt="spacepy_logo"/></a>
+</div>
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="spacepy.plot.utils.timestamp.html" title="spacepy.plot.utils.timestamp"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="spacepy.plot.utils.show_used.html" title="spacepy.plot.utils.show_used"
+             accesskey="P">previous</a> |</li>
+        <li><a href="http://spacepy.lanl.gov/index.shtml">homepage</a>|&nbsp;</li>
+        <li><a href="../../search.html">search</a>|&nbsp;</li>
+       <li><a href="../../index.html">documentation </a> &raquo;</li>
+
+          <li><a href="../../plot.html" >plot - Plot, various specialized plotting functions and associated utilities</a> &raquo;</li>
+          <li><a href="../spacepy.plot.utils.html" accesskey="U">spacepy.plot.utils</a> &raquo;</li> 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="spacepy.plot.utils.show_used.html"
+                        title="previous chapter">spacepy.plot.utils.show_used</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="spacepy.plot.utils.timestamp.html"
+                        title="next chapter">spacepy.plot.utils.timestamp</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../_sources/autosummary/autosummary/spacepy.plot.utils.smartTimeTicks.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="spacepy-plot-utils-smarttimeticks">
+<h1>spacepy.plot.utils.smartTimeTicks<a class="headerlink" href="#spacepy-plot-utils-smarttimeticks" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="spacepy.plot.utils.smartTimeTicks">
+<tt class="descclassname">spacepy.plot.utils.</tt><tt class="descname">smartTimeTicks</tt><big>(</big><em>time</em><big>)</big><a class="reference internal" href="../../_modules/spacepy/plot/utils.html#smartTimeTicks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spacepy.plot.utils.smartTimeTicks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns major ticks, minor ticks and format for time-based plots</p>
+<p>smartTimeTicks takes a list of datetime objects and uses the range
+to calculate the best tick spacing and format.  Returned to the user
+is a tuple containing the major tick locator, minor tick locator, and
+a format string &#8211; all necessary to apply the ticks to an axis.</p>
+<p>It is suggested that, unless the user explicitly needs this info,
+to use the convenience function applySmartTimeTicks to place the
+ticks directly on a given axis.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>time</strong> : list</p>
+<blockquote>
+<div><p>list of datetime objects</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>out</strong> : tuple</p>
+<blockquote class="last">
+<div><p>tuple of Mtick - major ticks, mtick - minor ticks, fmt - format</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="spacepy.plot.utils.applySmartTimeTicks.html#spacepy.plot.utils.applySmartTimeTicks" title="spacepy.plot.utils.applySmartTimeTicks"><tt class="xref py py-obj docutils literal"><span class="pre">applySmartTimeTicks</span></tt></a></p>
+</div>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="spacepy.plot.utils.timestamp.html" title="spacepy.plot.utils.timestamp"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="spacepy.plot.utils.show_used.html" title="spacepy.plot.utils.show_used"
+             >previous</a> |</li>
+        <li><a href="http://spacepy.lanl.gov/index.shtml">homepage</a>|&nbsp;</li>
+        <li><a href="../../search.html">search</a>|&nbsp;</li>
+       <li><a href="../../index.html">documentation </a> &raquo;</li>
+
+          <li><a href="../../plot.html" >plot - Plot, various specialized plotting functions and associated utilities</a> &raquo;</li>
+          <li><a href="../spacepy.plot.utils.html" >spacepy.plot.utils</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011-2014, The SpacePy Team.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

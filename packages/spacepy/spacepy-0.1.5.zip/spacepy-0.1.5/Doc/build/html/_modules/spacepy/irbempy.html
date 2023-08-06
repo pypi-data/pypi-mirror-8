@@ -1,0 +1,185 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>spacepy.irbempy &mdash; SpacePy v0.1.5 Manual</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/copybutton.js"></script>
+    <link rel="shortcut icon" href="../../_static/lanl_favicon.ico"/>
+    <link rel="top" title="SpacePy v0.1.5 Manual" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+
+<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../../index.html"><img src="../../_static/spacepy_logo.jpg" border="0" alt="spacepy_logo"/></a>
+</div>
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="http://spacepy.lanl.gov/index.shtml">homepage</a>|&nbsp;</li>
+        <li><a href="../../search.html">search</a>|&nbsp;</li>
+       <li><a href="../../index.html">documentation </a> &raquo;</li>
+
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for spacepy.irbempy</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">module wrapper for irbem_lib</span>
+<span class="sd">Reference for this library</span>
+<span class="sd">https://sourceforge.net/projects/irbem/</span>
+<span class="sd">D. Boscher, S. Bourdarie, P. O&#39;Brien, T. Guild, IRBEM library V4.3, 2004-2008</span>
+
+
+<span class="sd">Most functions in this module use an options list to define the models used and the settings</span>
+<span class="sd">that define the quality level of the result. The options list is a 5-element list and is defined</span>
+<span class="sd">as follows.</span>
+
+<span class="sd">Options</span>
+<span class="sd">-------</span>
+<span class="sd">   - 1st element: 0 - don&#39;t compute L* or phi ;  1 - compute L*; 2- compute phi</span>
+<span class="sd">   - 2nd element: 0 - initialize IGRF field once per year (year.5);  </span>
+<span class="sd">       n - n is the  frequency (in days) starting on January 1st of each year </span>
+<span class="sd">       (i.e. if options(2nd element)=15 then IGRF will be updated on the following days of the </span>
+<span class="sd">       year: 1, 15, 30, 45 ...)</span>
+<span class="sd">   - 3rd element: resolution to compute L* (0 to 9) where 0 is the recomended value to ensure a </span>
+<span class="sd">       good ratio precision/computation time</span>
+<span class="sd">       (i.e. an error of ~2% at L=6). The higher the value the better will be the precision, the </span>
+<span class="sd">       longer will be the computing time. Generally there is not much improvement for values </span>
+<span class="sd">       larger than 4. Note that this parameter defines the integration step (theta) </span>
+<span class="sd">       along the field line such as dtheta=(2pi)/(720*[options(3rd element)+1])</span>
+<span class="sd">   - 4th element: resolution to compute L* (0 to 9). The higher the value the better will be </span>
+<span class="sd">       the precision, the longer will be </span>
+<span class="sd">       the computing time. It is recommended to use 0 (usually sufficient) unless L* is not </span>
+<span class="sd">       computed on a LEO orbit. For LEO orbit higher values are recommended. Note that this </span>
+<span class="sd">       parameter defines the integration step (phi) along the drift shell such as </span>
+<span class="sd">       dphi=(2pi)/(25*[options(4th element)+1])</span>
+<span class="sd">   - 5th element: allows to select an internal magnetic field model (default is set to IGRF)</span>
+<span class="sd">       - 0 = IGRF</span>
+<span class="sd">       - 1 = Eccentric tilted dipole</span>
+<span class="sd">       - 2 = Jensen&amp;Cain 1960</span>
+<span class="sd">       - 3 = GSFC 12/66 updated to 1970</span>
+<span class="sd">       - 4 = User-defined model (Default: Centred dipole + uniform [Dungey open model] )</span>
+<span class="sd">       - 5 = Centred dipole</span>
+
+<span class="sd">The routines also require specification of the external magnetic field model. The default is the</span>
+<span class="sd">Tsyganenko 2001 storm-time model. The external model is always specified using the extMag keyword</span>
+<span class="sd">and the following options exist.</span>
+
+<span class="sd">extMag</span>
+<span class="sd">------</span>
+<span class="sd">    - &#39;0&#39; = No external field model</span>
+<span class="sd">    - &#39;MEAD&#39; = Mead and Fairfield</span>
+<span class="sd">    - &#39;T87SHORT&#39; = Tsyganenko 1987 short (inner magnetosphere)</span>
+<span class="sd">    - &#39;T87LONG&#39; = Tsyganenko 1987 long (valid in extended tail region)</span>
+<span class="sd">    - &#39;T89&#39; = Tsyganenko 1989</span>
+<span class="sd">    - &#39;OPQUIET&#39; = Olsen-Pfitzer static model for quiet conditions</span>
+<span class="sd">    - &#39;OPDYN&#39; = Olsen-Pfitzer static model for active conditions</span>
+<span class="sd">    - &#39;T96&#39; = Tsyganenko 1996</span>
+<span class="sd">    - &#39;OSTA&#39; = Ostapenko and Maltsev</span>
+<span class="sd">    - &#39;T01QUIET&#39; = Tsyganenko 2001 model for quiet conditions</span>
+<span class="sd">    - &#39;T01STORM&#39; = Tsyganenko 2001 model for active conditions</span>
+<span class="sd">    - &#39;T05&#39; = Tsyganenko and Sitnov 2005 model</span>
+<span class="sd">    - &#39;ALEX&#39; = Alexeev model</span>
+
+
+<span class="sd">Authors</span>
+<span class="sd">-------</span>
+<span class="sd">Josef Koller, Steve Morley </span>
+
+<span class="sd">Copyright 2010 Los Alamos National Security, LLC.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<span class="kn">from</span> <span class="nn">.irbempy</span> <span class="kn">import</span> <span class="o">*</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="http://spacepy.lanl.gov/index.shtml">homepage</a>|&nbsp;</li>
+        <li><a href="../../search.html">search</a>|&nbsp;</li>
+       <li><a href="../../index.html">documentation </a> &raquo;</li>
+
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011-2014, The SpacePy Team.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>
