@@ -1,0 +1,11 @@
+#!/usr/bin/env python
+
+import traceback
+
+from tenxer_pivotal_git_hooks.post_checkout import update_branch_story
+
+
+try:
+    update_branch_story()
+except Exception:
+    print traceback.format_exc()
