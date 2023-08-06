@@ -1,0 +1,63 @@
+#!/usr/bin/env python
+
+"""CLI for checking bandwidth at Server Density.
+
+Usage:
+	sdbw groups (update | view)
+	sdbw devices (update | view)
+	sdbw bandwidth (group <name> | -g <name>) [(-t <start> <end>)]
+	sdbw bandwidth (device <name> | -d <name>) [(-t <start> <end>)]
+	sdbw time (set (<start> <end>) | view)
+	sdbw -h | --help
+	sdbw -v | --version
+
+Options:
+	-d <name>  		Use this device name to check bandwidth
+	-g <name>		Use this group name to check bandwidth
+	-t <start> <end>  	Use this time and update time in config: YYYY-MM-DDTHH:MM:SSZ
+	-v, --version  		Show version
+	-h, --help  		Show help
+"""
+
+# view and update devices. delete interfaces.
+
+# 	Future version
+# 	sdbandwidth emailme <email>
+
+import docopt
+import bandwidth
+
+if __name__ == '__main__':
+	args = docopt.docopt(__doc__, version='SDbandwidth client 0.12')
+	bandwidth.check_existing_apikey()
+	if not bandwidth.read_config()['start']:
+		bandwidth.update_current_time()
+
+	if args['devices']:
+		if args['update']:
+			bandwidth.update_devices()
+		elif args['view']:
+			bandwidth.print_devices()
+	elif args['groups']:
+		if args['update']:
+			bandwidth.update_groups()
+		elif args['view']:
+			bandwidth.print_groups()
+	elif args['bandwidth']:
+		time_args = {}
+		if args['-t']:
+			time_args['start'] = args['<start>']
+			time_args['end'] = args['<end>']
+		if args['group'] or args['-g']:
+			bandwidth.print_bandwidth_group(args['<name>'], **time_args)
+		elif args['device'] or args['-d']:
+			bandwidth.print_bandwidth_device(args['<name>'], **time_args)
+	elif args['emailme']:
+		# check that email is correct.
+		print "Not yet implemented!"
+	elif args['time']:
+		if args['set']:
+			bandwidth.set_time(args['start'], args['end'])
+		elif args['view']:
+			bandwidth.print_time()
+
