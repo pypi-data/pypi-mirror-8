@@ -1,0 +1,34 @@
+Name:           {{ name }}
+Version:        {{ version }}
+Release:        1%{?dist}
+Summary:        {{ summary }}
+
+License:        {{ license }}
+URL:            {{ url }}
+Source0:        {{ source_url }}
+
+BuildRequires:  devassistant-devel
+Requires:       devassistant
+{% for r in requires  %}
+Requires:       {{ r }}
+{% endfor %}
+
+%description
+{{ description }}
+
+%prep
+%setup -q
+
+%install
+%install_assistant
+
+%files
+{% if doc %}
+%doc %{assistant_path}/{{ doc }}
+{% endif %}
+{% for dir in assistant_dirs %}
+%{assistant_path}/{{ dir }}
+{% endfor %}
+
+%changelog
+{{ changelog_entry }}
