@@ -1,0 +1,45 @@
+#!/usr/bin/python2
+
+##
+# PyChat
+# https://github.com/leosartaj/PyChat.git
+#
+# Copyright (c) 2014 Sartaj Singh
+# Licensed under the MIT license.
+##
+
+# system imports
+import sys
+import os
+
+# twisted imports
+from twisted.internet import gtk2reactor
+gtk2reactor.install() # install reactor for gui
+from twisted.internet import reactor
+from twisted.python import log
+from twisted.internet import defer
+
+# Other imports
+from PyChat.client.gui.clientGUIClass import clientGUIClass # get the main gui class
+from PyChat.client.gui.helper import helperFunc as hf
+from PyChat.client.options import parse_args
+
+if __name__ == '__main__':
+    args = parse_args() # parse the arguments
+
+    try:
+        # Start Logging
+        # Logs in pwd as pychat.log by default
+        log.startLogging(open(args.log , 'a'))
+    except Exception, e:
+        print 'Cannot Start PyChat'
+        print e
+        sys.exit(1) # end program if invalid log file
+
+    gui = clientGUIClass(args.client) # start the gui
+
+    if args.iface != None: # allow deafult connecting
+        if hf.validate_host(args.iface):
+            gui.connect(args.iface, args.port)
+
+    reactor.run()
