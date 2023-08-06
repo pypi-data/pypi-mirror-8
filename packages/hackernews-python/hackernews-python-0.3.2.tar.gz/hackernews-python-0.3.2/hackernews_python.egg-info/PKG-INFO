@@ -1,0 +1,97 @@
+Metadata-Version: 1.1
+Name: hackernews-python
+Version: 0.3.2
+Summary: Python wrapper for the official Hacker News API (v0)
+Home-page: https://github.com/abrinsmead/hackernews-python
+Author: Alex Brinsmead
+Author-email: alex.brinsmead@dataloft.com
+License: MIT
+Description: Hacker News API Wrapper
+        =======================
+        
+        Installation
+        ------------
+        
+        .. code-block:: bash
+        
+            pip install hackernews-python
+        
+        Usage
+        -----
+        
+        .. code-block:: pycon
+        
+            >>> from hackernews import HackerNews
+            >>> hn = HackerNews()
+            >>> hn.top_stories()
+            [8422599, 8422087, 8422928, 8422581, 8423825...
+        
+            >>> hn.item(1).title
+            'Y Combinator'
+        
+            >>> hn.item(1).time
+            datetime.datetime(2006, 10, 9, 11, 21, 51)
+        
+            >>> hn.user('pg').created
+            datetime.datetime(2006, 10, 9, 11, 21, 32)
+        
+            >>> hn.user('pg').karma
+            155040
+        
+            >>> hn.max_item()
+            8424314
+        
+            >>> hn.updates()
+            {'items': [8423690, 8424315, 8424299...], 'profiles': ['exampleuser',...]}
+        
+        
+        API Documentation
+        -----------------
+        
+        https://github.com/HackerNews/API
+        
+        
+        Release History
+        ---------------
+        
+        0.3.1 (2014-10-12)
+        ++++++++++++++++++
+        - Fix README examples
+        
+        
+        0.3.0 (2014-10-12)
+        ++++++++++++++++++
+        
+        - Returns Item and User objects instead of dicts.
+        
+        
+        0.2.0 (2014-10-10)
+        ++++++++++++++++++
+        
+        - Convert timestamps to native datetime objects (breaking change)
+        - Added tests.py (100% line coverage)
+        - Add link to official API docs to README.rst
+        
+        
+        0.1.1 (2014-10-09)
+        ++++++++++++++++++
+        
+        - Improve syntax highlighting in README.rst
+        
+        
+        0.1.0 (2014-10-07)
+        ++++++++++++++++++
+        
+        - 1st release
+Platform: UNKNOWN
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: Natural Language :: English
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.3
+Classifier: Programming Language :: Python :: 3.4
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
