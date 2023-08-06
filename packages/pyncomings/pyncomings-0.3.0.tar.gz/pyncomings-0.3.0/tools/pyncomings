@@ -1,0 +1,36 @@
+#!/usr/bin/env python
+
+# Author: Pablo Saavedra Rodinho
+# Contact: saavedra.pablo@gmail.com
+
+"""
+Pyncomings proccess line processor
+"""
+
+import pyncomings.incomingsmanager
+from optparse import OptionParser
+
+import sys
+
+parser = OptionParser()
+parser.add_option("-f", "--file", dest="filename",
+                  help="The configuration file", metavar="CONFIGFILE")
+
+parser.add_option("-c", "--createdatabase", dest="createdatabase", action="store_true",
+                 help="Create database",
+                 default=False)
+
+
+
+(options, args) = parser.parse_args()
+
+if not (options.filename):
+    options.filename = './pyncomings.conf'
+
+m = pyncomings.incomingsmanager.PyncomingsManager(options.filename)
+
+if (options.createdatabase):
+  m.create_database()
+  exit(0)
+
+m.pending_lines_process()
