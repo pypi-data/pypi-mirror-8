@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}{{ config.SITE_NAME }}|Login{% endblock %}
+
+{% block page_content %}
+    <div class="panel panel-default">
+        <ol class="breadcrumb">
+            <li><a href="/">{{ config.SITE_NAME }}</a></li>
+            <li class="active">Login</li>
+        </ol>
+        <div class="panel-body">
+            {{ wtf.quick_form(form, form_type="horizontal", horizontal_columns=('md', 2, 10)) }}
+            <div class="col-md-offset-1 col-md-10">
+                <p>Forgot your password? <a href="{{ url_for('user.password_reset_request') }}">Click here to reset it</a>.</p>
+                <p>New user? <a href="{{ url_for('user.register') }}">Click here to register</a>.</p>
+            </div>
+        </div>
+    </div>
+{% endblock %}
