@@ -1,0 +1,70 @@
+Metadata-Version: 2.0
+Name: hipachectl
+Version: 0.0.1
+Summary: Command Line Tool to Manage hipache
+Home-page: https://bitbucket.org/prologic/hipachectl
+Author: James Mills
+Author-email: James Mills, prologic at shortcircuit dot net dot au
+License: MIT
+Download-URL: http://bitbucket.org/prologic/hipachectl/downloads/
+Keywords: hipache manage docker
+Platform: POSIX
+Classifier: Development Status :: 3 - Alpha
+Classifier: Environment :: Console
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: System Administrators
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Natural Language :: English
+Classifier: Operating System :: POSIX :: BSD
+Classifier: Operating System :: POSIX :: Linux
+Classifier: Operating System :: MacOS :: MacOS X
+Classifier: Programming Language :: Python :: 2.6
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Programming Language :: Python :: Implementation :: CPython
+Classifier: Programming Language :: Python :: Implementation :: PyPy
+Requires-Dist: redis
+
+.. _docker: http://docker.com/
+.. _dotCloud: http://dotcloud.com/
+.. _hipache: https://github.com/hipache/hipache
+
+
+hipachectl
+==========
+
+hipachectl is a command-line tool to manage `dotCloud`_'s `hipache`_
+load balancer and reverse proxy. hipachectl lets you:
+
+- list configured virtual hosts
+- add a new virtual host
+- delete a virtual host
+
+
+Installation
+------------
+
+Either pull the prebuilt `Docker`_ image::
+
+    $ docker pull prologic/hipachectl
+
+Or install from the development repository::
+
+    $ hg clone https://bitbucket.org/prologic/hipachectl
+    $ cd hipachectl
+    $ pip install -r requirements.txt
+
+
+Usage
+-----
+
+To use hipachectl from `Docker`_::
+
+    $ docker run prologic/hipachectl -H <hipache_ip> <command>
+
+Or::
+
+    $ hipachectl -H <docker_ip> <command>
+
+For help user the ``--help`` option.
+
+
