@@ -1,0 +1,144 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>elasticluster.helpers &mdash; elasticluster 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="elasticluster 1.0 documentation" href="../../index.html" />
+    <link rel="up" title="Elasitcluster programming API" href="../index.html" />
+    <link rel="next" title="elasticluster.main" href="main.html" />
+    <link rel="prev" title="elasticluster.gc3_config" href="gc3_config.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="main.html" title="elasticluster.main"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="gc3_config.html" title="elasticluster.gc3_config"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../../index.html">elasticluster 1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Elasitcluster programming API</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-elasticluster.helpers">
+<span id="elasticluster-helpers"></span><h1><cite>elasticluster.helpers</cite><a class="headerlink" href="#module-elasticluster.helpers" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="elasticluster.helpers.Singleton">
+<em class="property">class </em><tt class="descclassname">elasticluster.helpers.</tt><tt class="descname">Singleton</tt><big>(</big><em>decorated</em><big>)</big><a class="reference internal" href="../../_modules/elasticluster/helpers.html#Singleton"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#elasticluster.helpers.Singleton" title="Permalink to this definition">¶</a></dt>
+<dd><p>see: <a class="reference external" href="http://stackoverflow.com/a/7346105">http://stackoverflow.com/a/7346105</a>
+A non-thread-safe helper class to ease implementing singletons.
+This should be used as a decorator &#8211; not a metaclass &#8211; to the
+class that should be a singleton.</p>
+<p>The decorated class can define one <cite>__init__</cite> function that
+takes only the <cite>self</cite> argument. Other than that, there are
+no restrictions that apply to the decorated class.</p>
+<p>To get the singleton instance, use the <cite>Instance</cite> method. Trying
+to use <cite>__call__</cite> will result in a <cite>TypeError</cite> being raised.</p>
+<p>Limitations: The decorated class cannot be inherited from.</p>
+<dl class="method">
+<dt id="elasticluster.helpers.Singleton.Instance">
+<tt class="descname">Instance</tt><big>(</big><big>)</big><a class="reference internal" href="../../_modules/elasticluster/helpers.html#Singleton.Instance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#elasticluster.helpers.Singleton.Instance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the singleton instance. Upon its first call, it creates a
+new instance of the decorated class and calls its <cite>__init__</cite> method.
+On all subsequent calls, the already created instance is returned.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="gc3_config.html"
+                        title="previous chapter"><cite>elasticluster.gc3_config</cite></a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="main.html"
+                        title="next chapter"><cite>elasticluster.main</cite></a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../_sources/api/elasticluster/helpers.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="main.html" title="elasticluster.main"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="gc3_config.html" title="elasticluster.gc3_config"
+             >previous</a> |</li>
+        <li><a href="../../index.html">elasticluster 1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Elasitcluster programming API</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Grid Computing Competence Centre, University of Zurich.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

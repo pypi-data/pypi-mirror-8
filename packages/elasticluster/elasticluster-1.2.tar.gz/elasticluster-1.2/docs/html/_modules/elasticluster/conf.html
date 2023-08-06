@@ -1,0 +1,643 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>elasticluster.conf &mdash; elasticluster 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="elasticluster 1.0 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">elasticluster 1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for elasticluster.conf</h1><div class="highlight"><pre>
+<span class="c">#! /usr/bin/env python</span>
+<span class="c">#</span>
+<span class="c"># Copyright (C) 2013 GC3, University of Zurich</span>
+<span class="c">#</span>
+<span class="c"># This program is free software: you can redistribute it and/or modify</span>
+<span class="c"># it under the terms of the GNU General Public License as published by</span>
+<span class="c"># the Free Software Foundation, either version 3 of the License, or</span>
+<span class="c"># (at your option) any later version.</span>
+<span class="c">#</span>
+<span class="c"># This program is distributed in the hope that it will be useful,</span>
+<span class="c"># but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c"># GNU General Public License for more details.</span>
+<span class="c">#</span>
+<span class="c"># You should have received a copy of the GNU General Public License</span>
+<span class="c"># along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+<span class="c">#</span>
+<span class="n">__author__</span> <span class="o">=</span> <span class="s">&#39;Nicolas Baer &lt;nicolas.baer@uzh.ch&gt;, Antonio Messina &lt;antonio.s.messina@gmail.com&gt;&#39;</span>
+
+<span class="c"># System imports</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="c"># External modules</span>
+<span class="kn">from</span> <span class="nn">ConfigParser</span> <span class="kn">import</span> <span class="n">RawConfigParser</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="c"># Voluptuous version &gt;= 0.8.1</span>
+    <span class="kn">from</span> <span class="nn">voluptuous</span> <span class="kn">import</span> <span class="n">message</span><span class="p">,</span> <span class="n">MultipleInvalid</span><span class="p">,</span> <span class="n">Invalid</span><span class="p">,</span> <span class="n">Schema</span>
+    <span class="kn">from</span> <span class="nn">voluptuous</span> <span class="kn">import</span> <span class="n">All</span><span class="p">,</span> <span class="n">Length</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Url</span><span class="p">,</span> <span class="n">Boolean</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="c"># Voluptuous version &lt;= 0.7.2</span>
+    <span class="kn">from</span> <span class="nn">voluptuous.voluptuous</span> <span class="kn">import</span> <span class="n">message</span><span class="p">,</span> <span class="n">MultipleInvalid</span><span class="p">,</span> <span class="n">Invalid</span>
+    <span class="kn">from</span> <span class="nn">voluptuous</span> <span class="kn">import</span> <span class="n">Schema</span><span class="p">,</span> <span class="n">All</span><span class="p">,</span> <span class="n">Length</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Url</span><span class="p">,</span> <span class="n">Boolean</span><span class="p">,</span> <span class="n">Optional</span>
+
+<span class="c"># Elasticluster imports</span>
+<span class="kn">from</span> <span class="nn">elasticluster</span> <span class="kn">import</span> <span class="n">log</span>
+<span class="kn">from</span> <span class="nn">elasticluster.exceptions</span> <span class="kn">import</span> <span class="n">ConfigurationError</span>
+<span class="kn">from</span> <span class="nn">elasticluster.providers.ec2_boto</span> <span class="kn">import</span> <span class="n">BotoCloudProvider</span>
+<span class="kn">from</span> <span class="nn">elasticluster.providers.gce</span> <span class="kn">import</span> <span class="n">GoogleCloudProvider</span>
+<span class="kn">from</span> <span class="nn">elasticluster.providers.ansible_provider</span> <span class="kn">import</span> <span class="n">AnsibleSetupProvider</span>
+<span class="kn">from</span> <span class="nn">elasticluster.cluster</span> <span class="kn">import</span> <span class="n">Cluster</span>
+<span class="kn">from</span> <span class="nn">elasticluster.repository</span> <span class="kn">import</span> <span class="n">ClusterRepository</span>
+
+
+<div class="viewcode-block" id="Configurator"><a class="viewcode-back" href="../../api/elasticluster/conf.html#elasticluster.conf.Configurator">[docs]</a><span class="k">class</span> <span class="nc">Configurator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;The Configurator is responsible for (I) keeping track of the</span>
+<span class="sd">    configuration and (II) offer factory methods to create all kind of</span>
+<span class="sd">    objects that need information from the configuration.</span>
+
+<span class="sd">    The cluster configuration dictionary is structured in the following way:</span>
+<span class="sd">    (see an example @</span>
+<span class="sd">     https://github.com/gc3-uzh-ch/elasticluster/wiki/Configuration-Module)</span>
+<span class="sd">    { &quot;&lt;cluster_template&gt;&quot; : {</span>
+<span class="sd">        &quot;setup&quot; : { properties of the setup section },</span>
+<span class="sd">        &quot;cloud&quot; : { properties of the cloud section },</span>
+<span class="sd">        &quot;login&quot; : { properties of the login section },</span>
+<span class="sd">        &quot;cluster&quot; : { properties of the cluster section },</span>
+<span class="sd">        &quot;nodes&quot;: {  &quot;&lt;node_kind&gt;&quot; : { properties of the node},</span>
+<span class="sd">                    &quot;&lt;node_kind&gt;&quot; : { properties of the node},</span>
+<span class="sd">                },</span>
+<span class="sd">        },</span>
+<span class="sd">     &quot;&lt;cluster_template&gt;&quot; : {</span>
+<span class="sd">        (see above)</span>
+<span class="sd">        }</span>
+<span class="sd">     }</span>
+
+<span class="sd">     :param dict cluster_conf: see description above</span>
+<span class="sd">     :param str storage_path: path to store data</span>
+<span class="sd">     :raises MultipleInvalid: configuration validation</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">cloud_providers_map</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">&quot;ec2_boto&quot;</span><span class="p">:</span> <span class="n">BotoCloudProvider</span><span class="p">,</span>
+        <span class="s">&quot;google&quot;</span><span class="p">:</span> <span class="n">GoogleCloudProvider</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="n">setup_providers_map</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;ansible&quot;</span><span class="p">:</span> <span class="n">AnsibleSetupProvider</span><span class="p">,</span> <span class="p">}</span>
+
+    <span class="n">default_storage_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span>
+        <span class="s">&quot;~/.elasticluster/storage&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cluster_conf</span><span class="p">,</span> <span class="n">storage_path</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">general_conf</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cluster_conf</span> <span class="o">=</span> <span class="n">cluster_conf</span>
+
+        <span class="k">if</span> <span class="n">storage_path</span><span class="p">:</span>
+            <span class="n">storage_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="n">storage_path</span><span class="p">)</span>
+            <span class="n">storage_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expandvars</span><span class="p">(</span><span class="n">storage_path</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">general_conf</span><span class="p">[</span><span class="s">&#39;storage&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">storage_path</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">general_conf</span><span class="p">[</span><span class="s">&#39;storage&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Configurator</span><span class="o">.</span><span class="n">default_storage_dir</span>
+
+        <span class="n">validator</span> <span class="o">=</span> <span class="n">ConfigValidator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cluster_conf</span><span class="p">)</span>
+        <span class="n">validator</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span>
+
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="Configurator.fromConfig"><a class="viewcode-back" href="../../api/elasticluster/conf.html#elasticluster.conf.Configurator.fromConfig">[docs]</a>    <span class="k">def</span> <span class="nf">fromConfig</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">configfile</span><span class="p">,</span> <span class="n">storage_path</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Helper method to initialize Configurator from an ini file.</span>
+
+<span class="sd">        :param str configfile: path to the ini file</span>
+<span class="sd">        :return: :py:class:`Configurator`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">config_reader</span> <span class="o">=</span> <span class="n">ConfigReader</span><span class="p">(</span><span class="n">configfile</span><span class="p">)</span>
+        <span class="n">conf</span> <span class="o">=</span> <span class="n">config_reader</span><span class="o">.</span><span class="n">read_config</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">Configurator</span><span class="p">(</span><span class="n">conf</span><span class="p">,</span> <span class="n">storage_path</span><span class="o">=</span><span class="n">storage_path</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Configurator.create_cloud_provider"><a class="viewcode-back" href="../../api/elasticluster/conf.html#elasticluster.conf.Configurator.create_cloud_provider">[docs]</a>    <span class="k">def</span> <span class="nf">create_cloud_provider</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cluster_template</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Creates a cloud provider by inspecting the configuration properties</span>
+<span class="sd">        of the given cluster template.</span>
+
+<span class="sd">        :param str cluster_template: template to use (if not already specified</span>
+<span class="sd">                                 on init)</span>
+<span class="sd">        :return: cloud provider that fulfills the contract of</span>
+<span class="sd">                 :py:class:`elasticluster.providers.AbstractSetupProvider`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">conf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cluster_conf</span><span class="p">[</span><span class="n">cluster_template</span><span class="p">][</span><span class="s">&#39;cloud&#39;</span><span class="p">]</span>
+
+        <span class="n">provider</span> <span class="o">=</span> <span class="n">Configurator</span><span class="o">.</span><span class="n">cloud_providers_map</span><span class="p">[</span><span class="n">conf</span><span class="p">[</span><span class="s">&#39;provider&#39;</span><span class="p">]]</span>
+        <span class="n">providerconf</span> <span class="o">=</span> <span class="n">conf</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">providerconf</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&#39;provider&#39;</span><span class="p">)</span>
+        <span class="n">providerconf</span><span class="p">[</span><span class="s">&#39;storage_path&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">general_conf</span><span class="p">[</span><span class="s">&#39;storage&#39;</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">provider</span><span class="p">(</span><span class="o">**</span><span class="n">providerconf</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Configurator.create_cluster"><a class="viewcode-back" href="../../api/elasticluster/conf.html#elasticluster.conf.Configurator.create_cluster">[docs]</a>    <span class="k">def</span> <span class="nf">create_cluster</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Creates a cluster by inspecting the configuration properties of the</span>
+<span class="sd">        given cluster template.</span>
+
+<span class="sd">        :param str template: name of the cluster template</span>
+
+<span class="sd">        :param str name: name of the cluster. If not defined, the cluster</span>
+<span class="sd">        will be named after the template.</span>
+
+<span class="sd">        :return: :py:class:`elasticluster.cluster.cluster` instance</span>
+
+<span class="sd">        :raises ConfigurationError: cluster template not found in config</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">name</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">template</span>
+
+        <span class="k">if</span> <span class="n">template</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cluster_conf</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ConfigurationError</span><span class="p">(</span>
+                <span class="s">&quot;Invalid configuration for cluster `</span><span class="si">%s</span><span class="s">`: </span><span class="si">%s</span><span class="s">&quot;</span>
+                <span class="s">&quot;&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">template</span><span class="p">,</span> <span class="n">name</span><span class="p">))</span>
+
+        <span class="n">conf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cluster_conf</span><span class="p">[</span><span class="n">template</span><span class="p">]</span>
+        <span class="n">conf_login</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cluster_conf</span><span class="p">[</span><span class="n">template</span><span class="p">][</span><span class="s">&#39;login&#39;</span><span class="p">]</span>
+
+        <span class="n">extra</span> <span class="o">=</span> <span class="n">conf</span><span class="p">[</span><span class="s">&#39;cluster&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">extra</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&#39;cloud&#39;</span><span class="p">)</span>
+        <span class="n">extra</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&#39;setup_provider&#39;</span><span class="p">)</span>
+
+        <span class="n">cluster</span> <span class="o">=</span> <span class="n">Cluster</span><span class="p">(</span><span class="n">name</span><span class="p">,</span>
+                          <span class="bp">self</span><span class="o">.</span><span class="n">create_cloud_provider</span><span class="p">(</span><span class="n">template</span><span class="p">),</span>
+                          <span class="bp">self</span><span class="o">.</span><span class="n">create_setup_provider</span><span class="p">(</span><span class="n">template</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">),</span>
+                          <span class="n">conf_login</span><span class="p">[</span><span class="s">&#39;user_key_name&#39;</span><span class="p">],</span>
+                          <span class="n">conf_login</span><span class="p">[</span><span class="s">&#39;user_key_public&#39;</span><span class="p">],</span>
+                          <span class="n">conf_login</span><span class="p">[</span><span class="s">&quot;user_key_private&quot;</span><span class="p">],</span>
+                          <span class="n">repository</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">create_repository</span><span class="p">(),</span>
+                          <span class="o">**</span><span class="n">extra</span><span class="p">)</span>
+
+        <span class="n">nodes</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">k</span><span class="p">[:</span><span class="o">-</span><span class="mi">6</span><span class="p">],</span> <span class="nb">int</span><span class="p">(</span><span class="n">v</span><span class="p">))</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">conf</span><span class="p">[</span><span class="s">&#39;cluster&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">iteritems</span><span class="p">()</span> <span class="k">if</span>
+            <span class="n">k</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s">&#39;_nodes&#39;</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">kind</span><span class="p">,</span> <span class="n">num</span> <span class="ow">in</span> <span class="n">nodes</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+            <span class="n">conf_kind</span> <span class="o">=</span> <span class="n">conf</span><span class="p">[</span><span class="s">&#39;nodes&#39;</span><span class="p">][</span><span class="n">kind</span><span class="p">]</span>
+            <span class="n">userdata</span> <span class="o">=</span> <span class="n">conf_kind</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;image_userdata&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)</span>
+            <span class="n">cluster</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="n">kind</span><span class="p">,</span>
+                              <span class="n">num</span><span class="p">,</span>
+                              <span class="n">conf_kind</span><span class="p">[</span><span class="s">&#39;image_id&#39;</span><span class="p">],</span>
+                              <span class="n">conf_login</span><span class="p">[</span><span class="s">&#39;image_user&#39;</span><span class="p">],</span>
+                              <span class="n">conf_kind</span><span class="p">[</span><span class="s">&#39;flavor&#39;</span><span class="p">],</span>
+                              <span class="n">conf_kind</span><span class="p">[</span><span class="s">&#39;security_group&#39;</span><span class="p">],</span>
+                              <span class="n">image_userdata</span><span class="o">=</span><span class="n">userdata</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">cluster</span>
+</div>
+<div class="viewcode-block" id="Configurator.load_cluster"><a class="viewcode-back" href="../../api/elasticluster/conf.html#elasticluster.conf.Configurator.load_cluster">[docs]</a>    <span class="k">def</span> <span class="nf">load_cluster</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cluster_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Loads a cluster from the cluster repository.</span>
+
+<span class="sd">        :param str cluster_name: name of the cluster</span>
+<span class="sd">        :return: :py:class:`elasticluster.cluster.cluster` instance</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">repository</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_repository</span><span class="p">()</span>
+        <span class="n">cluster</span> <span class="o">=</span> <span class="n">repository</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">cluster_name</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">cluster</span>
+</div>
+<div class="viewcode-block" id="Configurator.create_setup_provider"><a class="viewcode-back" href="../../api/elasticluster/conf.html#elasticluster.conf.Configurator.create_setup_provider">[docs]</a>    <span class="k">def</span> <span class="nf">create_setup_provider</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cluster_template</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Creates the setup provider for the given cluster template.</span>
+
+<span class="sd">        :param str cluster_template: template of the cluster</span>
+<span class="sd">        :param str name: name of the cluster to read configuration properties</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">conf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cluster_conf</span><span class="p">[</span><span class="n">cluster_template</span><span class="p">][</span><span class="s">&#39;setup&#39;</span><span class="p">]</span>
+        <span class="n">conf</span><span class="p">[</span><span class="s">&#39;general_conf&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">general_conf</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">name</span><span class="p">:</span>
+            <span class="n">conf</span><span class="p">[</span><span class="s">&#39;cluster_name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="n">conf_login</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cluster_conf</span><span class="p">[</span><span class="n">cluster_template</span><span class="p">][</span><span class="s">&#39;login&#39;</span><span class="p">]</span>
+
+        <span class="n">provider_name</span> <span class="o">=</span> <span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;provider&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">provider_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">Configurator</span><span class="o">.</span><span class="n">setup_providers_map</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ConfigurationError</span><span class="p">(</span>
+                <span class="s">&quot;Invalid value `</span><span class="si">%s</span><span class="s">` for `setup_provider` in configuration &quot;</span>
+                <span class="s">&quot;file.&quot;</span> <span class="o">%</span> <span class="n">provider_name</span><span class="p">)</span>
+
+        <span class="n">storage_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">general_conf</span><span class="p">[</span><span class="s">&#39;storage&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s">&#39;playbook_path&#39;</span> <span class="ow">in</span> <span class="n">conf</span><span class="p">:</span>
+            <span class="n">playbook_path</span> <span class="o">=</span> <span class="n">conf</span><span class="p">[</span><span class="s">&#39;playbook_path&#39;</span><span class="p">]</span>
+            <span class="k">del</span> <span class="n">conf</span><span class="p">[</span><span class="s">&#39;playbook_path&#39;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">playbook_path</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="n">groups</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">((</span><span class="n">k</span><span class="p">[:</span><span class="o">-</span><span class="mi">7</span><span class="p">],</span> <span class="n">v</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;,&#39;</span><span class="p">))</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span>
+                      <span class="ow">in</span> <span class="n">conf</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s">&#39;_groups&#39;</span><span class="p">))</span>
+        <span class="n">environment</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">nodekind</span><span class="p">,</span> <span class="n">grps</span> <span class="ow">in</span> <span class="n">groups</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">grps</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="n">groups</span><span class="p">[</span><span class="n">nodekind</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">grps</span><span class="p">]</span>
+
+            <span class="c"># Environment variables parsing</span>
+            <span class="n">environment</span><span class="p">[</span><span class="n">nodekind</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">conf</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+                <span class="n">prefix</span> <span class="o">=</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s">_var_&quot;</span> <span class="o">%</span> <span class="n">nodekind</span>
+                <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">prefix</span><span class="p">):</span>
+                    <span class="n">var</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)</span>
+                    <span class="n">environment</span><span class="p">[</span><span class="n">nodekind</span><span class="p">][</span><span class="n">var</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+        <span class="n">provider</span> <span class="o">=</span> <span class="n">Configurator</span><span class="o">.</span><span class="n">setup_providers_map</span><span class="p">[</span><span class="n">provider_name</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">provider</span><span class="p">(</span><span class="n">groups</span><span class="p">,</span> <span class="n">playbook_path</span><span class="o">=</span><span class="n">playbook_path</span><span class="p">,</span>
+                        <span class="n">environment_vars</span><span class="o">=</span><span class="n">environment</span><span class="p">,</span>
+                        <span class="n">storage_path</span><span class="o">=</span><span class="n">storage_path</span><span class="p">,</span>
+                        <span class="n">sudo_user</span><span class="o">=</span><span class="n">conf_login</span><span class="p">[</span><span class="s">&#39;image_user_sudo&#39;</span><span class="p">],</span>
+                        <span class="n">sudo</span><span class="o">=</span><span class="n">conf_login</span><span class="p">[</span><span class="s">&#39;image_sudo&#39;</span><span class="p">],</span> <span class="o">**</span><span class="n">conf</span><span class="p">)</span>
+</div>
+    <span class="k">def</span> <span class="nf">create_repository</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">storage_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">general_conf</span><span class="p">[</span><span class="s">&#39;storage&#39;</span><span class="p">]</span>
+        <span class="n">repository</span> <span class="o">=</span> <span class="n">ClusterRepository</span><span class="p">(</span><span class="n">storage_path</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">repository</span>
+
+</div>
+<div class="viewcode-block" id="ConfigValidator"><a class="viewcode-back" href="../../api/elasticluster/conf.html#elasticluster.conf.ConfigValidator">[docs]</a><span class="k">class</span> <span class="nc">ConfigValidator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Validator for the cluster configuration dictionary.</span>
+
+<span class="sd">    :param config: dictionary containing cluster configuration properties</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>
+
+    <span class="k">def</span> <span class="nf">_pre_validate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Handles all pre validation phase functionality, such as:</span>
+
+<span class="sd">        * reading environment variables</span>
+<span class="sd">        * interpolating configuraiton options</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># read cloud provider environment variables (ec2_boto or google)</span>
+        <span class="k">for</span> <span class="n">cluster</span><span class="p">,</span> <span class="n">props</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+            <span class="k">if</span> <span class="s">&quot;cloud&quot;</span> <span class="ow">in</span> <span class="n">props</span> <span class="ow">and</span> <span class="s">&quot;provider&quot;</span> <span class="ow">in</span> <span class="n">props</span><span class="p">[</span><span class="s">&#39;cloud&#39;</span><span class="p">]:</span>
+                <span class="k">for</span> <span class="n">param</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">props</span><span class="p">[</span><span class="s">&#39;cloud&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+                    <span class="n">PARAM</span> <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">value</span> <span class="ow">and</span> <span class="n">PARAM</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">:</span>
+                        <span class="n">props</span><span class="p">[</span><span class="s">&#39;cloud&#39;</span><span class="p">][</span><span class="n">param</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="n">PARAM</span><span class="p">]</span>
+
+        <span class="c"># interpolate ansible path manual, since configobj does not offer</span>
+        <span class="c"># an easy way to handle this</span>
+        <span class="n">ansible_pb_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">prefix</span><span class="p">,</span>
+            <span class="s">&#39;share/elasticluster/providers/ansible-playbooks&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">cluster</span><span class="p">,</span> <span class="n">props</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+            <span class="k">if</span> <span class="s">&#39;setup&#39;</span> <span class="ow">in</span> <span class="n">props</span> <span class="ow">and</span> <span class="s">&#39;playbook_path&#39;</span> <span class="ow">in</span> <span class="n">props</span><span class="p">[</span><span class="s">&#39;setup&#39;</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">props</span><span class="p">[</span><span class="s">&#39;setup&#39;</span><span class="p">][</span><span class="s">&#39;playbook_path&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span>
+                        <span class="s">&quot;</span><span class="si">%(ansible_pb_dir)s</span><span class="s">&quot;</span><span class="p">):</span>
+                    <span class="n">pbpath</span> <span class="o">=</span> <span class="n">props</span><span class="p">[</span><span class="s">&#39;setup&#39;</span><span class="p">][</span><span class="s">&#39;playbook_path&#39;</span><span class="p">]</span>
+                    <span class="n">pbpath</span> <span class="o">=</span> <span class="n">pbpath</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%(ansible_pb_dir)s</span><span class="s">&quot;</span><span class="p">,</span>
+                                            <span class="nb">str</span><span class="p">(</span><span class="n">ansible_pb_dir</span><span class="p">))</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="n">cluster</span><span class="p">][</span><span class="s">&#39;setup&#39;</span><span class="p">][</span><span class="s">&#39;playbook_path&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pbpath</span>
+
+    <span class="k">def</span> <span class="nf">_post_validate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Handles all post validation phase functionality, such as:</span>
+
+<span class="sd">        * expanding file paths</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># expand all paths</span>
+        <span class="k">for</span> <span class="n">cluster</span><span class="p">,</span> <span class="n">values</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+            <span class="n">conf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="n">cluster</span><span class="p">]</span>
+            <span class="k">if</span> <span class="s">&#39;playbook_path&#39;</span> <span class="ow">in</span> <span class="n">values</span><span class="p">[</span><span class="s">&#39;setup&#39;</span><span class="p">]:</span>
+                <span class="n">pbpath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="n">values</span><span class="p">[</span><span class="s">&#39;setup&#39;</span><span class="p">][</span><span class="s">&#39;playbook_path&#39;</span><span class="p">])</span>
+                <span class="n">conf</span><span class="p">[</span><span class="s">&#39;setup&#39;</span><span class="p">][</span><span class="s">&#39;playbook_path&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pbpath</span>
+
+            <span class="n">privkey</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="n">values</span><span class="p">[</span><span class="s">&#39;login&#39;</span><span class="p">][</span><span class="s">&#39;user_key_private&#39;</span><span class="p">])</span>
+            <span class="n">conf</span><span class="p">[</span><span class="s">&#39;login&#39;</span><span class="p">][</span><span class="s">&#39;user_key_private&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">privkey</span>
+
+            <span class="n">pubkey</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="n">values</span><span class="p">[</span><span class="s">&#39;login&#39;</span><span class="p">][</span><span class="s">&#39;user_key_public&#39;</span><span class="p">])</span>
+            <span class="n">conf</span><span class="p">[</span><span class="s">&#39;login&#39;</span><span class="p">][</span><span class="s">&#39;user_key_public&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pubkey</span>
+
+<div class="viewcode-block" id="ConfigValidator.validate"><a class="viewcode-back" href="../../api/elasticluster/conf.html#elasticluster.conf.ConfigValidator.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Validates the given configuration :py:attr:`self.config` to comply</span>
+<span class="sd">        with elasticluster. As well all types are converted to the expected</span>
+<span class="sd">        format if possible.</span>
+
+<span class="sd">        :raises: :py:class:`voluptuous.MultipleInvalid` if multiple</span>
+<span class="sd">                 properties are not compliant</span>
+<span class="sd">        :raises: :py:class:`voluptuous.Invalid` if one property is invalid</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pre_validate</span><span class="p">()</span>
+        <span class="c"># custom validators</span>
+        <span class="nd">@message</span><span class="p">(</span><span class="s">&quot;file could not be found&quot;</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">check_file</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+            <span class="n">f</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="n">v</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">f</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">Invalid</span><span class="p">(</span><span class="s">&quot;file could not be found `</span><span class="si">%s</span><span class="s">`&quot;</span> <span class="o">%</span> <span class="n">v</span><span class="p">)</span>
+
+        <span class="c"># schema to validate all cluster properties</span>
+        <span class="n">schema</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;cluster&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s">&quot;cloud&quot;</span><span class="p">:</span> <span class="n">All</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Length</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">)),</span>
+                              <span class="s">&quot;setup_provider&quot;</span><span class="p">:</span> <span class="n">All</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Length</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">)),</span>
+                              <span class="s">&quot;login&quot;</span><span class="p">:</span> <span class="n">All</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Length</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">))},</span>
+                  <span class="s">&quot;setup&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s">&quot;provider&quot;</span><span class="p">:</span> <span class="n">All</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Length</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">)),</span>
+                            <span class="n">Optional</span><span class="p">(</span><span class="s">&quot;playbook_path&quot;</span><span class="p">):</span> <span class="n">check_file</span><span class="p">()},</span>
+                  <span class="s">&quot;login&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s">&quot;image_user&quot;</span><span class="p">:</span> <span class="n">All</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Length</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">)),</span>
+                            <span class="s">&quot;image_user_sudo&quot;</span><span class="p">:</span> <span class="n">All</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Length</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">)),</span>
+                            <span class="s">&quot;image_sudo&quot;</span><span class="p">:</span> <span class="n">Boolean</span><span class="p">(</span><span class="nb">str</span><span class="p">),</span>
+                            <span class="s">&quot;user_key_name&quot;</span><span class="p">:</span> <span class="n">All</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Length</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">)),</span>
+                            <span class="s">&quot;user_key_private&quot;</span><span class="p">:</span> <span class="n">check_file</span><span class="p">(),</span>
+                            <span class="s">&quot;user_key_public&quot;</span><span class="p">:</span> <span class="n">check_file</span><span class="p">()}}</span>
+
+        <span class="n">cloud_schema_ec2</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;provider&quot;</span><span class="p">:</span> <span class="s">&#39;ec2_boto&#39;</span><span class="p">,</span>
+                            <span class="s">&quot;ec2_url&quot;</span><span class="p">:</span> <span class="n">Url</span><span class="p">(</span><span class="nb">str</span><span class="p">),</span>
+                            <span class="s">&quot;ec2_access_key&quot;</span><span class="p">:</span> <span class="n">All</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Length</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">)),</span>
+                            <span class="s">&quot;ec2_secret_key&quot;</span><span class="p">:</span> <span class="n">All</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Length</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">)),</span>
+                            <span class="s">&quot;ec2_region&quot;</span><span class="p">:</span> <span class="n">All</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Length</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">)),</span>
+                            <span class="n">Optional</span><span class="p">(</span><span class="s">&quot;auto_ip_assignment&quot;</span><span class="p">):</span> <span class="n">Boolean</span><span class="p">(</span><span class="nb">str</span><span class="p">)}</span>
+        <span class="n">cloud_schema_gce</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;provider&quot;</span><span class="p">:</span> <span class="s">&#39;google&#39;</span><span class="p">,</span>
+                            <span class="s">&quot;gce_client_id&quot;</span><span class="p">:</span> <span class="n">All</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Length</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">)),</span>
+                            <span class="s">&quot;gce_client_secret&quot;</span><span class="p">:</span> <span class="n">All</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Length</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">)),</span>
+                            <span class="s">&quot;gce_project_id&quot;</span><span class="p">:</span> <span class="n">All</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Length</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">))}</span>
+
+        <span class="n">node_schema</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s">&quot;flavor&quot;</span><span class="p">:</span> <span class="n">All</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Length</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">)),</span>
+            <span class="s">&quot;image_id&quot;</span><span class="p">:</span> <span class="n">All</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Length</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">)),</span>
+            <span class="s">&quot;security_group&quot;</span><span class="p">:</span> <span class="n">All</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Length</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+        <span class="p">}</span>
+
+        <span class="c"># validation</span>
+        <span class="n">validator</span> <span class="o">=</span> <span class="n">Schema</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="n">validator_node</span> <span class="o">=</span> <span class="n">Schema</span><span class="p">(</span><span class="n">node_schema</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="n">ec2_validator</span> <span class="o">=</span> <span class="n">Schema</span><span class="p">(</span><span class="n">cloud_schema_ec2</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+        <span class="n">gce_validator</span> <span class="o">=</span> <span class="n">Schema</span><span class="p">(</span><span class="n">cloud_schema_gce</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">Invalid</span><span class="p">(</span><span class="s">&quot;No clusters found in configuration.&quot;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">cluster</span><span class="p">,</span> <span class="n">properties</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="n">cluster</span><span class="p">]</span> <span class="o">=</span> <span class="n">validator</span><span class="p">(</span><span class="n">properties</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="s">&#39;provider&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">properties</span><span class="p">[</span><span class="s">&#39;cloud&#39;</span><span class="p">]:</span>
+                <span class="k">raise</span> <span class="n">Invalid</span><span class="p">(</span>
+                    <span class="s">&quot;Missing `provider` option in cluster `</span><span class="si">%s</span><span class="s">`&quot;</span> <span class="o">%</span> <span class="n">cluster</span><span class="p">)</span>
+
+            <span class="n">cloud_props</span> <span class="o">=</span> <span class="n">properties</span><span class="p">[</span><span class="s">&#39;cloud&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">properties</span><span class="p">[</span><span class="s">&#39;cloud&#39;</span><span class="p">][</span><span class="s">&#39;provider&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s">&quot;ec2_boto&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="n">cluster</span><span class="p">][</span><span class="s">&#39;cloud&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ec2_validator</span><span class="p">(</span><span class="n">cloud_props</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">properties</span><span class="p">[</span><span class="s">&#39;cloud&#39;</span><span class="p">][</span><span class="s">&#39;provider&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s">&quot;google&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="n">cluster</span><span class="p">][</span><span class="s">&#39;cloud&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gce_validator</span><span class="p">(</span><span class="n">cloud_props</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="s">&#39;nodes&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">properties</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">properties</span><span class="p">[</span><span class="s">&#39;nodes&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">Invalid</span><span class="p">(</span>
+                    <span class="s">&quot;No nodes configured for cluster `</span><span class="si">%s</span><span class="s">`&quot;</span> <span class="o">%</span> <span class="n">cluster</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">node</span><span class="p">,</span> <span class="n">props</span> <span class="ow">in</span> <span class="n">properties</span><span class="p">[</span><span class="s">&#39;nodes&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+                <span class="c"># check name pattern to conform hostnames</span>
+                <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s">r&#39;^[a-zA-Z0-9-]*$&#39;</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">match</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">Invalid</span><span class="p">(</span>
+                        <span class="s">&quot;Invalid name `</span><span class="si">%s</span><span class="s">` for node group. A valid node group &quot;</span>
+                        <span class="s">&quot;can only consist of letters, digits or the hyphens &quot;</span>
+                        <span class="s">&quot;character (`-`)&quot;</span> <span class="o">%</span> <span class="n">node</span><span class="p">)</span>
+
+                <span class="n">validator_node</span><span class="p">(</span><span class="n">props</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_post_validate</span><span class="p">()</span>
+
+</div></div>
+<div class="viewcode-block" id="ConfigReader"><a class="viewcode-back" href="../../api/elasticluster/conf.html#elasticluster.conf.ConfigReader">[docs]</a><span class="k">class</span> <span class="nc">ConfigReader</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Reads the configuration properties from a ini file.</span>
+
+<span class="sd">    :param str configfile: path to configfile</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">cluster_section</span> <span class="o">=</span> <span class="s">&quot;cluster&quot;</span>
+    <span class="n">login_section</span> <span class="o">=</span> <span class="s">&quot;login&quot;</span>
+    <span class="n">setup_section</span> <span class="o">=</span> <span class="s">&quot;setup&quot;</span>
+    <span class="n">cloud_section</span> <span class="o">=</span> <span class="s">&quot;cloud&quot;</span>
+    <span class="n">node_section</span> <span class="o">=</span> <span class="s">&quot;node&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">configfile</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">configfile</span> <span class="o">=</span> <span class="n">configfile</span>
+
+        <span class="n">configparser</span> <span class="o">=</span> <span class="n">RawConfigParser</span><span class="p">()</span>
+        <span class="n">config_tmp</span> <span class="o">=</span> <span class="n">configparser</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">configfile</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conf</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">section</span> <span class="ow">in</span> <span class="n">configparser</span><span class="o">.</span><span class="n">sections</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="p">[</span><span class="n">section</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">configparser</span><span class="o">.</span><span class="n">items</span><span class="p">(</span><span class="n">section</span><span class="p">))</span>
+
+        <span class="c">#self.conf = ConfigObj(self.configfile, interpolation=False)</span>
+
+        <span class="nd">@message</span><span class="p">(</span><span class="s">&quot;file could not be found&quot;</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">check_file</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+            <span class="n">f</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="n">v</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">f</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">Invalid</span><span class="p">(</span><span class="s">&quot;file could not be found `</span><span class="si">%s</span><span class="s">`&quot;</span> <span class="o">%</span> <span class="n">v</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">schemas</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s">&quot;cloud&quot;</span><span class="p">:</span> <span class="n">Schema</span><span class="p">(</span>
+                <span class="p">{</span><span class="s">&quot;provider&quot;</span><span class="p">:</span> <span class="n">Any</span><span class="p">(</span><span class="s">&#39;ec2_boto&#39;</span><span class="p">,</span> <span class="s">&#39;google&#39;</span><span class="p">),</span>
+                 <span class="s">&quot;ec2_url&quot;</span><span class="p">:</span> <span class="n">Url</span><span class="p">(</span><span class="nb">str</span><span class="p">),</span>
+                 <span class="s">&quot;ec2_access_key&quot;</span><span class="p">:</span> <span class="n">All</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Length</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">)),</span>
+                 <span class="s">&quot;ec2_secret_key&quot;</span><span class="p">:</span> <span class="n">All</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Length</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">)),</span>
+                 <span class="s">&quot;ec2_region&quot;</span><span class="p">:</span> <span class="n">All</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Length</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">)),</span>
+                 <span class="s">&quot;gce_project_id&quot;</span><span class="p">:</span> <span class="n">All</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Length</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">)),</span>
+                 <span class="s">&quot;gce_client_id&quot;</span><span class="p">:</span> <span class="n">All</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Length</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">)),</span>
+                 <span class="s">&quot;gce_client_secret&quot;</span><span class="p">:</span> <span class="n">All</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Length</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">))},</span> <span class="n">extra</span><span class="o">=</span><span class="bp">True</span><span class="p">),</span>
+            <span class="s">&quot;cluster&quot;</span><span class="p">:</span> <span class="n">Schema</span><span class="p">(</span>
+                <span class="p">{</span><span class="s">&quot;cloud&quot;</span><span class="p">:</span> <span class="n">All</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Length</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">)),</span>
+                 <span class="s">&quot;setup_provider&quot;</span><span class="p">:</span> <span class="n">All</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Length</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">)),</span>
+                 <span class="s">&quot;login&quot;</span><span class="p">:</span> <span class="n">All</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Length</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">))},</span> <span class="n">required</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="bp">True</span><span class="p">),</span>
+            <span class="s">&quot;setup&quot;</span><span class="p">:</span> <span class="n">Schema</span><span class="p">(</span>
+                <span class="p">{</span><span class="s">&quot;provider&quot;</span><span class="p">:</span> <span class="n">All</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Length</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">)),</span>
+                    <span class="p">},</span> <span class="n">required</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="bp">True</span><span class="p">),</span>
+            <span class="s">&quot;login&quot;</span><span class="p">:</span> <span class="n">Schema</span><span class="p">(</span>
+                <span class="p">{</span><span class="s">&quot;image_user&quot;</span><span class="p">:</span> <span class="n">All</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Length</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">)),</span>
+                 <span class="s">&quot;image_user_sudo&quot;</span><span class="p">:</span> <span class="n">All</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Length</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">)),</span>
+                 <span class="s">&quot;image_sudo&quot;</span><span class="p">:</span> <span class="n">Boolean</span><span class="p">(</span><span class="nb">str</span><span class="p">),</span>
+                 <span class="s">&quot;user_key_name&quot;</span><span class="p">:</span> <span class="n">All</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Length</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">)),</span>
+                 <span class="s">&quot;user_key_private&quot;</span><span class="p">:</span> <span class="n">check_file</span><span class="p">(),</span>
+                 <span class="s">&quot;user_key_public&quot;</span><span class="p">:</span> <span class="n">check_file</span><span class="p">()},</span> <span class="n">required</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="p">}</span>
+
+<div class="viewcode-block" id="ConfigReader.read_config"><a class="viewcode-back" href="../../api/elasticluster/conf.html#elasticluster.conf.ConfigReader.read_config">[docs]</a>    <span class="k">def</span> <span class="nf">read_config</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Reads the configuration properties from the ini file and links the</span>
+<span class="sd">        section to comply with the cluster config dictionary format.</span>
+
+<span class="sd">        :return: dictionary containing all configuration properties from the</span>
+<span class="sd">         ini file in compliance to the cluster config format</span>
+<span class="sd">        :raises: :py:class:`voluptuous.MultipleInvalid` if not all sections</span>
+<span class="sd">                 present or broken links between secitons</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">clusters</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">((</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">iteritems</span><span class="p">()</span> <span class="k">if</span>
+                        <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">ConfigReader</span><span class="o">.</span><span class="n">cluster_section</span> <span class="o">+</span> <span class="s">&quot;/(.*)&quot;</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+                        <span class="ow">and</span> <span class="n">key</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s">&quot;/&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">conf_values</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+        <span class="n">errors</span> <span class="o">=</span> <span class="n">MultipleInvalid</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">cluster</span> <span class="ow">in</span> <span class="n">clusters</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">ConfigReader</span><span class="o">.</span><span class="n">cluster_section</span> <span class="o">+</span> <span class="s">&quot;/(.*)&quot;</span><span class="p">,</span>
+                             <span class="n">cluster</span><span class="p">)</span><span class="o">.</span><span class="n">groups</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">name</span><span class="p">:</span>
+                <span class="n">errors</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s">&quot;Invalid section name `</span><span class="si">%s</span><span class="s">`&quot;</span> <span class="o">%</span> <span class="n">cluster</span><span class="p">)</span>
+                <span class="k">continue</span>
+
+            <span class="n">cluster_conf</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="p">[</span><span class="n">cluster</span><span class="p">])</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">schemas</span><span class="p">[</span><span class="s">&#39;cluster&#39;</span><span class="p">](</span><span class="n">cluster_conf</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">MultipleInvalid</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">error</span> <span class="ow">in</span> <span class="n">ex</span><span class="o">.</span><span class="n">errors</span><span class="p">:</span>
+                    <span class="n">errors</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s">&quot;Section `</span><span class="si">%s</span><span class="s">`: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">cluster</span><span class="p">,</span> <span class="n">error</span><span class="p">))</span>
+                <span class="k">continue</span>
+
+            <span class="n">cloud_name</span> <span class="o">=</span> <span class="n">ConfigReader</span><span class="o">.</span><span class="n">cloud_section</span> <span class="o">+</span> <span class="s">&quot;/&quot;</span> <span class="o">+</span> <span class="n">cluster_conf</span><span class="p">[</span>
+                <span class="s">&#39;cloud&#39;</span><span class="p">]</span>
+            <span class="n">login_name</span> <span class="o">=</span> <span class="n">ConfigReader</span><span class="o">.</span><span class="n">login_section</span> <span class="o">+</span> <span class="s">&quot;/&quot;</span> <span class="o">+</span> <span class="n">cluster_conf</span><span class="p">[</span>
+                <span class="s">&#39;login&#39;</span><span class="p">]</span>
+            <span class="n">setup_name</span> <span class="o">=</span> <span class="n">ConfigReader</span><span class="o">.</span><span class="n">setup_section</span> <span class="o">+</span> <span class="s">&quot;/&quot;</span> <span class="o">+</span> <span class="n">cluster_conf</span><span class="p">[</span>
+                <span class="s">&#39;setup_provider&#39;</span><span class="p">]</span>
+
+            <span class="n">values</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+            <span class="n">values</span><span class="p">[</span><span class="s">&#39;cluster&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cluster_conf</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">values</span><span class="p">[</span><span class="s">&#39;setup&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="p">[</span><span class="n">setup_name</span><span class="p">])</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">schemas</span><span class="p">[</span><span class="s">&#39;setup&#39;</span><span class="p">](</span><span class="n">values</span><span class="p">[</span><span class="s">&#39;setup&#39;</span><span class="p">])</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">,</span> <span class="n">ex</span><span class="p">:</span>
+                <span class="n">errors</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+                    <span class="s">&quot;cluster `</span><span class="si">%s</span><span class="s">` setup section `</span><span class="si">%s</span><span class="s">` does not exists&quot;</span> <span class="o">%</span> <span class="p">(</span>
+                        <span class="n">cluster</span><span class="p">,</span> <span class="n">setup_name</span><span class="p">))</span>
+            <span class="k">except</span> <span class="n">MultipleInvalid</span><span class="p">,</span> <span class="n">ex</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">error</span> <span class="ow">in</span> <span class="n">ex</span><span class="o">.</span><span class="n">errors</span><span class="p">:</span>
+                    <span class="n">errors</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">error</span><span class="p">)</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">values</span><span class="p">[</span><span class="s">&#39;login&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="p">[</span><span class="n">login_name</span><span class="p">])</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">schemas</span><span class="p">[</span><span class="s">&#39;login&#39;</span><span class="p">](</span><span class="n">values</span><span class="p">[</span><span class="s">&#39;login&#39;</span><span class="p">])</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">,</span> <span class="n">ex</span><span class="p">:</span>
+                <span class="n">errors</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+                    <span class="s">&quot;cluster `</span><span class="si">%s</span><span class="s">` login section `</span><span class="si">%s</span><span class="s">` does not exists&quot;</span> <span class="o">%</span> <span class="p">(</span>
+                        <span class="n">cluster</span><span class="p">,</span> <span class="n">login_name</span><span class="p">))</span>
+            <span class="k">except</span> <span class="n">MultipleInvalid</span><span class="p">,</span> <span class="n">ex</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">error</span> <span class="ow">in</span> <span class="n">ex</span><span class="o">.</span><span class="n">errors</span><span class="p">:</span>
+                    <span class="n">errors</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">error</span><span class="p">)</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">values</span><span class="p">[</span><span class="s">&#39;cloud&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="p">[</span><span class="n">cloud_name</span><span class="p">])</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">schemas</span><span class="p">[</span><span class="s">&#39;cloud&#39;</span><span class="p">](</span><span class="n">values</span><span class="p">[</span><span class="s">&#39;cloud&#39;</span><span class="p">])</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">,</span> <span class="n">ex</span><span class="p">:</span>
+                <span class="n">errors</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+                    <span class="s">&quot;cluster `</span><span class="si">%s</span><span class="s">` cloud section `</span><span class="si">%s</span><span class="s">` does not exists&quot;</span> <span class="o">%</span> <span class="p">(</span>
+                        <span class="n">cluster</span><span class="p">,</span> <span class="n">cloud_name</span><span class="p">))</span>
+            <span class="k">except</span> <span class="n">MultipleInvalid</span><span class="p">,</span> <span class="n">ex</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">error</span> <span class="ow">in</span> <span class="n">ex</span><span class="o">.</span><span class="n">errors</span><span class="p">:</span>
+                    <span class="n">errors</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Invalid</span><span class="p">(</span><span class="s">&quot;section </span><span class="si">%s</span><span class="s">: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">cloud_name</span><span class="p">,</span> <span class="n">error</span><span class="p">)))</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="c"># nodes can inherit the properties of cluster or overwrite them</span>
+                <span class="n">nodes</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">((</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span>
+                             <span class="n">values</span><span class="p">[</span><span class="s">&#39;cluster&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span>
+                             <span class="n">key</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s">&#39;_nodes&#39;</span><span class="p">))</span>
+                <span class="n">values</span><span class="p">[</span><span class="s">&#39;nodes&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">nodes</span><span class="o">.</span><span class="n">iterkeys</span><span class="p">():</span>
+                    <span class="n">node_name</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s">&quot;(.*)_nodes&quot;</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span><span class="o">.</span><span class="n">groups</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="n">property_name</span> <span class="o">=</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s">/</span><span class="si">%s</span><span class="s">/</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">ConfigReader</span><span class="o">.</span><span class="n">cluster_section</span><span class="p">,</span>
+                                                  <span class="n">name</span><span class="p">,</span> <span class="n">node_name</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">property_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="p">:</span>
+                        <span class="n">node_values</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                            <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s">&quot;&#39;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s">&#39;&quot;&#39;</span><span class="p">))</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span>
+                            <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="p">[</span><span class="n">property_name</span><span class="p">]</span><span class="o">.</span><span class="n">iteritems</span><span class="p">())</span>
+                        <span class="n">node_values</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                            <span class="n">values</span><span class="p">[</span><span class="s">&#39;cluster&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="o">+</span> <span class="n">node_values</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+                        <span class="n">values</span><span class="p">[</span><span class="s">&#39;nodes&#39;</span><span class="p">][</span><span class="n">node_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">node_values</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">values</span><span class="p">[</span><span class="s">&#39;nodes&#39;</span><span class="p">][</span><span class="n">node_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="s">&#39;cluster&#39;</span><span class="p">]</span>
+
+                <span class="k">if</span> <span class="n">errors</span><span class="o">.</span><span class="n">errors</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">error</span> <span class="ow">in</span> <span class="n">errors</span><span class="o">.</span><span class="n">errors</span><span class="p">:</span>
+                        <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                            <span class="s">&quot;Ignoring Cluster `</span><span class="si">%s</span><span class="s">`: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">error</span><span class="p">))</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&quot;Ignoring cluster `</span><span class="si">%s</span><span class="s">`.&quot;</span> <span class="o">%</span> <span class="n">name</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">conf_values</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">values</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">,</span> <span class="n">ex</span><span class="p">:</span>
+                <span class="n">errors</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s">&quot;Error in section `</span><span class="si">%s</span><span class="s">`&quot;</span> <span class="o">%</span> <span class="n">cluster</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">errors</span><span class="o">.</span><span class="n">errors</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">errors</span>
+        <span class="k">return</span> <span class="n">conf_values</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">elasticluster 1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Grid Computing Competence Centre, University of Zurich.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

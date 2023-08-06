@@ -1,0 +1,452 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>elasticluster.cluster &mdash; elasticluster 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="elasticluster 1.0 documentation" href="../../index.html" />
+    <link rel="up" title="Elasitcluster programming API" href="../index.html" />
+    <link rel="next" title="elasticluster.conf" href="conf.html" />
+    <link rel="prev" title="elasticluster" href="../elasticluster.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="conf.html" title="elasticluster.conf"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../elasticluster.html" title="elasticluster"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../../index.html">elasticluster 1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Elasitcluster programming API</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-elasticluster.cluster">
+<span id="elasticluster-cluster"></span><h1><cite>elasticluster.cluster</cite><a class="headerlink" href="#module-elasticluster.cluster" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="elasticluster.cluster.Cluster">
+<em class="property">class </em><tt class="descclassname">elasticluster.cluster.</tt><tt class="descname">Cluster</tt><big>(</big><em>name</em>, <em>cloud_provider</em>, <em>setup_provider</em>, <em>user_key_name</em>, <em>user_key_public</em>, <em>user_key_private</em>, <em>repository=None</em>, <em>**extra</em><big>)</big><a class="reference internal" href="../../_modules/elasticluster/cluster.html#Cluster"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#elasticluster.cluster.Cluster" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is the heart of elasticluster and handles all cluster relevant
+behavior. You can basically start, setup and stop a cluster. Also it
+provides factory methods to add nodes to the cluster.
+A typical workflow is as follows:</p>
+<ul class="simple">
+<li>create a new cluster</li>
+<li>add nodes to fit your computing needs</li>
+<li>start cluster; start all instances in the cloud</li>
+<li>setup cluster; configure all nodes to fit your computing cluster</li>
+<li>eventually stop cluster; destroys all instances in the cloud</li>
+</ul>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>name</strong> (<em>str</em>) &#8211; unique identifier of the cluster</li>
+<li><strong>cloud_provider</strong> (<a class="reference internal" href="providers.html#elasticluster.providers.AbstractCloudProvider" title="elasticluster.providers.AbstractCloudProvider"><tt class="xref py py-class docutils literal"><span class="pre">elasticluster.providers.AbstractCloudProvider</span></tt></a>) &#8211; access to the cloud to manage nodes</li>
+<li><strong>setup_provider</strong> (<a class="reference internal" href="providers.html#elasticluster.providers.AbstractSetupProvider" title="elasticluster.providers.AbstractSetupProvider"><tt class="xref py py-class docutils literal"><span class="pre">elasticluster.providers.AbstractSetupProvider</span></tt></a>) &#8211; provider to setup cluster</li>
+<li><strong>user_key_name</strong> (<em>str</em>) &#8211; name of the ssh key to connect to cloud</li>
+<li><strong>user_key_public</strong> (<em>str</em>) &#8211; path to ssh public key file</li>
+<li><strong>user_key_private</strong> (<em>str</em>) &#8211; path to ssh private key file</li>
+<li><strong>repository</strong> (<a class="reference internal" href="repository.html#elasticluster.repository.AbstractClusterRepository" title="elasticluster.repository.AbstractClusterRepository"><tt class="xref py py-class docutils literal"><span class="pre">elasticluster.repository.AbstractClusterRepository</span></tt></a>) &#8211; by default the
+<a class="reference internal" href="repository.html#elasticluster.repository.MemRepository" title="elasticluster.repository.MemRepository"><tt class="xref py py-class docutils literal"><span class="pre">elasticluster.repository.MemRepository</span></tt></a> is
+used to store the cluster in memory. Provide another
+repository to store the cluster in a persistent state.</li>
+<li><strong>extra</strong> &#8211; tbd.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Variables:</th><td class="field-body"><p class="first last"><strong>nodes</strong> &#8211; dict [node_type] = [<a class="reference internal" href="#elasticluster.cluster.Node" title="elasticluster.cluster.Node"><tt class="xref py py-class docutils literal"><span class="pre">Node</span></tt></a>] that represents all
+nodes in this cluster</p>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="elasticluster.cluster.Cluster.add_node">
+<tt class="descname">add_node</tt><big>(</big><em>kind</em>, <em>image_id</em>, <em>image_user</em>, <em>flavor</em>, <em>security_group</em>, <em>image_userdata=''</em>, <em>name=None</em><big>)</big><a class="reference internal" href="../../_modules/elasticluster/cluster.html#Cluster.add_node"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#elasticluster.cluster.Cluster.add_node" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds a new node to the cluster. This factory method provides an
+easy way to add a new node to the cluster by specifying all relevant
+parameters. The node does not get started nor setup automatically,
+this has to be done manually afterwards.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>kind</strong> (<em>str</em>) &#8211; kind of node to start. this refers to the
+groups defined in the ansible setup provider
+<tt class="xref py py-class docutils literal"><span class="pre">elasticluster.providers.AnsibleSetupProvider</span></tt>
+Please note that this must match the
+<cite>[a-zA-Z0-9-]</cite> regexp, as it is used to build
+a valid hostname</li>
+<li><strong>image_id</strong> (<em>str</em>) &#8211; image id to use for the cloud instance (e.g.
+ami on amazon)</li>
+<li><strong>image_user</strong> (<em>str</em>) &#8211; user to login on given image</li>
+<li><strong>flavor</strong> (<em>str</em>) &#8211; machine type to use for cloud instance</li>
+<li><strong>security_group</strong> (<em>str</em>) &#8211; security group that defines firewall rules
+to the instance</li>
+<li><strong>image_userdata</strong> (<em>str</em>) &#8211; commands to execute after instance starts</li>
+<li><strong>name</strong> (<em>str</em>) &#8211; name of this node, automatically generated if None</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises :</th><td class="field-body"><p class="first">ValueError: <cite>kind</cite> argument is an invalid string.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">created <a class="reference internal" href="#elasticluster.cluster.Node" title="elasticluster.cluster.Node"><tt class="xref py py-class docutils literal"><span class="pre">Node</span></tt></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="elasticluster.cluster.Cluster.add_nodes">
+<tt class="descname">add_nodes</tt><big>(</big><em>kind</em>, <em>num</em>, <em>image_id</em>, <em>image_user</em>, <em>flavor</em>, <em>security_group</em>, <em>image_userdata=''</em><big>)</big><a class="reference internal" href="../../_modules/elasticluster/cluster.html#Cluster.add_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#elasticluster.cluster.Cluster.add_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper method to add multiple nodes of the same kind to a cluster.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>kind</strong> (<em>str</em>) &#8211; kind of node to start. this refers to the groups
+defined in the ansible setup provider
+<tt class="xref py py-class docutils literal"><span class="pre">elasticluster.providers.AnsibleSetupProvider</span></tt></li>
+<li><strong>num</strong> (<em>int</em>) &#8211; number of nodes to add of this kind</li>
+<li><strong>image_id</strong> (<em>str</em>) &#8211; image id to use for the cloud instance (e.g.
+ami on amazon)</li>
+<li><strong>image_user</strong> (<em>str</em>) &#8211; user to login on given image</li>
+<li><strong>flavor</strong> (<em>str</em>) &#8211; machine type to use for cloud instance</li>
+<li><strong>security_group</strong> (<em>str</em>) &#8211; security group that defines firewall rules
+to the instance</li>
+<li><strong>image_userdata</strong> (<em>str</em>) &#8211; commands to execute after instance starts</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="elasticluster.cluster.Cluster.get_all_nodes">
+<tt class="descname">get_all_nodes</tt><big>(</big><big>)</big><a class="reference internal" href="../../_modules/elasticluster/cluster.html#Cluster.get_all_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#elasticluster.cluster.Cluster.get_all_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of all nodes in this cluster as a mixed list of
+different node kinds.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">list of <a class="reference internal" href="#elasticluster.cluster.Node" title="elasticluster.cluster.Node"><tt class="xref py py-class docutils literal"><span class="pre">Node</span></tt></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="elasticluster.cluster.Cluster.get_frontend_node">
+<tt class="descname">get_frontend_node</tt><big>(</big><big>)</big><a class="reference internal" href="../../_modules/elasticluster/cluster.html#Cluster.get_frontend_node"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#elasticluster.cluster.Cluster.get_frontend_node" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the first node of the class specified in the
+configuration file as <cite>ssh_to</cite>, or the first node of
+the first class in alphabetic order.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><a class="reference internal" href="#elasticluster.cluster.Node" title="elasticluster.cluster.Node"><tt class="xref py py-class docutils literal"><span class="pre">Node</span></tt></a></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raise :</th><td class="field-body"><tt class="xref py py-class docutils literal"><span class="pre">elasticluster.exceptions.NodeNotFound</span></tt> if no
+valid frontend node is found</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="elasticluster.cluster.Cluster.remove_node">
+<tt class="descname">remove_node</tt><big>(</big><em>node</em><big>)</big><a class="reference internal" href="../../_modules/elasticluster/cluster.html#Cluster.remove_node"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#elasticluster.cluster.Cluster.remove_node" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes a node from the cluster, but does not stop it. Use this
+method with caution.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>node</strong> (<a class="reference internal" href="#elasticluster.cluster.Node" title="elasticluster.cluster.Node"><tt class="xref py py-class docutils literal"><span class="pre">Node</span></tt></a>) &#8211; node to remove</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="elasticluster.cluster.Cluster.setup">
+<tt class="descname">setup</tt><big>(</big><big>)</big><a class="reference internal" href="../../_modules/elasticluster/cluster.html#Cluster.setup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#elasticluster.cluster.Cluster.setup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Configure the cluster nodes with the specified  This
+is delegated to the provided <a class="reference internal" href="providers.html#elasticluster.providers.AbstractSetupProvider" title="elasticluster.providers.AbstractSetupProvider"><tt class="xref py py-class docutils literal"><span class="pre">elasticluster.providers.AbstractSetupProvider</span></tt></a></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">bool - True on success, False otherwise</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="elasticluster.cluster.Cluster.start">
+<tt class="descname">start</tt><big>(</big><em>min_nodes=None</em><big>)</big><a class="reference internal" href="../../_modules/elasticluster/cluster.html#Cluster.start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#elasticluster.cluster.Cluster.start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Starts up all the instances in the cloud. To speed things up all
+instances are started in a seperate thread. To make sure
+elasticluster is not stopped during creation of an instance, it will
+overwrite the sigint handler. As soon as the last started instance
+is returned and saved to the repository, sigint is executed as usual.
+An instance is up and running as soon as a ssh connection can be
+established. If the startup timeout is reached before all instances
+are started, the cluster will stop and destroy all instances.</p>
+<p>This method is blocking and might take some time depending on the
+amount of instances to start.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>min_nodes</strong> (<em>dict [node_kind] = number</em>) &#8211; minimum number of nodes to start in case the quota
+is reached before all instances are up</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="elasticluster.cluster.Cluster.startup_timeout">
+<tt class="descname">startup_timeout</tt><em class="property"> = 600</em><a class="headerlink" href="#elasticluster.cluster.Cluster.startup_timeout" title="Permalink to this definition">¶</a></dt>
+<dd><p>timeout in seconds to start all nodes</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="elasticluster.cluster.Cluster.stop">
+<tt class="descname">stop</tt><big>(</big><em>force=False</em><big>)</big><a class="reference internal" href="../../_modules/elasticluster/cluster.html#Cluster.stop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#elasticluster.cluster.Cluster.stop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Destroys all instances of this cluster and calls delete on the
+repository.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>force</strong> (<em>bool</em>) &#8211; force termination of instances in any case</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="elasticluster.cluster.Cluster.update">
+<tt class="descname">update</tt><big>(</big><big>)</big><a class="reference internal" href="../../_modules/elasticluster/cluster.html#Cluster.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#elasticluster.cluster.Cluster.update" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update all connection information of the nodes of this cluster.
+It occurs for example public ip&#8217;s are not available imediatly,
+therefore calling this method might help.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="elasticluster.cluster.Node">
+<em class="property">class </em><tt class="descclassname">elasticluster.cluster.</tt><tt class="descname">Node</tt><big>(</big><em>name</em>, <em>kind</em>, <em>cloud_provider</em>, <em>user_key_public</em>, <em>user_key_private</em>, <em>user_key_name</em>, <em>image_user</em>, <em>security_group</em>, <em>image</em>, <em>flavor</em>, <em>image_userdata=None</em><big>)</big><a class="reference internal" href="../../_modules/elasticluster/cluster.html#Node"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#elasticluster.cluster.Node" title="Permalink to this definition">¶</a></dt>
+<dd><p>The node represents an instance in a cluster. It holds all
+information to connect to the nodes also manages the cloud instance. It
+provides the basic functionality to interact with the cloud instance,
+such as start, stop, check if the instance is up and ssh connect.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>name</strong> (<em>str</em>) &#8211; identifier of the node</li>
+<li><strong>kind</strong> (<em>str</em>) &#8211; kind of node in regard to cluster. this usually
+refers to a specified group in the
+<a class="reference internal" href="providers.html#elasticluster.providers.AbstractSetupProvider" title="elasticluster.providers.AbstractSetupProvider"><tt class="xref py py-class docutils literal"><span class="pre">elasticluster.providers.AbstractSetupProvider</span></tt></a></li>
+<li><strong>cloud_provider</strong> (<a class="reference internal" href="providers.html#elasticluster.providers.AbstractCloudProvider" title="elasticluster.providers.AbstractCloudProvider"><tt class="xref py py-class docutils literal"><span class="pre">elasticluster.providers.AbstractCloudProvider</span></tt></a>) &#8211; cloud provider to manage the instance</li>
+<li><strong>user_key_public</strong> (<em>str</em>) &#8211; path to the ssh public key</li>
+<li><strong>user_key_private</strong> (<em>str</em>) &#8211; path to the ssh private key</li>
+<li><strong>user_key_name</strong> (<em>str</em>) &#8211; name of the ssh key</li>
+<li><strong>image_user</strong> (<em>str</em>) &#8211; user to connect to the instance via ssh</li>
+<li><strong>security_group</strong> (<em>str</em>) &#8211; security group to setup firewall rules</li>
+<li><strong>image</strong> (<em>str</em>) &#8211; image id to launch instance with</li>
+<li><strong>flavor</strong> (<em>str</em>) &#8211; machine type to launch instance</li>
+<li><strong>image_userdata</strong> (<em>str</em>) &#8211; commands to execute after instance start</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
+<li><strong>instance_id</strong> &#8211; id of the node instance on the cloud</li>
+<li><strong>ip_public</strong> &#8211; public ip of this node</li>
+<li><strong>ip_private</strong> &#8211; private ip of this node</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="elasticluster.cluster.Node.connect">
+<tt class="descname">connect</tt><big>(</big><big>)</big><a class="reference internal" href="../../_modules/elasticluster/cluster.html#Node.connect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#elasticluster.cluster.Node.connect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Connect to the node via ssh using the paramiko library.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><tt class="xref py py-class docutils literal"><span class="pre">paramiko.SSHClient</span></tt> - ssh connection or None on
+failure</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="elasticluster.cluster.Node.connection_timeout">
+<tt class="descname">connection_timeout</tt><em class="property"> = 10</em><a class="headerlink" href="#elasticluster.cluster.Node.connection_timeout" title="Permalink to this definition">¶</a></dt>
+<dd><p>timeout in seconds to connect to host via ssh</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="elasticluster.cluster.Node.is_alive">
+<tt class="descname">is_alive</tt><big>(</big><big>)</big><a class="reference internal" href="../../_modules/elasticluster/cluster.html#Node.is_alive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#elasticluster.cluster.Node.is_alive" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if the current node is up and running in the cloud. It
+only checks the status provided by the cloud interface. Therefore a
+node might be running, but not yet ready to ssh into it.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="elasticluster.cluster.Node.pprint">
+<tt class="descname">pprint</tt><big>(</big><big>)</big><a class="reference internal" href="../../_modules/elasticluster/cluster.html#Node.pprint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#elasticluster.cluster.Node.pprint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pretty print information about the node.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">str - representaion of a node in pretty print</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="elasticluster.cluster.Node.start">
+<tt class="descname">start</tt><big>(</big><big>)</big><a class="reference internal" href="../../_modules/elasticluster/cluster.html#Node.start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#elasticluster.cluster.Node.start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Starts the node on the cloud using the given
+instance properties. This method is non-blocking, as soon
+as the node id is returned from the cloud provider, it will return.
+Therefore the <cite>is_alive</cite> and <cite>update_ips</cite> methods can be used to
+further gather details about the state of the node.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="elasticluster.cluster.Node.stop">
+<tt class="descname">stop</tt><big>(</big><big>)</big><a class="reference internal" href="../../_modules/elasticluster/cluster.html#Node.stop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#elasticluster.cluster.Node.stop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Destroys the instance launched on the cloud for this specific node.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="elasticluster.cluster.Node.update_ips">
+<tt class="descname">update_ips</tt><big>(</big><big>)</big><a class="reference internal" href="../../_modules/elasticluster/cluster.html#Node.update_ips"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#elasticluster.cluster.Node.update_ips" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieves the public and private ip of the instance by using the
+cloud provider. In some cases the public ip assignment takes some
+time, but this method is non blocking. To check for a public ip,
+consider calling this method multiple times during a certain timeout.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../elasticluster.html"
+                        title="previous chapter"><cite>elasticluster</cite></a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="conf.html"
+                        title="next chapter"><cite>elasticluster.conf</cite></a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../_sources/api/elasticluster/cluster.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="conf.html" title="elasticluster.conf"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../elasticluster.html" title="elasticluster"
+             >previous</a> |</li>
+        <li><a href="../../index.html">elasticluster 1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Elasitcluster programming API</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Grid Computing Competence Centre, University of Zurich.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

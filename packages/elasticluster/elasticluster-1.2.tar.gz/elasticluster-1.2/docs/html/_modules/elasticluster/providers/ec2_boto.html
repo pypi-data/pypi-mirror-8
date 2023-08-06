@@ -1,0 +1,496 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>elasticluster.providers.ec2_boto &mdash; elasticluster 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="elasticluster 1.0 documentation" href="../../../index.html" />
+    <link rel="up" title="elasticluster.providers" href="../providers.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">elasticluster 1.0 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../providers.html" accesskey="U">elasticluster.providers</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for elasticluster.providers.ec2_boto</h1><div class="highlight"><pre>
+<span class="c">#</span>
+<span class="c"># Copyright (C) 2013 GC3, University of Zurich</span>
+<span class="c">#</span>
+<span class="c"># This program is free software: you can redistribute it and/or modify</span>
+<span class="c"># it under the terms of the GNU General Public License as published by</span>
+<span class="c"># the Free Software Foundation, either version 3 of the License, or</span>
+<span class="c"># (at your option) any later version.</span>
+<span class="c">#</span>
+<span class="c"># This program is distributed in the hope that it will be useful,</span>
+<span class="c"># but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c"># GNU General Public License for more details.</span>
+<span class="c">#</span>
+<span class="c"># You should have received a copy of the GNU General Public License</span>
+<span class="c"># along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+<span class="c">#</span>
+<span class="n">__author__</span> <span class="o">=</span> <span class="s">&#39;Nicolas Baer &lt;nicolas.baer@uzh.ch&gt;, Antonio Messina &lt;antonio.s.messina@gmail.com&gt;&#39;</span>
+
+<span class="c"># System imports</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">urllib</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+
+<span class="c"># External modules</span>
+<span class="kn">import</span> <span class="nn">boto</span>
+<span class="kn">from</span> <span class="nn">boto</span> <span class="kn">import</span> <span class="n">ec2</span>
+<span class="kn">from</span> <span class="nn">paramiko</span> <span class="kn">import</span> <span class="n">DSSKey</span><span class="p">,</span> <span class="n">RSAKey</span><span class="p">,</span> <span class="n">PasswordRequiredException</span>
+<span class="kn">from</span> <span class="nn">paramiko.ssh_exception</span> <span class="kn">import</span> <span class="n">SSHException</span>
+
+<span class="c"># Elasticluster imports</span>
+<span class="kn">from</span> <span class="nn">elasticluster</span> <span class="kn">import</span> <span class="n">log</span>
+<span class="kn">from</span> <span class="nn">elasticluster.providers</span> <span class="kn">import</span> <span class="n">AbstractCloudProvider</span>
+<span class="kn">from</span> <span class="nn">elasticluster.exceptions</span> <span class="kn">import</span> <span class="n">SecurityGroupError</span><span class="p">,</span> <span class="n">KeypairError</span><span class="p">,</span> \
+    <span class="n">ImageError</span><span class="p">,</span> <span class="n">InstanceError</span><span class="p">,</span> <span class="n">ClusterError</span>
+
+
+<div class="viewcode-block" id="BotoCloudProvider"><a class="viewcode-back" href="../../../api/elasticluster/providers/ec2_boto.html#elasticluster.providers.ec2_boto.BotoCloudProvider">[docs]</a><span class="k">class</span> <span class="nc">BotoCloudProvider</span><span class="p">(</span><span class="n">AbstractCloudProvider</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;This implementation of</span>
+<span class="sd">    :py:class:`elasticluster.providers.AbstractCloudProvider` uses the boto</span>
+<span class="sd">    ec2 interface to connect to ec2 compliant clouds and manage instances.</span>
+
+<span class="sd">    Please check https://github.com/boto/boto for further information about</span>
+<span class="sd">    the supported cloud platforms.</span>
+
+<span class="sd">    :param str ec2_url: url to connect to cloud web service</span>
+<span class="sd">    :param str ec2_region: region identifier</span>
+<span class="sd">    :param str ec2_access_key: access key of the user account</span>
+<span class="sd">    :param str ec2_secret_key: secret key of the user account</span>
+<span class="sd">    :param str storage_path: path to store temporary data</span>
+<span class="sd">    :param bool auto_ip_assignment: Whether ip are assigned automatically</span>
+<span class="sd">                                    `True` or floating ips have to be</span>
+<span class="sd">                                    assigned manually `False`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">__node_start_lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>  <span class="c"># lock used for node startup</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ec2_url</span><span class="p">,</span> <span class="n">ec2_region</span><span class="p">,</span> <span class="n">ec2_access_key</span><span class="p">,</span> <span class="n">ec2_secret_key</span><span class="p">,</span>
+                 <span class="n">storage_path</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">auto_ip_assignment</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_url</span> <span class="o">=</span> <span class="n">ec2_url</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_region_name</span> <span class="o">=</span> <span class="n">ec2_region</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_access_key</span> <span class="o">=</span> <span class="n">ec2_access_key</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_secret_key</span> <span class="o">=</span> <span class="n">ec2_secret_key</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">auto_ip_assignment</span> <span class="o">=</span> <span class="n">auto_ip_assignment</span>
+
+        <span class="c"># read all parameters from url</span>
+        <span class="n">proto</span><span class="p">,</span> <span class="n">opaqueurl</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">splittype</span><span class="p">(</span><span class="n">ec2_url</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_host</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ec2path</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">splithost</span><span class="p">(</span><span class="n">opaqueurl</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ec2host</span><span class="p">,</span> <span class="n">port</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">splitport</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_host</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">port</span><span class="p">:</span>
+            <span class="n">port</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">port</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ec2port</span> <span class="o">=</span> <span class="n">port</span>
+
+        <span class="k">if</span> <span class="n">proto</span> <span class="o">==</span> <span class="s">&quot;https&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_secure</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_secure</span> <span class="o">=</span> <span class="bp">False</span>
+
+        <span class="c"># will be initialized upon first connect</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_connection</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_region</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_instances</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cached_instances</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_images</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="k">def</span> <span class="nf">_connect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Connects to the ec2 cloud provider</span>
+
+<span class="sd">        :return: :py:class:`boto.ec2.connection.EC2Connection`</span>
+<span class="sd">        :raises: Generic exception on error</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># check for existing connection</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Connecting to ec2 host </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ec2host</span><span class="p">)</span>
+            <span class="n">region</span> <span class="o">=</span> <span class="n">ec2</span><span class="o">.</span><span class="n">regioninfo</span><span class="o">.</span><span class="n">RegionInfo</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_region_name</span><span class="p">,</span>
+                                               <span class="n">endpoint</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_ec2host</span><span class="p">)</span>
+
+            <span class="c"># connect to webservice</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_connection</span> <span class="o">=</span> <span class="n">boto</span><span class="o">.</span><span class="n">connect_ec2</span><span class="p">(</span>
+                <span class="n">aws_access_key_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_access_key</span><span class="p">,</span>
+                <span class="n">aws_secret_access_key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_secret_key</span><span class="p">,</span>
+                <span class="n">is_secure</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_secure</span><span class="p">,</span>
+                <span class="n">host</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_ec2host</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_ec2port</span><span class="p">,</span>
+                <span class="n">path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_ec2path</span><span class="p">,</span> <span class="n">region</span><span class="o">=</span><span class="n">region</span><span class="p">)</span>
+
+            <span class="c"># list images to see if the connection works</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Connection has been successful.&quot;</span><span class="p">)</span>
+            <span class="c"># images = self._connection.get_all_images()</span>
+            <span class="c"># log.debug(&quot;%d images found on cloud %s&quot;,</span>
+            <span class="c">#           len(images), self._ec2host)</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;connection to cloud could not be &quot;</span>
+                      <span class="s">&quot;established: message=`</span><span class="si">%s</span><span class="s">`&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+            <span class="k">raise</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection</span>
+
+<div class="viewcode-block" id="BotoCloudProvider.start_instance"><a class="viewcode-back" href="../../../api/elasticluster/providers/ec2_boto.html#elasticluster.providers.ec2_boto.BotoCloudProvider.start_instance">[docs]</a>    <span class="k">def</span> <span class="nf">start_instance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key_name</span><span class="p">,</span> <span class="n">public_key_path</span><span class="p">,</span> <span class="n">private_key_path</span><span class="p">,</span>
+                       <span class="n">security_group</span><span class="p">,</span> <span class="n">flavor</span><span class="p">,</span> <span class="n">image_id</span><span class="p">,</span> <span class="n">image_userdata</span><span class="p">,</span>
+                       <span class="n">username</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Starts a new instance on the cloud using the given properties.</span>
+<span class="sd">        The following tasks are done to start an instance:</span>
+
+<span class="sd">        * establish a connection to the cloud web service</span>
+<span class="sd">        * check ssh keypair and upload it if it does not yet exist. This is</span>
+<span class="sd">          a locked process, since this function might be called in multiple</span>
+<span class="sd">          threads and we only want the key to be stored once.</span>
+<span class="sd">        * check if the security group exists</span>
+<span class="sd">        * run the instance with the given properties</span>
+
+<span class="sd">        :param str key_name: name of the ssh key to connect</span>
+<span class="sd">        :param str public_key_path: path to ssh public key</span>
+<span class="sd">        :param str private_key_path: path to ssh private key</span>
+<span class="sd">        :param str security_group: firewall rule definition to apply on the</span>
+<span class="sd">                                   instance</span>
+<span class="sd">        :param str flavor: machine type to use for the instance</span>
+<span class="sd">        :param str image_id: image type (os) to use for the instance</span>
+<span class="sd">        :param str image_userdata: command to execute after startup</span>
+<span class="sd">        :param str username: username for the given ssh key, default None</span>
+
+<span class="sd">        :return: str - instance id of the started instance</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">connection</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connect</span><span class="p">()</span>
+
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Checking keypair `</span><span class="si">%s</span><span class="s">`.&quot;</span><span class="p">,</span> <span class="n">key_name</span><span class="p">)</span>
+        <span class="c"># the `_check_keypair` method has to be called within a lock,</span>
+        <span class="c"># since it will upload the key if it does not exist and if this</span>
+        <span class="c"># happens for every node at the same time ec2 will throw an error</span>
+        <span class="c"># message (see issue #79)</span>
+        <span class="k">with</span> <span class="n">BotoCloudProvider</span><span class="o">.</span><span class="n">__node_start_lock</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_check_keypair</span><span class="p">(</span><span class="n">key_name</span><span class="p">,</span> <span class="n">public_key_path</span><span class="p">,</span> <span class="n">private_key_path</span><span class="p">)</span>
+
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Checking security group `</span><span class="si">%s</span><span class="s">`.&quot;</span><span class="p">,</span> <span class="n">security_group</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_security_group</span><span class="p">(</span><span class="n">security_group</span><span class="p">)</span>
+        <span class="c"># image_id = self._find_image_id(image_id)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">reservation</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">run_instances</span><span class="p">(</span>
+                <span class="n">image_id</span><span class="p">,</span> <span class="n">key_name</span><span class="o">=</span><span class="n">key_name</span><span class="p">,</span> <span class="n">security_groups</span><span class="o">=</span><span class="p">[</span><span class="n">security_group</span><span class="p">],</span>
+                <span class="n">instance_type</span><span class="o">=</span><span class="n">flavor</span><span class="p">,</span> <span class="n">user_data</span><span class="o">=</span><span class="n">image_userdata</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Error starting instance: </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">ex</span><span class="p">)</span>
+            <span class="k">if</span> <span class="s">&quot;TooManyInstances&quot;</span> <span class="ow">in</span> <span class="n">ex</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">ClusterError</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">InstanceError</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span>
+
+        <span class="n">vm</span> <span class="o">=</span> <span class="n">reservation</span><span class="o">.</span><span class="n">instances</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="c"># cache instance object locally for faster access later on</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_instances</span><span class="p">[</span><span class="n">vm</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">vm</span>
+
+        <span class="k">return</span> <span class="n">vm</span><span class="o">.</span><span class="n">id</span>
+</div>
+<div class="viewcode-block" id="BotoCloudProvider.stop_instance"><a class="viewcode-back" href="../../../api/elasticluster/providers/ec2_boto.html#elasticluster.providers.ec2_boto.BotoCloudProvider.stop_instance">[docs]</a>    <span class="k">def</span> <span class="nf">stop_instance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Stops the instance gracefully.</span>
+
+<span class="sd">        :param str instance_id: instance identifier</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">instance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_instance</span><span class="p">(</span><span class="n">instance_id</span><span class="p">)</span>
+        <span class="n">instance</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_instances</span><span class="p">[</span><span class="n">instance_id</span><span class="p">]</span>
+</div>
+<div class="viewcode-block" id="BotoCloudProvider.get_ips"><a class="viewcode-back" href="../../../api/elasticluster/providers/ec2_boto.html#elasticluster.providers.ec2_boto.BotoCloudProvider.get_ips">[docs]</a>    <span class="k">def</span> <span class="nf">get_ips</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Retrieves the private and public ip addresses for a given instance.</span>
+
+<span class="sd">        :return: tuple (ip_private, ip_public)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_load_instance</span><span class="p">(</span><span class="n">instance_id</span><span class="p">)</span>
+        <span class="n">instance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_instance</span><span class="p">(</span><span class="n">instance_id</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">instance</span><span class="o">.</span><span class="n">private_ip_address</span><span class="p">,</span> <span class="n">instance</span><span class="o">.</span><span class="n">ip_address</span>
+</div>
+<div class="viewcode-block" id="BotoCloudProvider.is_instance_running"><a class="viewcode-back" href="../../../api/elasticluster/providers/ec2_boto.html#elasticluster.providers.ec2_boto.BotoCloudProvider.is_instance_running">[docs]</a>    <span class="k">def</span> <span class="nf">is_instance_running</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Checks if the instance is up and running.</span>
+
+<span class="sd">        :param str instance_id: instance identifier</span>
+
+<span class="sd">        :return: bool - True if running, False otherwise</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">instance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_instance</span><span class="p">(</span><span class="n">instance_id</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">instance</span><span class="o">.</span><span class="n">update</span><span class="p">()</span> <span class="o">==</span> <span class="s">&quot;running&quot;</span><span class="p">:</span>
+            <span class="c"># If the instance is up&amp;running, ensure it has an IP</span>
+            <span class="c"># address.</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">instance</span><span class="o">.</span><span class="n">ip_address</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">auto_ip_assignment</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Public ip address has to be assigned through &quot;</span>
+                          <span class="s">&quot;elasticluster.&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_allocate_address</span><span class="p">(</span><span class="n">instance</span><span class="p">)</span>
+                <span class="n">instance</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+            <span class="k">return</span> <span class="bp">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">False</span>
+</div>
+    <span class="k">def</span> <span class="nf">_allocate_address</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Allocates a free public ip address to the given instance</span>
+
+<span class="sd">        :param instance: instance to assign address to</span>
+<span class="sd">        :type instance: py:class:`boto.ec2.instance.Reservation`</span>
+
+<span class="sd">        :return: public ip address</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">connection</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connect</span><span class="p">()</span>
+        <span class="n">addresses</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">get_all_addresses</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">address</span> <span class="ow">in</span> <span class="n">addresses</span><span class="p">:</span>
+            <span class="c"># Find an unused address</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">address</span><span class="o">.</span><span class="n">instance_id</span><span class="p">:</span>
+                <span class="c"># Free address, use it.</span>
+                <span class="n">instance</span><span class="o">.</span><span class="n">use_ip</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Assigning ip address `</span><span class="si">%s</span><span class="s">` to instance `</span><span class="si">%s</span><span class="s">`&quot;</span>
+                          <span class="o">%</span> <span class="p">(</span><span class="n">address</span><span class="o">.</span><span class="n">public_ip</span><span class="p">,</span> <span class="n">instance</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
+                <span class="k">return</span> <span class="n">address</span><span class="o">.</span><span class="n">public_ip</span>
+
+        <span class="c"># No allocated addresses available.</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">address</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">allocate_address</span><span class="p">()</span>
+            <span class="n">instance</span><span class="o">.</span><span class="n">use_ip</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">address</span><span class="o">.</span><span class="n">public_ip</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Unable to allocate a public IP address to instance `</span><span class="si">%s</span><span class="s">`&quot;</span><span class="p">,</span>
+                      <span class="n">instance</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_load_instance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;hecks if an instance with the given id is cached. If not it</span>
+<span class="sd">        will connect to the cloud and put it into the local cache</span>
+<span class="sd">        _instances.</span>
+
+<span class="sd">        :param str instance_id: instance identifier</span>
+<span class="sd">        :return: py:class:`boto.ec2.instance.Reservation` - instance</span>
+<span class="sd">        :raises: `InstanceError` is returned if the instance can&#39;t</span>
+<span class="sd">                 be found in the local cache or in the cloud.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">connection</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connect</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">instance_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_instances</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_instances</span><span class="p">[</span><span class="n">instance_id</span><span class="p">]</span>
+
+        <span class="c"># Instance not in the internal dictionary.</span>
+        <span class="c"># First, check the internal cache:</span>
+        <span class="k">if</span> <span class="n">instance_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="n">i</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cached_instances</span><span class="p">]:</span>
+            <span class="c"># Refresh the cache, just in case</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cached_instances</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">reservations</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">get_all_instances</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">reservations</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_cached_instances</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">instances</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">inst</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cached_instances</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">inst</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">instance_id</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_instances</span><span class="p">[</span><span class="n">instance_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">inst</span>
+                <span class="k">return</span> <span class="n">inst</span>
+
+        <span class="c"># If we reached this point, the instance was not found neither</span>
+        <span class="c"># in the cache or on the website.</span>
+        <span class="k">raise</span> <span class="n">InstanceError</span><span class="p">(</span><span class="s">&quot;the given instance `</span><span class="si">%s</span><span class="s">` was not found &quot;</span>
+                            <span class="s">&quot;on the coud&quot;</span> <span class="o">%</span> <span class="n">instance_id</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_check_keypair</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">public_key_path</span><span class="p">,</span> <span class="n">private_key_path</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;First checks if the keypair is valid, then checks if the keypair</span>
+<span class="sd">        is registered with on the cloud. If not the keypair is added to the</span>
+<span class="sd">        users ssh keys.</span>
+
+<span class="sd">        :param str name: name of the ssh key</span>
+<span class="sd">        :param str public_key_path: path to the ssh public key file</span>
+<span class="sd">        :param str private_key_path: path to the ssh private key file</span>
+
+<span class="sd">        :raises: `KeypairError` if key is not a valid RSA or DSA key,</span>
+<span class="sd">                 the key could not be uploaded or the fingerprint does not</span>
+<span class="sd">                 match to the one uploaded to the cloud.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">connection</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connect</span><span class="p">()</span>
+        <span class="n">keypairs</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">get_all_key_pairs</span><span class="p">()</span>
+        <span class="n">keypairs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">((</span><span class="n">k</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keypairs</span><span class="p">)</span>
+
+        <span class="c"># decide if dsa or rsa key is provided</span>
+        <span class="n">pkey</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="n">is_dsa_key</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">pkey</span> <span class="o">=</span> <span class="n">DSSKey</span><span class="o">.</span><span class="n">from_private_key_file</span><span class="p">(</span><span class="n">private_key_path</span><span class="p">)</span>
+            <span class="n">is_dsa_key</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="k">except</span> <span class="n">PasswordRequiredException</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s">&quot;Unable to check key file `</span><span class="si">%s</span><span class="s">` because it is encrypted with a &quot;</span>
+                <span class="s">&quot;password. Please, ensure that you added it to the SSH agent &quot;</span>
+                <span class="s">&quot;with `ssh-add </span><span class="si">%s</span><span class="s">`&quot;</span><span class="p">,</span> <span class="n">private_key_path</span><span class="p">,</span> <span class="n">private_key_path</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">SSHException</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">pkey</span> <span class="o">=</span> <span class="n">RSAKey</span><span class="o">.</span><span class="n">from_private_key_file</span><span class="p">(</span><span class="n">private_key_path</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">PasswordRequiredException</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="s">&quot;Unable to check key file `</span><span class="si">%s</span><span class="s">` because it is encrypted with a &quot;</span>
+                    <span class="s">&quot;password. Please, ensure that you added it to the SSH agent &quot;</span>
+                    <span class="s">&quot;with `ssh-add </span><span class="si">%s</span><span class="s">`&quot;</span><span class="p">,</span> <span class="n">private_key_path</span><span class="p">,</span> <span class="n">private_key_path</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">SSHException</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">KeypairError</span><span class="p">(</span><span class="s">&#39;File `</span><span class="si">%s</span><span class="s">` is neither a valid DSA key &#39;</span>
+                                   <span class="s">&#39;or RSA key.&#39;</span> <span class="o">%</span> <span class="n">private_key_path</span><span class="p">)</span>
+
+        <span class="c"># create keys that don&#39;t exist yet</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">keypairs</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s">&quot;Keypair `</span><span class="si">%s</span><span class="s">` not found on resource `</span><span class="si">%s</span><span class="s">`, Creating a new one&quot;</span><span class="p">,</span>
+                <span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_url</span><span class="p">)</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="n">public_key_path</span><span class="p">))</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">key_material</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="c"># check for DSA on amazon</span>
+                    <span class="k">if</span> <span class="s">&quot;amazon&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ec2host</span> <span class="ow">and</span> <span class="n">is_dsa_key</span><span class="p">:</span>
+                        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                            <span class="s">&quot;Apparently, amazon does not support DSA keys. &quot;</span>
+                            <span class="s">&quot;Please specify a valid RSA key.&quot;</span><span class="p">)</span>
+                        <span class="k">raise</span> <span class="n">KeypairError</span><span class="p">(</span>
+                            <span class="s">&quot;Apparently, amazon does not support DSA keys.&quot;</span>
+                            <span class="s">&quot;Please specify a valid RSA key.&quot;</span><span class="p">)</span>
+
+                    <span class="n">connection</span><span class="o">.</span><span class="n">import_key_pair</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">key_material</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">ex</span><span class="p">:</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                        <span class="s">&quot;Could not import key `</span><span class="si">%s</span><span class="s">` with name `</span><span class="si">%s</span><span class="s">` to `</span><span class="si">%s</span><span class="s">`&quot;</span><span class="p">,</span>
+                        <span class="n">name</span><span class="p">,</span> <span class="n">public_key_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_url</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="n">KeypairError</span><span class="p">(</span>
+                        <span class="s">&quot;could not create keypair `</span><span class="si">%s</span><span class="s">`: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">ex</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c"># check fingerprint</span>
+            <span class="n">cloud_keypair</span> <span class="o">=</span> <span class="n">keypairs</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">pkey</span><span class="p">:</span>
+                <span class="n">fingerprint</span> <span class="o">=</span> <span class="nb">str</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                    <span class="s">&#39;:&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">i</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&#39;hex&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">pkey</span><span class="o">.</span><span class="n">get_fingerprint</span><span class="p">()))</span>
+
+                <span class="k">if</span> <span class="n">fingerprint</span> <span class="o">!=</span> <span class="n">cloud_keypair</span><span class="o">.</span><span class="n">fingerprint</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="s">&quot;amazon&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ec2host</span><span class="p">:</span>
+                        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                            <span class="s">&quot;Apparently, Amazon does not compute the RSA key &quot;</span>
+                            <span class="s">&quot;fingerprint as we do! We cannot check if the &quot;</span>
+                            <span class="s">&quot;uploaded keypair is correct!&quot;</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="n">KeypairError</span><span class="p">(</span>
+                            <span class="s">&quot;Keypair `</span><span class="si">%s</span><span class="s">` is present but has &quot;</span>
+                            <span class="s">&quot;different fingerprint. Aborting!&quot;</span> <span class="o">%</span> <span class="n">name</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_check_security_group</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Checks if the security group exists.</span>
+
+<span class="sd">        :param str name: name of the security group</span>
+<span class="sd">        :raises: `SecurityGroupError` if group does not exist</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">connection</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connect</span><span class="p">()</span>
+        <span class="n">security_groups</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">get_all_security_groups</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">security_groups</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SecurityGroupError</span><span class="p">(</span>
+                <span class="s">&quot;the specified security group </span><span class="si">%s</span><span class="s"> does not exist&quot;</span> <span class="o">%</span> <span class="n">name</span><span class="p">)</span>
+
+        <span class="n">security_groups</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">((</span><span class="n">s</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">security_groups</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">security_groups</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SecurityGroupError</span><span class="p">(</span>
+                <span class="s">&quot;the specified security group </span><span class="si">%s</span><span class="s"> does not exist&quot;</span> <span class="o">%</span> <span class="n">name</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_find_image_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Finds an image id to a given id or name.</span>
+
+<span class="sd">        :param str image_id: name or id of image</span>
+<span class="sd">        :return: str - identifier of image</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_images</span><span class="p">:</span>
+            <span class="n">connection</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connect</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_images</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">get_all_images</span><span class="p">()</span>
+
+        <span class="n">image_id_cloud</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_images</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">i</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">image_id</span> <span class="ow">or</span> <span class="n">i</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">image_id</span><span class="p">:</span>
+                <span class="n">image_id_cloud</span> <span class="o">=</span> <span class="n">i</span><span class="o">.</span><span class="n">id</span>
+                <span class="k">break</span>
+
+        <span class="k">if</span> <span class="n">image_id_cloud</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">image_id_cloud</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ImageError</span><span class="p">(</span>
+                <span class="s">&quot;Could not find given image id `</span><span class="si">%s</span><span class="s">`&quot;</span> <span class="o">%</span> <span class="n">image_id</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">elasticluster 1.0 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../providers.html" >elasticluster.providers</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Grid Computing Competence Centre, University of Zurich.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

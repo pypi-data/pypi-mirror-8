@@ -1,0 +1,247 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>elasticluster.providers &mdash; elasticluster 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="elasticluster 1.0 documentation" href="../../index.html" />
+    <link rel="up" title="Elasitcluster programming API" href="../index.html" />
+    <link rel="next" title="elasticluster.providers.ansible_provider" href="providers/ansible_provider.html" />
+    <link rel="prev" title="elasticluster.module" href="module.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="providers/ansible_provider.html" title="elasticluster.providers.ansible_provider"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="module.html" title="elasticluster.module"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../../index.html">elasticluster 1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Elasitcluster programming API</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-elasticluster.providers">
+<span id="elasticluster-providers"></span><h1><cite>elasticluster.providers</cite><a class="headerlink" href="#module-elasticluster.providers" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="elasticluster.providers.AbstractCloudProvider">
+<em class="property">class </em><tt class="descclassname">elasticluster.providers.</tt><tt class="descname">AbstractCloudProvider</tt><big>(</big><em>**config</em><big>)</big><a class="reference internal" href="../../_modules/elasticluster/providers.html#AbstractCloudProvider"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#elasticluster.providers.AbstractCloudProvider" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the contract for a cloud provider to proper function with
+elasticluster.</p>
+<dl class="method">
+<dt id="elasticluster.providers.AbstractCloudProvider.get_ips">
+<tt class="descname">get_ips</tt><big>(</big><em>instance_id</em><big>)</big><a class="reference internal" href="../../_modules/elasticluster/providers.html#AbstractCloudProvider.get_ips"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#elasticluster.providers.AbstractCloudProvider.get_ips" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieves the private and public ip addresses for a given instance.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">tuple (ip_private, ip_public)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="elasticluster.providers.AbstractCloudProvider.is_instance_running">
+<tt class="descname">is_instance_running</tt><big>(</big><em>instance_id</em><big>)</big><a class="reference internal" href="../../_modules/elasticluster/providers.html#AbstractCloudProvider.is_instance_running"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#elasticluster.providers.AbstractCloudProvider.is_instance_running" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if the instance is up and running.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>instance_id</strong> (<em>str</em>) &#8211; instance identifier</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">bool - True if running, False otherwise</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="elasticluster.providers.AbstractCloudProvider.start_instance">
+<tt class="descname">start_instance</tt><big>(</big><em>key_name</em>, <em>public_key_path</em>, <em>private_key_path</em>, <em>security_group</em>, <em>flavor</em>, <em>image_id</em>, <em>image_userdata</em>, <em>username=None</em><big>)</big><a class="reference internal" href="../../_modules/elasticluster/providers.html#AbstractCloudProvider.start_instance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#elasticluster.providers.AbstractCloudProvider.start_instance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Starts a new instance on the cloud using the given properties.
+Multiple instances might be started in different threads at the same
+time. The implementation should handle any problems regarding this
+itself.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>key_name</strong> (<em>str</em>) &#8211; name of the ssh key to connect</li>
+<li><strong>public_key_path</strong> (<em>str</em>) &#8211; path to ssh public key</li>
+<li><strong>private_key_path</strong> (<em>str</em>) &#8211; path to ssh private key</li>
+<li><strong>security_group</strong> (<em>str</em>) &#8211; firewall rule definition to apply on the
+instance</li>
+<li><strong>flavor</strong> (<em>str</em>) &#8211; machine type to use for the instance</li>
+<li><strong>image_name</strong> (<em>str</em>) &#8211; image type (os) to use for the instance</li>
+<li><strong>image_userdata</strong> (<em>str</em>) &#8211; command to execute after startup</li>
+<li><strong>username</strong> (<em>str</em>) &#8211; username for the given ssh key, default None</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">str - instance id of the started instance</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="elasticluster.providers.AbstractCloudProvider.stop_instance">
+<tt class="descname">stop_instance</tt><big>(</big><em>instance_id</em><big>)</big><a class="reference internal" href="../../_modules/elasticluster/providers.html#AbstractCloudProvider.stop_instance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#elasticluster.providers.AbstractCloudProvider.stop_instance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stops the instance gracefully.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>instance_id</strong> (<em>str</em>) &#8211; instance identifier</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="elasticluster.providers.AbstractSetupProvider">
+<em class="property">class </em><tt class="descclassname">elasticluster.providers.</tt><tt class="descname">AbstractSetupProvider</tt><a class="reference internal" href="../../_modules/elasticluster/providers.html#AbstractSetupProvider"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#elasticluster.providers.AbstractSetupProvider" title="Permalink to this definition">¶</a></dt>
+<dd><p>TODO: define...</p>
+<dl class="method">
+<dt id="elasticluster.providers.AbstractSetupProvider.cleanup">
+<tt class="descname">cleanup</tt><big>(</big><big>)</big><a class="reference internal" href="../../_modules/elasticluster/providers.html#AbstractSetupProvider.cleanup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#elasticluster.providers.AbstractSetupProvider.cleanup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cleanup any temporary file or directory created during setup.
+This method is called every time a cluster is stopped.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="elasticluster.providers.AbstractSetupProvider.setup_cluster">
+<tt class="descname">setup_cluster</tt><big>(</big><em>cluster</em><big>)</big><a class="reference internal" href="../../_modules/elasticluster/providers.html#AbstractSetupProvider.setup_cluster"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#elasticluster.providers.AbstractSetupProvider.setup_cluster" title="Permalink to this definition">¶</a></dt>
+<dd><p>Configures all nodes of a cluster to function in respect to the
+given configuration.</p>
+<p>This method <em>must</em> be idempotent, i.e. it should always be
+safe calling it multiple times..</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>cluster</strong> (<a class="reference internal" href="cluster.html#elasticluster.cluster.Cluster" title="elasticluster.cluster.Cluster"><tt class="xref py py-class docutils literal"><span class="pre">elasticluster.cluster.Cluster</span></tt></a>) &#8211; cluster to configure</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><cite>True</cite> if the cluster is correctly configured, even
+if the method didn&#8217;t actually do anything. <cite>False</cite> if the
+cluster is not configured.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="module.html"
+                        title="previous chapter"><cite>elasticluster.module</cite></a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="providers/ansible_provider.html"
+                        title="next chapter"><cite>elasticluster.providers.ansible_provider</cite></a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../_sources/api/elasticluster/providers.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="providers/ansible_provider.html" title="elasticluster.providers.ansible_provider"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="module.html" title="elasticluster.module"
+             >previous</a> |</li>
+        <li><a href="../../index.html">elasticluster 1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Elasitcluster programming API</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Grid Computing Competence Centre, University of Zurich.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

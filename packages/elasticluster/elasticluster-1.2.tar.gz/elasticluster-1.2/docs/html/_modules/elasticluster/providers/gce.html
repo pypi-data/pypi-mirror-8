@@ -1,0 +1,488 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>elasticluster.providers.gce &mdash; elasticluster 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="elasticluster 1.0 documentation" href="../../../index.html" />
+    <link rel="up" title="elasticluster.providers" href="../providers.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">elasticluster 1.0 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../providers.html" accesskey="U">elasticluster.providers</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for elasticluster.providers.gce</h1><div class="highlight"><pre>
+<span class="c">#</span>
+<span class="c"># Copyright (C) 2013 GC3, University of Zurich</span>
+<span class="c">#</span>
+<span class="c"># This program is free software: you can redistribute it and/or modify</span>
+<span class="c"># it under the terms of the GNU General Public License as published by</span>
+<span class="c"># the Free Software Foundation, either version 3 of the License, or</span>
+<span class="c"># (at your option) any later version.</span>
+<span class="c">#</span>
+<span class="c"># This program is distributed in the hope that it will be useful,</span>
+<span class="c"># but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c"># GNU General Public License for more details.</span>
+<span class="c">#</span>
+<span class="c"># You should have received a copy of the GNU General Public License</span>
+<span class="c"># along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+<span class="c">#</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Cloud provider for the Google Compute Engine.</span>
+
+<span class="sd">See &lt;https://code.google.com/p/google-cloud-platform-samples/source/browse/python-client-library-example/gce.py?repo=compute&gt; for reference.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="n">__author__</span> <span class="o">=</span> <span class="s">&#39;Riccardo Murri &lt;riccardo.murri@uzh.ch&gt;, &#39;</span> \
+             <span class="s">&#39;Nicolas Baer &lt;nicolas.baer@gmail.com&gt;, &#39;</span>  \
+             <span class="s">&#39;Antonio Messina &lt;antonio.s.messina@gmail.com&gt;&#39;</span>
+
+
+<span class="c"># stdlib imports</span>
+<span class="kn">import</span> <span class="nn">httplib2</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">uuid</span>
+<span class="kn">from</span> <span class="nn">multiprocessing</span> <span class="kn">import</span> <span class="n">Lock</span>
+
+<span class="c"># External modules</span>
+<span class="kn">from</span> <span class="nn">apiclient.discovery</span> <span class="kn">import</span> <span class="n">build</span>
+<span class="kn">from</span> <span class="nn">apiclient.errors</span> <span class="kn">import</span> <span class="n">HttpError</span>
+<span class="kn">from</span> <span class="nn">oauth2client.file</span> <span class="kn">import</span> <span class="n">Storage</span>
+<span class="kn">from</span> <span class="nn">oauth2client.client</span> <span class="kn">import</span> <span class="n">OAuth2WebServerFlow</span>
+<span class="kn">from</span> <span class="nn">oauth2client.tools</span> <span class="kn">import</span> <span class="n">run</span>
+
+<span class="c"># Elasticluster imports</span>
+<span class="kn">from</span> <span class="nn">elasticluster</span> <span class="kn">import</span> <span class="n">log</span>
+<span class="kn">from</span> <span class="nn">elasticluster.providers</span> <span class="kn">import</span> <span class="n">AbstractCloudProvider</span>
+<span class="kn">from</span> <span class="nn">elasticluster.exceptions</span> <span class="kn">import</span> <span class="n">ImageError</span><span class="p">,</span> <span class="n">InstanceError</span><span class="p">,</span> <span class="n">CloudProviderError</span>
+
+
+<span class="c"># constants and defaults</span>
+
+<span class="c">#: the OAuth scope for the GCE web API</span>
+<span class="n">GCE_SCOPE</span> <span class="o">=</span> <span class="s">&#39;https://www.googleapis.com/auth/compute&#39;</span>
+<span class="n">GCE_API_NAME</span> <span class="o">=</span> <span class="s">&#39;compute&#39;</span>
+<span class="n">GCE_API_VERSION</span> <span class="o">=</span> <span class="s">&#39;v1beta15&#39;</span>
+<span class="n">GCE_URL</span> <span class="o">=</span> <span class="s">&#39;https://www.googleapis.com/compute/</span><span class="si">%s</span><span class="s">/projects/&#39;</span> <span class="o">%</span> <span class="n">GCE_API_VERSION</span>
+<span class="n">GCE_DEFAULT_ZONE</span> <span class="o">=</span> <span class="s">&#39;us-central1-a&#39;</span>
+<span class="n">GCE_DEFAULT_SERVICE_EMAIL</span> <span class="o">=</span> <span class="s">&#39;default&#39;</span>
+<span class="n">GCE_DEFAULT_SCOPES</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;https://www.googleapis.com/auth/devstorage&#39;</span>
+                      <span class="s">&#39;.full_control&#39;</span><span class="p">,</span>
+                      <span class="s">&#39;https://www.googleapis.com/auth/compute&#39;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="GoogleCloudProvider"><a class="viewcode-back" href="../../../api/elasticluster/providers/gce.html#elasticluster.providers.gce.GoogleCloudProvider">[docs]</a><span class="k">class</span> <span class="nc">GoogleCloudProvider</span><span class="p">(</span><span class="n">AbstractCloudProvider</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Cloud provider for the Google Compute Engine.</span>
+
+<span class="sd">    :param str gce_client_id: Client ID to use in OAuth authentication.</span>
+
+<span class="sd">    :param str gce_client_secret: Client secret (password) to use in</span>
+<span class="sd">                                  OAuth authentication.</span>
+
+<span class="sd">    :param str gce_project_id: Project name to log in to GCE.</span>
+
+<span class="sd">    :param str zone: gce zone, default is `us-central1-a`</span>
+
+<span class="sd">    :param str network: network to use, default is  `default`</span>
+
+<span class="sd">    :param str email: service email to use, default is `default`</span>
+
+<span class="sd">    :param str storage_path: path to store authentication data (oauth.dat</span>
+<span class="sd">                             file). If no path is specified, the login data</span>
+<span class="sd">                             has to be entered after every request.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gce_client_id</span><span class="p">,</span> <span class="n">gce_client_secret</span><span class="p">,</span> <span class="n">gce_project_id</span><span class="p">,</span>
+                 <span class="n">zone</span><span class="o">=</span><span class="n">GCE_DEFAULT_ZONE</span><span class="p">,</span> <span class="n">network</span><span class="o">=</span><span class="s">&#39;default&#39;</span><span class="p">,</span>
+                 <span class="n">email</span><span class="o">=</span><span class="n">GCE_DEFAULT_SERVICE_EMAIL</span><span class="p">,</span> <span class="n">storage_path</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_client_id</span> <span class="o">=</span> <span class="n">gce_client_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_client_secret</span> <span class="o">=</span> <span class="n">gce_client_secret</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_project_id</span> <span class="o">=</span> <span class="n">gce_project_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_zone</span> <span class="o">=</span> <span class="n">zone</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_network</span> <span class="o">=</span> <span class="n">network</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_email</span> <span class="o">=</span> <span class="n">email</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_storage_path</span> <span class="o">=</span> <span class="n">storage_path</span>
+
+        <span class="c"># will be initialized upon first connect</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gce</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_auth_http</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_instances</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cached_instances</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_images</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gce_lock</span> <span class="o">=</span> <span class="n">Lock</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_connect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Connects to the cloud web services. If this is the first</span>
+<span class="sd">        authentication, a web browser will be started to authenticate</span>
+<span class="sd">        against google and provide access to elasticluster.</span>
+
+<span class="sd">        :return: A Resource object with methods for interacting with the</span>
+<span class="sd">                 service.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># check for existing connection</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gce_lock</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gce</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gce</span>
+
+            <span class="n">flow</span> <span class="o">=</span> <span class="n">OAuth2WebServerFlow</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_client_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client_secret</span><span class="p">,</span>
+                                       <span class="n">GCE_SCOPE</span><span class="p">)</span>
+            <span class="c"># The `Storage` object holds the credentials that your</span>
+            <span class="c"># application needs to authorize access to the user&#39;s</span>
+            <span class="c"># data. The name of the credentials file is provided. If the</span>
+            <span class="c"># file does not exist, it is created. This object can only</span>
+            <span class="c"># hold credentials for a single user. It stores the access</span>
+            <span class="c"># priviledges for the application, so a user only has to grant</span>
+            <span class="c"># access through the web interface once.</span>
+            <span class="n">storage_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_storage_path</span><span class="p">,</span>
+                                        <span class="bp">self</span><span class="o">.</span><span class="n">_client_id</span> <span class="o">+</span> <span class="s">&#39;.oauth.dat&#39;</span><span class="p">)</span>
+            <span class="n">storage</span> <span class="o">=</span> <span class="n">Storage</span><span class="p">(</span><span class="n">storage_path</span><span class="p">)</span>
+
+            <span class="n">credentials</span> <span class="o">=</span> <span class="n">storage</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">credentials</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="n">credentials</span><span class="o">.</span><span class="n">invalid</span><span class="p">:</span>
+                <span class="c"># try to start a browser to have the user authenticate with Google</span>
+                <span class="c"># TODO: what kind of exception is raised if the browser</span>
+                <span class="c">#       cannot be started?</span>
+                <span class="n">credentials</span> <span class="o">=</span> <span class="n">run</span><span class="p">(</span><span class="n">flow</span><span class="p">,</span> <span class="n">storage</span><span class="p">)</span>
+
+            <span class="n">http</span> <span class="o">=</span> <span class="n">httplib2</span><span class="o">.</span><span class="n">Http</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_auth_http</span> <span class="o">=</span> <span class="n">credentials</span><span class="o">.</span><span class="n">authorize</span><span class="p">(</span><span class="n">http</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_gce</span> <span class="o">=</span> <span class="n">build</span><span class="p">(</span><span class="n">GCE_API_NAME</span><span class="p">,</span> <span class="n">GCE_API_VERSION</span><span class="p">,</span> <span class="n">http</span><span class="o">=</span><span class="n">http</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gce</span>
+
+    <span class="k">def</span> <span class="nf">_execute_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Helper method to execute a request, since a lock should be used</span>
+<span class="sd">        to not fire up multiple requests at the same time.</span>
+
+<span class="sd">        :return: Result of `request.execute`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gce_lock</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">request</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">http</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_auth_http</span><span class="p">)</span>
+
+    <span class="c"># The following function was adapted from</span>
+    <span class="c"># https://developers.google.com/compute/docs/api/python_guide</span>
+    <span class="c"># (function _blocking_call)</span>
+    <span class="k">def</span> <span class="nf">_wait_until_done</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="mi">30</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Blocks until the operation status is done for the given operation.</span>
+
+<span class="sd">        :param response: The response object used in a previous GCE call.</span>
+
+<span class="sd">        :param int wait: Wait up to this number of seconds in between</span>
+<span class="sd">                         successive polling of the GCE status.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">gce</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connect</span><span class="p">()</span>
+
+        <span class="n">status</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="s">&#39;status&#39;</span><span class="p">]</span>
+        <span class="k">while</span> <span class="n">status</span> <span class="o">!=</span> <span class="s">&#39;DONE&#39;</span> <span class="ow">and</span> <span class="n">response</span><span class="p">:</span>
+            <span class="c"># wait a random amount of time (up to `wait` seconds)</span>
+            <span class="k">if</span> <span class="n">wait</span><span class="p">:</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">random</span><span class="o">.</span><span class="n">randrange</span><span class="p">(</span><span class="n">wait</span><span class="p">))</span>
+
+            <span class="n">operation_id</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span>
+
+            <span class="c"># Identify if this is a per-zone resource</span>
+            <span class="k">if</span> <span class="s">&#39;zone&#39;</span> <span class="ow">in</span> <span class="n">response</span><span class="p">:</span>
+                <span class="n">zone_name</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="s">&#39;zone&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;/&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">request</span> <span class="o">=</span> <span class="n">gce</span><span class="o">.</span><span class="n">zoneOperations</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                    <span class="n">project</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_project_id</span><span class="p">,</span> <span class="n">operation</span><span class="o">=</span><span class="n">operation_id</span><span class="p">,</span>
+                    <span class="n">zone</span><span class="o">=</span><span class="n">zone_name</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">request</span> <span class="o">=</span> <span class="n">gce</span><span class="o">.</span><span class="n">globalOperations</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                    <span class="n">project</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_project_id</span><span class="p">,</span>
+                    <span class="n">operation</span><span class="o">=</span><span class="n">operation_id</span><span class="p">)</span>
+
+            <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_execute_request</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">response</span><span class="p">:</span>
+                <span class="n">status</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="s">&#39;status&#39;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">response</span>
+
+<div class="viewcode-block" id="GoogleCloudProvider.start_instance"><a class="viewcode-back" href="../../../api/elasticluster/providers/gce.html#elasticluster.providers.gce.GoogleCloudProvider.start_instance">[docs]</a>    <span class="k">def</span> <span class="nf">start_instance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                       <span class="c"># these are common to any</span>
+                       <span class="c"># CloudProvider.start_instance() call</span>
+                       <span class="n">key_name</span><span class="p">,</span> <span class="n">public_key_path</span><span class="p">,</span> <span class="n">private_key_path</span><span class="p">,</span>
+                       <span class="n">security_group</span><span class="p">,</span> <span class="n">flavor</span><span class="p">,</span> <span class="n">image_id</span><span class="p">,</span> <span class="n">image_userdata</span><span class="p">,</span>
+                       <span class="n">username</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                       <span class="c"># these params are specific to the</span>
+                       <span class="c"># GoogleCloudProvider</span>
+                       <span class="n">instance_name</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Starts a new instance with the given properties and returns</span>
+<span class="sd">        the instance id.</span>
+
+<span class="sd">        :param str key_name: name of the ssh key to connect</span>
+<span class="sd">        :param str public_key_path: path to ssh public key</span>
+<span class="sd">        :param str private_key_path: path to ssh private key</span>
+<span class="sd">        :param str security_group: firewall rule definition to apply on the</span>
+<span class="sd">                                   instance</span>
+<span class="sd">        :param str flavor: machine type to use for the instance</span>
+<span class="sd">        :param str image_id: image type (os) to use for the instance</span>
+<span class="sd">        :param str image_userdata: command to execute after startup</span>
+<span class="sd">        :param str username: username for the given ssh key, default None</span>
+
+<span class="sd">        :param str instance_name: name of the instance</span>
+
+<span class="sd">        :return: str - instance id of the started instance</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># construct URLs</span>
+        <span class="n">project_url</span> <span class="o">=</span> <span class="s">&#39;</span><span class="si">%s%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">GCE_URL</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_project_id</span><span class="p">)</span>
+        <span class="n">machine_type_url</span> <span class="o">=</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s">/zones/</span><span class="si">%s</span><span class="s">/machineTypes/</span><span class="si">%s</span><span class="s">&#39;</span> \
+                           <span class="o">%</span> <span class="p">(</span><span class="n">project_url</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_zone</span><span class="p">,</span> <span class="n">flavor</span><span class="p">)</span>
+        <span class="n">network_url</span> <span class="o">=</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s">/global/networks/</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">project_url</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_network</span><span class="p">)</span>
+        <span class="n">os</span> <span class="o">=</span> <span class="n">image_id</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;-&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">os_cloud</span> <span class="o">=</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s">-cloud&quot;</span> <span class="o">%</span> <span class="n">os</span>
+        <span class="n">image_url</span> <span class="o">=</span> <span class="s">&#39;</span><span class="si">%s%s</span><span class="s">/global/images/</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span>
+            <span class="n">GCE_URL</span><span class="p">,</span> <span class="n">os_cloud</span><span class="p">,</span> <span class="n">image_id</span><span class="p">)</span>
+
+        <span class="c"># construct the request body</span>
+        <span class="k">if</span> <span class="n">instance_name</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">instance_name</span> <span class="o">=</span> <span class="s">&#39;elasticluster-</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">()</span>
+
+        <span class="n">public_key_content</span> <span class="o">=</span> <span class="nb">file</span><span class="p">(</span><span class="n">public_key_path</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+
+        <span class="n">instance</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="n">instance_name</span><span class="p">,</span>
+            <span class="s">&#39;machineType&#39;</span><span class="p">:</span> <span class="n">machine_type_url</span><span class="p">,</span>
+            <span class="s">&#39;image&#39;</span><span class="p">:</span> <span class="n">image_url</span><span class="p">,</span>
+            <span class="s">&#39;networkInterfaces&#39;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">{</span><span class="s">&#39;accessConfigs&#39;</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="p">{</span><span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;ONE_TO_ONE_NAT&#39;</span><span class="p">,</span>
+                     <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;External NAT&#39;</span>
+                    <span class="p">}],</span>
+                 <span class="s">&#39;network&#39;</span><span class="p">:</span> <span class="n">network_url</span>
+                <span class="p">}],</span>
+            <span class="s">&#39;serviceAccounts&#39;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">{</span><span class="s">&#39;email&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_email</span><span class="p">,</span>
+                 <span class="s">&#39;scopes&#39;</span><span class="p">:</span> <span class="n">GCE_DEFAULT_SCOPES</span>
+                <span class="p">}],</span>
+            <span class="s">&quot;metadata&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s">&quot;kind&quot;</span><span class="p">:</span> <span class="s">&quot;compute#metadata&quot;</span><span class="p">,</span>
+                <span class="s">&quot;items&quot;</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="p">{</span>
+                        <span class="s">&quot;key&quot;</span><span class="p">:</span> <span class="s">&quot;sshKeys&quot;</span><span class="p">,</span>
+                        <span class="s">&quot;value&quot;</span><span class="p">:</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s">:</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">public_key_content</span><span class="p">)</span>
+                    <span class="p">}</span>
+                <span class="p">]</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+
+        <span class="c"># create the instance</span>
+        <span class="n">gce</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connect</span><span class="p">()</span>
+        <span class="n">request</span> <span class="o">=</span> <span class="n">gce</span><span class="o">.</span><span class="n">instances</span><span class="p">()</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span>
+            <span class="n">project</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_project_id</span><span class="p">,</span> <span class="n">body</span><span class="o">=</span><span class="n">instance</span><span class="p">,</span> <span class="n">zone</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_zone</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_execute_request</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wait_until_done</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_check_response</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">instance_name</span>
+        <span class="k">except</span> <span class="p">(</span><span class="n">HttpError</span><span class="p">,</span> <span class="n">CloudProviderError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Error creating instance `</span><span class="si">%s</span><span class="s">`&quot;</span> <span class="o">%</span> <span class="n">e</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">InstanceError</span><span class="p">(</span><span class="s">&quot;Error creating instance `</span><span class="si">%s</span><span class="s">`&quot;</span> <span class="o">%</span> <span class="n">e</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="GoogleCloudProvider.stop_instance"><a class="viewcode-back" href="../../../api/elasticluster/providers/gce.html#elasticluster.providers.gce.GoogleCloudProvider.stop_instance">[docs]</a>    <span class="k">def</span> <span class="nf">stop_instance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Stops the instance gracefully.</span>
+
+<span class="sd">        :param str instance_id: instance identifier</span>
+<span class="sd">        :raises: `InstanceError` if instance can not be stopped</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">gce</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connect</span><span class="p">()</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">request</span> <span class="o">=</span> <span class="n">gce</span><span class="o">.</span><span class="n">instances</span><span class="p">()</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">project</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_project_id</span><span class="p">,</span>
+                                        <span class="n">instance</span><span class="o">=</span><span class="n">instance_id</span><span class="p">,</span> <span class="n">zone</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_zone</span><span class="p">)</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_execute_request</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_check_response</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+        <span class="k">except</span> <span class="p">(</span><span class="n">HttpError</span><span class="p">,</span> <span class="n">CloudProviderError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InstanceError</span><span class="p">(</span><span class="s">&quot;Could not stop instance `</span><span class="si">%s</span><span class="s">`: `</span><span class="si">%s</span><span class="s">`&quot;</span>
+                                <span class="o">%</span> <span class="p">(</span><span class="n">instance_id</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="GoogleCloudProvider.list_instances"><a class="viewcode-back" href="../../../api/elasticluster/providers/gce.html#elasticluster.providers.gce.GoogleCloudProvider.list_instances">[docs]</a>    <span class="k">def</span> <span class="nf">list_instances</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">filter</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;List instances on GCE, optionally filtering the results.</span>
+
+<span class="sd">        :param str filter: Filter specification; see https://developers.google.com/compute/docs/reference/latest/instances/list for details.</span>
+<span class="sd">        :return: list of instances</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">gce</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connect</span><span class="p">()</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">request</span> <span class="o">=</span> <span class="n">gce</span><span class="o">.</span><span class="n">instances</span><span class="p">()</span><span class="o">.</span><span class="n">list</span><span class="p">(</span>
+                <span class="n">project</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_project_id</span><span class="p">,</span> <span class="nb">filter</span><span class="o">=</span><span class="nb">filter</span><span class="p">,</span> <span class="n">zone</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_zone</span><span class="p">)</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_execute_request</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_check_response</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+        <span class="k">except</span> <span class="p">(</span><span class="n">HttpError</span><span class="p">,</span> <span class="n">CloudProviderError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InstanceError</span><span class="p">(</span><span class="s">&quot;could not retrieve all instances on the &quot;</span>
+                                <span class="s">&quot;cloud: ``&quot;</span> <span class="o">%</span> <span class="n">e</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">response</span> <span class="ow">and</span> <span class="s">&#39;items&#39;</span> <span class="ow">in</span> <span class="n">response</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">response</span><span class="p">[</span><span class="s">&#39;items&#39;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">list</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="GoogleCloudProvider.get_ips"><a class="viewcode-back" href="../../../api/elasticluster/providers/gce.html#elasticluster.providers.gce.GoogleCloudProvider.get_ips">[docs]</a>    <span class="k">def</span> <span class="nf">get_ips</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Retrieves the ip addresses (private and public) from the cloud</span>
+<span class="sd">        provider by the given instance id.</span>
+
+<span class="sd">        :param str instance_id: id of the instance</span>
+<span class="sd">        :return: tuple (ip_private, ip_public)</span>
+<span class="sd">        :raises: InstanceError if the ip could not be retrieved.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">gce</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connect</span><span class="p">()</span>
+        <span class="n">instances</span> <span class="o">=</span> <span class="n">gce</span><span class="o">.</span><span class="n">instances</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">request</span> <span class="o">=</span> <span class="n">instances</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">instance</span><span class="o">=</span><span class="n">instance_id</span><span class="p">,</span>
+                                    <span class="n">project</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_project_id</span><span class="p">,</span> <span class="n">zone</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_zone</span><span class="p">)</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_execute_request</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+            <span class="n">ip_private</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="n">ip_public</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="k">if</span> <span class="n">response</span> <span class="ow">and</span> <span class="s">&quot;networkInterfaces&quot;</span> <span class="ow">in</span> <span class="n">response</span><span class="p">:</span>
+                <span class="n">interfaces</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="s">&#39;networkInterfaces&#39;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">interfaces</span><span class="p">:</span>
+                    <span class="n">ip_private</span> <span class="o">=</span> <span class="n">interfaces</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s">&#39;networkIP&#39;</span><span class="p">]</span>
+
+                    <span class="k">if</span> <span class="s">&quot;accessConfigs&quot;</span> <span class="ow">in</span> <span class="n">interfaces</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                        <span class="n">ip_public</span> <span class="o">=</span> <span class="n">interfaces</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s">&#39;accessConfigs&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s">&#39;natIP&#39;</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">ip_private</span> <span class="ow">and</span> <span class="n">ip_public</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">ip_private</span><span class="p">,</span> <span class="n">ip_public</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">InstanceError</span><span class="p">(</span><span class="s">&quot;could not retrieve the ip address for &quot;</span>
+                                    <span class="s">&quot;node `</span><span class="si">%s</span><span class="s">`, please check the node &quot;</span>
+                                    <span class="s">&quot;through the cloud provider interface&quot;</span>
+                                     <span class="o">%</span> <span class="n">instance_id</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="p">(</span><span class="n">HttpError</span><span class="p">,</span> <span class="n">CloudProviderError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InstanceError</span><span class="p">(</span><span class="s">&#39;could not retrieve the ip address of `</span><span class="si">%s</span><span class="s">`: &#39;</span>
+                                <span class="s">&#39;`</span><span class="si">%s</span><span class="s">`&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">instance_id</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="GoogleCloudProvider.is_instance_running"><a class="viewcode-back" href="../../../api/elasticluster/providers/gce.html#elasticluster.providers.gce.GoogleCloudProvider.is_instance_running">[docs]</a>    <span class="k">def</span> <span class="nf">is_instance_running</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Check whether the instance is up and running.</span>
+
+<span class="sd">        :param str instance_id: instance identifier</span>
+<span class="sd">        :reutrn: True if instance is running, False otherwise</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">items</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">list_instances</span><span class="p">(</span><span class="nb">filter</span><span class="o">=</span><span class="p">(</span><span class="s">&#39;name eq &quot;</span><span class="si">%s</span><span class="s">&quot;&#39;</span> <span class="o">%</span> <span class="n">instance_id</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">item</span><span class="p">[</span><span class="s">&#39;status&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;RUNNING&#39;</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">True</span>
+        <span class="k">return</span> <span class="bp">False</span>
+</div>
+    <span class="k">def</span> <span class="nf">_get_image_url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Gets the url for the specified image. Unfortunatly this only works</span>
+<span class="sd">        for images uploaded by the user. The images provided by google will</span>
+<span class="sd">        not be found.</span>
+
+<span class="sd">        :param str image_id: image identifier</span>
+<span class="sd">        :return: str - api url of the image</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">gce</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connect</span><span class="p">()</span>
+        <span class="nb">filter</span> <span class="o">=</span> <span class="s">&quot;name eq </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">image_id</span>
+        <span class="n">request</span> <span class="o">=</span> <span class="n">gce</span><span class="o">.</span><span class="n">images</span><span class="p">()</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="n">project</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_project_id</span><span class="p">,</span> <span class="nb">filter</span><span class="o">=</span><span class="nb">filter</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_execute_request</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wait_until_done</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+
+        <span class="n">image_url</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">if</span> <span class="s">&quot;items&quot;</span> <span class="ow">in</span> <span class="n">response</span><span class="p">:</span>
+            <span class="n">image_url</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="s">&quot;items&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s">&quot;selfLink&quot;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">image_url</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">image_url</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ImageError</span><span class="p">(</span><span class="s">&quot;Could not find given image id `</span><span class="si">%s</span><span class="s">`&quot;</span> <span class="o">%</span> <span class="n">image_id</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_check_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Checks the response from GCE for error messages.</span>
+
+<span class="sd">        :param response: GCE response</span>
+<span class="sd">        :return: nothing</span>
+<span class="sd">        :raises: CloudProviderError with error message from GCE</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="s">&quot;error&quot;</span> <span class="ow">in</span> <span class="n">response</span><span class="p">:</span>
+            <span class="n">error</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="s">&#39;error&#39;</span><span class="p">][</span><span class="s">&#39;errors&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s">&#39;message&#39;</span><span class="p">]</span>
+            <span class="k">raise</span> <span class="n">CloudProviderError</span><span class="p">(</span><span class="s">&quot;The following error occurred while &quot;</span>
+                                     <span class="s">&quot;interacting with the cloud provider &quot;</span>
+                                     <span class="s">&quot;`</span><span class="si">%s</span><span class="s">`&quot;</span> <span class="o">%</span> <span class="n">error</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">elasticluster 1.0 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../providers.html" >elasticluster.providers</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Grid Computing Competence Centre, University of Zurich.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,408 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>elasticluster &mdash; elasticluster 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="elasticluster 1.0 documentation" href="../index.html" />
+    <link rel="up" title="Elasitcluster programming API" href="index.html" />
+    <link rel="next" title="elasticluster.cluster" href="elasticluster/cluster.html" />
+    <link rel="prev" title="Elasitcluster programming API" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="elasticluster/cluster.html" title="elasticluster.cluster"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Elasitcluster programming API"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">elasticluster 1.0 documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Elasitcluster programming API</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="elasticluster">
+<h1><cite>elasticluster</cite><a class="headerlink" href="#elasticluster" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<p>Elasticluster offers an API to programmatically manage compute clusters on
+cloud infrastructure. This page introduces the basic concepts of the API and
+provides sample code to illustrate the usage of the API. While this document
+should provide you with the basics, more details can be found in the
+respective module documentation</p>
+</div>
+<div class="section" id="getting-started">
+<h2>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h2>
+<p>The following subchapters introduce the basic concepts of Elasticluster.</p>
+<div class="section" id="cluster">
+<h3>Cluster<a class="headerlink" href="#cluster" title="Permalink to this headline">¶</a></h3>
+<p>This is the heart of elasticluster and handles all cluster relevant
+behavior.  You can basically start, setup and stop a cluster. Also it
+provides factory methods to add nodes to the cluster. A typical
+workflow is as follows (see <a class="reference internal" href="#slurm">slurm</a> for a code example):</p>
+<ol class="arabic simple">
+<li>create a new cluster</li>
+<li>add nodes to fit your computing needs</li>
+<li>start cluster; start all instances in the cloud</li>
+<li>setup cluster; configure all nodes to fit your computing cluster</li>
+<li>ssh into a node to submit computing jobs</li>
+<li>eventually stop cluster; destroys all instances in the cloud</li>
+</ol>
+<p>See documentation of the <a class="reference internal" href="elasticluster/cluster.html#elasticluster.cluster.Cluster" title="elasticluster.cluster.Cluster"><tt class="xref py py-class docutils literal"><span class="pre">Cluster</span></tt></a>
+class for futher details.</p>
+</div>
+<div class="section" id="node">
+<h3>Node<a class="headerlink" href="#node" title="Permalink to this headline">¶</a></h3>
+<p>The node represents an instance in a cluster. It holds all information to
+connect to the nodes also manages the cloud instance. It provides the basic
+functionality to interact with the cloud instance, such as start, stop,
+check if the instance is up and ssh connect.</p>
+<p>See the <a class="reference internal" href="elasticluster/cluster.html#elasticluster.cluster.Node" title="elasticluster.cluster.Node"><tt class="xref py py-class docutils literal"><span class="pre">Node</span></tt></a> api docs for further details.</p>
+</div>
+<div class="section" id="cloud-provider">
+<h3>Cloud Provider<a class="headerlink" href="#cloud-provider" title="Permalink to this headline">¶</a></h3>
+<p>Manages the connection to the cloud webservice and offers all functionality
+used by the cluster to provision instances. Elasticluster offers two
+different cloud providers at the current state:</p>
+<ul>
+<li><dl class="first docutils">
+<dt><a class="reference internal" href="elasticluster/providers/ec2_boto.html#elasticluster.providers.ec2_boto.BotoCloudProvider" title="elasticluster.providers.ec2_boto.BotoCloudProvider"><tt class="xref py py-class docutils literal"><span class="pre">BotoCloudProvider</span></tt></a></dt>
+<dd><p class="first last">Cloud provider to connect to EC2 compliant web services (e.g
+Amazon, Openstack, etc.)</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><a class="reference internal" href="elasticluster/providers/gce.html#elasticluster.providers.gce.GoogleCloudProvider" title="elasticluster.providers.gce.GoogleCloudProvider"><tt class="xref py py-class docutils literal"><span class="pre">GoogleCloudProvider</span></tt></a> Cloud</dt>
+<dd><p class="first last">provider to connect to the Google Compute Engine (GCE)</p>
+</dd>
+</dl>
+</li>
+</ul>
+<p>All listed cloud providers above can be used to manage a cluster in the
+cloud. If the cloud operator is not supported by the implementations above,
+an alternative implementation can be provided by following the
+<a class="reference internal" href="elasticluster/providers.html#elasticluster.providers.AbstractCloudProvider" title="elasticluster.providers.AbstractCloudProvider"><tt class="xref py py-class docutils literal"><span class="pre">AbstractCloudProvider</span></tt></a> contract.</p>
+</div>
+<div class="section" id="setup-provider">
+<h3>Setup Provider<a class="headerlink" href="#setup-provider" title="Permalink to this headline">¶</a></h3>
+<p>The setup provider configures in respect to the specified cluster and
+node configuration. The basic implementation
+<a class="reference internal" href="elasticluster/providers/ansible_provider.html#elasticluster.providers.ansible_provider.AnsibleSetupProvider" title="elasticluster.providers.ansible_provider.AnsibleSetupProvider"><tt class="xref py py-class docutils literal"><span class="pre">AnsibleSetupProvider</span></tt></a>
+uses <a class="reference external" href="https://github.com/ansible/ansible">ansible</a> to configure the nodes. Ansible is a push based
+configuration management system in which the configuration is stored
+locally and pushed to all the nodes in the cluster.</p>
+<p>See the <a class="reference internal" href="../playbooks.html#playbooks"><em>Playbooks distributed with elasticluster</em></a> page for more
+details on the cluster setups possible with the ansible implementation
+and how the ansible playbooks can be enhanced.</p>
+<p>If this implementation does not satisfy the clients needs,
+an alternative implementation can be implemented following the
+<a class="reference internal" href="elasticluster/providers.html#elasticluster.providers.AbstractSetupProvider" title="elasticluster.providers.AbstractSetupProvider"><tt class="xref py py-class docutils literal"><span class="pre">AbstractSetupProvider</span></tt></a> contract.</p>
+</div>
+<div class="section" id="cluster-repository">
+<h3>Cluster Repository<a class="headerlink" href="#cluster-repository" title="Permalink to this headline">¶</a></h3>
+<p>The cluster repository is responsible to keep track of multiple clusters
+over time. Therefore Elasticluster provides two implementations:</p>
+<blockquote>
+<div><ul>
+<li><dl class="first docutils">
+<dt><a class="reference internal" href="elasticluster/repository.html#elasticluster.repository.MemRepository" title="elasticluster.repository.MemRepository"><tt class="xref py py-class docutils literal"><span class="pre">MemRepository</span></tt></a></dt>
+<dd><p class="first last">Stores the clusters in memory. Therefore after stopping a program
+using this repository, all clusters are not recoverable but possibly
+still running.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><a class="reference internal" href="elasticluster/repository.html#elasticluster.repository.ClusterRepository" title="elasticluster.repository.ClusterRepository"><tt class="xref py py-class docutils literal"><span class="pre">ClusterRepository</span></tt></a></dt>
+<dd><p class="first last">Stores the cluster on disk persistently. This implementation uses
+pickle to serialize and deserialize the cluster.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+<p>If a client wants to store the cluster in a database for example,
+an alternative implementation can be provided following the
+<a class="reference internal" href="elasticluster/repository.html#elasticluster.repository.AbstractClusterRepository" title="elasticluster.repository.AbstractClusterRepository"><tt class="xref py py-class docutils literal"><span class="pre">AbstractClusterRepository</span></tt></a> contract.</p>
+</div>
+</div>
+<div class="section" id="sample-code">
+<h2>Sample Code<a class="headerlink" href="#sample-code" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="start-and-setup-a-slurm-cluster">
+<span id="slurm"></span><h3>Start and setup a SLURM cluster<a class="headerlink" href="#start-and-setup-a-slurm-cluster" title="Permalink to this headline">¶</a></h3>
+<p>The following sample code shows how to start and setup a SLURM cluster on an
+OpenStack cloud and provides further information on each step. Other cluster
+types on other cloud providers can be setup accordingly.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">elasticluster</span>
+
+<span class="c"># Initialise an EC2 compatible cloud provider, in this case an OpenStack</span>
+<span class="c"># cloud operator is chosen. To initialise the cloud provider the</span>
+<span class="c"># following parameters are passed:</span>
+<span class="c">#   url:        url to connecto to the cloud operator web service</span>
+<span class="c">#   region:     region to start the nodes on</span>
+<span class="c">#   access_key: access key of the current user to connect</span>
+<span class="c">#   secret_key: secret key of the current user to connect</span>
+<span class="n">cloud_provider</span> <span class="o">=</span> <span class="n">elasticluster</span><span class="o">.</span><span class="n">BotoCloudProvider</span><span class="p">(</span>
+                                        <span class="s">&#39;http://uzh.ch/services/Cloud&#39;</span><span class="p">,</span>
+                                        <span class="s">&#39;nova&#39;</span><span class="p">,</span> <span class="s">&#39;access_key&#39;</span><span class="p">,</span> <span class="s">&#39;secret_key&#39;</span><span class="p">)</span>
+
+<span class="c"># Initialising the setup provider needs a little more preparation:</span>
+<span class="c"># the groups dictionary specifies the kind of nodes used for this cluster.</span>
+<span class="c"># In this case we want a frontend and a compute kind. The frontend node</span>
+<span class="c"># (s) will be setup as slurm_master, the compute node(s) as slurm_clients.</span>
+<span class="c"># This corresponds to the documentation of the ansible playbooks</span>
+<span class="c"># provided with elasticluster. The kind of the node is a name specified</span>
+<span class="c"># by the user. This name will be used to set a new hostname on the</span>
+<span class="c"># instance, therefore it should meet the requirements of RFC 953</span>
+<span class="c"># groups[&#39;kind&#39;] = [&#39;andible_group1&#39;, &#39;ansible_group2&#39;]</span>
+<span class="n">groups</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+<span class="n">groups</span><span class="p">[</span><span class="s">&#39;frontend&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;slurm_master&#39;</span><span class="p">]</span>
+<span class="n">groups</span><span class="p">[</span><span class="s">&#39;compute&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;slurm_clients&#39;</span><span class="p">]</span>
+
+<span class="n">setup_provider</span> <span class="o">=</span> <span class="n">elasticluster</span><span class="o">.</span><span class="n">AnsibleSetupProvider</span><span class="p">(</span><span class="n">groups</span><span class="p">)</span>
+
+<span class="c"># cluster initialisation (note: ssh keys are same for all nodes)</span>
+<span class="c"># After the steps above initialising an empty cluster is a peace of cake.</span>
+<span class="c"># The cluster takes the following arguments:</span>
+<span class="c"># name:           name to identify the cluster</span>
+<span class="c">#   cloud_provider: cloud provider to connect to cloud</span>
+<span class="c">#   setup_provider: setup provider to configure the cluster</span>
+<span class="c">#   ssh_key_name:   name of the ssh key stored (or to be stored) on the</span>
+<span class="c">#                   cloud</span>
+<span class="c">#   ssh_key_pub:    path to public ssh key file</span>
+<span class="c">#   ssh_key_priv:   path to private ssh key file</span>
+<span class="c">#</span>
+<span class="c"># The ssh key files are used for all instances in this cluster.</span>
+<span class="n">cluster</span> <span class="o">=</span> <span class="n">elasticluster</span><span class="o">.</span><span class="n">Cluster</span><span class="p">(</span><span class="s">&#39;my-cluster&#39;</span><span class="p">,</span> <span class="n">cloud_provider</span><span class="p">,</span>
+                                <span class="n">setup_provider</span><span class="p">,</span> <span class="s">&#39;ssh_key_name&#39;</span><span class="p">,</span>
+                                <span class="s">&#39;~/ssh/keys/my_ssh_key.pub&#39;</span><span class="p">,</span>
+                                <span class="s">&#39;~/ssh/keys/my_ssh_key&#39;</span><span class="p">)</span>
+
+<span class="c"># To add nodes to the cluster we can use the add_node. This</span>
+<span class="c"># only initialises a new node, but does not start it yet.</span>
+<span class="c"># The add node function is basically a factory method to make it easy to</span>
+<span class="c"># add nodes to a cluster. It takes the following arguments:</span>
+<span class="c">#   kind:   kind of the node in this cluster. This corresponds to the</span>
+<span class="c">#           groups defined in the cloud_provider.</span>
+<span class="n">cluster</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="s">&#39;frontend&#39;</span><span class="p">,</span> <span class="s">&#39;ami-00000048&#39;</span><span class="p">,</span> <span class="s">&#39;gc3-user&#39;</span><span class="p">,</span>
+                 <span class="s">&#39;m1.tiny&#39;</span><span class="p">,</span> <span class="s">&#39;all_tcp_ports&#39;</span><span class="p">)</span>
+
+<span class="c"># We can also add multiple nodes with the add_nodes method.</span>
+<span class="c"># The following command will add 2 nodes of the kind `compute` to the</span>
+<span class="c"># cluster</span>
+<span class="n">cluster</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="s">&#39;compute&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="s">&#39;ami-00000048&#39;</span><span class="p">,</span> <span class="s">&#39;gc3-user&#39;</span><span class="p">,</span> <span class="s">&#39;m1.tiny&#39;</span><span class="p">,</span>
+                  <span class="s">&#39;all_tcp_ports&#39;</span><span class="p">)</span>
+
+<span class="c"># Since we initialised all the nodes for this computing cluster,</span>
+<span class="c"># we can finally start the cluster.</span>
+<span class="c"># The start method is blocking and does the following tasks:</span>
+<span class="c">#   * call the cloud provider to start an instance for each node in a</span>
+<span class="c">#     seperate thread.</span>
+<span class="c">#   * to make sure elasticluster is not stopped during creation of an</span>
+<span class="c">#     instance, it will overwrite the sigint handler</span>
+<span class="c">#   * waits until all nodes are alive (meaning ssh connection</span>
+<span class="c">#     works)</span>
+<span class="c">#   * If the startup timeout is reached and not all nodes are alive,</span>
+<span class="c">#     the cluster will stop and destroy all instances</span>
+<span class="n">cluster</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+<span class="c"># Now, all the nodes are started and we can call the setup method to</span>
+<span class="c"># configure slurm on the nodes.</span>
+<span class="n">cluster</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="asynchronous-node-start">
+<h3>Asynchronous node start<a class="headerlink" href="#asynchronous-node-start" title="Permalink to this headline">¶</a></h3>
+<p>The <a class="reference internal" href="elasticluster/cluster.html#elasticluster.cluster.Cluster.start" title="elasticluster.cluster.Cluster.start"><tt class="xref py py-meth docutils literal"><span class="pre">start()</span></tt></a> method of the
+<a class="reference internal" href="elasticluster/cluster.html#elasticluster.cluster.Cluster" title="elasticluster.cluster.Cluster"><tt class="xref py py-meth docutils literal"><span class="pre">Cluster()</span></tt></a> class is blocking and therefore waits until all nodes
+are alive. If a client wants to use this time for other tasks,
+the nodes can as well be started asynchronous:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># retrieve all nodes from the cluster</span>
+<span class="n">nodes</span> <span class="o">=</span> <span class="n">cluster</span><span class="o">.</span><span class="n">get_all_nodes</span><span class="p">()</span>
+
+<span class="c"># start each node</span>
+<span class="c"># The start method on the node is non blocking and will return as soon</span>
+<span class="c"># as the cloud provider is contacted to start a new instance</span>
+<span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">:</span>
+    <span class="n">node</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+<span class="c"># wait until all nodes are alive</span>
+<span class="n">starting_nodes</span> <span class="o">=</span> <span class="n">nodes</span><span class="p">[:]</span>
+<span class="k">while</span> <span class="n">starting_nodes</span><span class="p">:</span>
+    <span class="n">starting_nodes</span> <span class="o">=</span> <span class="p">[</span><span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">starting_nodes</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">n</span><span class="o">.</span><span class="n">is_alive</span><span class="p">()]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="storing-a-cluster-on-disk">
+<h3>Storing a cluster on disk<a class="headerlink" href="#storing-a-cluster-on-disk" title="Permalink to this headline">¶</a></h3>
+<p>By default elasticluster will store the cluster in memory only. Therefore
+after a programm shutdown the cluster will not be available anymore in
+elasticluster, but might still be running on the cloud. The following
+example shows how to store clusters on disk to retrieve after a programm
+restart:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># The cluster repository uses pickle to store clusters each in a</span>
+<span class="c"># seperate file in the provided storage directory.</span>
+<span class="n">repository</span> <span class="o">=</span> <span class="n">elasticluster</span><span class="o">.</span><span class="n">ClusterRepository</span><span class="p">(</span><span class="s">&#39;/path/to/storage/dir&#39;</span><span class="p">)</span>
+
+<span class="c"># On cluster initialisation we can pass the repository as optional</span>
+<span class="c"># argument.</span>
+<span class="n">cluster</span> <span class="o">=</span> <span class="n">elasticluster</span><span class="o">.</span><span class="n">Cluster</span><span class="p">(</span><span class="s">&#39;my-cluster&#39;</span><span class="p">,</span> <span class="n">cloud_provider</span><span class="p">,</span>
+                                <span class="n">setup_provider</span><span class="p">,</span> <span class="s">&#39;ssh_key_name&#39;</span><span class="p">,</span>
+                                <span class="s">&#39;~/ssh/keys/my_ssh_key.pub&#39;</span><span class="p">,</span>
+                                <span class="s">&#39;~/ssh/keys/my_ssh_key&#39;</span><span class="p">,</span>
+                                <span class="n">repository</span><span class="o">=</span><span class="n">repository</span><span class="p">)</span>
+
+<span class="c"># When starting the cluster, it will safe its state using the repository.</span>
+<span class="n">cluster</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>After a program shutdown we can therefore fetch the cluster from the
+repository again and work with it as expected:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">repository</span> <span class="o">=</span> <span class="n">elasticluster</span><span class="o">.</span><span class="n">ClusterRepository</span><span class="p">(</span><span class="s">&#39;/path/to/storage/dir&#39;</span><span class="p">)</span>
+
+<span class="c"># retrieve the cluster from the repository</span>
+<span class="n">cluster</span> <span class="o">=</span> <span class="n">repository</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;my-cluster&#39;</span><span class="p">)</span>
+
+<span class="c"># or retrieve all clusters that are stored in the repository</span>
+<span class="n">clusters</span> <span class="o">=</span> <span class="n">repository</span><span class="o">.</span><span class="n">get_all</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="logging">
+<h3>Logging<a class="headerlink" href="#logging" title="Permalink to this headline">¶</a></h3>
+<p>Elasticluster uses the python <cite>logging</cite> module to log events. A client can
+overwrite the settings as illustrated below:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">import</span> <span class="nn">elasticluster</span>
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">elasticluster</span><span class="o">.</span><span class="n">log</span>
+<span class="n">level</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLevelName</span><span class="p">(</span><span class="s">&#39;INFO&#39;</span><span class="p">)</span>
+<span class="n">log</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">level</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The current example only shows how to increase the log level,
+but any settings can be applied compliant with the logging module of python.</p>
+<span class="target" id="module-elasticluster"></span></div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#"><cite>elasticluster</cite></a><ul>
+<li><a class="reference internal" href="#overview">Overview</a></li>
+<li><a class="reference internal" href="#getting-started">Getting Started</a><ul>
+<li><a class="reference internal" href="#cluster">Cluster</a></li>
+<li><a class="reference internal" href="#node">Node</a></li>
+<li><a class="reference internal" href="#cloud-provider">Cloud Provider</a></li>
+<li><a class="reference internal" href="#setup-provider">Setup Provider</a></li>
+<li><a class="reference internal" href="#cluster-repository">Cluster Repository</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#sample-code">Sample Code</a><ul>
+<li><a class="reference internal" href="#start-and-setup-a-slurm-cluster">Start and setup a SLURM cluster</a></li>
+<li><a class="reference internal" href="#asynchronous-node-start">Asynchronous node start</a></li>
+<li><a class="reference internal" href="#storing-a-cluster-on-disk">Storing a cluster on disk</a></li>
+<li><a class="reference internal" href="#logging">Logging</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Elasitcluster programming API</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="elasticluster/cluster.html"
+                        title="next chapter"><cite>elasticluster.cluster</cite></a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/api/elasticluster.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="elasticluster/cluster.html" title="elasticluster.cluster"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Elasitcluster programming API"
+             >previous</a> |</li>
+        <li><a href="../index.html">elasticluster 1.0 documentation</a> &raquo;</li>
+          <li><a href="index.html" >Elasitcluster programming API</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Grid Computing Competence Centre, University of Zurich.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

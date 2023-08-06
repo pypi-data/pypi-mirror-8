@@ -1,0 +1,403 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>elasticluster.providers.ansible_provider &mdash; elasticluster 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="elasticluster 1.0 documentation" href="../../../index.html" />
+    <link rel="up" title="elasticluster.providers" href="../providers.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">elasticluster 1.0 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../providers.html" accesskey="U">elasticluster.providers</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for elasticluster.providers.ansible_provider</h1><div class="highlight"><pre>
+<span class="c">#</span>
+<span class="c"># Copyright (C) 2013 GC3, University of Zurich</span>
+<span class="c">#</span>
+<span class="c"># This program is free software: you can redistribute it and/or modify</span>
+<span class="c"># it under the terms of the GNU General Public License as published by</span>
+<span class="c"># the Free Software Foundation, either version 3 of the License, or</span>
+<span class="c"># (at your option) any later version.</span>
+<span class="c">#</span>
+<span class="c"># This program is distributed in the hope that it will be useful,</span>
+<span class="c"># but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c"># GNU General Public License for more details.</span>
+<span class="c">#</span>
+<span class="c"># You should have received a copy of the GNU General Public License</span>
+<span class="c"># along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+<span class="c">#</span>
+<span class="n">__author__</span> <span class="o">=</span> <span class="s">&#39;Nicolas Baer &lt;nicolas.baer@uzh.ch&gt;, Antonio Messina &lt;antonio.s.messina@gmail.com&gt;&#39;</span>
+
+<span class="c"># system imports</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">tempfile</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="c"># external imports</span>
+<span class="kn">import</span> <span class="nn">ansible.callbacks</span>
+<span class="kn">from</span> <span class="nn">ansible.callbacks</span> <span class="kn">import</span> <span class="n">call_callback_module</span>
+<span class="kn">import</span> <span class="nn">ansible.constants</span> <span class="kn">as</span> <span class="nn">ansible_constants</span>
+<span class="kn">from</span> <span class="nn">ansible.errors</span> <span class="kn">import</span> <span class="n">AnsibleError</span>
+<span class="kn">from</span> <span class="nn">ansible.playbook</span> <span class="kn">import</span> <span class="n">PlayBook</span>
+<span class="kn">import</span> <span class="nn">ansible.utils</span>
+
+<span class="c"># Elasticluster imports</span>
+<span class="kn">import</span> <span class="nn">elasticluster</span>
+<span class="kn">from</span> <span class="nn">elasticluster</span> <span class="kn">import</span> <span class="n">log</span>
+<span class="kn">from</span> <span class="nn">elasticluster.providers</span> <span class="kn">import</span> <span class="n">AbstractSetupProvider</span>
+
+
+<span class="k">class</span> <span class="nc">ElasticlusterPbCallbacks</span><span class="p">(</span><span class="n">ansible</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">PlaybookCallbacks</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">on_no_hosts_matched</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">call_callback_module</span><span class="p">(</span><span class="s">&#39;playbook_on_no_hosts_matched&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">on_no_hosts_remaining</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">call_callback_module</span><span class="p">(</span><span class="s">&#39;playbook_on_no_hosts_remaining&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">on_task_start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">is_conditional</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s">&#39;step&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">step</span><span class="p">:</span>
+            <span class="n">resp</span> <span class="o">=</span> <span class="nb">raw_input</span><span class="p">(</span><span class="s">&#39;Perform task: </span><span class="si">%s</span><span class="s"> (y/n/c): &#39;</span> <span class="o">%</span> <span class="n">name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">resp</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&#39;y&#39;</span><span class="p">,</span> <span class="s">&#39;yes&#39;</span><span class="p">]:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">skip_task</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="k">elif</span> <span class="n">resp</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&#39;c&#39;</span><span class="p">,</span> <span class="s">&#39;continue&#39;</span><span class="p">]:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">skip_task</span> <span class="o">=</span> <span class="bp">False</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">step</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">skip_task</span> <span class="o">=</span> <span class="bp">True</span>
+
+        <span class="n">call_callback_module</span><span class="p">(</span><span class="s">&#39;playbook_on_task_start&#39;</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">is_conditional</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">on_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">call_callback_module</span><span class="p">(</span><span class="s">&#39;playbook_on_setup&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">on_import_for_host</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">imported_file</span><span class="p">):</span>
+        <span class="n">call_callback_module</span><span class="p">(</span><span class="s">&#39;playbook_on_import_for_host&#39;</span><span class="p">,</span>
+                             <span class="n">host</span><span class="p">,</span> <span class="n">imported_file</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">on_not_import_for_host</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">missing_file</span><span class="p">):</span>
+        <span class="n">call_callback_module</span><span class="p">(</span><span class="s">&#39;playbook_on_not_import_for_host&#39;</span><span class="p">,</span>
+                             <span class="n">host</span><span class="p">,</span> <span class="n">missing_file</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">on_play_start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pattern</span><span class="p">):</span>
+        <span class="n">call_callback_module</span><span class="p">(</span><span class="s">&#39;playbook_on_play_start&#39;</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">on_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stats</span><span class="p">):</span>
+        <span class="n">call_callback_module</span><span class="p">(</span><span class="s">&#39;playbook_on_stats&#39;</span><span class="p">,</span> <span class="n">stats</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="AnsibleSetupProvider"><a class="viewcode-back" href="../../../api/elasticluster/providers/ansible_provider.html#elasticluster.providers.ansible_provider.AnsibleSetupProvider">[docs]</a><span class="k">class</span> <span class="nc">AnsibleSetupProvider</span><span class="p">(</span><span class="n">AbstractSetupProvider</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;This implementation uses ansible to configure and manage the cluster</span>
+<span class="sd">    setup. See https://github.com/ansible/ansible for details.</span>
+
+<span class="sd">    :param dict groups: dictionary of node kinds with corresponding</span>
+<span class="sd">                        ansible groups to install on the node kind.</span>
+<span class="sd">                        e.g [node_kind] = [&#39;ansible_group1&#39;, &#39;ansible_group2&#39;]</span>
+<span class="sd">                        The group defined here can be references in each</span>
+<span class="sd">                        node. Therefore groups can make it easier to</span>
+<span class="sd">                        define multiple groups for one node.</span>
+
+<span class="sd">    :param str playbook_path: path to playbook; if empty this will use</span>
+<span class="sd">                              the shared playbook of elasticluster</span>
+
+<span class="sd">    :param dict environment_vars: dictonary to define variables per node</span>
+<span class="sd">                                  kind, e.g. [node_kind][var] = value</span>
+
+<span class="sd">    :param str storage_path: path to store the inventory file. By default</span>
+<span class="sd">                             the inventory file is saved temporarily in a</span>
+<span class="sd">                             temporary directory and deleted when the</span>
+<span class="sd">                             cluster in stopped.</span>
+
+<span class="sd">    :param bool sudo: indication whether use sudo to gain root permission</span>
+
+<span class="sd">    :param str sudo_user: user with root permission</span>
+
+<span class="sd">    :param str ansible_module_dir: path to addition ansible modules</span>
+<span class="sd">    :param extra_conf: tbd.</span>
+
+<span class="sd">    :ivar groups: node kind and ansible group mapping dictionary</span>
+<span class="sd">    :ivar environment: additional environment variables</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">inventory_file_ending</span> <span class="o">=</span> <span class="s">&#39;ansible-inventory&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">groups</span><span class="p">,</span> <span class="n">playbook_path</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">environment_vars</span><span class="o">=</span><span class="nb">dict</span><span class="p">(),</span>
+                 <span class="n">storage_path</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">sudo</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">sudo_user</span><span class="o">=</span><span class="s">&#39;root&#39;</span><span class="p">,</span>
+                 <span class="n">ansible_module_dir</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_conf</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">groups</span> <span class="o">=</span> <span class="n">groups</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_playbook_path</span> <span class="o">=</span> <span class="n">playbook_path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">environment</span> <span class="o">=</span> <span class="n">environment_vars</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_storage_path</span> <span class="o">=</span> <span class="n">storage_path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sudo_user</span> <span class="o">=</span> <span class="n">sudo_user</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sudo</span> <span class="o">=</span> <span class="n">sudo</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">extra_conf</span> <span class="o">=</span> <span class="n">extra_conf</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_playbook_path</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_playbook_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">prefix</span><span class="p">,</span>
+                                               <span class="s">&#39;share/elasticluster/providers/ansible-playbooks&#39;</span><span class="p">,</span> <span class="s">&#39;site.yml&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_playbook_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_playbook_path</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_playbook_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expandvars</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_playbook_path</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_storage_path</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_storage_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_storage_path</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_storage_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expandvars</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_storage_path</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_storage_path_tmp</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_storage_path</span><span class="p">):</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_storage_path</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_storage_path</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkdtemp</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_storage_path_tmp</span> <span class="o">=</span> <span class="bp">True</span>
+
+        <span class="k">if</span> <span class="n">ansible_module_dir</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">mdir</span> <span class="ow">in</span> <span class="n">ansible_module_dir</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;,&#39;</span><span class="p">):</span>
+                <span class="n">ansible</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">module_finder</span><span class="o">.</span><span class="n">add_directory</span><span class="p">(</span><span class="n">mdir</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+
+<div class="viewcode-block" id="AnsibleSetupProvider.setup_cluster"><a class="viewcode-back" href="../../../api/elasticluster/providers/ansible_provider.html#elasticluster.providers.ansible_provider.AnsibleSetupProvider.setup_cluster">[docs]</a>    <span class="k">def</span> <span class="nf">setup_cluster</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cluster</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Configures the cluster according to the node_kind to ansible</span>
+<span class="sd">        group matching. This method is idempotent and therefore can be</span>
+<span class="sd">        called multiple times without corrupting the cluster configuration.</span>
+
+<span class="sd">        :param cluster: cluster to configure</span>
+<span class="sd">        :type cluster: :py:class:`elasticluster.cluster.Cluster`</span>
+
+<span class="sd">        :return: True on success, False otherwise. Please note, if nothing</span>
+<span class="sd">                 has to be configures True is returned</span>
+
+<span class="sd">        :raises: `AnsibleError` if the playbook can not be found or playbook</span>
+<span class="sd">                 is corrupt</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">inventory_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_inventory</span><span class="p">(</span><span class="n">cluster</span><span class="p">)</span>
+        <span class="n">private_key_file</span> <span class="o">=</span> <span class="n">cluster</span><span class="o">.</span><span class="n">user_key_private</span>
+
+        <span class="c"># update ansible constants</span>
+        <span class="n">ansible_constants</span><span class="o">.</span><span class="n">HOST_KEY_CHECKING</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="n">ansible_constants</span><span class="o">.</span><span class="n">DEFAULT_PRIVATE_KEY_FILE</span> <span class="o">=</span> <span class="n">private_key_file</span>
+        <span class="n">ansible_constants</span><span class="o">.</span><span class="n">DEFAULT_SUDO_USER</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sudo_user</span>
+
+        <span class="c"># check paths</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">inventory_path</span><span class="p">:</span>
+            <span class="c"># No inventory file has been created, maybe an</span>
+            <span class="c"># invalid calss has been specified in config file? Or none?</span>
+            <span class="c"># assume it is fine.</span>
+            <span class="n">elasticluster</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;No setup required for this cluster.&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">True</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">inventory_path</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">AnsibleError</span><span class="p">(</span>
+                <span class="s">&quot;inventory file `</span><span class="si">%s</span><span class="s">` could not be found&quot;</span> <span class="o">%</span> <span class="n">inventory_path</span><span class="p">)</span>
+        <span class="c"># ANTONIO: These should probably be configuration error</span>
+        <span class="c"># instead, and should probably checked inside __init__().</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_playbook_path</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">AnsibleError</span><span class="p">(</span>
+                <span class="s">&quot;playbook `</span><span class="si">%s</span><span class="s">` could not be found&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_playbook_path</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_playbook_path</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">AnsibleError</span><span class="p">(</span>
+                <span class="s">&quot;the playbook `</span><span class="si">%s</span><span class="s">` is not a file&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_playbook_path</span><span class="p">)</span>
+
+        <span class="n">elasticluster</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Using playbook file </span><span class="si">%s</span><span class="s">.&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_playbook_path</span><span class="p">)</span>
+
+        <span class="n">stats</span> <span class="o">=</span> <span class="n">ansible</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">AggregateStats</span><span class="p">()</span>
+        <span class="n">playbook_cb</span> <span class="o">=</span> <span class="n">ElasticlusterPbCallbacks</span><span class="p">(</span><span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">runner_cb</span> <span class="o">=</span> <span class="n">ansible</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">DefaultRunnerCallbacks</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">elasticluster</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">level</span> <span class="o">&lt;=</span> <span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">:</span>
+            <span class="n">playbook_cb</span> <span class="o">=</span> <span class="n">ansible</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">PlaybookCallbacks</span><span class="p">()</span>
+            <span class="n">runner_cb</span> <span class="o">=</span> <span class="n">ansible</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">PlaybookRunnerCallbacks</span><span class="p">(</span><span class="n">stats</span><span class="p">)</span>
+
+        <span class="n">pb</span> <span class="o">=</span> <span class="n">PlayBook</span><span class="p">(</span>
+            <span class="n">playbook</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_playbook_path</span><span class="p">,</span>
+            <span class="n">host_list</span><span class="o">=</span><span class="n">inventory_path</span><span class="p">,</span>
+            <span class="n">callbacks</span><span class="o">=</span><span class="n">playbook_cb</span><span class="p">,</span>
+            <span class="n">runner_callbacks</span><span class="o">=</span><span class="n">runner_cb</span><span class="p">,</span>
+            <span class="n">forks</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+            <span class="n">stats</span><span class="o">=</span><span class="n">stats</span><span class="p">,</span>
+            <span class="n">sudo</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_sudo</span><span class="p">,</span>
+            <span class="n">sudo_user</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_sudo_user</span><span class="p">,</span>
+            <span class="n">private_key_file</span><span class="o">=</span><span class="n">private_key_file</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">status</span> <span class="o">=</span> <span class="n">pb</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+        <span class="k">except</span> <span class="n">AnsibleError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">elasticluster</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="s">&quot;could not execute ansible playbooks. message=`</span><span class="si">%s</span><span class="s">`&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+            <span class="k">return</span> <span class="bp">False</span>
+
+
+        <span class="c"># Check ansible status.</span>
+        <span class="n">cluster_failures</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="k">for</span> <span class="n">host</span><span class="p">,</span> <span class="n">hoststatus</span> <span class="ow">in</span> <span class="n">status</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">hoststatus</span><span class="p">[</span><span class="s">&#39;unreachable&#39;</span><span class="p">]:</span>
+                <span class="n">elasticluster</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                    <span class="s">&quot;Host `</span><span class="si">%s</span><span class="s">` is unreachable, &quot;</span>
+                    <span class="s">&quot;please re-run elasticluster setup&quot;</span><span class="p">,</span> <span class="n">host</span><span class="p">)</span>
+                <span class="n">cluster_failures</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="k">if</span> <span class="n">hoststatus</span><span class="p">[</span><span class="s">&#39;failures&#39;</span><span class="p">]:</span>
+                <span class="n">elasticluster</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                    <span class="s">&quot;Host `</span><span class="si">%s</span><span class="s">` had </span><span class="si">%d</span><span class="s"> failures: please re-run elasticluster &quot;</span>
+                    <span class="s">&quot;setup or check the Ansible playbook `</span><span class="si">%s</span><span class="s">`&quot;</span> <span class="o">%</span> <span class="p">(</span>
+                        <span class="n">host</span><span class="p">,</span> <span class="n">hoststatus</span><span class="p">[</span><span class="s">&#39;failures&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_playbook_path</span><span class="p">))</span>
+                <span class="n">cluster_failures</span> <span class="o">=</span> <span class="bp">True</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">cluster_failures</span><span class="p">:</span>
+            <span class="n">elasticluster</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Cluster correctly configured.&quot;</span><span class="p">)</span>
+            <span class="c"># ANTONIO: TODO: We should return an object to identify if</span>
+            <span class="c"># the cluster was correctly configured, if we had</span>
+            <span class="c"># temporary errors or permanent errors.</span>
+            <span class="k">return</span> <span class="bp">True</span>
+        <span class="k">return</span> <span class="bp">False</span>
+</div>
+    <span class="k">def</span> <span class="nf">_build_inventory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cluster</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Builds the inventory for the given cluster and returns its path</span>
+
+<span class="sd">        :param cluster: cluster to build inventory for</span>
+<span class="sd">        :type cluster: :py:class:`elasticluster.cluster.Cluster`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">inventory</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">cluster</span><span class="o">.</span><span class="n">get_all_nodes</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">kind</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">groups</span><span class="p">:</span>
+                <span class="n">extra_vars</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;ansible_ssh_user=</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">node</span><span class="o">.</span><span class="n">image_user</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">kind</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">environment</span><span class="p">:</span>
+                    <span class="n">extra_vars</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="s">&#39;</span><span class="si">%s</span><span class="s">=</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span>
+                                      <span class="bp">self</span><span class="o">.</span><span class="n">environment</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">kind</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+                <span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">groups</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">kind</span><span class="p">]:</span>
+                    <span class="k">if</span> <span class="n">group</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">inventory</span><span class="p">:</span>
+                        <span class="n">inventory</span><span class="p">[</span><span class="n">group</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+                    <span class="n">public_ip</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">ip_public</span> <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">ip_public</span> <span class="k">else</span> <span class="n">node</span><span class="o">.</span><span class="n">ip_private</span>
+                    <span class="n">inventory</span><span class="p">[</span><span class="n">group</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">public_ip</span><span class="p">,</span> <span class="nb">str</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s">&#39; &#39;</span><span class="p">,</span> <span class="n">extra_vars</span><span class="p">)))</span>
+
+        <span class="k">if</span> <span class="n">inventory</span><span class="p">:</span>
+            <span class="c"># create a temporary file to pass to ansible, since the</span>
+            <span class="c"># api is not stable yet...</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_storage_path_tmp</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_storage_path</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_storage_path</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkdtemp</span><span class="p">()</span>
+                <span class="n">elasticluster</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&quot;Writing inventory file to tmp dir &quot;</span>
+                                          <span class="s">&quot;`</span><span class="si">%s</span><span class="s">`&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_storage_path</span><span class="p">)</span>
+            <span class="n">fname</span> <span class="o">=</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s">.</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">AnsibleSetupProvider</span><span class="o">.</span><span class="n">inventory_file_ending</span><span class="p">,</span>
+                               <span class="n">cluster</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">inventory_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_storage_path</span><span class="p">,</span> <span class="n">fname</span><span class="p">)</span>
+
+            <span class="n">inventory_fd</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">inventory_path</span><span class="p">,</span> <span class="s">&#39;w+&#39;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">section</span><span class="p">,</span> <span class="n">hosts</span> <span class="ow">in</span> <span class="n">inventory</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">inventory_fd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">[&quot;</span> <span class="o">+</span> <span class="n">section</span> <span class="o">+</span> <span class="s">&quot;]</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">hosts</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">host</span> <span class="ow">in</span> <span class="n">hosts</span><span class="p">:</span>
+                        <span class="n">hostline</span> <span class="o">=</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s"> ansible_ssh_host=</span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="se">\n</span><span class="s">&quot;</span> \
+                                   <span class="o">%</span> <span class="n">host</span>
+                        <span class="n">inventory_fd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">hostline</span><span class="p">)</span>
+
+            <span class="n">inventory_fd</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+            <span class="k">return</span> <span class="n">inventory_path</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">elasticluster</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;No inventory file was created.&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">None</span>
+
+<div class="viewcode-block" id="AnsibleSetupProvider.cleanup"><a class="viewcode-back" href="../../../api/elasticluster/providers/ansible_provider.html#elasticluster.providers.ansible_provider.AnsibleSetupProvider.cleanup">[docs]</a>    <span class="k">def</span> <span class="nf">cleanup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cluster</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Deletes the inventory file used last recently used.</span>
+
+<span class="sd">        :param cluster: cluster to clear up inventory file for</span>
+<span class="sd">        :type cluster: :py:class:`elasticluster.cluster.Cluster`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_storage_path</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_storage_path</span><span class="p">):</span>
+            <span class="n">fname</span> <span class="o">=</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s">.</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">AnsibleSetupProvider</span><span class="o">.</span><span class="n">inventory_file_ending</span><span class="p">,</span>
+                               <span class="n">cluster</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">inventory_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_storage_path</span><span class="p">,</span> <span class="n">fname</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">inventory_path</span><span class="p">):</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">inventory_path</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_storage_path_tmp</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_storage_path</span><span class="p">))</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                            <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_storage_path</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">OSError</span><span class="p">,</span> <span class="n">ex</span><span class="p">:</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                        <span class="s">&quot;AnsibileProvider: Ignoring error while deleting &quot;</span>
+                        <span class="s">&quot;inventory file </span><span class="si">%s</span><span class="s">: </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">inventory_path</span><span class="p">,</span> <span class="n">ex</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">elasticluster 1.0 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../providers.html" >elasticluster.providers</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Grid Computing Competence Centre, University of Zurich.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

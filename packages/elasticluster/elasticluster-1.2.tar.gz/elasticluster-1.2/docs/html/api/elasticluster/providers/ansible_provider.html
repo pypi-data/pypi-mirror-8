@@ -1,0 +1,198 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>elasticluster.providers.ansible_provider &mdash; elasticluster 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="elasticluster 1.0 documentation" href="../../../index.html" />
+    <link rel="up" title="Elasitcluster programming API" href="../../index.html" />
+    <link rel="next" title="elasticluster.providers.ec2_boto" href="ec2_boto.html" />
+    <link rel="prev" title="elasticluster.providers" href="../providers.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="ec2_boto.html" title="elasticluster.providers.ec2_boto"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../providers.html" title="elasticluster.providers"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../../../index.html">elasticluster 1.0 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" accesskey="U">Elasitcluster programming API</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-elasticluster.providers.ansible_provider">
+<span id="elasticluster-providers-ansible-provider"></span><h1><cite>elasticluster.providers.ansible_provider</cite><a class="headerlink" href="#module-elasticluster.providers.ansible_provider" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="elasticluster.providers.ansible_provider.AnsibleSetupProvider">
+<em class="property">class </em><tt class="descclassname">elasticluster.providers.ansible_provider.</tt><tt class="descname">AnsibleSetupProvider</tt><big>(</big><em>groups</em>, <em>playbook_path=None</em>, <em>environment_vars={}</em>, <em>storage_path=None</em>, <em>sudo=True</em>, <em>sudo_user='root'</em>, <em>ansible_module_dir=None</em>, <em>**extra_conf</em><big>)</big><a class="reference internal" href="../../../_modules/elasticluster/providers/ansible_provider.html#AnsibleSetupProvider"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#elasticluster.providers.ansible_provider.AnsibleSetupProvider" title="Permalink to this definition">¶</a></dt>
+<dd><p>This implementation uses ansible to configure and manage the cluster
+setup. See <a class="reference external" href="https://github.com/ansible/ansible">https://github.com/ansible/ansible</a> for details.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>groups</strong> (<em>dict</em>) &#8211; dictionary of node kinds with corresponding
+ansible groups to install on the node kind.
+e.g [node_kind] = [&#8216;ansible_group1&#8217;, &#8216;ansible_group2&#8217;]
+The group defined here can be references in each
+node. Therefore groups can make it easier to
+define multiple groups for one node.</li>
+<li><strong>playbook_path</strong> (<em>str</em>) &#8211; path to playbook; if empty this will use
+the shared playbook of elasticluster</li>
+<li><strong>environment_vars</strong> (<em>dict</em>) &#8211; dictonary to define variables per node
+kind, e.g. [node_kind][var] = value</li>
+<li><strong>storage_path</strong> (<em>str</em>) &#8211; path to store the inventory file. By default
+the inventory file is saved temporarily in a
+temporary directory and deleted when the
+cluster in stopped.</li>
+<li><strong>sudo</strong> (<em>bool</em>) &#8211; indication whether use sudo to gain root permission</li>
+<li><strong>sudo_user</strong> (<em>str</em>) &#8211; user with root permission</li>
+<li><strong>ansible_module_dir</strong> (<em>str</em>) &#8211; path to addition ansible modules</li>
+<li><strong>extra_conf</strong> &#8211; tbd.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
+<li><strong>groups</strong> &#8211; node kind and ansible group mapping dictionary</li>
+<li><strong>environment</strong> &#8211; additional environment variables</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="elasticluster.providers.ansible_provider.AnsibleSetupProvider.cleanup">
+<tt class="descname">cleanup</tt><big>(</big><em>cluster</em><big>)</big><a class="reference internal" href="../../../_modules/elasticluster/providers/ansible_provider.html#AnsibleSetupProvider.cleanup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#elasticluster.providers.ansible_provider.AnsibleSetupProvider.cleanup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deletes the inventory file used last recently used.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>cluster</strong> (<a class="reference internal" href="../cluster.html#elasticluster.cluster.Cluster" title="elasticluster.cluster.Cluster"><tt class="xref py py-class docutils literal"><span class="pre">elasticluster.cluster.Cluster</span></tt></a>) &#8211; cluster to clear up inventory file for</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="elasticluster.providers.ansible_provider.AnsibleSetupProvider.setup_cluster">
+<tt class="descname">setup_cluster</tt><big>(</big><em>cluster</em><big>)</big><a class="reference internal" href="../../../_modules/elasticluster/providers/ansible_provider.html#AnsibleSetupProvider.setup_cluster"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#elasticluster.providers.ansible_provider.AnsibleSetupProvider.setup_cluster" title="Permalink to this definition">¶</a></dt>
+<dd><p>Configures the cluster according to the node_kind to ansible
+group matching. This method is idempotent and therefore can be
+called multiple times without corrupting the cluster configuration.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>cluster</strong> (<a class="reference internal" href="../cluster.html#elasticluster.cluster.Cluster" title="elasticluster.cluster.Cluster"><tt class="xref py py-class docutils literal"><span class="pre">elasticluster.cluster.Cluster</span></tt></a>) &#8211; cluster to configure</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">True on success, False otherwise. Please note, if nothing
+has to be configures True is returned</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises :</th><td class="field-body"><cite>AnsibleError</cite> if the playbook can not be found or playbook
+is corrupt</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../providers.html"
+                        title="previous chapter"><cite>elasticluster.providers</cite></a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="ec2_boto.html"
+                        title="next chapter"><cite>elasticluster.providers.ec2_boto</cite></a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../../_sources/api/elasticluster/providers/ansible_provider.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="ec2_boto.html" title="elasticluster.providers.ec2_boto"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../providers.html" title="elasticluster.providers"
+             >previous</a> |</li>
+        <li><a href="../../../index.html">elasticluster 1.0 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Elasitcluster programming API</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Grid Computing Competence Centre, University of Zurich.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

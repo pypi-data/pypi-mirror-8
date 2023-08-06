@@ -1,0 +1,225 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>elasticluster.subcommands &mdash; elasticluster 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="elasticluster 1.0 documentation" href="../../index.html" />
+    <link rel="up" title="Elasitcluster programming API" href="../index.html" />
+    <link rel="prev" title="elasticluster.repository" href="repository.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="repository.html" title="elasticluster.repository"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../../index.html">elasticluster 1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Elasitcluster programming API</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-elasticluster.subcommands">
+<span id="elasticluster-subcommands"></span><h1><cite>elasticluster.subcommands</cite><a class="headerlink" href="#module-elasticluster.subcommands" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="elasticluster.subcommands.AbstractCommand">
+<em class="property">class </em><tt class="descclassname">elasticluster.subcommands.</tt><tt class="descname">AbstractCommand</tt><big>(</big><em>params</em><big>)</big><a class="reference internal" href="../../_modules/elasticluster/subcommands.html#AbstractCommand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#elasticluster.subcommands.AbstractCommand" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the general contract every command has to fulfill in
+order to be recognized by the arguments list and executed
+afterwards.</p>
+<dl class="method">
+<dt id="elasticluster.subcommands.AbstractCommand.execute">
+<tt class="descname">execute</tt><big>(</big><big>)</big><a class="reference internal" href="../../_modules/elasticluster/subcommands.html#AbstractCommand.execute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#elasticluster.subcommands.AbstractCommand.execute" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method is executed after a command was recognized and may
+vary in its behavior.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="elasticluster.subcommands.AbstractCommand.pre_run">
+<tt class="descname">pre_run</tt><big>(</big><big>)</big><a class="reference internal" href="../../_modules/elasticluster/subcommands.html#AbstractCommand.pre_run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#elasticluster.subcommands.AbstractCommand.pre_run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overrides this method to execute any pre-run code, especially
+to check any command line options.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="elasticluster.subcommands.AbstractCommand.setup">
+<tt class="descname">setup</tt><big>(</big><em>subparsers</em><big>)</big><a class="reference internal" href="../../_modules/elasticluster/subcommands.html#AbstractCommand.setup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#elasticluster.subcommands.AbstractCommand.setup" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method handles the setup of the subcommand. In order to
+do so, every command has to add a parser to the subparsers
+reference given as parameter. The following example is the
+minimum implementation of such a setup procedure: parser =
+subparsers.add_parser(&#8220;start&#8221;)
+parser.set_defaults(func=self.execute)</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="elasticluster.subcommands.ListClusters">
+<em class="property">class </em><tt class="descclassname">elasticluster.subcommands.</tt><tt class="descname">ListClusters</tt><big>(</big><em>params</em><big>)</big><a class="reference internal" href="../../_modules/elasticluster/subcommands.html#ListClusters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#elasticluster.subcommands.ListClusters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Print a list of all clusters that have been started.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="elasticluster.subcommands.ListNodes">
+<em class="property">class </em><tt class="descclassname">elasticluster.subcommands.</tt><tt class="descname">ListNodes</tt><big>(</big><em>params</em><big>)</big><a class="reference internal" href="../../_modules/elasticluster/subcommands.html#ListNodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#elasticluster.subcommands.ListNodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Show some information on all the nodes belonging to a given
+cluster.</p>
+<dl class="method">
+<dt id="elasticluster.subcommands.ListNodes.execute">
+<tt class="descname">execute</tt><big>(</big><big>)</big><a class="reference internal" href="../../_modules/elasticluster/subcommands.html#ListNodes.execute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#elasticluster.subcommands.ListNodes.execute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Lists all nodes within the specified cluster with certain
+information like id and ip.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="elasticluster.subcommands.ListTemplates">
+<em class="property">class </em><tt class="descclassname">elasticluster.subcommands.</tt><tt class="descname">ListTemplates</tt><big>(</big><em>params</em><big>)</big><a class="reference internal" href="../../_modules/elasticluster/subcommands.html#ListTemplates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#elasticluster.subcommands.ListTemplates" title="Permalink to this definition">¶</a></dt>
+<dd><p>List the available templates defined in the configuration file.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="elasticluster.subcommands.ResizeCluster">
+<em class="property">class </em><tt class="descclassname">elasticluster.subcommands.</tt><tt class="descname">ResizeCluster</tt><big>(</big><em>params</em><big>)</big><a class="reference internal" href="../../_modules/elasticluster/subcommands.html#ResizeCluster"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#elasticluster.subcommands.ResizeCluster" title="Permalink to this definition">¶</a></dt>
+<dd><p>Resize the cluster by adding or removing compute nodes.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="elasticluster.subcommands.SetupCluster">
+<em class="property">class </em><tt class="descclassname">elasticluster.subcommands.</tt><tt class="descname">SetupCluster</tt><big>(</big><em>params</em><big>)</big><a class="reference internal" href="../../_modules/elasticluster/subcommands.html#SetupCluster"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#elasticluster.subcommands.SetupCluster" title="Permalink to this definition">¶</a></dt>
+<dd><p>Setup the given cluster by calling the setup provider defined for
+this cluster.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="elasticluster.subcommands.SftpFrontend">
+<em class="property">class </em><tt class="descclassname">elasticluster.subcommands.</tt><tt class="descname">SftpFrontend</tt><big>(</big><em>params</em><big>)</big><a class="reference internal" href="../../_modules/elasticluster/subcommands.html#SftpFrontend"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#elasticluster.subcommands.SftpFrontend" title="Permalink to this definition">¶</a></dt>
+<dd><p>Open an SFTP session to the cluster frontend host.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="elasticluster.subcommands.SshFrontend">
+<em class="property">class </em><tt class="descclassname">elasticluster.subcommands.</tt><tt class="descname">SshFrontend</tt><big>(</big><em>params</em><big>)</big><a class="reference internal" href="../../_modules/elasticluster/subcommands.html#SshFrontend"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#elasticluster.subcommands.SshFrontend" title="Permalink to this definition">¶</a></dt>
+<dd><p>Connect to the frontend of the cluster using <cite>ssh</cite>.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="elasticluster.subcommands.Start">
+<em class="property">class </em><tt class="descclassname">elasticluster.subcommands.</tt><tt class="descname">Start</tt><big>(</big><em>params</em><big>)</big><a class="reference internal" href="../../_modules/elasticluster/subcommands.html#Start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#elasticluster.subcommands.Start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new cluster using the given cluster template.</p>
+<dl class="method">
+<dt id="elasticluster.subcommands.Start.execute">
+<tt class="descname">execute</tt><big>(</big><big>)</big><a class="reference internal" href="../../_modules/elasticluster/subcommands.html#Start.execute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#elasticluster.subcommands.Start.execute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Starts a new cluster.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="elasticluster.subcommands.Stop">
+<em class="property">class </em><tt class="descclassname">elasticluster.subcommands.</tt><tt class="descname">Stop</tt><big>(</big><em>params</em><big>)</big><a class="reference internal" href="../../_modules/elasticluster/subcommands.html#Stop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#elasticluster.subcommands.Stop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop a cluster and terminate all associated virtual machines.</p>
+<dl class="method">
+<dt id="elasticluster.subcommands.Stop.execute">
+<tt class="descname">execute</tt><big>(</big><big>)</big><a class="reference internal" href="../../_modules/elasticluster/subcommands.html#Stop.execute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#elasticluster.subcommands.Stop.execute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stops the cluster if it&#8217;s running.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="elasticluster.subcommands.Stop.setup">
+<tt class="descname">setup</tt><big>(</big><em>subparsers</em><big>)</big><a class="reference internal" href="../../_modules/elasticluster/subcommands.html#Stop.setup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#elasticluster.subcommands.Stop.setup" title="Permalink to this definition">¶</a></dt>
+<dd><p>&#64;see abstract_command contract</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="repository.html"
+                        title="previous chapter"><cite>elasticluster.repository</cite></a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../_sources/api/elasticluster/subcommands.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="repository.html" title="elasticluster.repository"
+             >previous</a> |</li>
+        <li><a href="../../index.html">elasticluster 1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Elasitcluster programming API</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Grid Computing Competence Centre, University of Zurich.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

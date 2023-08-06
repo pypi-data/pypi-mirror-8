@@ -1,0 +1,799 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>elasticluster.cluster &mdash; elasticluster 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="elasticluster 1.0 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">elasticluster 1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for elasticluster.cluster</h1><div class="highlight"><pre>
+<span class="c">#! /usr/bin/env python</span>
+<span class="c">#</span>
+<span class="c"># Copyright (C) 2013 GC3, University of Zurich</span>
+<span class="c">#</span>
+<span class="c"># This program is free software: you can redistribute it and/or modify</span>
+<span class="c"># it under the terms of the GNU General Public License as published by</span>
+<span class="c"># the Free Software Foundation, either version 3 of the License, or</span>
+<span class="c"># (at your option) any later version.</span>
+<span class="c">#</span>
+<span class="c"># This program is distributed in the hope that it will be useful,</span>
+<span class="c"># but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c"># GNU General Public License for more details.</span>
+<span class="c">#</span>
+<span class="c"># You should have received a copy of the GNU General Public License</span>
+<span class="c"># along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+<span class="c">#</span>
+<span class="n">__author__</span> <span class="o">=</span> <span class="s">&#39;Nicolas Baer &lt;nicolas.baer@uzh.ch&gt;, Antonio Messina &lt;antonio.s.messina@gmail.com&gt;&#39;</span>
+
+<span class="c"># System imports</span>
+<span class="kn">import</span> <span class="nn">operator</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">signal</span>
+<span class="kn">import</span> <span class="nn">socket</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">multiprocessing.dummy</span> <span class="kn">import</span> <span class="n">Pool</span>
+
+<span class="c"># External modules</span>
+<span class="kn">import</span> <span class="nn">paramiko</span>
+<span class="kn">from</span> <span class="nn">binascii</span> <span class="kn">import</span> <span class="n">hexlify</span>
+
+<span class="c"># Elasticluster imports</span>
+<span class="kn">from</span> <span class="nn">elasticluster</span> <span class="kn">import</span> <span class="n">log</span>
+<span class="kn">from</span> <span class="nn">elasticluster.exceptions</span> <span class="kn">import</span> <span class="n">TimeoutError</span><span class="p">,</span> <span class="n">NodeNotFound</span><span class="p">,</span> \
+    <span class="n">InstanceError</span><span class="p">,</span> <span class="n">ClusterError</span>
+<span class="kn">from</span> <span class="nn">elasticluster.repository</span> <span class="kn">import</span> <span class="n">MemRepository</span>
+
+<span class="k">class</span> <span class="nc">IgnorePolicy</span><span class="p">(</span><span class="n">paramiko</span><span class="o">.</span><span class="n">MissingHostKeyPolicy</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">missing_host_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">,</span> <span class="n">hostname</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;Ignoring unknown </span><span class="si">%s</span><span class="s"> host key for </span><span class="si">%s</span><span class="s">: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span>
+                 <span class="p">(</span><span class="n">key</span><span class="o">.</span><span class="n">get_name</span><span class="p">(),</span> <span class="n">hostname</span><span class="p">,</span> <span class="n">hexlify</span><span class="p">(</span><span class="n">key</span><span class="o">.</span><span class="n">get_fingerprint</span><span class="p">())))</span>
+
+
+<div class="viewcode-block" id="Cluster"><a class="viewcode-back" href="../../api/elasticluster/cluster.html#elasticluster.cluster.Cluster">[docs]</a><span class="k">class</span> <span class="nc">Cluster</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;This is the heart of elasticluster and handles all cluster relevant</span>
+<span class="sd">    behavior. You can basically start, setup and stop a cluster. Also it</span>
+<span class="sd">    provides factory methods to add nodes to the cluster.</span>
+<span class="sd">    A typical workflow is as follows:</span>
+
+<span class="sd">    * create a new cluster</span>
+<span class="sd">    * add nodes to fit your computing needs</span>
+<span class="sd">    * start cluster; start all instances in the cloud</span>
+<span class="sd">    * setup cluster; configure all nodes to fit your computing cluster</span>
+<span class="sd">    * eventually stop cluster; destroys all instances in the cloud</span>
+
+<span class="sd">    :param str name: unique identifier of the cluster</span>
+
+<span class="sd">    :param cloud_provider: access to the cloud to manage nodes</span>
+<span class="sd">    :type cloud_provider: :py:class:`elasticluster.providers.AbstractCloudProvider`</span>
+
+<span class="sd">    :param setup_provider: provider to setup cluster</span>
+<span class="sd">    :type setup_provider: :py:class:`elasticluster.providers.AbstractSetupProvider`</span>
+
+<span class="sd">    :param str user_key_name: name of the ssh key to connect to cloud</span>
+
+<span class="sd">    :param str user_key_public: path to ssh public key file</span>
+
+<span class="sd">    :param str user_key_private: path to ssh private key file</span>
+
+<span class="sd">    :param repository: by default the</span>
+<span class="sd">                       :py:class:`elasticluster.repository.MemRepository` is</span>
+<span class="sd">                       used to store the cluster in memory. Provide another</span>
+<span class="sd">                       repository to store the cluster in a persistent state.</span>
+<span class="sd">    :type repository: :py:class:`elasticluster.repository.AbstractClusterRepository`</span>
+
+<span class="sd">    :param extra: tbd.</span>
+
+
+<span class="sd">    :ivar nodes: dict [node_type] = [:py:class:`Node`] that represents all</span>
+<span class="sd">                 nodes in this cluster</span>
+<span class="sd">   &quot;&quot;&quot;</span>
+    <span class="n">startup_timeout</span> <span class="o">=</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">10</span>  <span class="c">#: timeout in seconds to start all nodes</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">cloud_provider</span><span class="p">,</span> <span class="n">setup_provider</span><span class="p">,</span>
+                 <span class="n">user_key_name</span><span class="p">,</span> <span class="n">user_key_public</span><span class="p">,</span>
+                 <span class="n">user_key_private</span><span class="p">,</span> <span class="n">repository</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">extra</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cloud_provider</span> <span class="o">=</span> <span class="n">cloud_provider</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_setup_provider</span> <span class="o">=</span> <span class="n">setup_provider</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_user_key_name</span> <span class="o">=</span> <span class="n">user_key_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_user_key_public</span> <span class="o">=</span> <span class="n">user_key_public</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">user_key_private</span> <span class="o">=</span> <span class="n">user_key_private</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">repository</span> <span class="o">=</span> <span class="n">repository</span> <span class="k">if</span> <span class="n">repository</span> <span class="k">else</span> <span class="n">MemRepository</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ssh_to</span> <span class="o">=</span> <span class="n">extra</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;ssh_to&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">extra</span> <span class="o">=</span> <span class="n">extra</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">user_key_private</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expandvars</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">user_key_private</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">user_key_private</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">user_key_private</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_user_key_public</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_user_key_public</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_user_key_public</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expandvars</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_user_key_public</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Cluster.add_node"><a class="viewcode-back" href="../../api/elasticluster/cluster.html#elasticluster.cluster.Cluster.add_node">[docs]</a>    <span class="k">def</span> <span class="nf">add_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kind</span><span class="p">,</span> <span class="n">image_id</span><span class="p">,</span> <span class="n">image_user</span><span class="p">,</span> <span class="n">flavor</span><span class="p">,</span>
+                 <span class="n">security_group</span><span class="p">,</span> <span class="n">image_userdata</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Adds a new node to the cluster. This factory method provides an</span>
+<span class="sd">        easy way to add a new node to the cluster by specifying all relevant</span>
+<span class="sd">        parameters. The node does not get started nor setup automatically,</span>
+<span class="sd">        this has to be done manually afterwards.</span>
+
+<span class="sd">        :param str kind: kind of node to start. this refers to the</span>
+<span class="sd">                         groups defined in the ansible setup provider</span>
+<span class="sd">                         :py:class:`elasticluster.providers.AnsibleSetupProvider`</span>
+<span class="sd">                         Please note that this must match the</span>
+<span class="sd">                         `[a-zA-Z0-9-]` regexp, as it is used to build</span>
+<span class="sd">                         a valid hostname</span>
+
+<span class="sd">        :param str image_id: image id to use for the cloud instance (e.g.</span>
+<span class="sd">                             ami on amazon)</span>
+
+<span class="sd">        :param str image_user: user to login on given image</span>
+
+<span class="sd">        :param str flavor: machine type to use for cloud instance</span>
+
+<span class="sd">        :param str security_group: security group that defines firewall rules</span>
+<span class="sd">                                   to the instance</span>
+
+<span class="sd">        :param str image_userdata: commands to execute after instance starts</span>
+
+<span class="sd">        :param str name: name of this node, automatically generated if None</span>
+
+<span class="sd">        :raises: ValueError: `kind` argument is an invalid string.</span>
+
+<span class="sd">        :return: created :py:class:`Node`</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s">&quot;^[a-zA-Z0-9-]+$&quot;</span><span class="p">,</span> <span class="n">kind</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s">&quot;Invalid name `</span><span class="si">%s</span><span class="s">`. The `kind` argument may only contains &quot;</span>
+                <span class="s">&quot;characters in [a-z0-9-] range, as it is going to be used as &quot;</span>
+                <span class="s">&quot;hostname&quot;</span> <span class="o">%</span> <span class="n">kind</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">kind</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">kind</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">name</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="s">&quot;</span><span class="si">%s%03d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">kind</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">kind</span><span class="p">])</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">node</span> <span class="o">=</span> <span class="n">Node</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">kind</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cloud_provider</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_user_key_public</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_key_private</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_user_key_name</span><span class="p">,</span> <span class="n">image_user</span><span class="p">,</span> <span class="n">security_group</span><span class="p">,</span>
+                    <span class="n">image_id</span><span class="p">,</span> <span class="n">flavor</span><span class="p">,</span> <span class="n">image_userdata</span><span class="o">=</span><span class="n">image_userdata</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">kind</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">node</span>
+</div>
+<div class="viewcode-block" id="Cluster.add_nodes"><a class="viewcode-back" href="../../api/elasticluster/cluster.html#elasticluster.cluster.Cluster.add_nodes">[docs]</a>    <span class="k">def</span> <span class="nf">add_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kind</span><span class="p">,</span> <span class="n">num</span><span class="p">,</span> <span class="n">image_id</span><span class="p">,</span> <span class="n">image_user</span><span class="p">,</span> <span class="n">flavor</span><span class="p">,</span>
+                  <span class="n">security_group</span><span class="p">,</span> <span class="n">image_userdata</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Helper method to add multiple nodes of the same kind to a cluster.</span>
+
+<span class="sd">        :param str kind: kind of node to start. this refers to the groups</span>
+<span class="sd">                         defined in the ansible setup provider</span>
+<span class="sd">                         :py:class:`elasticluster.providers.AnsibleSetupProvider`</span>
+
+<span class="sd">        :param int num: number of nodes to add of this kind</span>
+
+<span class="sd">        :param str image_id: image id to use for the cloud instance (e.g.</span>
+<span class="sd">                             ami on amazon)</span>
+
+<span class="sd">        :param str image_user: user to login on given image</span>
+
+<span class="sd">        :param str flavor: machine type to use for cloud instance</span>
+
+<span class="sd">        :param str security_group: security group that defines firewall rules</span>
+<span class="sd">                                   to the instance</span>
+
+<span class="sd">        :param str image_userdata: commands to execute after instance starts</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">kind</span><span class="p">,</span> <span class="n">image_id</span><span class="p">,</span> <span class="n">image_user</span><span class="p">,</span> <span class="n">flavor</span><span class="p">,</span>
+                          <span class="n">security_group</span><span class="p">,</span> <span class="n">image_userdata</span><span class="o">=</span><span class="n">image_userdata</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Cluster.remove_node"><a class="viewcode-back" href="../../api/elasticluster/cluster.html#elasticluster.cluster.Cluster.remove_node">[docs]</a>    <span class="k">def</span> <span class="nf">remove_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Removes a node from the cluster, but does not stop it. Use this</span>
+<span class="sd">        method with caution.</span>
+
+<span class="sd">        :param node: node to remove</span>
+<span class="sd">        :type node: :py:class:`Node`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">kind</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Unable to remove node </span><span class="si">%s</span><span class="s">: invalid node type `</span><span class="si">%s</span><span class="s">`.&quot;</span><span class="p">,</span>
+                      <span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">kind</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">kind</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">kind</span><span class="p">][</span><span class="n">index</span><span class="p">]:</span>
+                <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">kind</span><span class="p">][</span><span class="n">index</span><span class="p">]</span>
+</div>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_start_node</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Static method to start a specific node on a cloud</span>
+
+<span class="sd">        :return: bool -- True on success, False otherwise</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;_start_node: working on node </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="c"># TODO: the following check is not optimal yet. When a</span>
+        <span class="c"># node is still in a starting state,</span>
+        <span class="c"># it will start another node here,</span>
+        <span class="c"># since the `is_alive` method will only check for</span>
+        <span class="c"># running nodes (see issue #13)</span>
+        <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Not starting node </span><span class="si">%s</span><span class="s"> which is &quot;</span>
+                     <span class="s">&quot;already up&amp;running.&quot;</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">node</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;_start_node: node has been started&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="bp">True</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;could not start node `</span><span class="si">%s</span><span class="s">` for reason &quot;</span>
+                          <span class="s">&quot;`</span><span class="si">%s</span><span class="s">`&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+                <span class="k">return</span> <span class="bp">None</span>
+
+<div class="viewcode-block" id="Cluster.start"><a class="viewcode-back" href="../../api/elasticluster/cluster.html#elasticluster.cluster.Cluster.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">min_nodes</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Starts up all the instances in the cloud. To speed things up all</span>
+<span class="sd">        instances are started in a seperate thread. To make sure</span>
+<span class="sd">        elasticluster is not stopped during creation of an instance, it will</span>
+<span class="sd">        overwrite the sigint handler. As soon as the last started instance</span>
+<span class="sd">        is returned and saved to the repository, sigint is executed as usual.</span>
+<span class="sd">        An instance is up and running as soon as a ssh connection can be</span>
+<span class="sd">        established. If the startup timeout is reached before all instances</span>
+<span class="sd">        are started, the cluster will stop and destroy all instances.</span>
+
+<span class="sd">        This method is blocking and might take some time depending on the</span>
+<span class="sd">        amount of instances to start.</span>
+
+<span class="sd">        :param min_nodes: minimum number of nodes to start in case the quota</span>
+<span class="sd">                          is reached before all instances are up</span>
+<span class="sd">        :type min_nodes: dict [node_kind] = number</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c"># To not mess up the cluster management we start the nodes in a</span>
+        <span class="c"># different thread. In this case the main thread receives the sigint</span>
+        <span class="c"># and communicates to the `start_node` thread. The nodes to work on</span>
+        <span class="c"># are passed in a managed queue.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">keep_running</span> <span class="o">=</span> <span class="bp">True</span>
+
+        <span class="k">def</span> <span class="nf">sigint_handler</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">frame</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Makes sure the cluster is stored, before the sigint results in</span>
+<span class="sd">            exiting during the node startup.</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;user interruption: saving cluster before exit.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">keep_running</span> <span class="o">=</span> <span class="bp">False</span>
+
+        <span class="n">nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_all_nodes</span><span class="p">()</span>
+        <span class="n">thread_pool</span> <span class="o">=</span> <span class="n">Pool</span><span class="p">(</span><span class="n">processes</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">nodes</span><span class="p">))</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Created pool of </span><span class="si">%d</span><span class="s"> threads&quot;</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">nodes</span><span class="p">))</span>
+        <span class="n">signal</span><span class="o">.</span><span class="n">signal</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">SIGINT</span><span class="p">,</span> <span class="n">sigint_handler</span><span class="p">)</span>
+
+        <span class="c"># This is blocking</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">thread_pool</span><span class="o">.</span><span class="n">map_async</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_start_node</span><span class="p">,</span> <span class="n">nodes</span><span class="p">)</span>
+
+        <span class="k">while</span> <span class="ow">not</span> <span class="n">result</span><span class="o">.</span><span class="n">ready</span><span class="p">():</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">keep_running</span><span class="p">:</span>
+                <span class="c"># the user did abort the start of the cluster. We finish the</span>
+                <span class="c">#  current start of a node and save the status to the</span>
+                <span class="c"># storage, so we don&#39;t have not managed instances laying</span>
+                <span class="c"># around</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Aborting upon Ctrl-C&quot;</span><span class="p">)</span>
+                <span class="n">thread_pool</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                <span class="n">thread_pool</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">repository</span><span class="o">.</span><span class="n">save_or_update</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c"># dump the cluster here, so we don&#39;t loose any knowledge</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">repository</span><span class="o">.</span><span class="n">save_or_update</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="n">signal</span><span class="o">.</span><span class="n">alarm</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">sigint_reset</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">frame</span><span class="p">):</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">signal</span><span class="o">.</span><span class="n">signal</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">SIGINT</span><span class="p">,</span> <span class="n">sigint_reset</span><span class="p">)</span>
+
+        <span class="c"># check if all nodes are running, stop all nodes if the</span>
+        <span class="c"># timeout is reached</span>
+        <span class="k">def</span> <span class="nf">timeout_handler</span><span class="p">(</span><span class="n">signum</span><span class="p">,</span> <span class="n">frame</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">TimeoutError</span><span class="p">(</span><span class="s">&quot;problems occured while starting the nodes, &quot;</span>
+                               <span class="s">&quot;timeout `</span><span class="si">%i</span><span class="s">`&quot;</span><span class="p">,</span> <span class="n">Cluster</span><span class="o">.</span><span class="n">startup_timeout</span><span class="p">)</span>
+
+        <span class="n">signal</span><span class="o">.</span><span class="n">signal</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">SIGALRM</span><span class="p">,</span> <span class="n">timeout_handler</span><span class="p">)</span>
+        <span class="n">signal</span><span class="o">.</span><span class="n">alarm</span><span class="p">(</span><span class="n">Cluster</span><span class="o">.</span><span class="n">startup_timeout</span><span class="p">)</span>
+
+        <span class="n">starting_nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_all_nodes</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">while</span> <span class="n">starting_nodes</span><span class="p">:</span>
+                <span class="n">starting_nodes</span> <span class="o">=</span> <span class="p">[</span><span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">starting_nodes</span>
+                                  <span class="k">if</span> <span class="ow">not</span> <span class="n">n</span><span class="o">.</span><span class="n">is_alive</span><span class="p">()]</span>
+                <span class="k">if</span> <span class="n">starting_nodes</span><span class="p">:</span>
+                    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">TimeoutError</span> <span class="k">as</span> <span class="n">timeout</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Not all nodes were started correctly within the given&quot;</span>
+                      <span class="s">&quot; timeout `</span><span class="si">%s</span><span class="s">`&quot;</span> <span class="o">%</span> <span class="n">Cluster</span><span class="o">.</span><span class="n">startup_timeout</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">starting_nodes</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Stopping node `</span><span class="si">%s</span><span class="s">`, since it could not start &quot;</span>
+                          <span class="s">&quot;within the given timeout&quot;</span> <span class="o">%</span> <span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+                <span class="n">node</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">remove_node</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+
+        <span class="n">signal</span><span class="o">.</span><span class="n">alarm</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="c"># If we reached this point, we should have IP addresses for</span>
+        <span class="c"># the nodes, so update the storage file again.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">repository</span><span class="o">.</span><span class="n">save_or_update</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="c"># Try to connect to each node. Run the setup action only when</span>
+        <span class="c"># we successfully connect to all of them.</span>
+        <span class="n">signal</span><span class="o">.</span><span class="n">signal</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">SIGALRM</span><span class="p">,</span> <span class="n">timeout_handler</span><span class="p">)</span>
+        <span class="n">signal</span><span class="o">.</span><span class="n">alarm</span><span class="p">(</span><span class="n">Cluster</span><span class="o">.</span><span class="n">startup_timeout</span><span class="p">)</span>
+        <span class="n">pending_nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_all_nodes</span><span class="p">()[:]</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">while</span> <span class="n">pending_nodes</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">pending_nodes</span><span class="p">[:]:</span>
+                    <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">connect</span><span class="p">():</span>
+                        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Connection to node </span><span class="si">%s</span><span class="s"> (</span><span class="si">%s</span><span class="s">) successful.&quot;</span><span class="p">,</span>
+                                 <span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">ip_public</span><span class="p">)</span>
+                        <span class="n">pending_nodes</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">pending_nodes</span><span class="p">:</span>
+                    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="n">TimeoutError</span><span class="p">:</span>
+            <span class="c"># remove the pending nodes from the cluster</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Could not connect to all the nodes of the &quot;</span>
+                      <span class="s">&quot;cluster within the given timeout `</span><span class="si">%s</span><span class="s">`.&quot;</span>
+                      <span class="o">%</span> <span class="n">Cluster</span><span class="o">.</span><span class="n">startup_timeout</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">pending_nodes</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Stopping node `</span><span class="si">%s</span><span class="s">`, since we could not connect to&quot;</span>
+                          <span class="s">&quot; it within the timeout.&quot;</span> <span class="o">%</span> <span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+                <span class="n">node</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">remove_node</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+
+        <span class="n">signal</span><span class="o">.</span><span class="n">alarm</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="c"># A lot of things could go wrong when starting the cluster. To</span>
+        <span class="c"># ensure a stable cluster fitting the needs of the user in terms of</span>
+        <span class="c"># cluster size, we check the minimum nodes within the node groups to</span>
+        <span class="c"># match the current setup.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">min_nodes</span><span class="p">:</span>
+            <span class="c"># the node minimum is implicit if not specified.</span>
+            <span class="n">min_nodes</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">((</span><span class="n">key</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">key</span><span class="p">]))</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span>
+                             <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="o">.</span><span class="n">iterkeys</span><span class="p">())</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c"># check that each group has a minimum value</span>
+            <span class="k">for</span> <span class="n">group</span><span class="p">,</span> <span class="n">nodes</span> <span class="ow">in</span> <span class="n">nodes</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">group</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">min_nodes</span><span class="p">:</span>
+                    <span class="n">min_nodes</span><span class="p">[</span><span class="n">group</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_cluster_size</span><span class="p">(</span><span class="n">min_nodes</span><span class="p">)</span>
+</div>
+    <span class="k">def</span> <span class="nf">_check_cluster_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">min_nodes</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Checks the size of the cluster to fit the needs of the user. It</span>
+<span class="sd">        considers the minimum values for the node groups if present.</span>
+<span class="sd">        Otherwise it will imply the user wants the amount of specified</span>
+<span class="sd">        nodes at least.</span>
+
+<span class="sd">        :param min_nodes: minimum number of nodes for each kind</span>
+<span class="sd">        :type min_nodes: dict [node_kind] = number</span>
+<span class="sd">        :raises: ClusterError in case the size does not fit the minimum</span>
+<span class="sd">                 number specified by the user.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># check the total sizes before moving the nodes around</span>
+        <span class="n">minimum_nodes</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">group</span><span class="p">,</span> <span class="n">size</span> <span class="ow">in</span> <span class="n">min_nodes</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+            <span class="n">minimum_nodes</span> <span class="o">=</span> <span class="n">minimum_nodes</span> <span class="o">+</span> <span class="n">size</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_all_nodes</span><span class="p">())</span> <span class="o">&lt;</span> <span class="n">minimum_nodes</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ClusterError</span><span class="p">(</span><span class="s">&quot;The cluster does not provide the minimum &quot;</span>
+                               <span class="s">&quot;amount of nodes specified in the &quot;</span>
+                               <span class="s">&quot;configuration. The nodes are still running, &quot;</span>
+                               <span class="s">&quot;but will not be setup yet. Please change the&quot;</span>
+                               <span class="s">&quot; minimum amount of nodes in the &quot;</span>
+                               <span class="s">&quot;configuration or try to start a new cluster &quot;</span>
+                               <span class="s">&quot;after checking the cloud provider settings.&quot;</span><span class="p">)</span>
+
+        <span class="c"># finding all node groups with an unsatisfied amount of nodes</span>
+        <span class="n">unsatisfied_groups</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">group</span><span class="p">,</span> <span class="n">size</span> <span class="ow">in</span> <span class="n">min_nodes</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">group</span><span class="p">])</span> <span class="o">&lt;</span> <span class="n">size</span><span class="p">:</span>
+                <span class="n">unsatisfied_groups</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">group</span><span class="p">)</span>
+
+        <span class="c"># trying to move nodes around to fill the groups with missing nodes</span>
+        <span class="k">for</span> <span class="n">ugroup</span> <span class="ow">in</span> <span class="n">unsatisfied_groups</span><span class="p">[:]:</span>
+            <span class="n">missing</span> <span class="o">=</span> <span class="n">min_nodes</span><span class="p">[</span><span class="n">ugroup</span><span class="p">]</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">ugroup</span><span class="p">])</span>
+            <span class="k">for</span> <span class="n">group</span><span class="p">,</span> <span class="n">nodes</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+                <span class="n">spare</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">group</span><span class="p">])</span> <span class="o">-</span> <span class="n">min_nodes</span><span class="p">[</span><span class="n">group</span><span class="p">]</span>
+                <span class="k">while</span> <span class="n">spare</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">missing</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">ugroup</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">group</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+                    <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">group</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="n">spare</span> <span class="o">=</span> <span class="n">spare</span> <span class="o">-</span> <span class="mi">1</span>
+                    <span class="n">missing</span> <span class="o">=</span> <span class="n">missing</span> <span class="o">-</span> <span class="mi">1</span>
+
+                    <span class="k">if</span> <span class="n">missing</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="n">unsatisfied_groups</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">ugroup</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">unsatisfied_groups</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ClusterError</span><span class="p">(</span><span class="s">&quot;Could not find an optimal solution to &quot;</span>
+                               <span class="s">&quot;distribute the started nodes into the node &quot;</span>
+                               <span class="s">&quot;groups to satisfy the minimum amount of &quot;</span>
+                               <span class="s">&quot;nodes. Please change the minimum amount of &quot;</span>
+                               <span class="s">&quot;nodes in the configuration or try to start a&quot;</span>
+                               <span class="s">&quot; new clouster after checking the cloud &quot;</span>
+                               <span class="s">&quot;provider settings&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Cluster.get_all_nodes"><a class="viewcode-back" href="../../api/elasticluster/cluster.html#elasticluster.cluster.Cluster.get_all_nodes">[docs]</a>    <span class="k">def</span> <span class="nf">get_all_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns a list of all nodes in this cluster as a mixed list of</span>
+<span class="sd">        different node kinds.</span>
+
+<span class="sd">        :return: list of :py:class:`Node`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">nodes</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">reduce</span><span class="p">(</span><span class="n">operator</span><span class="o">.</span><span class="n">add</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="nb">list</span><span class="p">())</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span>
+</div>
+<div class="viewcode-block" id="Cluster.stop"><a class="viewcode-back" href="../../api/elasticluster/cluster.html#elasticluster.cluster.Cluster.stop">[docs]</a>    <span class="k">def</span> <span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Destroys all instances of this cluster and calls delete on the</span>
+<span class="sd">        repository.</span>
+
+<span class="sd">        :param bool force: force termination of instances in any case</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_all_nodes</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">instance_id</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">node</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">kind</span><span class="p">]</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Removed node with instance id </span><span class="si">%s</span><span class="s"> from </span><span class="si">%s</span><span class="s">&quot;</span>
+                              <span class="o">%</span> <span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">instance_id</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">kind</span><span class="p">))</span>
+                <span class="k">except</span><span class="p">:</span>
+                    <span class="c"># Boto does not always raises an `Exception` class!</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;could not stop instance `</span><span class="si">%s</span><span class="s">`, it might &quot;</span>
+                              <span class="s">&quot;already be down.&quot;</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">instance_id</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Not stopping node with no instance id. It seems &quot;</span>
+                          <span class="s">&quot;like node `</span><span class="si">%s</span><span class="s">` did not start correctly.&quot;</span>
+                          <span class="o">%</span> <span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">kind</span><span class="p">]</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_all_nodes</span><span class="p">():</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Removing cluster </span><span class="si">%s</span><span class="s">.&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_setup_provider</span><span class="o">.</span><span class="n">cleanup</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">repository</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">force</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&quot;Not all instances have been terminated. &quot;</span>
+                        <span class="s">&quot;Please rerun the `elasticluster stop </span><span class="si">%s</span><span class="s">`&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">repository</span><span class="o">.</span><span class="n">save_or_update</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&quot;Not all instances have been terminated. However, &quot;</span>
+                        <span class="s">&quot;as requested, the cluster has been force-removed.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_setup_provider</span><span class="o">.</span><span class="n">cleanup</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">repository</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Cluster.get_frontend_node"><a class="viewcode-back" href="../../api/elasticluster/cluster.html#elasticluster.cluster.Cluster.get_frontend_node">[docs]</a>    <span class="k">def</span> <span class="nf">get_frontend_node</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns the first node of the class specified in the</span>
+<span class="sd">        configuration file as `ssh_to`, or the first node of</span>
+<span class="sd">        the first class in alphabetic order.</span>
+
+<span class="sd">        :return: :py:class:`Node`</span>
+<span class="sd">        :raise: :py:class:`elasticluster.exceptions.NodeNotFound` if no</span>
+<span class="sd">                valid frontend node is found</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ssh_to</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ssh_to</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
+                <span class="n">cls</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">ssh_to</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">cls</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">cls</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                        <span class="s">&quot;preferred `ssh_to` `</span><span class="si">%s</span><span class="s">` is empty: unable to &quot;</span>
+                        <span class="s">&quot;get the choosen frontend node from that class.&quot;</span><span class="p">,</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">ssh_to</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">NodeNotFound</span><span class="p">(</span>
+                    <span class="s">&quot;Invalid ssh_to `</span><span class="si">%s</span><span class="s">`. Please check your &quot;</span>
+                    <span class="s">&quot;configuration file.&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">ssh_to</span><span class="p">)</span>
+
+        <span class="c"># If we reach this point, the preferred class was empty. Pick</span>
+        <span class="c"># one using the default logic.</span>
+        <span class="k">for</span> <span class="n">cls</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">cls</span><span class="p">]:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">cls</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="c"># Uh-oh, no nodes in this cluster.</span>
+        <span class="k">raise</span> <span class="n">NodeNotFound</span><span class="p">(</span><span class="s">&quot;Unable to find a valid frontend: &quot;</span>
+                           <span class="s">&quot;cluster has no nodes!&quot;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Cluster.setup"><a class="viewcode-back" href="../../api/elasticluster/cluster.html#elasticluster.cluster.Cluster.setup">[docs]</a>    <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Configure the cluster nodes with the specified  This</span>
+<span class="sd">        is delegated to the provided :py:class:`elasticluster.providers.AbstractSetupProvider`</span>
+
+<span class="sd">        :return: bool - True on success, False otherwise</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c"># setup the cluster using the setup provider</span>
+            <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setup_provider</span><span class="o">.</span><span class="n">setup_cluster</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="s">&quot;the setup provider was not able to setup the cluster, &quot;</span>
+                <span class="s">&quot;but the cluster is running by now. Setup provider error &quot;</span>
+                <span class="s">&quot;message: `</span><span class="si">%s</span><span class="s">`&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+            <span class="n">ret</span> <span class="o">=</span> <span class="bp">False</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">ret</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s">&quot;Cluster `</span><span class="si">%s</span><span class="s">` not yet configured. Please, re-run &quot;</span>
+                <span class="s">&quot;`elasticluster setup </span><span class="si">%s</span><span class="s">` and/or check your configuration&quot;</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">ret</span>
+</div>
+<div class="viewcode-block" id="Cluster.update"><a class="viewcode-back" href="../../api/elasticluster/cluster.html#elasticluster.cluster.Cluster.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Update all connection information of the nodes of this cluster.</span>
+<span class="sd">        It occurs for example public ip&#39;s are not available imediatly,</span>
+<span class="sd">        therefore calling this method might help.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_all_nodes</span><span class="p">():</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">node</span><span class="o">.</span><span class="n">update_ips</span><span class="p">()</span>
+            <span class="k">except</span> <span class="n">InstanceError</span><span class="p">,</span> <span class="n">ex</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&quot;Ignoring error updating information on node </span><span class="si">%s</span><span class="s">: </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span>
+                          <span class="n">node</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">ex</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">repository</span><span class="o">.</span><span class="n">save_or_update</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+</div></div>
+<div class="viewcode-block" id="Node"><a class="viewcode-back" href="../../api/elasticluster/cluster.html#elasticluster.cluster.Node">[docs]</a><span class="k">class</span> <span class="nc">Node</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;The node represents an instance in a cluster. It holds all</span>
+<span class="sd">    information to connect to the nodes also manages the cloud instance. It</span>
+<span class="sd">    provides the basic functionality to interact with the cloud instance,</span>
+<span class="sd">    such as start, stop, check if the instance is up and ssh connect.</span>
+
+<span class="sd">    :param str name: identifier of the node</span>
+
+<span class="sd">    :param str kind: kind of node in regard to cluster. this usually</span>
+<span class="sd">                     refers to a specified group in the</span>
+<span class="sd">                     :py:class:`elasticluster.providers.AbstractSetupProvider`</span>
+
+<span class="sd">    :param cloud_provider: cloud provider to manage the instance</span>
+<span class="sd">    :type cloud_provider: :py:class:`elasticluster.providers.AbstractCloudProvider`</span>
+
+<span class="sd">    :param str user_key_public: path to the ssh public key</span>
+
+<span class="sd">    :param str user_key_private: path to the ssh private key</span>
+
+<span class="sd">    :param str user_key_name: name of the ssh key</span>
+
+<span class="sd">    :param str image_user: user to connect to the instance via ssh</span>
+
+<span class="sd">    :param str security_group: security group to setup firewall rules</span>
+
+<span class="sd">    :param str image: image id to launch instance with</span>
+
+<span class="sd">    :param str flavor: machine type to launch instance</span>
+
+<span class="sd">    :param str image_userdata: commands to execute after instance start</span>
+
+
+<span class="sd">    :ivar instance_id: id of the node instance on the cloud</span>
+
+<span class="sd">    :ivar ip_public: public ip of this node</span>
+
+<span class="sd">    :ivar ip_private: private ip of this node</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">connection_timeout</span> <span class="o">=</span> <span class="mi">10</span>  <span class="c">#: timeout in seconds to connect to host via ssh</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">kind</span><span class="p">,</span> <span class="n">cloud_provider</span><span class="p">,</span> <span class="n">user_key_public</span><span class="p">,</span>
+                 <span class="n">user_key_private</span><span class="p">,</span> <span class="n">user_key_name</span><span class="p">,</span> <span class="n">image_user</span><span class="p">,</span> <span class="n">security_group</span><span class="p">,</span>
+                 <span class="n">image</span><span class="p">,</span> <span class="n">flavor</span><span class="p">,</span> <span class="n">image_userdata</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kind</span> <span class="o">=</span> <span class="n">kind</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cloud_provider</span> <span class="o">=</span> <span class="n">cloud_provider</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">user_key_public</span> <span class="o">=</span> <span class="n">user_key_public</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">user_key_private</span> <span class="o">=</span> <span class="n">user_key_private</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">user_key_name</span> <span class="o">=</span> <span class="n">user_key_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">image_user</span> <span class="o">=</span> <span class="n">image_user</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">security_group</span> <span class="o">=</span> <span class="n">security_group</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">image</span> <span class="o">=</span> <span class="n">image</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">image_userdata</span> <span class="o">=</span> <span class="n">image_userdata</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">flavor</span> <span class="o">=</span> <span class="n">flavor</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">instance_id</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ip_public</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ip_private</span> <span class="o">=</span> <span class="bp">None</span>
+
+<div class="viewcode-block" id="Node.start"><a class="viewcode-back" href="../../api/elasticluster/cluster.html#elasticluster.cluster.Node.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Starts the node on the cloud using the given</span>
+<span class="sd">        instance properties. This method is non-blocking, as soon</span>
+<span class="sd">        as the node id is returned from the cloud provider, it will return.</span>
+<span class="sd">        Therefore the `is_alive` and `update_ips` methods can be used to</span>
+<span class="sd">        further gather details about the state of the node.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Starting node </span><span class="si">%s</span><span class="s">.&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">instance_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cloud_provider</span><span class="o">.</span><span class="n">start_instance</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">user_key_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_key_public</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_key_private</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">security_group</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">flavor</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">image</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_userdata</span><span class="p">,</span>
+            <span class="n">username</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">image_user</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Node </span><span class="si">%s</span><span class="s"> has instance_id: `</span><span class="si">%s</span><span class="s">`&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_id</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Node.stop"><a class="viewcode-back" href="../../api/elasticluster/cluster.html#elasticluster.cluster.Node.stop">[docs]</a>    <span class="k">def</span> <span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Destroys the instance launched on the cloud for this specific node.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;shutting down instance `</span><span class="si">%s</span><span class="s">`&quot;</span><span class="p">,</span>
+                 <span class="bp">self</span><span class="o">.</span><span class="n">instance_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cloud_provider</span><span class="o">.</span><span class="n">stop_instance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instance_id</span><span class="p">)</span>
+        <span class="c"># When an instance is terminated, the EC2 cloud provider will</span>
+        <span class="c"># basically return it as &quot;running&quot; state. Setting the</span>
+        <span class="c"># `instance_id` attribute to None will force `is_alive()`</span>
+        <span class="c"># method not to check with the cloud provider, and forever</span>
+        <span class="c"># forgetting about the instance id.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">instance_id</span> <span class="o">=</span> <span class="bp">None</span>
+</div>
+<div class="viewcode-block" id="Node.is_alive"><a class="viewcode-back" href="../../api/elasticluster/cluster.html#elasticluster.cluster.Node.is_alive">[docs]</a>    <span class="k">def</span> <span class="nf">is_alive</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Checks if the current node is up and running in the cloud. It</span>
+<span class="sd">        only checks the status provided by the cloud interface. Therefore a</span>
+<span class="sd">        node might be running, but not yet ready to ssh into it.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">running</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_id</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">False</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Getting information for instance </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span>
+                      <span class="bp">self</span><span class="o">.</span><span class="n">instance_id</span><span class="p">)</span>
+            <span class="n">running</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cloud_provider</span><span class="o">.</span><span class="n">is_instance_running</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">instance_id</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Ignoring error while looking for vm id </span><span class="si">%s</span><span class="s">: </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span>
+                      <span class="bp">self</span><span class="o">.</span><span class="n">instance_id</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">ex</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">running</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;node `</span><span class="si">%s</span><span class="s">` (instance id </span><span class="si">%s</span><span class="s">) is up and running&quot;</span><span class="p">,</span>
+                      <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_id</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update_ips</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;node `</span><span class="si">%s</span><span class="s">` (instance id `</span><span class="si">%s</span><span class="s">`) still building...&quot;</span><span class="p">,</span>
+                      <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_id</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">running</span>
+</div>
+<div class="viewcode-block" id="Node.connect"><a class="viewcode-back" href="../../api/elasticluster/cluster.html#elasticluster.cluster.Node.connect">[docs]</a>    <span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Connect to the node via ssh using the paramiko library.</span>
+
+<span class="sd">        :return: :py:class:`paramiko.SSHClient` - ssh connection or None on</span>
+<span class="sd">                 failure</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ssh</span> <span class="o">=</span> <span class="n">paramiko</span><span class="o">.</span><span class="n">SSHClient</span><span class="p">()</span>
+        <span class="n">ssh</span><span class="o">.</span><span class="n">set_missing_host_key_policy</span><span class="p">(</span><span class="n">IgnorePolicy</span><span class="p">())</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Trying to connect to host </span><span class="si">%s</span><span class="s"> (</span><span class="si">%s</span><span class="s">)&quot;</span><span class="p">,</span>
+                      <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ip_public</span><span class="p">)</span>
+            <span class="n">ssh</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ip_public</span><span class="p">,</span>
+                        <span class="n">username</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">image_user</span><span class="p">,</span>
+                        <span class="n">allow_agent</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+                        <span class="n">key_filename</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">user_key_private</span><span class="p">,</span>
+                        <span class="n">timeout</span><span class="o">=</span><span class="n">Node</span><span class="o">.</span><span class="n">connection_timeout</span><span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Connection to </span><span class="si">%s</span><span class="s"> succeded!&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ip_public</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">ssh</span>
+        <span class="k">except</span> <span class="n">socket</span><span class="o">.</span><span class="n">error</span><span class="p">,</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Host </span><span class="si">%s</span><span class="s"> (</span><span class="si">%s</span><span class="s">) not reachable: </span><span class="si">%s</span><span class="s">.&quot;</span><span class="p">,</span>
+                      <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ip_public</span><span class="p">,</span> <span class="n">ex</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">paramiko</span><span class="o">.</span><span class="n">SSHException</span><span class="p">,</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Ignoring error </span><span class="si">%s</span><span class="s"> connecting to </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span>
+                      <span class="nb">str</span><span class="p">(</span><span class="n">ex</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">None</span>
+</div>
+<div class="viewcode-block" id="Node.update_ips"><a class="viewcode-back" href="../../api/elasticluster/cluster.html#elasticluster.cluster.Node.update_ips">[docs]</a>    <span class="k">def</span> <span class="nf">update_ips</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Retrieves the public and private ip of the instance by using the</span>
+<span class="sd">        cloud provider. In some cases the public ip assignment takes some</span>
+<span class="sd">        time, but this method is non blocking. To check for a public ip,</span>
+<span class="sd">        consider calling this method multiple times during a certain timeout.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">private</span><span class="p">,</span> <span class="n">public</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cloud_provider</span><span class="o">.</span><span class="n">get_ips</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instance_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ip_public</span> <span class="o">=</span> <span class="n">public</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ip_private</span> <span class="o">=</span> <span class="n">private</span>
+        <span class="k">return</span> <span class="n">private</span><span class="p">,</span> <span class="n">public</span>
+</div>
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&quot;name=`</span><span class="si">%s</span><span class="s">`, id=`</span><span class="si">%s</span><span class="s">`, public_ip=`</span><span class="si">%s</span><span class="s">`, private_ip=`</span><span class="si">%s</span><span class="s">`&quot;</span> <span class="o">%</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ip_public</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ip_private</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Node.pprint"><a class="viewcode-back" href="../../api/elasticluster/cluster.html#elasticluster.cluster.Node.pprint">[docs]</a>    <span class="k">def</span> <span class="nf">pprint</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Pretty print information about the node.</span>
+
+<span class="sd">        :return: str - representaion of a node in pretty print</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s">&quot;&quot;&quot;</span><span class="si">%s</span><span class="s"></span>
+<span class="s">public IP:   </span><span class="si">%s</span><span class="s"></span>
+<span class="s">private IP:  </span><span class="si">%s</span><span class="s"></span>
+<span class="s">instance id: </span><span class="si">%s</span><span class="s"></span>
+<span class="s">instance flavor: </span><span class="si">%s</span><span class="s">&quot;&quot;&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ip_public</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ip_private</span><span class="p">,</span>
+                          <span class="bp">self</span><span class="o">.</span><span class="n">instance_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">flavor</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">elasticluster 1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Grid Computing Competence Centre, University of Zurich.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

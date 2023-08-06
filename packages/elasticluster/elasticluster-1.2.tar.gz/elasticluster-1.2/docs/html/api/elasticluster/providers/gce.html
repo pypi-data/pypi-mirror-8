@@ -1,0 +1,252 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>elasticluster.providers.gce &mdash; elasticluster 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="elasticluster 1.0 documentation" href="../../../index.html" />
+    <link rel="up" title="Elasitcluster programming API" href="../../index.html" />
+    <link rel="next" title="elasticluster.repository" href="../repository.html" />
+    <link rel="prev" title="elasticluster.providers.ec2_boto" href="ec2_boto.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../repository.html" title="elasticluster.repository"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="ec2_boto.html" title="elasticluster.providers.ec2_boto"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../../../index.html">elasticluster 1.0 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" accesskey="U">Elasitcluster programming API</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-elasticluster.providers.gce">
+<span id="elasticluster-providers-gce"></span><h1><cite>elasticluster.providers.gce</cite><a class="headerlink" href="#module-elasticluster.providers.gce" title="Permalink to this headline">¶</a></h1>
+<p>Cloud provider for the Google Compute Engine.</p>
+<p>See &lt;<a class="reference external" href="https://code.google.com/p/google-cloud-platform-samples/source/browse/python-client-library-example/gce.py?repo=compute">https://code.google.com/p/google-cloud-platform-samples/source/browse/python-client-library-example/gce.py?repo=compute</a>&gt; for reference.</p>
+<dl class="data">
+<dt id="elasticluster.providers.gce.GCE_SCOPE">
+<tt class="descclassname">elasticluster.providers.gce.</tt><tt class="descname">GCE_SCOPE</tt><em class="property"> = 'https://www.googleapis.com/auth/compute'</em><a class="headerlink" href="#elasticluster.providers.gce.GCE_SCOPE" title="Permalink to this definition">¶</a></dt>
+<dd><p>the OAuth scope for the GCE web API</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="elasticluster.providers.gce.GoogleCloudProvider">
+<em class="property">class </em><tt class="descclassname">elasticluster.providers.gce.</tt><tt class="descname">GoogleCloudProvider</tt><big>(</big><em>gce_client_id</em>, <em>gce_client_secret</em>, <em>gce_project_id</em>, <em>zone='us-central1-a'</em>, <em>network='default'</em>, <em>email='default'</em>, <em>storage_path=None</em><big>)</big><a class="reference internal" href="../../../_modules/elasticluster/providers/gce.html#GoogleCloudProvider"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#elasticluster.providers.gce.GoogleCloudProvider" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cloud provider for the Google Compute Engine.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>gce_client_id</strong> (<em>str</em>) &#8211; Client ID to use in OAuth authentication.</li>
+<li><strong>gce_client_secret</strong> (<em>str</em>) &#8211; Client secret (password) to use in
+OAuth authentication.</li>
+<li><strong>gce_project_id</strong> (<em>str</em>) &#8211; Project name to log in to GCE.</li>
+<li><strong>zone</strong> (<em>str</em>) &#8211; gce zone, default is <cite>us-central1-a</cite></li>
+<li><strong>network</strong> (<em>str</em>) &#8211; network to use, default is  <cite>default</cite></li>
+<li><strong>email</strong> (<em>str</em>) &#8211; service email to use, default is <cite>default</cite></li>
+<li><strong>storage_path</strong> (<em>str</em>) &#8211; path to store authentication data (oauth.dat
+file). If no path is specified, the login data
+has to be entered after every request.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="elasticluster.providers.gce.GoogleCloudProvider.get_ips">
+<tt class="descname">get_ips</tt><big>(</big><em>instance_id</em><big>)</big><a class="reference internal" href="../../../_modules/elasticluster/providers/gce.html#GoogleCloudProvider.get_ips"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#elasticluster.providers.gce.GoogleCloudProvider.get_ips" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieves the ip addresses (private and public) from the cloud
+provider by the given instance id.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>instance_id</strong> (<em>str</em>) &#8211; id of the instance</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">tuple (ip_private, ip_public)</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises :</th><td class="field-body">InstanceError if the ip could not be retrieved.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="elasticluster.providers.gce.GoogleCloudProvider.is_instance_running">
+<tt class="descname">is_instance_running</tt><big>(</big><em>instance_id</em><big>)</big><a class="reference internal" href="../../../_modules/elasticluster/providers/gce.html#GoogleCloudProvider.is_instance_running"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#elasticluster.providers.gce.GoogleCloudProvider.is_instance_running" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check whether the instance is up and running.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>instance_id</strong> (<em>str</em>) &#8211; instance identifier</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Reutrn :</th><td class="field-body">True if instance is running, False otherwise</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="elasticluster.providers.gce.GoogleCloudProvider.list_instances">
+<tt class="descname">list_instances</tt><big>(</big><em>filter=None</em><big>)</big><a class="reference internal" href="../../../_modules/elasticluster/providers/gce.html#GoogleCloudProvider.list_instances"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#elasticluster.providers.gce.GoogleCloudProvider.list_instances" title="Permalink to this definition">¶</a></dt>
+<dd><p>List instances on GCE, optionally filtering the results.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filter</strong> (<em>str</em>) &#8211; Filter specification; see <a class="reference external" href="https://developers.google.com/compute/docs/reference/latest/instances/list">https://developers.google.com/compute/docs/reference/latest/instances/list</a> for details.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">list of instances</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="elasticluster.providers.gce.GoogleCloudProvider.start_instance">
+<tt class="descname">start_instance</tt><big>(</big><em>key_name</em>, <em>public_key_path</em>, <em>private_key_path</em>, <em>security_group</em>, <em>flavor</em>, <em>image_id</em>, <em>image_userdata</em>, <em>username=None</em>, <em>instance_name=None</em><big>)</big><a class="reference internal" href="../../../_modules/elasticluster/providers/gce.html#GoogleCloudProvider.start_instance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#elasticluster.providers.gce.GoogleCloudProvider.start_instance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Starts a new instance with the given properties and returns
+the instance id.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>key_name</strong> (<em>str</em>) &#8211; name of the ssh key to connect</li>
+<li><strong>public_key_path</strong> (<em>str</em>) &#8211; path to ssh public key</li>
+<li><strong>private_key_path</strong> (<em>str</em>) &#8211; path to ssh private key</li>
+<li><strong>security_group</strong> (<em>str</em>) &#8211; firewall rule definition to apply on the
+instance</li>
+<li><strong>flavor</strong> (<em>str</em>) &#8211; machine type to use for the instance</li>
+<li><strong>image_id</strong> (<em>str</em>) &#8211; image type (os) to use for the instance</li>
+<li><strong>image_userdata</strong> (<em>str</em>) &#8211; command to execute after startup</li>
+<li><strong>username</strong> (<em>str</em>) &#8211; username for the given ssh key, default None</li>
+<li><strong>instance_name</strong> (<em>str</em>) &#8211; name of the instance</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">str - instance id of the started instance</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="elasticluster.providers.gce.GoogleCloudProvider.stop_instance">
+<tt class="descname">stop_instance</tt><big>(</big><em>instance_id</em><big>)</big><a class="reference internal" href="../../../_modules/elasticluster/providers/gce.html#GoogleCloudProvider.stop_instance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#elasticluster.providers.gce.GoogleCloudProvider.stop_instance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stops the instance gracefully.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>instance_id</strong> (<em>str</em>) &#8211; instance identifier</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises :</th><td class="field-body"><cite>InstanceError</cite> if instance can not be stopped</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="ec2_boto.html"
+                        title="previous chapter"><cite>elasticluster.providers.ec2_boto</cite></a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../repository.html"
+                        title="next chapter"><cite>elasticluster.repository</cite></a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../../_sources/api/elasticluster/providers/gce.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../repository.html" title="elasticluster.repository"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="ec2_boto.html" title="elasticluster.providers.ec2_boto"
+             >previous</a> |</li>
+        <li><a href="../../../index.html">elasticluster 1.0 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Elasitcluster programming API</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Grid Computing Competence Centre, University of Zurich.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,332 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>elasticluster.conf &mdash; elasticluster 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="elasticluster 1.0 documentation" href="../../index.html" />
+    <link rel="up" title="Elasitcluster programming API" href="../index.html" />
+    <link rel="next" title="elasticluster.exceptions" href="exceptions.html" />
+    <link rel="prev" title="elasticluster.cluster" href="cluster.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="exceptions.html" title="elasticluster.exceptions"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="cluster.html" title="elasticluster.cluster"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../../index.html">elasticluster 1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Elasitcluster programming API</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-elasticluster.conf">
+<span id="elasticluster-conf"></span><h1><cite>elasticluster.conf</cite><a class="headerlink" href="#module-elasticluster.conf" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="elasticluster.conf.ConfigReader">
+<em class="property">class </em><tt class="descclassname">elasticluster.conf.</tt><tt class="descname">ConfigReader</tt><big>(</big><em>configfile</em><big>)</big><a class="reference internal" href="../../_modules/elasticluster/conf.html#ConfigReader"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#elasticluster.conf.ConfigReader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads the configuration properties from a ini file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>configfile</strong> (<em>str</em>) &#8211; path to configfile</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="elasticluster.conf.ConfigReader.read_config">
+<tt class="descname">read_config</tt><big>(</big><big>)</big><a class="reference internal" href="../../_modules/elasticluster/conf.html#ConfigReader.read_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#elasticluster.conf.ConfigReader.read_config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads the configuration properties from the ini file and links the
+section to comply with the cluster config dictionary format.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">dictionary containing all configuration properties from the
+ini file in compliance to the cluster config format</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises :</th><td class="field-body"><tt class="xref py py-class docutils literal"><span class="pre">voluptuous.MultipleInvalid</span></tt> if not all sections
+present or broken links between secitons</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="elasticluster.conf.ConfigValidator">
+<em class="property">class </em><tt class="descclassname">elasticluster.conf.</tt><tt class="descname">ConfigValidator</tt><big>(</big><em>config</em><big>)</big><a class="reference internal" href="../../_modules/elasticluster/conf.html#ConfigValidator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#elasticluster.conf.ConfigValidator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Validator for the cluster configuration dictionary.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>config</strong> &#8211; dictionary containing cluster configuration properties</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="elasticluster.conf.ConfigValidator.validate">
+<tt class="descname">validate</tt><big>(</big><big>)</big><a class="reference internal" href="../../_modules/elasticluster/conf.html#ConfigValidator.validate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#elasticluster.conf.ConfigValidator.validate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Validates the given configuration <tt class="xref py py-attr docutils literal"><span class="pre">self.config</span></tt> to comply
+with elasticluster. As well all types are converted to the expected
+format if possible.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Raises :</th><td class="field-body"><tt class="xref py py-class docutils literal"><span class="pre">voluptuous.MultipleInvalid</span></tt> if multiple
+properties are not compliant</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises :</th><td class="field-body"><tt class="xref py py-class docutils literal"><span class="pre">voluptuous.Invalid</span></tt> if one property is invalid</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="elasticluster.conf.Configurator">
+<em class="property">class </em><tt class="descclassname">elasticluster.conf.</tt><tt class="descname">Configurator</tt><big>(</big><em>cluster_conf</em>, <em>storage_path=None</em><big>)</big><a class="reference internal" href="../../_modules/elasticluster/conf.html#Configurator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#elasticluster.conf.Configurator" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>The Configurator is responsible for (I) keeping track of the</dt>
+<dd><p class="first">configuration and (II) offer factory methods to create all kind of
+objects that need information from the configuration.</p>
+<p>The cluster configuration dictionary is structured in the following way:
+(see an example &#64;</p>
+<blockquote>
+<div><a class="reference external" href="https://github.com/gc3-uzh-ch/elasticluster/wiki/Configuration-Module">https://github.com/gc3-uzh-ch/elasticluster/wiki/Configuration-Module</a>)</div></blockquote>
+<div class="last highlight-python"><pre>{ "&lt;cluster_template&gt;" : {
+    "setup" : { properties of the setup section },
+    "cloud" : { properties of the cloud section },
+    "login" : { properties of the login section },
+    "cluster" : { properties of the cluster section },
+    "nodes": {  "&lt;node_kind&gt;" : { properties of the node},
+                "&lt;node_kind&gt;" : { properties of the node},
+            },
+    },
+ "&lt;cluster_template&gt;" : {
+    (see above)
+    }
+ }</pre>
+</div>
+</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>cluster_conf</strong> (<em>dict</em>) &#8211; see description above</li>
+<li><strong>storage_path</strong> (<em>str</em>) &#8211; path to store data</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Raises MultipleInvalid:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body"><p class="first last">configuration validation</p>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="elasticluster.conf.Configurator.create_cloud_provider">
+<tt class="descname">create_cloud_provider</tt><big>(</big><em>cluster_template</em><big>)</big><a class="reference internal" href="../../_modules/elasticluster/conf.html#Configurator.create_cloud_provider"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#elasticluster.conf.Configurator.create_cloud_provider" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a cloud provider by inspecting the configuration properties
+of the given cluster template.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>cluster_template</strong> (<em>str</em>) &#8211; template to use (if not already specified
+on init)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">cloud provider that fulfills the contract of
+<a class="reference internal" href="providers.html#elasticluster.providers.AbstractSetupProvider" title="elasticluster.providers.AbstractSetupProvider"><tt class="xref py py-class docutils literal"><span class="pre">elasticluster.providers.AbstractSetupProvider</span></tt></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="elasticluster.conf.Configurator.create_cluster">
+<tt class="descname">create_cluster</tt><big>(</big><em>template</em>, <em>name=None</em><big>)</big><a class="reference internal" href="../../_modules/elasticluster/conf.html#Configurator.create_cluster"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#elasticluster.conf.Configurator.create_cluster" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a cluster by inspecting the configuration properties of the
+given cluster template.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>template</strong> (<em>str</em>) &#8211; name of the cluster template</li>
+<li><strong>name</strong> (<em>str</em>) &#8211; name of the cluster. If not defined, the cluster</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>will be named after the template.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><tt class="xref py py-class docutils literal"><span class="pre">elasticluster.cluster.cluster</span></tt> instance</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Raises ConfigurationError:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body">cluster template not found in config</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="elasticluster.conf.Configurator.create_setup_provider">
+<tt class="descname">create_setup_provider</tt><big>(</big><em>cluster_template</em>, <em>name=None</em><big>)</big><a class="reference internal" href="../../_modules/elasticluster/conf.html#Configurator.create_setup_provider"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#elasticluster.conf.Configurator.create_setup_provider" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates the setup provider for the given cluster template.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>cluster_template</strong> (<em>str</em>) &#8211; template of the cluster</li>
+<li><strong>name</strong> (<em>str</em>) &#8211; name of the cluster to read configuration properties</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="elasticluster.conf.Configurator.fromConfig">
+<em class="property">classmethod </em><tt class="descname">fromConfig</tt><big>(</big><em>configfile</em>, <em>storage_path=None</em><big>)</big><a class="reference internal" href="../../_modules/elasticluster/conf.html#Configurator.fromConfig"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#elasticluster.conf.Configurator.fromConfig" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper method to initialize Configurator from an ini file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>configfile</strong> (<em>str</em>) &#8211; path to the ini file</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><a class="reference internal" href="#elasticluster.conf.Configurator" title="elasticluster.conf.Configurator"><tt class="xref py py-class docutils literal"><span class="pre">Configurator</span></tt></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="elasticluster.conf.Configurator.load_cluster">
+<tt class="descname">load_cluster</tt><big>(</big><em>cluster_name</em><big>)</big><a class="reference internal" href="../../_modules/elasticluster/conf.html#Configurator.load_cluster"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#elasticluster.conf.Configurator.load_cluster" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads a cluster from the cluster repository.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>cluster_name</strong> (<em>str</em>) &#8211; name of the cluster</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><tt class="xref py py-class docutils literal"><span class="pre">elasticluster.cluster.cluster</span></tt> instance</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="cluster.html"
+                        title="previous chapter"><cite>elasticluster.cluster</cite></a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="exceptions.html"
+                        title="next chapter"><cite>elasticluster.exceptions</cite></a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../_sources/api/elasticluster/conf.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="exceptions.html" title="elasticluster.exceptions"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="cluster.html" title="elasticluster.cluster"
+             >previous</a> |</li>
+        <li><a href="../../index.html">elasticluster 1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Elasitcluster programming API</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Grid Computing Competence Centre, University of Zurich.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>
