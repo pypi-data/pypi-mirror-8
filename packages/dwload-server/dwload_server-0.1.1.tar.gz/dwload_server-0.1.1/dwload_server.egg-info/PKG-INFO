@@ -1,0 +1,219 @@
+Metadata-Version: 1.1
+Name: dwload-server
+Version: 0.1.1
+Summary: DWLOAD server implemented in Python
+Home-page: https://github.com/DWLOAD/DwLoadServer
+Author: Jens Diemer
+Author-email: dwload_server@jensdiemer.de
+License: GPL v3+
+Description: DwLoadServer
+        
+        ==================================================================
+        DWLOAD server implemented in Python (OpenSource, GPL v3 or above).
+        ==================================================================
+        
+         It's in unuseable, experimental state and currently nothing more then some tests scripts.
+        
+        -------------
+        current state
+        -------------
+        
+        Tested DWEEBS:
+        
+        +------------+-------------------------------+------------------------------------------------+
+        | DWEEB      | example                       | Description                                    |
+        +============+===============================+================================================+
+        | **DLOAD**  | ``DLOAD``                     | Load ``AUTOLOAD.DWL`` (Used on Dragon startup) |
+        +------------+-------------------------------+------------------------------------------------+
+        | **RESAVE** | ``DLOAD"RESAVE""MYFILE.BAS"`` | Save BASIC listing                             |
+        +------------+-------------------------------+------------------------------------------------+
+        
+        Implemented DriveWire Transactions:
+        
+        +-----+-----+------------------+--------------------------------------------------------------------------+
+        | hex | dez | DW name          | Description                                                              |
+        +=====+=====+==================+==========================================================================+
+        | $01 | 1   | OP_NAMEOBJ_MOUNT | Mount a file to a virtual drive number                                   |
+        +-----+-----+------------------+--------------------------------------------------------------------------+
+        | $d2 | 210 | OP_READEX        | Send 256 bytes sector from the DWLOAD server to the client               |
+        +-----+-----+------------------+--------------------------------------------------------------------------+
+        | $57 | 87  | OP_WRITE         | Write 256 bytes sector of data from the client into a file on the server |
+        +-----+-----+------------------+--------------------------------------------------------------------------+
+        
+        ----
+        TODO
+        ----
+        
+        * support ``SAVE``
+        
+        * compare checksum
+        
+        ------------
+        installation
+        ------------
+        
+        Linux
+        =====
+        
+        The is a virtualenv bootstrap file, created with `bootstrap_env <https://github.com/jedie/bootstrap_env>`_, for easy installation.
+        
+        Get the bootstrap file:
+        
+        ::
+        
+            /home/FooBar$ wget https://raw.githubusercontent.com/DWLOAD/DwLoadServer/master/boot_dwload_server.py
+        
+        There are tree types of installation:
+        
+        +------------------+------------------------------------------------------------------------+
+        | option           | desciption                                                             |
+        +==================+========================================================================+
+        | **pypi**         | use `Python Package Index`_ (for all normal user!)                     |
+        +------------------+------------------------------------------------------------------------+
+        | **git_readonly** | use ``git`` to get the sourcecode (for developer without write access) |
+        +------------------+------------------------------------------------------------------------+
+        | **dev**          | use ``git`` with write access                                          |
+        +------------------+------------------------------------------------------------------------+
+        
+        .. _Python Package Index: http://www.python.org/pypi/
+        
+        e.g.:
+        
+        ::
+        
+            /home/FooBar$ python3 boot_dwload_server.py ~/dwload_server_env --install_type git_readonly
+        
+        This creates a virtualenv in **``~/dwload_server_env``** and used ``git`` to checkout the needed repositories.
+        
+        In this case (using --install_type=**git_readonly**) the git repository are in: **.../dwload_server_env/src/**
+        So you can easy update them e.g.:
+        
+        ::
+        
+            /home/FooBar$ cd ~/dwload_server_env/src/dwload-server
+            /home/FooBar/dwload_server_env/src/dwload-server$ git pull
+        
+        Windows
+        =======
+        
+        There are several ways to install the project under windows.
+        
+        The following is hopeful the easiest one:
+        
+        * Install Python 3, e.g.: `https://www.python.org/downloads/ <https://www.python.org/downloads/>`_
+        
+        * Download the ``DWLOAD Server`` git snapshot from Github: `master.zip <https://github.com/DWLOAD/DwLoadServer/archive/master.zip>`_
+        
+        * Extract the Archive somewhere
+        
+        * Maybe, adjust paths in ``boot_dwload_server.cmd``
+        
+        * Run ``boot_dwload_server.cmd``
+        
+        The default ``boot_dwload_server.cmd`` will install via ``Python Package Index`` (PyPi) into ``%APPDATA%\dwload_server_env``
+        
+        startup
+        =======
+        
+        Setup server root directory. This is the directory for the files that are interchange with the client.
+        
+        ::
+        
+            /home/FooBar$ cd ~/dwload_server_env/
+            /home/FooBar/dwload_server_env$ mkdir root
+        
+        You have to put the DWEEB files into the ``root`` dir. e.g. ``dwload-demo-files`` from: `https://github.com/DWLOAD/DWLOAD <https://github.com/DWLOAD/DWLOAD>`_
+        
+        To start the server:
+        
+        ::
+        
+            /home/FooBar$ cd ~/dwload_server_env/
+            /home/FooBar/dwload_server_env$ ./bin/python -m dwload_server.dwload_server --port /dev/ttyUSB0 --root_dir ./root
+        
+        If you would like to see more debug output:
+        
+        ::
+        
+            /home/FooBar/dwload_server_env$ ./bin/python -m dwload_server.dwload_server --port /dev/ttyUSB0 --root_dir ./root --log_level 10
+        
+        Display CLI help:
+        
+        ::
+        
+            /home/FooBar/dwload_server_env$ ./bin/python -m dwload_server.dwload_server --help
+        
+        Maybe it's nice to have a shell script to startup? Take a copy of existing `start_DWLOAD_server.sh <https://github.com/DWLOAD/DwLoadServer/blob/master/start_DWLOAD_server.sh>`_ file and change it for your needs, e.g.:
+        
+        ::
+        
+            /home/FooBar$ cd ~/dwload_server_env/
+            /home/FooBar/dwload_server_env$ wget https://raw.githubusercontent.com/DWLOAD/DwLoadServer/master/start_DWLOAD_server.sh
+            
+            # Just call (after edit)
+            /home/FooBar/dwload_server_env$ ./start_DWLOAD_server.sh
+        
+        -------
+        History
+        -------
+        
+        * 14.11.2014 - v0.1.0 - Create bootstrap file that work under linux and windows.
+        
+        * 12.11.2014 - v0.0.1 - send a file works rudimentary
+        
+        * 30.09.2014 - Idea was born: `Forum post 11893 <http://archive.worldofdragon.org/phpBB3/viewtopic.php?f=8&t=4946#p11893>`_
+        
+        -----
+        Links
+        -----
+        
+        +--------------+---------------------------------------------------------------------+
+        | Forum Thread | `http://archive.worldofdragon.org/phpBB3/viewtopic.php?f=8&t=4946`_ |
+        +--------------+---------------------------------------------------------------------+
+        | IRC          | `#pylucid on freenode.net`_                                         |
+        +--------------+---------------------------------------------------------------------+
+        | Jabber       | pylucid@conference.jabber.org                                       |
+        +--------------+---------------------------------------------------------------------+
+        | PyPi         | `https://pypi.python.org/pypi/dwload_server/`_                      |
+        +--------------+---------------------------------------------------------------------+
+        | Github       | `https://github.com/DWLOAD/DwLoadServer`_                           |
+        +--------------+---------------------------------------------------------------------+
+        
+        .. _http://archive.worldofdragon.org/phpBB3/viewtopic.php?f=8&t=4946: http://archive.worldofdragon.org/phpBB3/viewtopic.php?f=8&t=4946
+        .. _#pylucid on freenode.net: http://www.pylucid.org/permalink/304/irc-channel
+        .. _https://pypi.python.org/pypi/dwload_server/: https://pypi.python.org/pypi/dwload_server/
+        .. _https://github.com/DWLOAD/DwLoadServer: https://github.com/DWLOAD/DwLoadServer
+        
+        some project related links:
+        
+        * About DWLOAD: `http://archive.worldofdragon.org/phpBB3/viewtopic.php?f=5&t=4964 <http://archive.worldofdragon.org/phpBB3/viewtopic.php?f=5&t=4964>`_
+        
+        * DWEEBS application Thread: `http://archive.worldofdragon.org/phpBB3/viewtopic.php?f=5&t=4968 <http://archive.worldofdragon.org/phpBB3/viewtopic.php?f=5&t=4968>`_
+        
+        * Dragon 32/64 DriveWire Adapter: `http://archive.worldofdragon.org/index.php?title=Dragon_32/64_Drivewire_Adapter <http://archive.worldofdragon.org/index.php?title=Dragon_32/64_Drivewire_Adapter>`_
+        
+        * Drivewire for dummies: `http://archive.worldofdragon.org/index.php?title=Drivewire_for_dummies <http://archive.worldofdragon.org/index.php?title=Drivewire_for_dummies>`_
+        
+        * `http://sourceforge.net/p/drivewireserver/wiki/DriveWire_Specification/ <http://sourceforge.net/p/drivewireserver/wiki/DriveWire_Specification/>`_
+        
+        * `http://sourceforge.net/p/drivewireserver/wiki/ <http://sourceforge.net/p/drivewireserver/wiki/>`_
+Keywords: 6809 Dragon CoCo DriveWire
+Platform: UNKNOWN
+Classifier: Development Status :: 4 - Beta
+Classifier: Environment :: MacOS X
+Classifier: Environment :: Win32 (MS Windows)
+Classifier: Environment :: X11 Applications
+Classifier: Environment :: Other Environment
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: Education
+Classifier: License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 2
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: Implementation :: CPython
+Classifier: Programming Language :: Python :: Implementation :: PyPy
+Classifier: Topic :: System :: Emulators
+Classifier: Topic :: Software Development :: Assemblers
+Classifier: Topic :: Software Development :: Testing
+Provides: dwload_server
