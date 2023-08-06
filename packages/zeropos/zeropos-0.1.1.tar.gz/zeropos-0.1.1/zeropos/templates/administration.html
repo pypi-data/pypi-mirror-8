@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-6">
+        <h2>Current Printer</h2>
+        {% if current_printer %}
+        <dl>
+            <dt>Product</dt>
+            <dd>{{ current_printer.product }}</dd>
+            <dt>Manufacturer</dt>
+            <dd>{{ current_printer.manufacturer }}</dd>
+        </dl>
+        {% else %}
+        <p class="text-danger">
+            There is currently no printer set to be used. Choose one from below.
+        </p>
+        {% endif %}
+    </div>
+    <div class="col-md-6 pull-right">
+    </div>
+    <div class="col-md-12">
+        <h2>Change Current Printer</h2>
+        <table class="table table-bordered">
+            <thead>
+                <th>Product</th>
+                <th>Manufacturer</th>
+                <th></th>
+            </thead> 
+            <tbody>
+                {% for device in devices %}
+                <tr class="{% if device|isSameDevice(current_printer) %}success{% endif %}">
+                    <td>{{ device.product }}</td>
+                    <td>{{ device.manufacturer }}</td>
+                    <td>
+                        {% if not device|isSameDevice(current_printer) %}
+                        <a class="btn btn-primary" 
+                            href="{{ url_for('set_printer', vendor=device.idVendor, product=device.idProduct) }}"
+                            >Set as Current Printer</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+                {% if not devices %}
+                <tr class="warning">
+                    <td colspan="3">No USB devices were detected.</td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
