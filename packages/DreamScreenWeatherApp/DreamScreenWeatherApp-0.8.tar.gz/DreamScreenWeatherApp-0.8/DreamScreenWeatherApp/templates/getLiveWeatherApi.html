@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0">
+<channel>
+<language>en-us</language>
+<ttl>60</ttl>
+<aws:weather xmlns:aws="http://www.aws.com/aws">
+<aws:api version="2.0" />
+<aws:WebURL>{{ weburl }}</aws:WebURL>
+<aws:ob>
+<aws:current-condition icon="http://deskwx.weatherbug.com/images/Forecast/icons/cond{{ '%03d' % iconLive  }}.gif">{{ obs.weather }}</aws:current-condition>
+<aws:feels-like units="%%F">{{ obs.feelslike_f }}</aws:feels-like>
+<aws:temp units="%%F">{{ obs.temp_f }}</aws:temp>
+<aws:wind-speed units="mph">{{ obs.wind_mph }}</aws:wind-speed>
+</aws:ob>
+</aws:weather>
+</channel>
+</rss>
