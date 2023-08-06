@@ -1,0 +1,44 @@
+{% load i18n static cms_tags menu_tags sekizai_tags  %}
+
+{%addtoblock "css" %}<link href="{% static 'accordion_presentation/css/Field.css' %}" rel="stylesheet">{%endaddtoblock "css"%}
+{%addtoblock "css" %}<link href="{{ STATIC_URL }}accordion_presentation/css/fluid_grid.css" rel="stylesheet">{%endaddtoblock "css"%}
+
+
+{%addtoblock "css" %}
+<style>
+#ins_{{ instance.pk}} {
+	background-color: {{instance.color}};
+	display: block;
+	height: 100%;
+}
+</style>
+{%endaddtoblock "css"%}
+<div id="ins_{{ instance.pk}}" class="ap_field">
+    	{%if instance.align == 'v'%}
+    	 <div class="ap_icon_vertical">
+    	 	<img src="{{instance.icon.url}}"/>
+    	 </div>
+		  <p class="ap_title_vertical"> {{instance.title}}</p>
+		  {%else%}
+		  <p class="ap_title_horizontal"> {{instance.title}}</p>		
+    	 <div class="ap_icon_horizontal">
+    	 	<img src="{{instance.icon.url}}" />
+    	 </div>
+		  {%endif%}
+</div>
+
+{%addtoblock "js" %}
+<script>
+($ || CMS.$)(window).load(function() {
+	var c = ($ || CMS.$)('#ins_{{ instance.pk}}').closest('.clearfix');
+	($ || CMS.$)('#ins_{{ instance.pk}}').closest('.column').css({padding: '0px'});
+	/*($ || CMS.$)('#ins_{{ instance.pk}}').closest('.column').css({height: c.height()}); */
+});
+
+($ || CMS.$)(window).on('resize',function() {
+	var c = ($ || CMS.$)('#ins_{{ instance.pk}}').closest('.clearfix');
+	($ || CMS.$)('#ins_{{ instance.pk}}').closest('.column').css({padding: '0px'});
+	($ || CMS.$)('#ins_{{ instance.pk}}').css({height: c.height()}); 
+});
+</script>
+{%endaddtoblock "js" %}
