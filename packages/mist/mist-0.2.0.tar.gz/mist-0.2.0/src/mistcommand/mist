@@ -1,0 +1,643 @@
+#!/usr/bin/env python
+# PYTHON_ARGCOMPLETE_OK
+
+import sys
+import argparse
+import argcomplete
+
+from ansible.runner import Runner
+from ansible.inventory import Inventory
+
+from mistcommand.helpers.login import user_info
+from mistcommand.helpers.backends import backend_action
+from mistcommand.helpers.providers import provider_action
+from mistcommand.helpers.keys import key_action
+from mistcommand.helpers.machines import machine_action
+from mistcommand.helpers.images import image_action
+from mistcommand.helpers.sizes import size_action
+from mistcommand.helpers.locations import location_action
+from mistcommand.helpers.plugins import plugin_action
+from mistcommand.helpers.mistansible import ansible_action
+
+
+def main():
+
+    main_parser = argparse.ArgumentParser(description="Mist.io command line tool")
+    subparsers = main_parser.add_subparsers(help='action to perform',
+                                            dest='action')
+
+    # --------------ACTiONS----------------------------
+    p_list = subparsers.add_parser(
+        'list',
+        description="List supported providers, images, sizes, locations, networks, backends, keys, machines, plugins",
+    )
+
+    p_display = subparsers.add_parser(
+        'display',
+        description="Display info about key or machine"
+    )
+    p_add = subparsers.add_parser(
+        'add',
+        description="Add backend, key or plugin to machine",
+    )
+
+    p_create = subparsers.add_parser(
+        'create',
+        description="Create machine"
+    )
+
+    p_delete = subparsers.add_parser(
+        'delete',
+        description="Delete backend, key or network"
+    )
+
+    p_rename = subparsers.add_parser(
+        'rename',
+        description="Rename backend or key"
+    )
+
+    p_start = subparsers.add_parser(
+        'start',
+        description="Start a machine"
+    )
+
+    p_stop = subparsers.add_parser(
+        'stop',
+        description="Stop a machine"
+    )
+
+    p_reboot = subparsers.add_parser(
+        'reboot',
+        description="Reboot a machine"
+    )
+
+    p_destroy = subparsers.add_parser(
+        'destroy',
+        description="Destroy a machine"
+    )
+
+    p_probe = subparsers.add_parser(
+        'probe',
+        description="Probe a machine"
+    )
+
+    p_tag = subparsers.add_parser(
+        'tag',
+        description="Tag machine"
+    )
+
+    p_enable_monitoring = subparsers.add_parser(
+        'enable-monitoring',
+        description="Enable monitoring on a machine"
+    )
+
+    p_disable_monitoring = subparsers.add_parser(
+        'disable-monitoring',
+        description="Disable monitoring on a machine"
+    )
+
+    # p_get_stats = subparsers.add_parser(
+    #     'get-stats',
+    #     description="Get stats from a monitored machine"
+    # )
+
+    p_user = subparsers.add_parser(
+        'user',
+        description="User actions"
+    )
+
+    p_run = subparsers.add_parser(
+        'run',
+        description="Run a command in multiple machines"
+    )
+
+    p_run.add_argument(
+        '--command', required=True,
+        help="Run this command"
+    )
+
+    p_run.add_argument(
+        '--tag', required=True,
+        help="Run the command in machines that have this tag"
+    )
+    # ------------------LIST TARGETS-------------------
+    subparsers = p_list.add_subparsers(
+        dest='target',
+        help='List info for this target, e.g. list machines'
+    )
+
+    p_list_supported_providers = subparsers.add_parser(
+        'supported-providers',
+        description="List all supported providers"
+    )
+
+    p_list_backends = subparsers.add_parser(
+        'backends',
+        description="List all backends that are added to mist.io"
+    )
+
+    p_list_locations = subparsers.add_parser(
+        'locations',
+        description="List locations for the given backend"
+    )
+
+    p_list_images = subparsers.add_parser(
+        'images',
+        description="List available OS Images for the given backend"
+    )
+    p_list_images.add_argument(
+        '--search', required=False,
+        help="Search for OS Images that contain this."
+    )
+
+    p_list_sizes = subparsers.add_parser(
+        'sizes',
+        description="List available machine sizes for the given backend"
+    )
+
+    p_list_keys = subparsers.add_parser(
+        'keys',
+        description="List added/available SSH Keys"
+    )
+
+    p_list_machines = subparsers.add_parser(
+        'machines',
+        description="List machines for all or a specific backend. "
+                    "If no backend is specified it will list all machines for all backends"
+    )
+
+    group = p_list_machines.add_mutually_exclusive_group()
+    group.add_argument(
+        '--backend',
+        help="This can be either a backend's name or id"
+    )
+    group.add_argument(
+        '--backend-id',
+        help="Specify a backend's id"
+    )
+    group.add_argument(
+        '--backend-name',
+        help="Sepcify a backend's name"
+    )
+
+    p_list_plugins = subparsers.add_parser(
+        'plugins',
+        help="List available plugins for a machine"
+    )
+    # ----------------DISPLAY TARGETS------------------
+    subparsers = p_display.add_subparsers(
+        dest='target',
+        help='List info for this target, e.g. display backend --backend_name MyBackend'
+    )
+
+    p_display_backend = subparsers.add_parser(
+        'backend',
+        help="Display info for this backend"
+    )
+
+    p_display_key = subparsers.add_parser(
+        'key',
+        help="Display info for this key"
+    )
+
+    p_display_machine = subparsers.add_parser(
+        'machine',
+        help="Display info for this machine"
+    )
+
+    # ----------------ADD TARGETS----------------------
+    subparsers = p_add.add_subparsers(
+        dest='target',
+        help='Add a backend or key'
+    )
+
+    p_add_backend = subparsers.add_parser(
+        'backend',
+        help="Add a new backend"
+    )
+
+    provider_choices = [
+        'bare_metal',
+        'ec2_ap_northeast',
+        'ec2_ap_southeast',
+        'ec2_ap_southeast_2',
+        'ec2_eu_west',
+        'ec2_sa_east',
+        'ec2_us_east',
+        'ec2_us_west',
+        'ec2_us_west_oregon',
+        'gce',
+        'nephoscale',
+        'digitalocean',
+        'linode',
+        'openstack',
+        'rackspace:dfw',
+        'rackspace:ord',
+        'rackspace:iad',
+        'rackspace:lon',
+        'rackspace:syd',
+        'rackspace:hkg',
+        'rackspace_first_gen:us',
+        'rackspace_first_gen:uk',
+        'softlayer',
+        'hpcloud:region-a.geo-1',
+        'hpcloud:region-b.geo-1',
+        'docker'
+    ]
+    p_add_backend.add_argument(
+        '--provider', required=True, choices=provider_choices,
+        help="The provider id for the new backend, e.g. ec2_ap_northeast. You can"
+             " list supported-providers to see all available provider ids"
+    )
+
+    p_add_backend.add_argument(
+        '--name', required=True,
+        help="Name for the new backend"
+    )
+
+    ec2_group = p_add_backend.add_argument_group('EC2')
+    ec2_group.add_argument(
+        '--ec2-api-key',
+        help="The ec2 API key"
+    )
+    ec2_group.add_argument(
+        '--ec2-api-secret',
+        help="The ec2 API secret"
+    )
+
+    rackspace_group = p_add_backend.add_argument_group('Rackspace')
+    rackspace_group.add_argument(
+        '--rackspace-username',
+        help="Username for Rackspace"
+    )
+    rackspace_group.add_argument(
+        '--rackspace-api-key',
+        help="API Key for Rackspace"
+    )
+
+    nephoscale_group = p_add_backend.add_argument_group('NephoScale')
+    nephoscale_group.add_argument(
+        '--nepho-username',
+        help="Username for NephoScale"
+    )
+    nephoscale_group.add_argument(
+        '--nepho-password',
+        help="Password for nephoscale"
+    )
+
+    digital_group = p_add_backend.add_argument_group('DigitalOcean')
+    digital_group.add_argument(
+        '--digi-token',
+        help="Token for the DigitalOcean backend"
+    )
+
+    linode_group = p_add_backend.add_argument_group("Linode")
+    linode_group.add_argument(
+        '--linode-api-key',
+        help="API Key for the Linode backend"
+    )
+
+    openstack_group = p_add_backend.add_argument_group("Openstack")
+    openstack_group.add_argument(
+        '--openstack-username',
+        help="Username for the Openstack backend"
+    )
+    openstack_group.add_argument(
+        '--openstack-password',
+        help="Password for the Openstack backend"
+    )
+    openstack_group.add_argument(
+        '--openstack-auth-url',
+        help="Auth url, e.g. http://10.0.0.2:5000"
+    )
+    openstack_group.add_argument(
+        '--openstack-tenant',
+        help="Tenant name"
+    )
+    openstack_group.add_argument(
+        '--openstack-region',
+        help="OPTIONAL. Normally you do not have to explicitly set a region"
+    )
+
+    softlayer_group = p_add_backend.add_argument_group("SoftLayer")
+    softlayer_group.add_argument(
+        '--softlayer-username',
+        help="Username for the softlayer backend"
+    )
+    softlayer_group.add_argument(
+        '--softlayer-api-key',
+        help="API Key for the SoftLayer backend"
+    )
+
+    hp_group = p_add_backend.add_argument_group("HP")
+    hp_group.add_argument(
+        '--hp-username',
+        help="Username for the HP backend"
+    )
+    hp_group.add_argument(
+        '--hp-password',
+        help="Passord for the HP backend"
+    )
+    hp_group.add_argument(
+        '--hp-tenant',
+        help="Tenant name for the HP backend"
+    )
+
+    docker_group = p_add_backend.add_argument_group("Docker")
+    docker_group.add_argument(
+        '--docker-host',
+        help="Ip of the Docker host"
+    )
+    docker_group.add_argument(
+        '--docker-port', default="4243",
+        help="Port for the Docker API. By default 4243."
+    )
+    docker_group.add_argument(
+        '--docker-auth-user',
+        help="OPTIONAL. In case you have a basic auth set up."
+    )
+    docker_group.add_argument(
+        '--docker-auth-password',
+        help="OPTIONAL. In case you have a basic auth set up"
+    )
+
+    bare_group = p_add_backend.add_argument_group("Bare Metal Server")
+    bare_group.add_argument(
+        '--bare-hostname',
+        help="Hostname of the machine"
+    )
+    bare_group.add_argument(
+        '--bare-user', default="root",
+        help="By default root"
+    )
+    bare_group.add_argument(
+        '--bare-port', default="22",
+        help="Port of the ssh-server. By default 22"
+    )
+    bare_group.add_argument(
+        '--bare-ssh-key-id',
+        help="The id of the ssh key that is associated with the machine"
+    )
+
+
+    p_add_key = subparsers.add_parser(
+        'key',
+        help="Add a new SSH Key"
+    )
+
+    p_add_key.add_argument(
+        '--name', required=True,
+        help="Name of the new SSH Key"
+    )
+
+    group = p_add_key.add_mutually_exclusive_group(required=True)
+    group.add_argument(
+        '--key-path',
+        help="Path to private SSH Key file"
+    )
+    group.add_argument(
+        '--auto-generate', action='store_true',
+        help="If given, then mist.io will auto-generate an SSH Key"
+    )
+
+    p_add_plugin = subparsers.add_parser(
+        'plugin',
+        help="Add plugin to machine"
+    )
+
+    p_add_plugin.add_argument(
+        '--plugin-id', required=True,
+        help="Id of the plugin you want to add. You can list plugins for this machine to find available"
+             "plugins and the corresponding ids"
+    )
+    #-----------------MACHINE ACTIONS TARGETS----------
+
+    subparsers = p_reboot.add_subparsers(
+        dest='target',
+        help='Reboot machine'
+    )
+    p_reboot_machine = subparsers.add_parser(
+        'machine',
+        help="Reboot machine"
+    )
+
+    subparsers = p_start.add_subparsers(
+        dest='target',
+        help='Start machine'
+    )
+    p_start_machine = subparsers.add_parser(
+        'machine',
+        help="Start machine"
+    )
+
+    subparsers = p_stop.add_subparsers(
+        dest='target',
+        help='Stop machine'
+    )
+    p_stop_machine = subparsers.add_parser(
+        'machine',
+        help="Stop machine"
+    )
+
+    subparsers = p_destroy.add_subparsers(
+        dest='target',
+        help='Destroy machine'
+    )
+    p_destroy_machine = subparsers.add_parser(
+        'machine',
+        help="Destroy machine"
+    )
+
+    subparsers = p_probe.add_subparsers(
+        dest='target',
+        help='Probe machine'
+    )
+    p_probe_machine = subparsers.add_parser(
+        'machine',
+        help="Probe machine"
+    )
+
+    subparsers = p_enable_monitoring.add_subparsers(
+        dest='target',
+        help="Enable monitoring on machine"
+    )
+    p_enable_monitoring_machine = subparsers.add_parser(
+        'machine',
+        help="Enable monitoring on this machine"
+    )
+
+    subparsers = p_disable_monitoring.add_subparsers(
+        dest='target',
+        help="Enable monitoring on machine"
+    )
+    p_disable_monitoring_machine = subparsers.add_parser(
+        'machine',
+        help="Enable monitoring on this machine"
+    )
+
+    subparsers = p_tag.add_subparsers(
+        dest='target',
+        help="Tag machine"
+    )
+    p_tag_machine = subparsers.add_parser(
+        'machine',
+        help="Tag this machine"
+    )
+
+    p_tag_machine.add_argument(
+        '--tag', required=True,
+        help="Add this tag to the machine"
+    )
+    #-----------------CREATE TARGETS-------------------
+    subparsers = p_create.add_subparsers(
+        dest='target',
+        help="Create machine or network"
+    )
+
+    p_create_machine = subparsers.add_parser(
+        'machine',
+        help="Create a new machine"
+    )
+
+    p_create_machine.add_argument(
+        '--machine-name', required=True,
+        help="Name for the new machine"
+    )
+    p_create_machine.add_argument(
+        '--key-id',
+        help="Id of SSH Key to associate with the machine"
+    )
+    p_create_machine.add_argument(
+        '--image-id', required=True,
+        help="Id of OS Image. You can list images for the given backend to find their ids"
+    )
+    p_create_machine.add_argument(
+        '--size-id', required=True,
+        help="Id of machine size. You can list sizes for the given backend to find their ids"
+    )
+    p_create_machine.add_argument(
+        '--location-id', required=True,
+        help="Id of the backend location. You can list locations for the given backend to find their ids"
+    )
+
+    # ----------------RENAME TARGETS-------------------
+    subparsers = p_rename.add_subparsers(
+        dest='target',
+        help="Rename backend or key"
+    )
+
+    p_rename_backend = subparsers.add_parser(
+        'backend',
+        description="Rename backend"
+    )
+
+    p_rename_backend.add_argument(
+        '-n', '--new-name', required=True,
+        help="New name"
+    )
+
+    p_rename_key = subparsers.add_parser(
+        'key',
+        description="Rename SSH Key"
+    )
+
+    p_rename_key.add_argument(
+        '--new-name', required=True,
+        help="New name for the SSH Key"
+    )
+
+    # ----------------DELETE TARGETS-------------------
+    subparsers = p_delete.add_subparsers(
+        dest='target',
+        description="Delele backend, key or network"
+    )
+
+    p_delete_backend = subparsers.add_parser(
+        'backend',
+        help="Delete this backend"
+    )
+
+    p_delete_key = subparsers.add_parser(
+        'key',
+        help="Delete this SSH Key"
+    )
+
+    # ----------------USER TARGETS---------------------
+    subparsers = p_user.add_subparsers(
+        dest='target',
+        help='List info and take actions regarding the user'
+    )
+
+    p_user_info = subparsers.add_parser(
+        'info',
+        help='Get info about the user'
+    )
+
+    #---------------KEYS OPTIONS------------------------
+    for parser in [p_delete_key, p_rename_key, p_display_key]:
+        parser.add_argument(
+            '--key', required=True,
+            help="Name of the SSH Key you want to delete"
+        )
+
+    #---------------BACKEND OPTIONS---------------------
+    for parser in [p_rename_backend, p_delete_backend, p_display_backend, p_list_locations,
+                   p_list_images, p_list_sizes, p_create_machine]:
+        group = parser.add_mutually_exclusive_group(required=True)
+        group.add_argument(
+            '--backend',
+            help="This can be either a backend's name or id"
+        )
+        group.add_argument(
+            '--backend-id',
+            help="Specify a backend's id"
+        )
+        group.add_argument(
+            '--backend-name',
+            help="Sepcify a backend's name"
+        )
+
+    #------------MACHINE OPTIONS------------------------
+    for parser in [p_start_machine, p_reboot_machine, p_stop_machine, p_destroy_machine,
+                   p_probe_machine, p_enable_monitoring_machine, p_disable_monitoring_machine,
+                   p_list_plugins, p_add_plugin, p_display_machine, p_tag_machine]:
+        group = parser.add_mutually_exclusive_group(required=True)
+        group.add_argument(
+            '--machine',
+            help="This can be either a machine's name or id"
+        )
+        group.add_argument(
+            '--machine-id',
+            help="Specify a machine's id"
+        )
+        group.add_argument(
+            '--machine-name',
+            help="Sepcify a machine's name"
+        )
+
+    argcomplete.autocomplete(main_parser)
+    args = main_parser.parse_args()
+
+    if args.action == 'run':
+        ansible_action(args, Runner, Inventory)
+    elif args.action == 'user' and args.target == 'info':
+        user_info()
+    elif args.target == 'supported-providers':
+        provider_action(args)
+    elif args.target in ['backends', 'backend']:
+        backend_action(args)
+    elif args.target == 'locations':
+        location_action(args)
+    elif args.target == 'images':
+        image_action(args)
+    elif args.target == 'sizes':
+        size_action(args)
+    elif args.target in ['keys', 'key']:
+        key_action(args)
+    elif args.target in ['machine', 'machines']:
+        machine_action(args)
+    elif args.target in ['plugin', 'plugins']:
+        plugin_action(args)
+
+if __name__ == "__main__":
+    main()
