@@ -1,0 +1,1245 @@
+CHANGES
+=======
+
+0.3.2
+-----
+
+* Typo
+* More metadata tweakeing
+* Fix shields / badges
+
+0.3.0
+-----
+
+* Fix metadata
+* Fix MANIFEST
+* Back to development: 0.3.1
+* Fix version
+* Fix metadata for pypi
+* Preparing release 0.3.0
+* Update CHANGES
+* added config: TRACKING_CODE_SNIPPET
+* Fix another error on appveyor build
+* Trying out appveyor (Windows CI). Will likely fail
+* Cosmetic
+* antivirus: fix result check
+* antivirus: fix result check
+* widgets basetableview: fix datatable init
+* select2 widget: set allowClear when field is not required
+* JS: add widget creators registry
+* add missing templates/widgets/select2ajax.html
+* * templates/widgets/render_for_edit.html: fix form width on small screens
+* * templates/abilian_base.html: fix main columns widths
+* render_for_edit: action buttons on left, vertically aligned with form widgets
+* Pass form in case it's used by the rendering template
+* fix webassets filters not registered
+* pylintrc: restore file
+* add antivirus check service. Requires ClamAV
+* scribe: update to latest version, track deps with bower
+* richtext widget: pass allowed_tags to template
+* Simplify deps
+* Add vagrant-test task to Makefile
+* Various clean ups
+* Run test suite w/ vagrant
+* Clean up (pep8 + others)
+* Fix travis build
+* Don't use pip-accel hack as it fails on my mac
+* pip-accel hack doesn't work on my mac
+* More cleanup
+* Fix various pyflakes warnings
+* Deal with boundary case
+* richtextwidget: fix sanitizer initialization
+* service base: ensure service has a name
+* conversion: don't create libmagic sniffers at module level
+* blob: ensure meta is not None but a dict
+* sentry: add 'process_type' tag (web or celery task)
+* ObjectEdit: add hook to customize exceptions handling during commit
+* JS: preventDoubleSubmit: re-enable buttons on unload
+* object CBV: add 'cancel' css class to cancel button
+* object views: fix redirect to button.url. fix chain_create_allowed url
+* fix render_ajax_table: datatable needs requirejs call style
+* i18n vocabularies
+* models: add __repr__
+* vocabularies: add up/down action
+* style: add caret-up, caret-down, btn-inline
+* admin extension: fix additionals endpoint when panel has post method
+* add vocabulary panel
+* abilian/web/forms: add ModelForm based on .Form
+* admin: fix panel breadcrumb not inserted for panel's other endpoints
+* activities: check object is an Entity before creating log entry
+* admin: panels can preprocess url values for their own views
+* auto insert position-less items as last
+* add base service and models
+* Cleaner clean up
+* preferences: don't show inaccessible panels
+* pylintrc: ignore C0111, W0232
+* render_for_edit widget: use panels to avoid long page
+* jinjaext deferJS: fix TB when not content inside deferJS
+* tox: use pip-accel
+* * js/abilian.js: select2 set allowclear if field not required
+* "required" validator: set flag on field
+* JS: fix page scroll to anchor
+* * abilian/web/resources/less/layout.less: use boostrap variable
+* add jinja filter: 'toslug'
+* fix dep conflict with pytest-cov / coverage
+* single view: try to render field if render_empty flags is set
+* macros form field: generated markup cosmetic
+* render_for_edit: don't render label for hidden fields
+* form macro / SingleView: use field.is_hidden
+* JS: refactor Abilian.api to make it more pluggable
+* Many small cosmetic fixes (pep8 and so on)
+* Various cleanups
+* Fix travis build
+* Should fix tests
+* More declarative setup using pbr
+* web/views: fix __all__
+* views: export JSONView
+* fix indent
+* scribe: fix style for heading x in select box
+* scribe: add tooltips on toolbar buttons; add i18n
+* add richtextwidget + JS; based on scribe
+* * scribe-plugin-smart-lists: fix when no range
+* scribe.js: backport upstream fix
+* update datatables to make it work with requirejs
+* add assets: scribe + require
+* linkify_url changed icon: fix test
+* widgets: linkify_url: use fa-external-link icon
+* frontend stuff: use views.objects CBV for view/edit/create/delete; add missing templates
+* cbv create: add breadcrumb item with create button title
+* cbv: base_template, chain_create_allowed in __init__
+* cbv edit: form_kwargs: don't set formdata, let flask_wtf do it
+* imageinput widget: show base64 thumb if no url; add "delete" checkbox
+* filefield: support optional delete; support relationship (defaults works with Blob)
+* entity auto-slug: number suffix if slug already exists
+* admin audit: show seconds
+* login: harden checks for 'next_url'; never redirect to login.* after login success
+* views: ObjectEdit: add form_valid(), now object is saved here
+* template: field macro: show field errors on 1 line each
+* field macro: use text-danger css for field.errors
+* widgets: textarea: accept default 'rows' parameter
+* form macro: ensure no label for hidden fields
+* views: get/post methods receive *args,**kwargs
+* views: object: add object to actions context
+* view: object edit/create: activity creation: add custom verb and target
+* views: BaseView: add redirect() method
+* action icon: add FAIcon
+* update font-awesome to 4.2.0
+* relationship: fix `lazy='lazy'`, valid value is `'select'`'
+* conditional index create: `engines` is now located in `info` dict
+* ajaxmaintableview: don't format further column when it has "display_fun"
+* indexing command: single transaction mode & progressive mode
+* ajaxmaintableview: add columns parameter "display_fun"
+* require flask-mail >= 0.9.1, remove patch needed when 0.9.0
+* activity: fix for case when object is deleted and already flushed
+* enhance code comment
+* user: add unique index for lower(email) (postgres only)
+* sa: filter indexes for some engines
+* require alembic >= 0.6.7
+* form filters: add lowercase filter; add tests
+* login: ignore case for username
+* user photo: fix when png/colormap photo is submitted
+* security service/ensure_flushed() decorator: check if session is currently flushing
+* babel: configure for use with setup.py
+* admin settings UI: add session lifetime
+* security: fix set_inherit_security
+* security models: cosmestic: multi line constraint
+* config generator: add REDIS_URI
+* redis config: missing uri: fail only when app is configured and not testing
+* Don't forget print CSS
+* missing import
+* user_avatar: ensure user's own avatar is always revalidated
+* _remove_session_save_objects: reload objects marked dirty
+* admin audit panel: fix security entry presentation
+* navbar: fix style for action-navigation-user-authenticated
+* authenticated user group action: show user avatar instead of generic icon
+* add view for user avatar; add css class "avatar"
+* action icon: added DynamicIcon, to use an image with a computed url
+* actions: add automatic css class: "action", "action-category", "action-category-name"
+* admin audit panel: fix security entry presentation when object has been deleted
+* add JS assets for i18n files
+* index_update task: wait for asyncwriter thread
+* indexing: index_update(): try to find fieldname causing exception during CI
+* fix bad indent
+* require Flask-Testing >= 0.4.2
+* search: don't crash search page or live results if one url build fails
+* indexing: index_update(): log exception
+* app handle_exception: fix how session is removed
+* view registry: ensure kwargs are not ignored
+* indexing: log error in index_update
+* nav: navgroup: check condition enabled for subitems
+* fix user.last_active update
+* list widget: fix markup for BS3
+* fix doc
+* add upstreaminfo extension: for now, can set username in a header
+* conversion: manage all temp files with a context manager
+* util: capture_stream_errors: log only Exception types (ignore GeneratorExit)
+* add abilian.web.util.capture_stream_errors
+* redis: fix setup_client
+* added list_routes command
+* redis: don't raise error at init if app is not in configured state; config init commant now includes REDIS_URI
+* security: delete roleassignment on object delete; clear FK in security audit
+* wtforms_alchemy: remove patch since release 0.12.9 has the fix, update requirements
+* security: fix _fill_role_cache_batch when role is global
+* template abilian_base: add 'locale_js' block
+* app: redis property returns redis client
+* added redis extension
+* csrf time_limit: get value directly from config
+* user preferences: fix TB when photo is left unchanged
+* user preferences form: prevent submit with enter key on text inputs
+* app handle_exception: ensure db objects are in a valid session
+* fix possible unicode errors during __repr__
+* fix patching flask_mail
+* fix patching flask_mail (last)
+* fix patching flask_mail (again)
+* fix patching flask_mail
+* patch_logger: fix func name when it's a method
+* sqlalchemy: when postgres, set default client encoding to utf-8
+* entity: fix _object_type() from indexable base
+* remove print statement
+* Fix previous commit
+* Pep8 cleaning
+* PEP8 cleanup
+* Fix coverage command for coverall
+* Fine-tuning coverage
+* Closure needs to be pinned for some reason
+* Parallel tests with pytest-xdist
+* Refactor the way dependencies are handled
+* Back to development: 0.2.1
+
+0.2.0
+-----
+
+* Preparing release 0.2.0
+* Cleanup before pushing version 0.2
+* admin audit panel: add day selector, filter by user, filter by content type
+* JS: remove loadScript. i18n files loading is done directly in base template
+* views: add JSONView
+* babel: jinja needs deferredJS extension
+* admin: panels can install additional url rules
+* Relax some deps
+* search page results: link to author page
+* indexing: use entity_type for fqcn when for Entities
+* testcase services: check if service is running before doing start/stop
+* fix docstring
+* nav: g.nav['active'] should be set to navitem path of active navitem
+* action: add 'status', for ui action status (enabled, disabled, active)
+* action: 'active' renamed 'enabled'
+* action: documentation for getset decorator
+* add singleton module with UniqueName base class
+* actions: store compiled template_string
+* actions: move Endpoint class from nav to action, use for actions
+* actions: added icon class to allow custom icons
+* reword comment to be more clear
+* entities: add ENTITY_TYPE_BASE to allow override module part of entity_type
+* use patch_logger for all monkey patches. patch_logger now also accept standard string as any logger
+* indexing: basic test for clear() method
+* indexing: don't restrict security & contenttypes with filters, but combine with AND
+* indexing: doc for clear(), stop service after clear()
+* search: live JSON view show html when request prefers html. Add highlight.js
+* subjects: don't index groups
+* pylintrc: always ignore "too few public methods"
+* indexing: use a custom ramstorage during tests
+* testing: disable http_trap_exceptions in default config
+* entities: index slug
+* actions: init context on appcontext_pushed, not in before_request
+* fix test
+* deferredJS jinjaext: better init
+* util: fix memoize to properly wrap decorated function and not hide its docstring
+* entities: add slug column
+* remove unused imports
+* ignore .cov2emacs.log
+* hardened slugify()
+* User: use strategy for passwords
+* tests: dont build assets by default
+* makefile: test-with-coverage: don't annotate
+* user: remove unused and misnamed property
+* fix linkify test
+* add mock; more tests jinja filters
+* default options for pytest
+* ignore coverage annotation files
+* travis: build matrix sqlite + postgres
+* travis: cssmin is required by webassets but not in its deps..
+* deps-frozen: wtforms-alchemy had been removed by mistake
+* travis: actually chrislea's nodejs also contains npm and conflics with 'npm' package
+* travis: install nodejs as npm from ppa is not enough to force dependency install
+* travis: -y to add-apt-repository, enable redis
+* travis: install node/npm from chrislea ppa, since build is on 12.04
+* deps-frozen: fix flask-mail version again
+* travis: apt-get install npm
+* travis: install lesscss, test report short TB
+* update deps-frozen to more accurate versions
+* deps-frozen: add pathlib
+* TestCase: added SERVICES attribute
+* indexing service: register functions for altering search filters and document values
+* fix TB in indexing debug toolbar
+* search page: fix result count
+* search page: in sidebar show approximate results count also for 'all' entry
+* search page: fix grid size for xs and sm+
+* i18n fr
+* search result page: style object types filter with list-groups
+* box template macro: add parameter 'omit_body'
+* search: finish pagination
+* search: always show sidebar, with active filter highlighted
+* search: results page style, add pagination, i18n
+* style for 'mark' tag
+* fix datatable style when used with bootstrap's .table-striped
+* audit models: index 'happened_at'. Faster queries in admin panel
+* admin audit panel: fix TB; joinload related entities
+* fix asset filters for webassets >= 0.10 (added as requirement, too)
+* update to bootstrap 3.2.0
+* ensure MarkupSafe > 0.21
+* patch wtforms_alchemy.utils.find_entity
+* add abilian.core.logging with `patch_logger`: logger dedicated to trace monkey patches
+* base template: added 'page_title' block for head <title> tag
+* logger config from yml: disable_existing_loggers: default to False
+* modern format string
+* render_for_edit: missing css class on cancel button
+* tabular field list: fix markup to avoid having inputs not fit width
+* render_single: fix bootbox call for 'delete' action
+* * abilian/web/templates/abilian_base.html: inline_js as both block and variable
+* fix date/datetime fields not supporting years before 1900
+* frontend render_single: make edit action rendered as button
+* search: add user global roles in security filter
+* indexing search: fix filters concat
+* web/frontend module: on item view, set 'current' object in actions context
+* * abilian/services/indexing/debug_toolbar.py: show 'no object' when no current object defined
+* style: comment rule for 'select'
+* activity macro template: mark object url as safe
+* update project conf for emacs
+* csrf exempt for debugtoolbar views
+* patch flask_sqlalchemy._calling_context (used during dev, provide more context info in debugtoolbar)
+* minor docstring format
+* repository: fix when using sqlalchemy's subtranscation (!= nested)
+* session repository: create transaction directory only after "begin", not at instanciation time
+* repository service: remove global logger instance
+* repository tests: cosmetic changes
+* service base: install logger instance on services
+* celery: install sentry handlers
+* deps-frozen: fix flask-mail version (used by tox & jenkins)
+* deps: try to force flask-mail update
+* auth views: use full blueprint name in url_for(), in order to be able to call view functions from other views
+* * abilian/services/auth/views.py: exempt csrf for forgotten_pw and reset_pw
+* * abilian/services/auth/views.py: fix query filter
+* test config: added SITE_NAME and MAIL_SENDER
+* i18n update
+* user preferences: fix panel title
+* base template: 'inline_js' should be a block, not a variable
+* fix url for flask-mail deps so that pip install -e . doesn't fail
+* update flask-mail to current git version (fixed commit), set 'Sender' header in outgoing mail and smtp envelope
+* security: export RoleType column type
+* js: set jshint camelcase false, use strict
+* * abilian/web/admin/extension.py: fix confusion with extension name and Admin role
+* security: Role is now hashable to be usable in sets and fully comparing with their string version
+* * abilian/services/security/models.py: RoleType is implemented as String(length=100)
+* admin panel login sessions: don't break when ip_address is unknown
+* security: use Role instance instead of strings (but remain compatible with strings)
+* more concise code style
+* add jinja filter: url_for
+* * abilian/services/auth/service.py: during test with no_login: do full login of sys user
+* * abilian/app.py: minor indent fix
+* search page results: smaller input
+* * abilian/services/security/models.py: rolesingleton: allow instanciate a role from a Role
+* minor doc fix
+* indexing: limit search to indexable type; ignore others even if indexed
+* indexing: fix facet search
+* indexing: fix index being erased on each restart
+* * etc/deps.txt: use whoosh <2.6
+* fix traceback when logging path object
+* * etc/deps.txt: use wtforms-alchemy==0.12.6: important fixes when using six>=1.7.0
+* * etc/deps.txt: fix url for progressbar package
+* * abilian/services/auth/service.py: set user on 'g' also on 'user_logged_in' event
+* * docs/conf.py: fix intersphinx url for webassets
+* admin: fix traceback when POST
+* * abilian/services/activity/models.py: fix TODO in module docstring
+* * abilian/web/tests/test_widgets.py: fix test
+* fix "_name" usage instead of "name"
+* * abilian/web/forms/widgets.py: _name -> name
+* init converter service
+* require redis >= 2.10.1
+* remove _url usage
+* User: add __repr__ method
+* admin audit panel: show url when entity can be found
+* * abilian/web/resources/less/layout.less: #content: use @grid-gutter-width for margin / padding
+* * abilian/web/resources/less/form.less: select inputs: unify look accross browsers
+* fix grid markup
+* * abilian/web/assets/filters.py: don't fix url path if it's embedded base64 data
+* flash messages: enclose in a grid row
+* conversion service: use pathlib
+* tests: always start session_repository
+* fix reindex command
+* * abilian/web/frontend.py: add breadcrumb items
+* widgets: fix table markup
+* * abilian/web/frontend.py: register entity default view
+* add 2 config variables: LOGO_URL, FAVICO_URL
+* * abilian/web/templates/abilian_base.html: enclose main/content in a col-12
+* * abilian/web/templates/widgets/render_for_edit.html: use m_field macro
+* fix m_field macro for checkboxes
+* * abilian/web/templates/widgets/tabular_fieldlist_widget.html: remove useless span1 class
+* * abilian/web/templates/widgets/render_ajax_table.html: use Abilian.fn.onAppInit
+* don't init typeahead if no datasets
+* move base.html template to abilian_base.html, so that application can just extend it from base.html
+* js: missing semicolons
+* frontend: remove references to old breadcrumb system
+* fix logging info
+* config command: fix description
+* frontend: removed reference to old breadcrumb system
+* assets: setup load path for static_folder
+* register csrf blueprint
+* csrf time_limit: handle case where form value is already an int
+* csrf: added method to get csrf timeout + simple json view to get current token
+* fix missing import
+* init_extensions and register_plugins are now run with an app_context
+* abilian.core.models: add symbols from .base
+* fix deps
+* removed coaster: hard dep on flask-script==0.5.3, and it's decorators are not used
+* fix download url for progressbar
+* fix docstring format
+* blob: now session_repository requires a session or model instance
+* session_repository: run event handlers only if service is registered and running
+* fix respository tests trying to call an already instanciated session
+* Service: added ServiceNotRegistered exception, if_running decorator
+* app: fix exception handling when session is not usable
+* session_repository: there maybe more than one session object living in the application
+* deps: added cssselect
+* blob use session repository
+* added session_repository
+* Added 'Blob' model: used to reference binary content stored using repository service
+* added repository service: store binary content by uuid key
+* use pathlib, added data_dir in instance folder
+* fix bad indent
+* fix files for emacs/pylint setup
+* base Model should now be imported from abilian.core.models, not db.Model
+* Added sqlalchemy type: UUID
+* style fix (constant name, bad indent)
+* force Sqlalchemy-Utils<0.24
+* add project config for emacs: indent offset in python and config file to use with flycheck
+* add config for pylint and jshint
+* bootstrap: new version provides config files for csslint and csscomb
+* style: fix handle offset for flaskdebug toolbar to appear just under navbar, not over it
+* Update Bootstrap to 3.1.1
+* update CHANGES: css style switched to lesscss
+* doc: add intersphinx ref for `webassets`
+* fix doc markup
+* update bootstrap-switch to 3.0.0
+* app.register_asset: `assets` parameter is now *args
+* assets: SubBundle class is not needed anymore; all LESS assets are simple Bundle instance (again)
+* assets: less filter is now used on output; fix 'less_import' filter to pass-through when not used on real file
+* add install intructions for lesscss dependency
+* assets: removed all JS_DEBUG entries. When production mode is on closure compiler will minify all
+* LessImportFilter: use LESS_RUN_IN_DEBUG option
+* assets: preserver order of css import; fix wrong sources references in css source map file
+* fix CSS causing trouble when parsed as a less file: removed rules for IE5.5 support in datatable theme
+* style: use less syntax, added variables.less to overrides definitions from included packages
+* assets: remove all _CSS definitions. All css files renamed with .less extension
+* date filter: format string is now a parameter
+* add config value: BABEL_ACCEPT_LANGUAGES, to limit supported languages and change order during negociation
+* less filter: enable source map when assets are in debug mode
+* Back to development: 0.1.5
+
+0.1.4
+-----
+
+* Preparing release 0.1.4
+* use lesscss for building CSS, add less files from components we use
+* Update CHANGES
+* Start work on JsonSelect2MultipleField
+* fix doc for new module layout
+* refactor abilian.core.entities, abilian.core.subjects
+* Try to fix travis build
+* Fix setup wizard bug
+* Fix dependencies
+* setupwizard: in generated config disable debugtoolbar when debug is false
+* config command: set logging level to INFO instead of DEBUG for some loggers
+* setupwizard: no need for csrf
+* clean deps
+* updated deps
+* tox: run pip list to have it included in jenkins test results
+* fix Flask-WTF minimum version
+* install flask_wtf csrf extension - all post/put views are protected by default
+* Back to development: 0.1.4
+
+0.1.3
+-----
+
+* Preparing release 0.1.3
+* Update CHANGES
+* Upgrade dep on Flask-Script
+* Upgrade broken dependency
+* fix deps version in deps-frozen.txt
+* fix deps version in deps-frozen.txt
+* setupwizard: redis: don't use 'client_list()' as test command, but 'info()'
+* templates: check if abilian.web.search is in app_plugins before installing code that need this blueprint
+* set login_view on LoginManager
+* testcase: added client_login, client_logout and fixed login() when used in a with statement
+* Added login/logout via JSON api
+* added commmand: createuser
+* ensure '_model_changes' is set on session to please Flask-Sqlalchemy <= 1.0
+* fix deps & deprecated imports
+* init preferences service in base app
+* added user preferences panel (change password, change photo)
+* boolean widget: fix when on_off_mode is not used
+* added password input widget, supports setting default autocomplete value to off (useful for 'new password' fields)
+* can register panel without app context but by passing app in kwargs
+* added web.coreviews module, with users blueprint (mainly view for user's photo). Registered in base app, TODO: make modular/replaceable
+* preferences: mark blueprints registered
+* grid layout: fix vertical alignment of content borders with breadcrumbs borders
+* search results: set autofocus on search input
+* Back to development: 0.1.3
+
+0.1.2
+-----
+
+* Preparing release 0.1.2
+* Remove dependency on feedparser
+* added bootstrap-switch, used in booleanwidget
+* fix error when no action is found in form submitted data
+* widget file: style
+* split tag for abilian_init.js and defferedJS/inline code
+* JS: set csrf fieldname / token in Abilian namespace
+* inject csrf module in jinja env
+* use jquery.fileapi 0.3.2; added in assets
+* remove js error (logged in console) related to jquery getelementbyid when clicking anywhere on page
+* FileInput: new widget with a bit of FileAPI
+* make $.imageInput() return image input object
+* Cosmit + README
+* Try to fix build on Travis
+* fix version spec
+* fix deps problems: force pip < 1.5 (too many problems with 3rd-party libs), don't include distribute in frozen-deps
+* _name property: first check for title, then name
+* pep8
+* Make more robust
+* preferences: added breadcrumb
+* use deferJS on inline JS
+* deferJS: allow to let <script> tag within deferJS (for editor syntax highlight for example), and remove it when collecting fragment
+* added jinja extension to collect JS snippets during page generation and put them at end of document ("deferred")
+* added basic javascript to prevent double submission
+* don't use document.write when we can be more direct
+* use flask-migrate instead of (never released) flask-alembic
+* changed indexes creation: pass index name as parameter; use ramstorage during tests
+* indexing service: fixed "clear()"
+* Fix CHANGES
+* Back to development: 0.1.2
+
+0.1.1
+-----
+
+* Preparing release 0.1.1
+* changelog update
+* livesearch: fix typeahead showing duplicate entries for datasets
+* live search: return minimal data instead of full whoosh record
+* search: facet_by_type: return Hit instances
+* Indexable: fix return object_type
+* added live search
+* added Abilian.api, to store stuff like API urls, valid parameters, etc
+* search with facet_by_type: returns dict of type -> hits
+* consider Indexable Model subclasses for indexation; made Principal indexable
+* default view: can register default view for any model, not just Entity
+* added friendly_fqcn: use it for getting a display name from an object_type (fqcn)
+* really inject our url_for in jinja env
+* url_for: if object use default view first; raise BuildError if not url found for object (consistent with flask.url_for)
+* added css to fix typeahead with bootstrap 3
+* added dynamix_fields '*_at' for dates, '*_prefix' for edge ngram fields; added 'name_prefix' in destinations for entities' name
+* fix doc format
+* add_to_recent_items: use default_view registry instead of deprecated '_url' attribute
+* url_for_hit: pass hit object to default_view registry
+* default_view can now handle whoosh Hit instead of object instance; added helper function parameter to complete kwargs for url_for
+* Add some links
+* get_document: don't index None
+* indexing: store creator_name, owner_name
+* export Role
+* indexing: convert user instances to indexable values
+* indexing debug toolbar: fixes
+* indexing: log fields added dynamically
+* indexing: use get_document() defined on service object: it ensures all objects have a value for allowed_roles_and_users
+* load g.user/is_manager during load_user, not during login
+* search results: highlight matched terms in description
+* added api doc entries from some services
+* filter on allowed_roles_and_users unless user has global manager role
+* testcase: added login,logout,login_system methods
+* set g.user/is_manager/... from login signal, not in before_request. Cleanup on logout
+* added Role class + Anonymous, Authenticated, Admin markers; added indexable_role to convert a Role to indexed text
+* moved 'noproxy' in abilian.core.util
+* require Sphinx 1.2+ to support :annotation: on autodata directives
+* fix doc format
+* Doc fixes
+* added shell command for reindexing
+* correct use of whoosh.query.Or
+* don't look in __indexation_args__ for searchable, use a separate attribute
+* added basic search view, with object type faceting
+* indexing: worked on search(). Removed 'get_models' method
+* default view registry: url function should also accept object type and id, for cases where no instance has been retrieved from db
+* trigger index task only if there is items to index
+* index update: don't add twice the same document during a single transaction
+* don't add 'None' value in indexed terms
+* index_update: fix key used to deleted old document
+* fix search_for_class
+* updated method index_objects: was using code for old implementation
+* removed Searcher class: not used anymore
+* doc format; set __all__
+* removed unused import
+* fix broken login + added test; default prefix url is now /user/(login|logout|...)
+* commands: changepassword renamed to passwd, prompt if password not set on command line
+* update to sqlalchemy 0.8.4
+* Back to development: 0.1.1
+
+0.1
+---
+
+* abilian-core instead of Abilian-Core
+* Preparing release 0.1
+* Preparing release 0.1
+* Preparing release 0.1
+* Fix sphinx-rtd-theme version
+* Work on doc
+* indexing service: ensure models are indexed only when outer commit has been issued
+* testing: set CELERY_ALWAYS_EAGER by default
+* subclass sqlalchemy extension to support savepoints when using sqlite
+* user created by init_user is not used?!
+* subclass Flask-Sqlalchemy when <= 1.0, to add support for "bind" parameter on session maker. Versions > 1.0 supports it
+* create_db: don't create app_context: caller should set it
+* fix duplicate index name
+* added a debug panel for looking at indexed values of 'current' object
+* added 'object_key' as unique id index (id is not enough), added 'text' in destinations of 'name' field
+* added fields for allowed_roles_and_users and parent_ids (path)
+* security: models: object is now a reference to Entity; added Anonymous object so that anonymous can have roles
+* fix session usage in async task
+* get_role_assignements: use object's session, not app session
+* don't store text by default, it's supposed to be the "full text" index
+* move service/indexing to its own subdir/module, introduced 'adapters' to convert an object to a document
+* info dict: support 'or' operator
+* make test: use short traceback format
+* Another fix for the privious commit
+* Try to fix failing build on Postgres
+* PEP8 clean up
+* Import some useful decorators from Coaster
+* Introduce smarter url_for function
+* Cleanup / format code
+* doc format + event registration with decorator
+* Better loggin message
+* Fix database URI generation
+* py.test wants this version of py
+* Generate real Sqlite DB
+* Add autosummary for later
+* updated pytest to 2.4.2
+* FileAPI: remove lowercased version. Poor filesystems can't see the difference
+* set min version for pytest
+* added registry for default entity view. Given an entity instance, it returns an url for its canonical/default view
+* jinja env: install default bytecode_cache (jinja's builtin filesystem based)
+* added js FileAPI + basic ImageInput widget
+* added fileinput widget, set as default on abilian.web.forms.fields.FileField
+* added TextArea widget: support "resizeable" parameter to control CSS resize property
+* Fix bug introduced in previous commit
+* Pass port as script parameter
+* added abilian.web.view: base view class, object view: view, edit, create, delete
+* fix documentation format
+* form macros: reviewed m_field, added m_form; ability to generate standard or "horizontal" forms
+* docs/exts is now an importable module
+* removed old abilian.web.views module, will be replace by view module with class based view utilities
+* added html comments for marking begin/end of boxes: makes easier understanding of generated page
+* enhanced doc presentation for abilian.i18n
+* code formatting
+* moved babel extension in new abilian.i18n module
+* doc build: added intersphinx support + custom extension to support intersphinx with flask extensions
+* autodoc config
+* removed old breadcrumb stuff
+* Update python-magic due to failing tests on my Mac
+* removed title (probably here because of a copy'n'paste op)
+* added base template for preferences (from SBE)
+* datefield and datetime field show up using locale's short date format and are parse on server side according to user locale
+* finalize step, write config to disk, and final page
+* even if app has custom and valid config, db may not be initialized yet
+* added basic setupwizard, unfinished
+* let app start without any configuration file nor instance folder
+* docstring fix
+* base template: proper placement of "row" blocks
+* missing deps: redis
+* box macro: use bootstrap 3 panel structure
+* fix pagination markup
+* added missing deps; fixed imports and CSRF_ENABLED flag for new versions of flask-wtf
+* "phonenumbers" and "closure" have only pre-release, specified min version to have "pip install -e ." complete without complaining
+* fix doc formatting
+* document abilian.service.base
+* Service.running: returns False if working outside application context (instead of letting RuntimeError propagate)
+* updated bootstrap to v3.0.2
+* Use flask's Latex theme
+* Make deps-devel include dev-frozen
+* Use released version of Flask-Security
+* admin: setup breadcrumbs
+* first breadcrumb item: use "home" icon instead of text
+* init breadcrumbs variable on request started event
+* breadcrumb item: added possibility to set an icon; added render method
+* Add Makefile for doc
+* fix: entity.updated_at was not updated when none of changed attributes belonged to Entity class
+* added manager command set "config"
+* enable CSRF by default
+* install sentry if raven is installed and SENTRY_DSN is defined
+* require whoosh >= 2.5
+* fix rollback during exception handling
+* indexation: convert db.Model instances to unicode
+* added init_debug_toolbar
+* reworked assets bundles: bundles can be registered during app initiliazation, bundles is finalized after all components have been loaded
+* added 'add_static_url' method for easily adding static rules under /static
+* fix deps versions
+* test config added explicit babel config, but set to flask-babel defaults
+* age / date_age filters: use babel for date and timedelta formatting
+* definitely removed all system_tz imports
+* use LOCALTZ from babel instead of our weaker implementation
+* added missing tests for admin
+* added css for admin panels (from abilian-sbe)
+* admin: added panel "login sessions"
+* ask for Babel >= 1.3 and Flask-Babel >= 0.9
+* fix detection of NullTranslations instances
+* added audit panel
+* entities: added entity_class property, don't set up mapper with polymorphic '*' by default (seems imposible to alterate when using relationships to Entity)
+* fixed listen() on entities
+* user and groups are not entities anymore. On OwnedMixin Creator and Owner are now join loaded
+* removed unused import
+* createadmin: added name and first_name parameters
+* Creator and owner can't be anonymous user
+* app can load from config from db with the help of settings service; admin: added settings panel
+* added 'admin' interface (refactored from abilian-sbe)
+* install security service in core app
+* security service: ensure User 0 has root privileges
+* auth: fix testing+no_login case: current_user wasn't set to SYSTEM but let as anonymous
+* fix ModalActionMixin to use glyphicon
+* settings: added 'iteritems' and 'as_dict()' method
+* tests needs flush() for jenkins? it works here... :-/
+* added settings service with namespace support
+* though test are not failing here but only in jenkins, add flush() to ensure delete is emitted
+* new location for m_table. By defautl it adds a responsive div, can be skipped by passing responsive=False
+* added note to mark deprecated state of macros.html
+* activity: object/target id is set by default to _fk_(object|target)_id by sqlalchemy. Removed after_flush listener: with Trrue relations all ids are now set by sqlalchemy
+* activities: use foreign key for entity relation
+* comments: use foreign key for entity relation
+* audit: use foreign key for entity relation
+* Entity is not abstract anymore. Subclasses are now using joined table inheritance with Entity (done transparently with specific metaclass)
+* removed commented code not required anymore
+* fix default home page
+* explicit configure mappers after all models have been imported, for explicit failure message in case of mapper configuration problem
+* use data-toggle for initializing select2
+* JS: init timepicker + datetimepicker
+* timepicker: update layout for bootstrap 3
+* dateinput: use format from current locale. Added jinja filter to convert locale datetime format to datepicker format
+* update bootstrap-datepicker with new version from abilian's 3.x branch
+* added css for activity stream
+* Various doc fixes
+* Remove unneeded dependencies
+* Fix doc build issue
+* Various doc improvement and fixes
+* Make more robust
+* moved more macros out of macros.html
+* JS: added window.onbeforeprint handler
+* added class resizeable-vertical for textareas
+* added timepicker from https://github.com/abilian/bootstrap-timepicker.git branch 3.x @206e601817db510d34a9ddf6cbac5ac54b9366f3
+* removed load_script from document body, put it in Abilian.fn.loadScript
+* JS: added Abilian.fn namespace for functions, + Abilian.fn.onAppInit
+* JS lib: added boostrap-datepicker
+* fix malformed docstring
+* run Abilian.init on document ready; load select2 locale file for user locale
+* JS: set Abilian.locale from request/babel locale
+* added select2.js + select2 css for bootstrap3
+* added datatables 1.9.4
+* move inline JS init code in its own template. Added bootbox init to set default locale from Abilian.locale
+* JS Abilian namespace: added variable 'locale'
+* Remove unneeded method
+* Code formatting
+* Fix broken createadmin command
+* Add a get_service convenience method
+* added classe useful for textareas: not-resizeable
+* added preventEnterKey
+* put send_file_from_directory in abilian.web.util, to be usable by other packages
+* added bootbox js 4.1.0
+* Add / cleanup commands
+* Add dropdb command
+* Add dump_route command
+* removed "content" block in base.html: used in subtemplates to focus on core content provided by plugin. At best it was a bad name
+* fix bad call to url_for
+* added css for m_box* macros
+* deprecate macros.html in favor of macros/xxx.html
+* import macros from abilian-sbe. macros will be refactored
+* activityentry: fix wrong attributes used for 'target' lookup (cherry picked from commit 7bd57b83d0c16fafbc53dc26794b5360b18a4410)
+* avoid too many blank lines in generated html
+* added breadcrumb
+* pref service: register blueprint on components_registered signal
+* added signal: components_registered
+* fix preferences to make a true service with local app state
+* auth service: added user_menu for authenticated user navgroup; add preferences navitem from pref service
+* nav group: honor navitem.divider
+* fix wrong variable name
+* startup check: verify existence and permission of instance folder
+* Silence tox warnings
+* Revert broken cleanup
+* use action system to build nav bar
+* action: allow callable for title, description, icon, endpoint
+* action icon: use glyphicon notation from bootstrap 3
+* actions registry init: check if registry has already been initialized on app
+* Cleanup
+* hopefully last remove from pip freeze generated list
+* removed local, irrelevant dep
+* removed deps already present in dep-dev
+* update deps-frozen to help travis-ci pass tests
+* fix typo in variable name
+* unused imports
+* minor doc enhancements
+* document abilian.testing
+* fix docstring
+* install default error handler for 403, 404, 500
+* fix testcase: use abilian.testing
+* added auth service, login/logout/reset password pages
+* fix body padding-top (fixed nav space)
+* added flash messages and accessibility link to content
+* basic style for navbar, fixes for typeahead width
+* add form-control class on search input
+* JS: added Abilian namespace + init function + nav search init
+* typehead integration: added hogan.js
+* added twitter typeahead.js v0.9.3
+* Fix failing test
+* added basic 403,404,500 pages, with view helper in debug mode
+* fix css filters, fix assets path for core assets
+* base.html: added jinja blocks, added navbar
+* set apple multitouch icon, added full abilian logo
+* fix assets filter: cssimporter
+* register abilian.css
+* added register_jinja_loaders
+* minor doc fix
+* default (and ugly) index page
+* assets: added manifest file as it is required by management commands (build, clean...)
+* assets css importer: process included file through cssrewriter
+* added font-awesome 3.2.1
+* ensure relative import
+* added assets management + base assets, base template
+* use flask >0.10, flask-script > 0.6
+* added base script manager, for providing abilian commands from core and extensions modules
+* moved templates in web/templates
+* fix doc for abilian.application renamed
+* tox: create junit report file
+* renamed abilian.application to abilian.app
+* activity instance: cache object/target lookup
+* Make the date filter work with dates, not only datetimes
+* entity edit: send flush before sending activity, like it's done in entity_new
+* fix test DB when using postgres: now each test is using a unique pg schema
+* fix test case
+* fix definition for limited length text columns (on postgres Text() is only for unlimited length)
+* test case: can configure sqlalchemy from env (useful to test compat on many db)
+* fix deps-frozen not in sync with deps.txt
+* testing: turns on SAWarning as error by default
+* audit: can audit changes on entity-related subchildren models
+* security service: don't perform flush after security modifications, but only if needed at read time
+* fixed: too many flushes occuring when many activities and some flush/subtransactions
+* updated sqlalchemy to 0.8, wtform 1.0.4 and wtforms-alchemy to 0.7.15
+* audit: changes on an entity related model (needed for complex and multiple values) can be attached on entity audit
+* audit: if auditing should fail don't let errors propagates
+* audit: added method to determine if an item is auditable (factorization)
+* Fix error introduced by my previous commit
+* More robust XLS export code
+* Sort values in multi-select widgets
+* register_plugins: custom app can define APP_PLUGINS attribute for listing required plugins. Optional plugins can still be listed in config
+* 'abilian' module is namespace compatible
+* start_services must be run within an application context
+* True services (start/stop, need app state) are now based on abilian.services.base.Service
+* added base class for services. Manages running/stopped, with application state object
+* load logging file from instance_path
+* indexing: initiliaze class indexes in init_app (required in tests; todo: maintain class indexes in app extensions, not in service itself)
+* fix clear tmp instance dir at class teardown
+* unit test security: start only security service
+* sanitize service handling: added 'services' mapping on ServiceManager, (like 'extensions' for Flask). Services are extensions (they should have init_app()) and should also register themselves on 'services'
+* added get_setup_config(), for testcases who wants to tweak app config before app is created
+* setup and clean app instance work directory in setUpClass/teardownClass
+* don't try to load instance config file when testing
+* Application: 1st parameter is app name, as in Flask base class. config should be passed by name
+* doc Application.CONFIG_ENVVAR
+* fix doc warning about bad reference (warnings treated as errors in jenkins)
+* refactor Application class. Ultimately it could be used as base class in applications using abilian framework
+* Various cleanups and backborts
+* Add a get_extension() convenience function
+* celery stuff: added custom loader + class to create app in workers and properly push/pop app context around task execution
+* use instance relative path instead of relative to current working directory tests: fix whoosh cleanup, conversion: tests use temp work directories
+* Revert "set celery default task aware of app context; periodic_task decorator should be used instead of celery's one."
+* set celery default task aware of app context; periodic_task decorator should be used instead of celery's one
+* User: by default defer photo loading (significant performance hit when photo is a large file)
+* added filter_cols: list columns on a model except filtered ones
+* groups: load with user by default
+* abilian.core user: removed fields: job_title, department, company, location, expertise, interests
+* missing import, more parameters in __init__
+* don't pin SQLAlchemy version, just require <0.8
+* Fix docs (again)
+* Fix build issue on documentation
+* Refactor documentation
+* Back to the french date format
+* added logging setup, custom jinja loaders, custom exception handlers
+* dateinput: use format from kwargs, fallback on field.format; datetimeinput: force format for dateinput
+* datetimeinput: don't use None but empty string for empty value
+* datetimeinput: fix when no date set on field
+* added timeinput widget + datetime field/widget (widget is a composite date + time inputs)
+* widgets don't pass empty string if no custom template is defined. Some template loaders fail at this
+* More widgets and forms imported from specific project
+* Forgot to add abilian/web/forms/
+* Split abilian.web into smaller packages
+* Clean up and simplify
+* Work around API change in Flask-Login
+* _get_translations_multi_paths: ensure we are not trying to merge in a NullTranslations object
+* added Form class with babel support
+* added FileField supporting 'multiple' keyword, for use with hmtl5 multiple file selection
+* API change: for_category now returns [] if there is not such category
+* util pagination: added "prev" "next" properties
+* Use existing magic methods
+* Make activity entries more robust just in case
+* Make presenters immutable
+* upgrade celery from 3.0.13 to 3.0.21
+* timer: use logger dependant of function module logger
+* anoter mimetype for excel
+* entity_edit_post: no sentry on integrityerror: the case is handled. Replaced by logging.error to have logs
+* ensure update queue is emptied before a new request
+* .datatable-export links: preserve existing parameters of original link
+* define python_type for JSONUniqueListType
+* Add explicit registration of plugins
+* Half refactoring subject -> target in activities
+* Factor usage of endpoints / url_for in actions
+* Add convenience method
+* Add convenience methods
+* excel export: use only 1 instance of XFStyle for date formating, fixed years format
+* don't fix strict version on flask-security
+* Add convenience method on test case
+* update and fix flask-security / flask-login versions
+* API change: 'subject' renamed to 'target'
+* Refactor activities
+* Relax constraints on entity initializer
+* Add debugging helper
+* update coverage required version
+* user preferences: use JSON type for 'value' column, no need for _value column+properties. Added 'preferences' backref to User model
+* remove print statement
+* Another workaround
+* Work around a testing bug
+* Add support for access control in user preference panels
+* form support having an attribute '_widgets_options': mapping field names -> dict of useful stuff for some custom widget. Fields expect optional 'widget_options' in kwargs at render time
+* Work on the user preference service
+* fix export_xls when query returns empty list
+* Small fixes
+* Add a test
+* Work around stupid issue w/ twill & subprocess
+* Fix typo that broke the build
+* Use a converage.rc file
+* Add tests for SA extensions
+* Move tests and clean up a bit more
+* Move tests around
+* Fix previous commit
+* Refactor activity service
+* We'll deal with the issue later..
+* Add missing tests to tox
+* Fix (?) travis build
+* Try to fix travis build
+* Try to clean up dependencies a bit
+* Add coveralls badge
+* Playing w/ coveralls
+* Playing w/ Travis
+* Add badges
+* Add TESTING-True in test config
+* Revert "Unbreak tox tests."
+* Unbreak tox tests
+* Change also fozen deps
+* Forgot to commit deps
+* Add a simple plugin loader
+* Refactor other services tests
+* Add preference service
+* Base class for simple integration tests
+* tox: actually docs env needs package deps; defaults build py27,docs
+* don't install deps in test commands, use deps parameter; use download cache; build docs in a separate environment
+* fix some SyntaxWarning
+* Unit tests first
+* Add security service
+* Add comment service
+* JSONUniqueListType: fix string bindparam in 'like' clause transformed in a uniquified/list/json-ed value
+* ListWidget: ensure to use label instead of raw value when field has choices selection
+* made Mutable elements support pickling see http://docs.sqlalchemy.org/en/rel_0_8/orm/extensions/mutable.html#supporting-pickling
+* fix missing param in call of supermethod
+* display_value: handle list of items
+* db.Model: install method 'display_value' to retrieve human-readable value of a field; useful for fields having a 'choices' dict in their info dict
+* JSONList: added parameter 'unique_sorted': stored value is a list with sorted uniquified terms
+* use url_for instead of manually constructed url
+* indexing: default analyzer includes charsetfilter to remove accents
+* fix rst markup
+* added CHANGES to doc, abilian.core.sqlalchemy module
+* added JSON types for sqlalchemy: JSON column, and mutable dict,list stored as JSON (use JSONDict(), JSONList() in column declaration)
+* added actions registry
+* Cleanup code
+* Cosmetic refactoring
+* singleview: show delete button only if allow_delete is in view.options
+* fix tests
+* Module: added view_form_class attribute
+* entries_for: order entries by date desc
+* Drafting services API
+* Another method from customer project
+* Move method from customer project
+* Module: new form may show 'save and new' button, for repeated entities creation
+* BaseTableView render_line: render boolean with unicode check mark
+* BaseTableView render_line: allow '.' in attribute to fetch
+* BaseTableView: set default sorting at datatable init
+* don't test str type, but isinstance(basestring)
+* defined RelatedView and DefaultRelatedView, for module. Allows to pass a subclass of RelatedView for specific related items
+* Minor and cosmetic fixes
+* i18n: entity edit actions
+* fix jquery selector for click event
+* rollback before calling sentry.captureException (since it may need a clean session to collect some data
+* table views: column 'width' was ignored
+* date filters: display time using system timezone instead of UTC
+* fix deps / versions required
+* git extension required for proper sdist (used by tox)
+* update xlwt and xlrd versions
+* added utility to get deps from requirements file (code from openstack/ceilometer, see license in setup_util.py)
+* system_tz: added 'normalize' method to implement pytz.tzinfo interface (used by flask.ext.babel)
+* fix logging level used for a message: use debug() instead of error()
+* fix attributeerror on auditentry objects
+* converter: unoconv: added another mimetype signature for powerpoint docs
+* added 2 jinja filters: nl2br (pure newline to <br />, and paragraphs (insert <p> and do nl2br inside each paragrah
+* added system_tz: tzinfo for local system; local_dt: convert a datetime instance to a system_tz aware instance
+* BaseTableView: for search, pagination: more precise control of elements presence
+* BaseTableView: for search, pagination: more precise control of elements presence
+* member follow, group membership: added unique constraint
+* listwidget: view mode render items with bootstrap "label" elements
+* set form multipart
+* Skip tests when needed executables are missing
+* PEP8
+* Add integration tests for CRM app
+* singleview: ensure only strings for view template, and ensure fallback on default template
+* disable csrf in tests
+* i18n: fixed ngettext extraction with _n as ngettext alias
+* singleview: added 'options' keyword. template name is put in options
+* More concise coverage report
+* Fix build failure by bumping dependency version
+* Renamed yaka -> abilian
+* textsearchcriterion: allow multiple search_format string, resulting in multiple clauses on same field
+* added floatwidget
+* update translations
+* patch wtforms.Field to set property 'is_hidden': since HiddenField does not set flags.hidden the test is complicated and error prone in application
+* render related view: pass main entity as 'related_to' kwargs. For example it allows to build urls related to main entity
+* RelatedTableView: render accepts kwargs (passed to template), can specify an alternate template in options
+* singleview: don't show line if field/widget renders empty string
+* removed unused import
+* use cStringIO
+* added moneywidget
+* modellistwidget: in view mode render template even if no value is present. This allows templates to show an 'add' button for example
+* fix widgets render_view if no data
+* added method 'render_entity_view', for easier customization by subclasses
+* field/widget render_view: allow kwargs
+* display label only if present, avoid generating blank lines
+* field macro: proper markup generation for labels (previously resulted in 2 imbricated label tags)
+* tabularfieldlistwidget: accept a template path as init parameter
+* widget view mode: if label comes from field, don't use form rendered version with 'label' tag, just text labels are now place in a namedtuple, to ease work in custom view templates
+* added data- for form prefix and field short_name, to help JS create dynamic names
+* use namedtuple for data in rows: allow templates to select by name instead of just iterating on a list
+* SingleView: render uses form fields to display and properly format values
+* Module listing: set ajaxtable view name, in order to have bstatesave activated
+* ajaxtable: added 'name' parameter for use as table id. If it is provided bstatesave is activated
+* adjust table id
+* Single view render: obtain labels from form, to be more consitent with edit view. ModelFields also gain nicer labels
+* ajaxmaintableview: allow columns to pass arg 'display_fmt': value formatting function
+* Module: fixed automatic query ordering for date types; restrict usage of lower() to string types
+* unoconv from config: make absolute path to avoid errors when running with different working directory
+* use xlwt from trunk on github: released version is too old has bugs biting us
+* setup babel
+* datatable: put javascript *after* table dom nodes: maybe some browsers trigger initialization code too early
+* markup: remove generated empty lines - better readability in browser source listing
+* added csrf module for convenient protection of 'simple' POST pages (with 'html only' forms, without rendered wtforms instances)
+* update flask-wtf to 0.8.2
+* forms: render csrf_token - should be empty if csrf is disabled in config
+* Bump Flask-Assets version to 0.8
+* tests: set sqlalchemy warnings be errors. Fixed simple strings on unicode columns
+* audit entry: added column "entity_name", to have be able to get this information even after entity has been deleted
+* audit service: added reverse mapping classname -> class, so that AuditEntry.entity can work with all audited entities
+* index update task: close session outside "with context"
+* SearchCriterion: search string format as parameter
+* Horizontal table: don't display variable that evaluates to False (like 'None')
+* fixed search when using more than 1 model type in relationship attr search, and also when using join loading on model relationship
+* audit: added 'audit_hide_content' flag in column info dict, to avoid exposing content in audit log
+* Fix issue with timezones
+* replaced print statements by logging statements
+* oohandler: use mkstemp for generating temporary output filename. 1) recommanded by python doc 2) it returns an absolute path which avoid any current working directory problem
+* entity: fix SAWarning: declare "owner"" and "creator"" relations only for direct subclasses. Otherwise when using subclasses of direct subclasses this the warning:
+* Explicit is better than implicit
+* fixed non-ascii passwords unsupported
+* added init_app for converter and conversion handlers. UnoconvHandler can use specific unoconv by setting config key "UNOCONV_LOCATION"
+* search: fix model lookup from search results issuing a lot of DB lookup: models where not loaded from session identity map
+* search: fix dummy request: error when query has join statements
+* XLS export: don't export fields of type ModelFieldList
+* comment abiword converter, use unoconv
+* fix converter: get_metadata worked only on images and pdf documents: attempt to convert others to pdf
+* Temp workaround for unicode error
+* user name: return 'Unknown' only if first_name and last_name are both empty
+* audit entry: in changes dict, ensure all string values are unicode, including dict keys
+* Better error reporting
+* converter: added method 'has_image'
+* fix: cache.get() does not have a default value
+* I18n
+* I18n
+* Item single view: if no label is found for 'name' attribute, try to translate 'name' to get a nice label
+* fix: return audit entry only for this entity
+* added 'get_image': return preview image but don't compute it if it doesn't exists (unlike to_image)
+* Another similar fix
+* Prevent some errors from happening
+* make sure we process after_commit events only from application session
+* async: use async writer, as there may be concurrent workers
+* all_entity_classes: ensure we iterate on classes (not always the case with sqlalchemy 0.8)
+* fix to sqlalchemy 0.7.9
+* make sure we index only models registered for indexation
+* index task:
+* index documents in an async task, one task per model type Indexation is done only after commit
+* don't init services in setUp, its already done in app creation
+* setup celery in app init
+* celery config for tests: no async, propagate exceptions
+* search: don't run a db query if whoosh result set is empty
+* ensure service set event listeners only once
+* added a celery instance as extension. must be configured by application
+* removed useless import
+* Safeguard in case something goes wrong
+* Filter only subclasses of Entity
+* Add a touch of Sentry logging
+* Fix several bugs found by PyCharm
+* all_entity_classes: no more interation through sys.modules, use registry created by declarative base (private attribute on Entity)
+* even if 'name' comes from dir(module), getattr may fail (happened on a probably generated module in 3rd-party lib, name was '__file__')
+* fix string not declared as unicode (conversion error as it is formatted with a unicode one)
+* js handler to have export button update its href with datatable current filtering arguments
+* list view and excel exports use same arguments for query filtering
+* i18n update
+* Clean up harder
+* update translations
+* update translations
+* don't order NULLs if engine is sqlite
+* items ordering: * properly order on columns refering to a related model * NULLs are placed first or last depending on sort direction
+* Fix HTML5 validation issues
+* initialize model before using criterions. In criterions model attributes lookup is performed only once; Added 'is_excluded' method to allow subclasses to filter which attributes should be used for filtering
+* Changed NameSearchCriterion for a more generic one: allow to search on an arbitrary number of attributes names, including on related models (level 1 only)
+* subclass flaskext.babel.Babel to provide multi-paths translations (useful for integrating translations catalog from other eggs)
+* updated translations
+* frontend/Module: added search criterions: allow to have specific search filters per module
+* fix logical bug in detection of list of models
+* assume no data when no labels
+* forgot to commit template: tabular_fieldlist_widget
+* missing deps
+* added modelfield & modelforms widgets, based on wtforms_alchemy
+* ModelWrapper: fix rendering of list of related models
+* updated i18n fr translations
+* setup i18n extraction
+* removed logbook
+* Make "large value" a bit larger
+* collect models in after_flush (they are garanteed to have an id), and index in after_flush_postexec
+* use mapper columns properties to get proper attribute name from a column
+* use frozenset() instead of set() for class default values
+* removed logbook, use flask app.logger
+* don't run tests in debug mode
+* More robust password check
+* Add a few CRUD listeners on entities
+* Repair activity stream that was broken by the Entity refactoring
+* get rid of id_gen. Let the DB do its job!
+* create audit entries in "after_flush" event: new objects have their DB id but are not yet removed from session.new
+* removed 'DummyUser': not used, and we have an actual System user (id=0)
+* Ensure filtering is case independent
+* ensure temp files are removed after conversion
+* unoconv: use a timeout (60s for now) and kill process if it lasts longer
+* Change default value for whoosh data
+* Add explicit "can_login" field
+* Allow bulk indexing e.g. at the end of an import
+* Index stuff on flush, not just on commit
+* added user methods to crypt password / authenticate a password (uses bcrypt)
+* Add xlrd to deps (not used directly yet, but will be soon)
+* Add xlwt to frozen deps
+* XLS export
+* Cleanup + start work on XLS export
+* User passwd may be NULL (in which case you're not allowed to login, of course)
+* Add base class for Users and Groups
+* Make some fields optionnally linkable
+* test with sqlite and postgres
+* integration tests: get SQLALCHEMY_DATABASE_URI from environ to allow testing against different DB
+* added 'create_db' method on Application. This ensures DB is initialized, and for now creates a 'system' user id 0
+* Formatters for list data
+* Convenience hack for presenting dates
+* Very basic validation framework for entities
+* String collation
+* Hidden feature: use arrow keys to move around the table
+* Add simplistic CSV export
+* Better error message with integrity error
+* Fix unicode issue
+* JSON endpoints for Select boxes
+* Work on JSON-backed select fields
+* Ok, it was a mistake to remove these aliases
+* Fix build
+* Cleanup / document (a bit)
+* Remove redundant names
+* Add a slot for JavaScript code
+* Work on table views
+* Forgot to add this file
+* Jsonify table views
+* Fix failing test
+* Cosmetic fixes
+* Fix (or hack around) transaction error when modifying documents
+* Fix bug
+* API search on search
+* Another try w/ abiword
+* Use unoconv instead of abiword for now
+* Another bugfix
+* Fix bug
+* Abiword-based converters
+* Add a couple of try/excepts
+* Fix typo on mime-type
+* Add a handler based on wvWare
+* Clean up services
+* Disable failing test runner
+* Use one-to-one relationship
+* Much better relational design
+* Cleanup
+* Work on UI
+* Add icon to external urls
+* Better confirm dialog for object deletion
+* Fix conversion on Mac OS (sortof)
+* Don't show null (0, 0.0) values
+* Add cleanup command in tox.ini
+* Fix tox.ini
+* Try to fix build on jenkis
+* Fixing build
+* Refactor activity service
+* Add coverage report
+* Introduce login manager from Flask-Login
+* Refactor tests
+* Cleanup and fix tests
+* Add logging
+* Make functional tests on search pass
+* Cleanup
+* Reenable indexing
+* Use frozen deps in CI
+* Refactor and fix audit service
+* Fix tests
+* Try to reenable audit & indexing
+* Update TODO
+* Better way to present URLs in views
+* Work on widgets
+* Fix issue on prod
+* Work on tests (WIP)
+* Work on views/widgets
+* Refactor single model view rendering
+* Cleanup tox.ini
+* Working on views
+* Refactoring tableviews in progress
+* Work on widgets
+* Add tests for widgets
+* Fix breadcrumbs error
+* Extract widgets from web app
+* Make controls optional on table views
+* Use _name instead of name
+* Fix name collision on url vs. url(). Cosmit
+* Work on documentation generation with Sphinx
+* Fix sphinx build error on Travis
+* Let travis and tox check docs too
+* Tests are failing when called this way
+* Add utility function
+* Add "templated" decorator
+* Labels on tables
+* Single views can be generated from form
+* Disable py.test for now
+* Slugify accepts string or unicode
+* Fix travis url
+* Add sluggify util
+* setup.py knows about descriptions
+* Tune travis config
+* Fix build broken by previous commit
+* Clean up deps management
+* Fix unicode issue
+* Extract from earlier prototype
