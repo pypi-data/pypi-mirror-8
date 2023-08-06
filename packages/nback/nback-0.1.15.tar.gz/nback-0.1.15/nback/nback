@@ -1,0 +1,17 @@
+#!/usr/bin/python
+
+import nback.lib.backup as backup
+
+
+class nback(backup.Backup):
+
+    def run(self):
+        self.dump_dbs()
+        self.tar_files()
+        self.upload_and_sync()
+        self.cleanup()
+        self.send_notifications()
+
+
+if __name__ == '__main__':
+    nback().run()
