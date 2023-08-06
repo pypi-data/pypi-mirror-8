@@ -1,0 +1,15 @@
+[ymci.ext]
+ymci-ext-oauth = ymci_ext_oauth
+
+[ymci.ext.db.Table]
+oauth_table = ymci_ext_oauth.db:OAuthProjectConfig
+
+[ymci.ext.form.Form]
+form = ymci_ext_oauth.form:OAuthConfigForm
+
+[ymci.ext.hooks.PrepareHook]
+oauth_hook = ymci_ext_oauth.hooks:OAuthHook
+
+[ymci.ext.routes.Route]
+result_chart = ymci_ext_oauth.routes:GoogleOAuth2LoginHandler
+
