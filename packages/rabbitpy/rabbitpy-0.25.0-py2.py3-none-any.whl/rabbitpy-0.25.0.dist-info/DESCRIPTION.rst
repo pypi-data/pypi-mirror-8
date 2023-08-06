@@ -1,0 +1,97 @@
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification,
+are permitted provided that the following conditions are met:
+
+ * Redistributions of source code must retain the above copyright notice, this
+   list of conditions and the following disclaimer.
+ * Redistributions in binary form must reproduce the above copyright notice,
+   this list of conditions and the following disclaimer in the documentation
+   and/or other materials provided with the distribution.
+ * Neither the name of the rabbitpy library nor the names of its
+   contributors may be used to endorse or promote products derived from this
+   software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+Description: rabbitpy - rabbitmq simplified
+        ==============================
+        
+        A pure python, thread-safe, minimalistic and Pythonic BSD Licensed
+        AMQP/RabbitMQ library that supports Python 2.6+ and Python 3.2+.
+        rabbitpy aims to provide a simple and easy to use API for interfacing with
+        RabbitMQ, minimizing the programming overhead often found in other libraries.
+        
+        |Version| |Downloads| |Status| |Coverage| |License|
+        
+        Installation
+        ------------
+        
+        rabbitpy may be installed via the Python package index with the tool of
+        your choice. I prefer pip:
+        
+        .. code:: bash
+        
+            pip install rabbitpy
+        
+        But there's always easy_install:
+        
+        .. code:: bash
+        
+            easy_install rabbitpy
+        
+        Documentation
+        -------------
+        
+        https://rabbitpy.readthedocs.org
+        
+        Requirements
+        ------------
+        
+        -  `pamqp <https://github.com/pika/pamqp>`_
+        
+        Version History
+        ---------------
+        Available at https://rabbitpy.readthedocs.org/en/latest/history.html
+        
+        .. |Version| image:: https://badge.fury.io/py/rabbitpy.svg?
+           :target: http://badge.fury.io/py/rabbitpy
+        
+        .. |Status| image:: https://travis-ci.org/gmr/rabbitpy.svg?branch=master
+           :target: https://travis-ci.org/gmr/rabbitpy
+        
+        .. |Coverage| image:: https://coveralls.io/repos/gmr/rabbitpy/badge.png
+           :target: https://coveralls.io/r/gmr/rabbitpy
+          
+        .. |Downloads| image:: https://pypip.in/d/rabbitpy/badge.svg?
+           :target: https://pypi.python.org/pypi/rabbitpy
+           
+        .. |License| image:: https://pypip.in/license/rabbitpy/badge.svg?
+           :target: https://rabbitpy.readthedocs.org
+        
+Platform: UNKNOWN
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 2
+Classifier: Programming Language :: Python :: 2.6
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.2
+Classifier: Programming Language :: Python :: 3.3
+Classifier: Programming Language :: Python :: 3.4
+Classifier: Programming Language :: Python :: Implementation :: CPython
+Classifier: Programming Language :: Python :: Implementation :: PyPy
+Classifier: Topic :: Communications
+Classifier: Topic :: Internet
+Classifier: Topic :: Software Development :: Libraries
