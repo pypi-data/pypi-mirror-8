@@ -1,0 +1,69 @@
+Metadata-Version: 2.0
+Name: redlock
+Version: 0.1.4
+Summary: Distributed locks with Redis
+Home-page: https://github.com/glasslion/redlock
+Author: Leonardo Zhou
+Author-email: glasslion@gmail.com
+License: MIT
+Keywords: redis lock distributed
+Platform: UNKNOWN
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 2
+Classifier: Programming Language :: Python :: 2.6
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.2
+Classifier: Programming Language :: Python :: 3.3
+Classifier: Programming Language :: Python :: 3.4
+Requires-Dist: redis
+
+|RedLock logo|
+
+RedLock - Distributed locks with Redis and Python
+-------------------------------------------------
+
+|Build Status|
+
+This library implements the RedLock algorithm introduced by
+`@antirez <http://antirez.com/>`__
+
+The detailed description of the RedLock algorithm can be found in the
+Redis documentation: `Distributed locks with
+Redis <http://redis.io/topics/distlock>`__.
+
+The ``redlock.RedLock`` class shares a similar API with the
+``threading.Lock`` class in the Python Standard Library.
+
+Simple Usage
+~~~~~~~~~~~~
+
+.. code:: python
+
+    from redlock import RedLock
+    lock =  RedLock("distributed_lock")
+    lock.acquire()
+    do_something()
+    lock.release()
+
+With Statement / Context Manager
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+As with ``threading.Lock``, ``redlock.RedLock`` objects are context
+managers thus support the `With
+Statement <https://docs.python.org/2/reference/datamodel.html#context-managers>`__.
+Thsi way is more pythonic and recommended.
+
+.. code:: python
+
+    from redlock import RedLock
+    with RedLock("distributed_lock"):
+        do_something()
+
+.. |RedLock logo| image:: https://github.com/glasslion/redlock/raw/master/docs/assets/redlock-small.png
+.. |Build Status| image:: https://travis-ci.org/glasslion/redlock.svg?branch=master
+   :target: https://travis-ci.org/glasslion/redlock
+
+
