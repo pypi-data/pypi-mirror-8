@@ -1,0 +1,22 @@
+<!-- field/annalist_edit_select.html -->
+<!-- name:    {{field.field_name}}   -->
+<!-- value:   {{field.field_value}}  -->
+<!-- options: {{field.options}}      -->
+<!-- see also: http://stackoverflow.com/questions/5805059/ -->
+<select name="{{repeat_prefix}}{{field.field_name}}">
+  {% for v in field.options %}
+    {% if v == field.field_value %}
+      {% if v == "" %}
+      <option value="" selected="selected">{{field.field_placeholder}}</option>
+      {% else %}
+      <option selected="selected">{{v}}</option>
+      {% endif %}
+    {% else %}
+      {% if v == "" %}
+      <option value="">{{field.field_placeholder}}</option>
+      {% else %}
+      <option>{{v}}</option>
+      {% endif %}
+    {% endif %}
+  {% endfor %}
+</select>
