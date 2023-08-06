@@ -1,0 +1,65 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:plone="http://namespaces.plone.org/plone"
+    xmlns:z3c="http://namespaces.zope.org/z3c"
+    i18n_domain="rg.infocard">
+
+    <!-- Set overrides folder for Just-a-Bunch-Of-Templates product -->
+    <include package="z3c.jbot" file="meta.zcml" />
+    <browser:jbot directory="overrides" layer="..interfaces.IRgInfocardLayer" />
+
+    <browser:page
+      for="..models.infocard.IInfocard"
+      name="view"
+      class=".infocard_view.View"
+      template="templates/infocard_view.pt"
+      permission="zope2.View"
+      />
+
+    <!-- Publish static files -->
+    <browser:resourceDirectory
+      name="rg.infocard"
+      directory="static"
+      />
+
+    <adapter
+      for="Products.CMFCore.interfaces.IFolderish
+           Products.CMFDefault.interfaces.ICMFDefaultSkin
+           plone.dexterity.interfaces.IDexterityFTI"
+      provides="zope.publisher.interfaces.browser.IBrowserPage"
+      factory=".infocardcontainer.AddView"
+      name="infocardcontainer"
+      />
+
+    <browser:page
+      for="..models.infocardcontainer.IInfocardcontainer"
+      name="edit"
+      class=".infocardcontainer.EditView"
+      permission="cmf.ModifyPortalContent"
+      />
+
+    <adapter
+      for="Products.CMFCore.interfaces.IFolderish
+           Products.CMFDefault.interfaces.ICMFDefaultSkin
+           plone.dexterity.interfaces.IDexterityFTI"
+      provides="zope.publisher.interfaces.browser.IBrowserPage"
+      factory=".infocard.AddView"
+      name="infocard"
+      />
+
+    <browser:page
+      for="..models.infocard.IInfocard"
+      name="edit"
+      class=".infocard.EditView"
+      permission="cmf.ModifyPortalContent"
+      />
+
+    <z3c:widgetTemplate
+      mode="input"
+      widget="..models.base.ICellRichTextWidget"
+      layer="z3c.form.interfaces.IFormLayer"
+      template="templates/cell_rich_text_widget_input.pt"
+    />
+
+</configure>

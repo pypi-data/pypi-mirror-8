@@ -1,0 +1,22 @@
+<dl class="portlet portletSearch">
+  <dt class="portletHeader" tal:condition="view/data/name">
+      <span class="portletTopLeft"></span>
+      <a class="tile" tal:attributes="href string:${here/portal_url}${view/data/target}" tal:content="view/data/name"></a>
+      <span class="portletTopRight"></span>
+  </dt>
+  <dd class="portletItem">
+    <form class="enableUnloadProtection" method="get" enctype="multipart/form-data"
+      tal:attributes="action python:view.target.absolute_url()">
+      <div data-fieldname="form.widgets.text" id="formfield-form-widgets-text">
+        <input class="searchField portlet-search-gadget" id="form-widgets-text" name="form.widgets.text" value="" type="text" size="15" />
+        <input i18n:domain="plone" i18n:attributes="value" id="form-buttons-label_search" name="form.buttons.label_search" class="submit-widget button-field" value="label_search" type="submit" />
+      </div>
+    </form>
+    <div class="visualClear"></div>
+    <dd class="portletFooter">
+        <span class="portletBottomLeft"></span>
+        <span class="portletBottomRight"></span>
+    </dd>
+  </dd>
+
+</dl>
