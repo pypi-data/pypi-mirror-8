@@ -1,0 +1,55 @@
+CHANGES
+=======
+
+0.3 (2014-10-30)
+----------------
+
+- Now runs under Python 3, PyPy, PyPy3, Jython.
+
+- All output is now through logging, which enables you to select verbosity.
+
+- Added --version, --verbose and --quiet options.
+
+- Now use subprocess32 under Python 2.
+
+- Will now run tests in parallell with multiprocessing. A 'max-processes'
+  option in the [spiny] section will allow you to cap the processes if
+  you don't want to max your computer. Otherwise it will use as many processes
+  as multiprocessing will report cpu's.
+
+
+0.2 (2014-10-27)
+----------------
+
+- Now prints a summary in the end.
+
+- Regard more virtualenv tests as failures.
+
+- Return 1 if not all tests succeeded.
+
+- Fall back to setup.cfg is there is no spiny config file.
+
+- Renamed spiny.conf to spiny.cfg for consistency.
+
+- Made the configuration file optional.
+
+- Spiny will now grep setup.py for Python version classifiers if no
+  environment configuration is found.
+
+- If both Python X and Python X.Y is given as environments, it will
+  skip the tests for Python X, seeing as it is fulfilled by Python X.Y.
+
+- The version specified in the [pythons] section now have preference.
+
+- Setting a config option from the command line now works even if the section
+  doesn't exist.
+
+- Spiny will now attempt to extract the test requirements and install them
+  into the virtualenv before running the tests, to avoid polluting the
+  project directory with .egg directories.
+
+
+0.1.1 (2014-10-18)
+------------------
+
+- Initial release
