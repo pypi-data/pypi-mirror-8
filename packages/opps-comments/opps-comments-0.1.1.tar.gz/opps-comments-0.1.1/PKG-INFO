@@ -1,0 +1,69 @@
+Metadata-Version: 1.1
+Name: opps-comments
+Version: 0.1.1
+Summary: comments App for Opps CMS
+Home-page: http://oppsproject.org
+Author: Bruno Cezar Rocha
+Author-email: rochacbruno@gmail.com
+License: YACOWS LICENSE
+Download-URL: https://github.com/opps/opps-comments/tarball/master
+Description: OPPS-COMMENTS
+        =============
+        
+        Install
+        -------
+        
+        .. code-block:: bash
+        
+            pip install -e git+https://github.com/opps/opps-comments.git#egg=opps-comments
+        
+        
+        
+        Configuration
+        -------------
+        
+        Include `opps.comments` on your django settings:
+        
+        .. code-block:: python
+        
+            INSTALLED_APPS += (
+                'opps.comments',
+            )
+        
+        
+        Add Opps Comments credentials on your django settings:
+        
+        .. code-block:: python
+        
+            OPPS_COMMENTS = {
+                "disqus": {
+                    "shortname": "opps",
+                },
+                "facebook": {
+                    "APP_ID": "123456"
+                },
+                "google": {}
+            }
+        
+        
+        
+        Used
+        ----
+        
+        .. code-block:: html
+        
+            {% load comments_tags %}
+            {% load_comments %}
+        
+Keywords: comments opps cms django apps magazines websites
+Platform: UNKNOWN
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Framework :: Opps
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Operating System :: OS Independent
+Classifier: Topic :: Internet :: WWW/HTTP :: Dynamic Content
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
