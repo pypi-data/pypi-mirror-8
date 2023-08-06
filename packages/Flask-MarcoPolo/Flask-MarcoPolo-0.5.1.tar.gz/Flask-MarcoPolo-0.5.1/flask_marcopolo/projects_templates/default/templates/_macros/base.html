@@ -1,0 +1,114 @@
+"""
+Flask-MarcoPolo Base Macros
+"""
+
+#---- webassets_header() -------------------------------------------------------
+# Define CSS, JS to be included in the header
+{% macro webassets_header(bootswatch_theme="superhero") %}
+
+    {%- assets
+        "vendor/font-awesome/css/font-awesome.min.css",
+        "vendor/bootstrap/css/bootstrap.min.css",
+        "vendor/bootswatch/" + bootswatch_theme + ".css",
+        "css/style.css"
+    %}
+        <link href="{{ ASSET_URL }}" type="text/css" rel="stylesheet">
+    {%- endassets %}
+
+
+    {%- assets
+        "vendor/jquery/jquery.min.js",
+        "vendor/bootstrap/js/bootstrap.min.js"
+    %}
+        <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+    {%- endassets %}
+{% endmacro %}
+
+
+#---- webassets_footer() -------------------------------------------------------
+# Define all javascript to be included in the footer of the page
+{% macro webassets_footer() %}
+    {%- assets
+            "js/app.js"
+    %}
+        <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+    {%- endassets %}
+
+{% endmacro %}
+
+
+#---- flashed_messages() -------------------------------------------------------
+# Render the flashed messages set
+{% macro flashed_messages() %}
+    {% for category, message in __flashed_messages__ %}
+        <div class="alert alert-{{category|replace('error', 'danger')}}">
+            {{message}}
+        </div>
+    {%endfor%}
+{% endmacro %}
+
+#---- create_nav_menu ---------------------------------------------------------
+# Creates a nav menu
+# @params items: List of tuples (title, href, id) of each element
+# @params key: string, a key name  to retrieve data set by set_page_info(), which uniquely identifies the page
+# @params class: A string of class to apply to the ul list
+{% macro create_nav_menu(items, key="", class="nav nav-pills nav-stacked") %}
+    <ul class="{{class}}">
+        {% for title, href, id in items %}
+            <li class="{% if id == get_page_info(key) %}active{% endif%}">
+                <a href="{{ href|e }}">{{ title|e }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+{% endmacro %}
+
+
+#---- alert_message() ----------------------------------------------------------
+{% macro alert_message(message, category="info", dismissible=False) %}
+    <div class="alert
+        alert-{{category|replace('error', 'danger')}}
+        {% if dismissible %}alert-dismissible{%endif%}
+        " role="alert">
+        {% if dismissible %}
+         <button type="button" class="close" data-dismiss="alert">
+             <span aria-hidden="true">&times;</span>
+             <span class="sr-only">Close</span>
+         </button>
+        {%endif%}
+        {{message}}
+    </div>
+{% endmacro %}
+
+
+#---- show_pagination() --------------------------------------------------------
+{% macro show_pagination(paginator, endpoint, kwargs={}) %}
+
+    <ul class="pagination">
+      {%- if paginator.has_prev %}
+        <li><a href="{{ url_for(endpoint, page=paginator.prev_num, **kwargs) }}"
+         rel="me prev">«</a></li>
+      {% else %}
+        <li class="disabled"><span>«</span></li>
+      {%- endif %}
+
+      {%- for page in paginator.pages %}
+        {% if page %}
+          {% if page != paginator.page %}
+            <li><a href="{{ url_for(endpoint, page=page, **kwargs) }}"
+             rel="me">{{ page }}</a></li>
+          {% else %}
+            <li class="current"><span>{{ page }}</span></li>
+          {% endif %}
+        {% else %}
+          <li><span class=ellipsis>…</span></li>
+        {% endif %}
+      {%- endfor %}
+
+      {%- if paginator.has_next %}
+        <li><a href="{{ url_for(endpoint, page=paginator.next_num, **kwargs) }}"
+         rel="me next">»</a></li>
+      {% else %}
+        <li class="disabled"><span>»</span></li>
+      {%- endif %}
+    </ul>
+{% endmacro %}

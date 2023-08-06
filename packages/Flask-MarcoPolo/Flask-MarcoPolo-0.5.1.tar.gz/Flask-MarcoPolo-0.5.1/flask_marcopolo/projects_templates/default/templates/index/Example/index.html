@@ -1,0 +1,24 @@
+
+{% import "_macros/base.html" as base_macro with context %}
+
+{{ set_page_info(title="Example Page Title") }}
+
+<h1>Dismissible Alerts</h1>
+
+{{ base_macro.alert_message("Alert message Info", category="info", dismissible=True) }}
+
+{{ base_macro.alert_message("Alert message Info", category="error", dismissible=True) }}
+
+<h2> Create  menu</h2>
+
+{% set menu_list = [
+    (url_for("Index:index"), 'index', 'Home'),
+    (url_for("Example:index"), 'example_index', 'Example'),
+    (url_for("Example:text"), 'example_text', 'Render a Text'),
+    (url_for("Example:error_401"), 'error_401', 'Error 401'),
+    (url_for("Example:error_403"), 'error_403', 'Error 403'),
+    (url_for("Example:error_404"), 'error_404', 'Error 404'),
+    (url_for("Example:error_500"), 'error_500', 'Error 500')
+] -%}
+
+{{- base_macro.create_list_menu(menu_list) -}}
