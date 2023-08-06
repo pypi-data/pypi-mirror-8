@@ -1,0 +1,92 @@
+#!/usr/bin/env python
+
+import requests
+import json
+import sys
+import pynag.Plugins
+
+_DEFAULT_HOST = 'localhost'
+_DEFAULT_PORT = 8443
+_DEFAULT_PROTOCOL = 'https'
+_URI = '{protocol}://{host}:{port}'
+
+
+class CheckNSCP(pynag.Plugins.PluginHelper):
+    _DEFAULT_QUERY = ('query', 'check_nscp')
+
+    def __init__(self):
+        pynag.Plugins.PluginHelper.__init__(self)
+        self.add_option('--host', default='localhost')
+        self.add_option('--port', default='8443')
+        self.add_option('--protocol', default='https')
+        self.add_option('--url', default=None)
+        self.add_option('--password', default='display')
+        self.parse_arguments()
+
+    def get_server_uri(self):
+        """Get url of the NSCP we want to connect to."""
+        return self.options.url or _URI.format(
+            protocol=self.options.protocol,
+            host=self.options.host,
+            port=self.options.port,
+        )
+
+    def query(self, *args):
+        server_uri = self.get_server_uri()
+        url = '/'.join([server_uri] + list(args))
+        if self.verbose:
+            self.add_long_output("Requesting data from: %s" % url)
+        session = requests.Session()
+        if self.options.password:
+            session.headers['password'] = self.options.password
+        response = session.get(url, verify=False)
+        return self.parse_response(response)
+    @staticmethod
+    def parse_response(response):
+        response_data = response.json()
+        header = response_data['header']
+        payload = response_data['payload']
+        return payload[0]
+
+    def check_query(self, *args):
+        args = args or self.arguments or self._DEFAULT_QUERY
+
+        payload = self.query(*args)
+        summary = payload.get('message') or 'No summary received'
+        status = payload.get('result')
+        status = pynag.Plugins.state.get(status.lower(), pynag.Plugins.UNKNOWN)
+        performance_data = payload.get('perf', [])
+        command = payload.get('command')
+        self.set_summary(command)
+        self.add_summary(summary)
+        self.status(status)
+        for metric in performance_data:
+            float_value = metric['float_value']
+            label = metric['alias']
+            minimum = float_value['minimum']
+
+            maximum = float_value['maximum']
+            value = float_value['value']
+            warn = float_value['warning']
+            crit = float_value['critical']
+            uom = float_value['unit']
+            self.add_metric(
+                label=label,
+                value=value,
+                uom=uom,
+                max=maximum,
+                min=minimum,
+                warn=warn,
+                crit=crit,
+            )
+
+
+def main(args):
+    helper = CheckNSCP()
+    helper.parse_arguments(args)
+    helper.check_query()
+    helper.exit()
+
+if __name__ == '__main__':
+    arguments = sys.argv[1:] or ['check_nscp', 'query', 'check_memory']
+    main(arguments)
