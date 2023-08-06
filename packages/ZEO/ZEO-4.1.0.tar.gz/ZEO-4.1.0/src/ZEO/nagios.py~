@@ -1,0 +1,55 @@
+##############################################################################
+#
+# Copyright (c) 2011 Zope Foundation and Contributors.
+# All Rights Reserved.
+#
+# This software is subject to the provisions of the Zope Public License,
+# Version 2.1 (ZPL).  A copy of the ZPL should accompany this distribution.
+# THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
+# WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
+# FOR A PARTICULAR PURPOSE.
+#
+##############################################################################
+
+import json
+import re
+import socket
+from __future__ import print_function
+import struct
+import sys
+
+NO_TRANSACTION = '0'*16
+
+def warn(message):
+    print(message)
+    return 1
+
+def main(args=None):
+    if args is None:
+        args = sys.argv[1:]
+    [addr] = args
+    m = re.match(r'\[(\S+)\]:(\d+)$', addr)
+    if m:
+        addr = m.group(1), int(m.group(2))
+        s = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
+    else:
+        m = re.match(r'(\S+):(\d+)$', addr)
+        if m:
+            addr = m.group(1), int(m.group(2))
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        else:
+            s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+    s.connect(addr)
+    s.send('\x00\x00\x00\x04ruok')
+    proto = s.recv(struct.unpack(">I", s.recv(4))[0])
+    data = json.loads(s.recv(struct.unpack(">I", s.recv(4))[0]))
+    if not data:
+        return warn("No storages")
+    for storage_id, status in data.items():
+        if status['last-transaction'] == NO_TRANSACTION:
+            return warn("Empty storage %r" % storage_id)
+    print("OK")
+
+if __name__ == '__main__':
+    main()

@@ -1,0 +1,69 @@
+Better monitoring support for ZEO (and ZRS)
+
+ZEO provides limited built-in monitoring support. To monitor ZEO, you
+can make a ZEO connection to verify that connections are possible. You
+might try to fetch object 0, which fails for a new database.  If you
+want to get metrics, there's a ``server_stats`` method a client can call
+to get various data.  A client can get the last transaction id to
+monitor replication.
+
+There are some disadvantages to using the ZEO client protocol:
+
+- If you make a client connection to get some information and
+  disconnect, and do this on a regular interval, you'll end up adding
+  a lot of noise to the logs.
+
+- If you maintain a connection, then you have to have a long-lived
+  stateful monitor.  This doesn't mesh well with Nagios and monitoring
+  frameworks that use the Nagios plugin framework. It also generally
+  makes the monitor rather complex.
+
+There's also a deprecated monitoring interface, which has a number of
+disadvantages:
+
+- It requires managing a separate network address.
+
+- It doesn't help you decide if the ZEO server is working.
+
+- It doesn't have all of the data we would need, especially the last
+  transaction timestamp, although this is fixable.
+
+Proposal
+========
+
+A common momnitor-support technique when implementing a protocol is to
+include an ``ruok`` message in the protocol specifically to support
+monitoring.
+
+I propose to add an ``ruok`` request as a special ZEO protocol
+identifier. When a server gets a client that presents ``ruok`` as its
+protocol (rather than, for example ``Z3101``), the server will dump
+monitoring data and close the connection.  The monitoring data will be
+the data returned by ``server_status`` with the addition of the last
+transaction identifier needed by the server.  The data will be output
+in JSON format.  We would arrange that nothing would be logged for
+these requests, at least when logging at the INFO level.
+
+ZEO has a feature of being able to serve multiple databases
+simultaneously.  When you make a ZEO connection, you need to specify a
+identifier to indicate which database you want to use.  We (ZC) never
+use this feature.  It adds a fair bit of complexity and if I ever get
+around to re-implementing ZEO, it's a feature I would drop.  Modern
+versions of ZEO mitigate this feature by defaulting the database
+identifiers to '1'.
+
+If a single database is being served, then the ``ruok`` output will be
+the data (a dict) for that database, without a database identifier.  If
+multiple databases are served, the output will be a list of dicts.
+
+Nagios plugins (http://nagios.sourceforge.net/docs/3_0/pluginapi.html)
+will be included in ZEO and ZRS.  The ZEO plugin will, by default,
+perform a basis liveness check.  Optionally, it will also provide
+metric data.  The ZRS plugin will support monitoring replication and
+generation of metrics for replication lag. (Note that a number of
+monitoring frameworks support the Nagios plugin API. The API has the
+advantage of being simple and easy to debug.)
+
+Any objections?
+
+
