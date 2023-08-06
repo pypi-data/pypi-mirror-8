@@ -1,0 +1,73 @@
+-----------------------------------------------------------------------
+--
+--  CONTACT MECHANISM INITIAL DATA
+--
+-----------------------------------------------------------------------
+
+
+WITH
+contactmechanismtypes(code, description) AS (
+    VALUES
+        ('phonenumber', 'Phonenumber'),
+        ('email', 'E-mail address'),
+        ('postal', 'Postal address'),
+        ('website', 'Website'),
+        ('unknown', 'Unknown'),
+        ('live', 'Live')
+),
+upsert AS (
+    UPDATE {{ schema_common }}.contactmechanismtypes R SET
+        description = U.description
+    FROM contactmechanismtypes U
+    WHERE
+        R.code = U.code
+    RETURNING R.*
+)
+INSERT INTO {{ schema_common }}.contactmechanismtypes
+    (code, description)
+SELECT R.code, description
+FROM contactmechanismtypes R
+WHERE R.code NOT IN (
+    SELECT U.code
+    FROM upsert U
+    WHERE U.code = R.code
+);
+
+
+WITH
+contactmechanismapplicationtypes(mechanism_type, code, description) AS (
+    VALUES
+        ('phonenumber', 'voice', 'Phone'),
+        ('phonenumber', 'fax', 'Fax'),
+        ('phonenumber', 'sms', 'Short Message Service (SMS)'),
+        ('phonenumber', 'whatsapp', 'WhatsApp'),
+        ('phonenumber', 'tango', 'Tango'),
+        ('phonenumber', 'facebook', 'Facebook Messenger'),
+        ('phonenumber', 'viber', 'Viber'),
+        ('phonenumber', 'skype', 'Skype'),
+        ('email', 'email', 'Email'),
+        ('email', 'skype', 'Skype'),
+        ('website', 'chat', 'Live chat'),
+        ('website', 'message', 'Direct message'),
+        ('website', 'form', 'Contact form'),
+        ('website', 'comments', 'Comments'),
+        ('unknown', 'unknown', 'Unknown')
+),
+upsert AS (
+    UPDATE {{ schema_common }}.contactmechanismapplicationtypes R SET
+        description = U.description
+    FROM contactmechanismapplicationtypes U
+    WHERE
+        R.code = U.code AND
+        R.mechanism_type = U.mechanism_type
+    RETURNING R.*
+)
+INSERT INTO {{ schema_common }}.contactmechanismapplicationtypes
+    (mechanism_type, code, description)
+SELECT R.mechanism_type, code, description
+FROM contactmechanismapplicationtypes R
+WHERE (R.mechanism_type, R.code) NOT IN (
+    SELECT U.mechanism_type, U.code
+    FROM upsert U
+    WHERE U.code = R.code
+);
