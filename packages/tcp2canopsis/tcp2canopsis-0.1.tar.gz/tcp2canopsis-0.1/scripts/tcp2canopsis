@@ -1,0 +1,12 @@
+# -*- coding: utf-8 -*-
+
+from tcp2canopsis.daemon import run_daemon
+
+if __name__ == '__main__':
+    import sys
+
+    if len(sys.argv) < 3:
+        print('Usage: {0} <port> <amqp url>'.format(sys.argv[0]))
+        sys.exit(1)
+
+    run_daemon(sys.argv[1], sys.argv[2])
