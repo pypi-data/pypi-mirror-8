@@ -1,0 +1,93 @@
+{%extends "base.html"%}
+
+{%block content%}
+
+<link href="css/bootstrap.min.css" rel="stylesheet">
+<h1>Edit Command Page</h1>
+<h3> Command : {{edit.commandname}}</h3>
+<form role="form" method="post" id="editcommand" action = "/successedit/">{% csrf_token %}
+	<input type="hidden" class="form-control" name="commandname" value = "{{edit.idcommand}}">
+	<div class="form-group" style = "margin-bottom : 10px;">
+		<div class="col-sm-3">
+				<label label-default="" for="filedirname" class="col-sm-9 control-label">Location</label> 
+				<input type="text" class="form-control" name="param1" value="{{edit.parameter1}}" required="">
+		</div>
+	<div class = "clearfix"></div>
+	<div class="form-group" style = "margin-bottom : 10px;">
+		<div class="col-sm-3">
+			{% if edit.commandname == "newfile" or edit.commandname == "delfile"%}
+				<label label-default="" for="filedirname" class="col-sm-9 control-label">File Name</label> 
+				<input type="text" class="form-control" name="param2" value="{{edit.parameter2}}" required="">
+			{%elif edit.commandname == "mkdir" or edit.commandname == "deldir" %}
+				<label label-default="" for="filedirname" class="col-sm-9 control-label">Directory Name</label> 
+				<input type="text" class="form-control" name="param2" value="{{edit.parameter2}}" required="">
+			{%endif%}
+		</div>
+	</div>
+	<div class = "clearfix"></div>
+	{% if  edit.isdefault %}
+	<div class="radio">
+		<label>
+			<input type="radio" name="basedir" class ="nobasedir" value="optionno" >
+				Not Use Base Directory
+		  </label>
+	</div>
+	<div class="radio">
+		<label>
+			<input type="radio" name="basedir" class ="defaultbasedir" value="optiondefault" checked>
+				Use Default Base Directory
+		  </label>
+	</div>
+	<div class="radio">
+		<label>
+			<input type="radio" name="basedir"  class ="custombasedir" value="optioncustom">
+			<input type ="text" name = "inputbasedir" class="inputtext" placeholder = "Use Custom Base Directory">
+		</label>
+	</div>
+	{%elif edit.basespaths %}
+	<div class="radio">
+		<label>
+			<input type="radio" name="basedir" class ="nobasedir" value="optionno" >
+				Not Use Base Directory
+		  </label>
+	</div>
+	<div class="radio">
+		<label>
+			<input type="radio" name="basedir" class ="defaultbasedir" value="optiondefault">
+				Use Default Base Directory
+		  </label>
+	</div>
+	<div class="radio">
+		<label>
+			<input type="radio" name="basedir"  class ="custombasedir" value="optioncustom" checked >
+			<input type ="text" name = "inputbasedir" class="inputtext" value = "{{edit.basespaths}}">
+		</label>
+	</div>
+	{% else %}
+	<div class="radio">
+		<label>
+			<input type="radio" name="basedir" class ="nobasedir" value="optionno" checked >
+				Not Use Base Directory
+		  </label>
+	</div>
+	<div class="radio">
+		<label>
+			<input type="radio" name="basedir" class ="defaultbasedir" value="optiondefault">
+				Use Default Base Directory
+		  </label>
+	</div>
+	<div class="radio">
+		<label>
+			<input type="radio" name="basedir"  class ="custombasedir" value="optioncustom">
+			<input type ="text" name = "inputbasedir" class="inputtext" placeholder = "Use Custom Base Directory">
+		</label>
+	</div>
+	{%endif%}
+	<div class="form-group" style = "margin-top : 10px;">
+		<div class="col-sm-12">
+			<button type="submit" class="btn btn-primary btn-sm">Save</button>
+			<a href = "{{backs}}" class="btn btn-warning btn-sm" role = "button">Back</a>
+		</div>
+	</div>
+</form>
+{% endblock %}

@@ -1,0 +1,45 @@
+{%extends "base.html"%}
+
+{%block content%}
+
+<link href="css/bootstrap.min.css" rel="stylesheet">
+<h1>Edit Command Page</h1>
+<h3> Command : {{edit.commandname}}</h3>
+<form role="form" method="post" id="editcommand" action = "/successedit/">{% csrf_token %}
+	<input type="hidden" class="form-control" name="commandname" value = "{{edit.idcommand}}">
+	<div class="form-group" style = "margin-bottom : 10px;">
+		<div class="col-sm-3">
+			{%if edit.commandname == "deldir" %}
+				<input type="text" class="form-control" name="param1" placeholder="Edit Full Path Directory Name" required="">
+			{%elif edit.commandname == "delfile" %}
+				<input type="text" class="form-control" name="param1" placeholder="Edit Full Path File Name" required="">
+			{%endif%}
+		</div>
+	</div>
+	<div class = "clearfix"></div>
+	<div class="radio">
+		<label>
+			<input type="radio" name="basedir" class ="nobasedir" value="optionno">
+				Not Use Base Directory
+		  </label>
+	</div>
+	<div class="radio">
+		<label>
+			<input type="radio" name="basedir" class ="defaultbasedir" value="optiondefault">
+				Use Default Base Directory
+		  </label>
+	</div>
+	<div class="radio">
+		<label>
+			<input type="radio" name="basedir"  class ="custombasedir" value="optioncustom">
+			<input type ="text" name = "inputbasedir" class="inputtext" placeholder = "Use Custom Base Directory">
+		</label>
+	</div>
+	<div class="form-group" style = "margin-top : 10px;">
+		<div class="col-sm-12">
+			<button type="submit" class="btn btn-primary btn-sm">Save</button>
+			<a href = "{{backs}}" class="btn btn-warning btn-sm" role = "button">Back</a>
+		</div>
+	</div>
+</form>
+{% endblock %}

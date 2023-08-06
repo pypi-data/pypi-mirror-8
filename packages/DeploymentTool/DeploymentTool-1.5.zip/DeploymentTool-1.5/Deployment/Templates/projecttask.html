@@ -1,0 +1,162 @@
+{%extends "base.html"%}
+
+{%block content%}
+<div class = "col-xs-12">
+	<h3>Task :	{{nametask.taskname}}</h3>
+</div>
+<div class = "col-xs-6" style ="border-bottom:1px solid;">
+	<h4>Default Base Directory:	{{nametask.hostes.basepath}}</h4>
+</div>
+<div class = "col-xs-6" style ="border-bottom:1px solid;">
+	<h4>Host Task:	{{nametask.hostes.hostname}}</h4>
+</div>
+<div class="col-xs-6">
+	<table class="table">
+	  <thead>
+		<tr>
+		  <th class="col-md-1" colspan = "3">Template Command</th>
+		</tr>
+	  </thead>
+	  <tbody>
+			<tr>
+				<td class="col-md-1"><a role="button" class="btn btn-default btn-block" href = "#copy" data-toggle="modal">COPY</a></td>
+				<td></td>
+				<td></td>
+			</tr>
+		   <tr>
+				<td class="col-md-1"><a role="button" class="btn btn-default btn-block" href = "#newfile" data-toggle="modal">NEW FILE</a></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td class="col-md-1"><a role="button" class="btn btn-default btn-block" href = "#deletedirectory" data-toggle="modal">DELETE DIRECTORY</a></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td class="col-md-1"><a role="button" class="btn btn-default btn-block" href = "#deletefile" data-toggle="modal">DELETE FILE</a></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td class="col-md-1"><a role="button" class="btn btn-default btn-block" href = "#uploadfile" data-toggle="modal">UPLOAD FILE</a></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td class="col-md-1"><a role="button" class="btn btn-default btn-block" href = "#createdirectory" data-toggle="modal">CREATE DIRECTORY</a></td>
+				<td></td>
+				<td></td>
+			</tr>
+	  </tbody>
+	</table>
+	<a href = "#modalhosttask" role="button" class="btn btn-info" data-toggle = "modal" >Change Host for This Task</a>
+</div>
+<div class="col-xs-6">
+	<table class="table table-stripped">
+	  <thead>
+		<tr>
+		  <th class="col-md-3">Command List for Deploying</th>
+		  <th class="col-md-2" colspan = "2">Option</th>
+		</tr>
+	  </thead>
+	</table>
+	<div class="div-table-content">
+		<table class="table table-hover">
+			<tbody>
+					{%if taskloads%}
+							{% for command in taskloads %}
+							<tr>
+							  <td class="col-md-2">{{command.commandname }}</td>
+							  <td class="col-md-1"><a class ="btn btn-warning btn-block" role = "button"  href = "{{command.get_absolute_url}}">Edit </a></td>
+							  <td class="col-md-1"><a class ="btn btn-danger btn-block" role = "button"  href = "{{command.get_url_path}}">Delete</a></td>
+							 </tr>
+							{% endfor %}
+			</tbody>
+		</table>
+	</div>
+	<a href = "#modalbacktotasklist"role="button" class="btn btn-warning" data-toggle = "modal">Back to Task List</a>
+	<a href = "#modaldeleteall" role="button" class="btn btn-danger" data-toggle= "modal">Delete All</a>
+	<a href = "#modalexecute" id = "execute" data-loading-text="Executing..." role="button" class="btn btn-primary" data-toggle= "modal">Execute</a>
+				{%else%}
+					<tr>
+						<td class = "col-md-4">Sorry, this task doesn't have list of commands.</td>
+					</tr>
+			</tbody>
+		</table>
+	</div>
+	<a href = "#modalbacktotasklist"role="button" class="btn btn-warning" data-toggle = "modal">Back to Task List</a>
+	<a href = "#modaldeleteall" role="button" class="btn btn-danger" data-toggle= "modal" disabled = "disabled">Delete All</a>
+	<a href = "#modalexecute" role="button" class="btn btn-primary" data-toggle= "modal" disabled = "disabled">Execute</a>
+					{%endif%}	
+</div>
+
+<!--modal group-->
+<!--modal basktotasklist-->
+<div class = "modal fade" id = "modalbacktotasklist" aria-hidden="true">
+	<div class="modal-dialog modal-sm">
+		<div class="modal-body">
+			<div class="panel panel-warning">
+				<div class="panel-heading">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+					<h3 class="panel-title">Warning</h3>
+				</div>
+				<div class="panel-body">
+					<div class = "col-md-12 style = text-align : center; margin-bottom : 5px; "><h3>Are you sure want to back to task list?</h3></div>
+					<div class="clearfix"></div>
+					<div class="clearfix"></div>
+					<div style = "float : center">
+						<div class = "col-md-6"><a role="button" class="btn btn-default btn-block" href = "/tasklist/">Yes</a> </div>
+						<div class = "col-md-6"><button type="button" class="btn btn-default btn-block" data-dismiss="modal">No</button> </div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!--end modal basktotasklist-->
+<!--modal deleteall-->
+<div class = "modal fade" id = "modaldeleteall" aria-hidden="true">
+	<div class="modal-dialog modal-sm">
+		<div class="modal-body">
+			<div class="panel panel-danger">
+				<div class="panel-heading">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+					<h3 class="panel-title">Warning</h3>
+				</div>
+				<div class="panel-body">
+					<div class="col-sm-12"><h3>Are you sure want to delete all command?</h3></div>
+					<div style = "float : center">
+						<div class = "col-md-6"><a role="button" class="btn btn-default btn-block" href = "/deleteallcommand/">Yes</a> </div>
+						<div class = "col-md-6"><button type="button" class="btn btn-default btn-block" data-dismiss="modal">No</button> </div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!--end modal deleteall-->
+<!--modal execute-->
+<div class = "modal fade" id = "modalexecute" aria-hidden="true">
+	<div class="modal-dialog modal-sm">
+		<div class="modal-body">
+			<div class="panel panel-primary">
+				<div class="panel-heading">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+					<h3 class="panel-title">Warning</h3>
+				</div>
+				<div class="panel-body">
+					<div class="col-sm-12"><h3>Are you sure want to execute this task?</h3></div>
+					<div style = "float : center">
+						<div class = "col-md-6"><a role="button" class="btn btn-default btn-block" href = "/executetask/">Yes</a> </div>
+						<div class = "col-md-6"><button type="button" class="btn btn-default btn-block" data-dismiss="modal">No</button> </div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!--end modal execute-->
+<!--end modal group-->
+
+{% endblock %}

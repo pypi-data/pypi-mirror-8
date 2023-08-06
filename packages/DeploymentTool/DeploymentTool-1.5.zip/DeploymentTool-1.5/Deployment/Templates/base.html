@@ -1,0 +1,492 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang = "en">
+	<head>
+		<title>Deployment Tools</title>
+		<link href="{% static "css/bootstrap.min.css"%}" rel="stylesheet">
+		<!--<link href="css/bootstrap.min.css" rel="stylesheet">-->
+		<script type='text/javascript' src='http://code.jquery.com/jquery-1.8.2.js'></script>
+		<script src="{% static 'js/bootstrap.min.js'%}"></script>
+		<style>
+			.pull-right {
+				float: right;
+				margin-bottom :10px;
+			}
+			.pull-left {
+				float: left;
+				margin-top : 10px;
+				margin-bottom :10px;
+			}
+			.navbar {
+				margin: 0 auto;
+				width:1200px;  
+				float: none;
+			}
+			table {
+				table-layout:fixed;
+			}
+			.div-table-content {
+			height:250px;
+			margin-bottom : 25px;
+			overflow-y:auto;
+			}
+			.div-table-content-2 {
+			height:400px;
+			margin-bottom : 25px;
+			overflow-y:auto;
+			}
+		</style>
+		<script type="text/javascript" >
+		$(document).ready(function($) { 
+			$('.inputtext').attr("disabled", true); 
+			$(".custombasedir").click(function(){
+               if ($(this).is(':checked')) {               		
+                    $('.inputtext').attr("disabled", false);               
+				}
+			}); 		
+			$(".defaultbasedir").click(function() {
+				 if ($(this).is(':checked')) {  
+					$('.inputtext').attr("disabled", true); 
+				}
+				}); 
+			$(".nobasedir").click(function() {
+				 if ($(this).is(':checked')) {  
+					$('.inputtext').attr("disabled", true); 
+				}
+				}); 
+			if($(".custombasedir").is(':checked')) {
+				$('.inputtext').attr("disabled", false); 
+			}
+			}); 
+		</script>
+	</head>
+	<body>
+		<nav class="navbar navbar-inverse " role="navigation">
+			<div class="container-fluid">
+				<div class="collapse navbar-collapse pull-right" id="navbar-logout">
+					<ul class="nav navbar-nav">
+						<li><a href="/loggedout/"><h4><strong>LOGOUT</strong></h4></a></li>
+					</ul>
+				  </div>
+			</div>
+		</nav>
+		<div class = "container">
+			<div id = "content" class = "flex">
+				{%block content%}{%endblock%}
+			</div>
+		</div>
+		<!-- modal group-->
+		<!-- modal add task-->
+		<form role="form" method = "post" id ="addtask" action = "/addnewtask/"> {% csrf_token %}
+		<div id="modaladdnew" class="modal fade"  role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+							<h3 id="Label">Add New Task</h3>
+					</div>
+					<div class="modal-body">
+							<div class="form-group">
+								<input type="text" name = "addnew" class="form-control" placeholder="Task Name" required="">
+							</div>
+					</div>
+					<div class="modal-footer">
+						<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+						<button class="btn btn-primary" type = "submit">Save</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		</form>
+		<!-- end modal add task-->
+		<!-- modal change hostuser-->
+		<form role="form" method = "post" id ="changehost" action = "/changehostuser/"> {% csrf_token %}
+		<div id="modalhost" class="modal fade"  role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+							<h3 id="Label">Change Host</h3>
+					</div>
+					<div class="modal-body">
+							<div class="form-group">
+								<input type="text" name = "host"class="form-control" placeholder="Host" required="">
+							</div>
+					</div>
+					<div class="modal-footer">
+						<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+						<button type="submit" class="btn btn-primary">Save</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		</form>
+		<!-- end  changehostuser-->
+		<!-- modal changehosttask-->
+		<form role="form" method = "post" id ="changehost" action = "/changehosttask/"> {% csrf_token %}
+		<div id="modalhosttask" class="modal fade"  role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+							<h3 id="Label">Change Host</h3>
+					</div>
+					<div class="modal-body">
+							<div class="form-group">
+								<input type="text" name = "hosts"class="form-control" placeholder="Host" required="">
+							</div>
+					</div>
+					<div class="modal-footer">
+						<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+						<button type="submit" class="btn btn-primary">Save</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		</form>
+		<!-- end  changehosttask-->
+		<!--modal copy-->
+		<form role="form" method = "post" id ="formcopy" action = "/copy/"> {% csrf_token %}
+		<div id="copy" class="modal fade"  role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+							<h3 id="Label">Copy</h3>
+					</div>
+					<div class="modal-body">
+						<form role="form" method = "post" id ="copies">{% csrf_token %}
+							<div class="form-group">
+								<input type="text" class="form-control" placeholder="Destination" name="destination"  required="">
+							</div>
+							<div class="form-group">
+								<input type="text" class="form-control" placeholder="Source" name="location"  required="">
+							</div>
+							<div class="form-group">
+								<input type="text" class="form-control" placeholder="Source Location" name="localbasepath"  required="">
+							</div>
+							<div class="radio">
+								<label>
+									<input type="radio" name="basedir" class ="nobasedir" value="optionno">
+										Not Use Base Directory
+								  </label>
+							</div>
+							<div class="radio">
+								<label>
+									<input type="radio" name="basedir" class ="defaultbasedir" value="optiondefault" checked>
+										Use Default Base Directory
+								  </label>
+							</div>
+							<div class="radio">
+								<label>
+									<input type="radio" name="basedir"  class ="custombasedir" value="optioncustom">
+									<input type ="text" name = "inputbasedir" class="inputtext" placeholder = "Use Custom Base Directory">
+								</label>
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+						<button class="btn btn-primary" type="submit">Save</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		</form>
+		<!-- end modal copy-->
+		<!--modal new file-->
+		<form role="form" method = "post" id ="formnewfile" action = "/newfile/"> {% csrf_token %}
+		<div id="newfile" class="modal fade"  role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+							<h3 id="Label">New File</h3>
+					</div>
+					<div class="modal-body">
+						<form role="form" method = "post" id ="newfile"> {% csrf_token %}
+							<div class="form-group">
+								<input type="text" class="form-control" placeholder="Location" name="location">
+							</div>
+							<div class="form-group">
+								<input type="text" class="form-control" placeholder="New File Name" name="namafile"  required="">
+							</div>
+							<div class="radio">
+								<label>
+									<input type="radio" name="basedir" class ="nobasedir" value="optionno">
+										Not Use Base Directory
+								  </label>
+							</div>
+							<div class="radio">
+								<label>
+									<input type="radio" name="basedir" class ="defaultbasedir" value="optiondefault" checked>
+										Use Default Base Directory
+								  </label>
+							</div>
+							<div class="radio">
+								<label>
+									<input type="radio" name="basedir"  class ="custombasedir" value="optioncustom">
+									<input type ="text" name = "inputbasedir" class="inputtext" placeholder = "Use Custom Base Directory">
+								</label>
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+						<button class="btn btn-primary" type="submit">Save</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- end modal new file-->
+		<!-- modal delete directory-->
+		<form role="form" method = "post" id ="formdeletedirectory" action = "/deletedirectory/"> {% csrf_token %}
+		<div id="deletedirectory" class="modal fade"  role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+							<h3 id="Label">Delete Directory</h3>
+					</div>
+					<div class="modal-body">
+						<form role="form" method = "post" id ="deletedir"> {% csrf_token %}
+							<div class="form-group">
+								<input type="text" class="form-control" placeholder="Location" name="location"  required="">
+							</div>
+							<div class="form-group">
+								<input type="text" class="form-control" placeholder="Directory Name" name="namadir"  required="">
+							</div>
+							<div class="radio">
+								<label>
+									<input type="radio" name="basedir" class ="nobasedir" value="optionno">
+										Not Use Base Directory
+								  </label>
+							</div>
+							<div class="radio">
+								<label>
+									<input type="radio" name="basedir" class ="defaultbasedir" value="optiondefault" checked>
+										Use Default Base Directory
+								  </label>
+							</div>
+							<div class="radio">
+								<label>
+									<input type="radio" name="basedir"  class ="custombasedir" value="optioncustom">
+									<input type ="text" name = "inputbasedir" class="inputtext" placeholder = "Use Custom Base Directory">
+								</label>
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+						<button class="btn btn-primary" type="submit">Save</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- end modal delete directory-->
+		<!-- modal delete file-->
+		<form role="form" method = "post" id ="formdeletefile" action = "/deletefile/"> {% csrf_token %}
+		<div id="deletefile" class="modal fade"  role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+							<h3 id="Label">Delete File</h3>
+					</div>
+					<div class="modal-body">
+						<form role="form" method = "post" id ="deletefile"> {% csrf_token %}
+							<div class="form-group">
+								<input type="text" class="form-control" placeholder="Location" name="location"  required="">
+							</div>
+							<div class="form-group">
+								<input type="text" class="form-control" placeholder="File Name" name="namafile"  required="">
+							</div>
+							<div class="radio">
+								<label>
+									<input type="radio" name="basedir" class ="nobasedir" value="optionno">
+										Not Use Base Directory
+								  </label>
+							</div>
+							<div class="radio">
+								<label>
+									<input type="radio" name="basedir" class ="defaultbasedir" value="optiondefault" checked>
+										Use Default Base Directory
+								  </label>
+							</div>
+							<div class="radio">
+								<label>
+									<input type="radio" name="basedir"  class ="custombasedir" value="optioncustom">
+									<input type ="text" name = "inputbasedir" class="inputtext" placeholder = "Use Custom Base Directory">
+								</label>
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+						<button class="btn btn-primary" type="submit">Save</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- end modal delete file-->
+		<!-- modal create directory-->
+		<form role="form" method = "post" id ="formcreatedirectory" action = "/createdirectory/"> {% csrf_token %}
+		<div id="createdirectory" class="modal fade"  role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+							<h3 id="Label">Create Directory</h3>
+					</div>
+					<div class="modal-body">
+						<form role="form" method = "post" id ="createdir"> {% csrf_token %}
+							<div class="form-group">
+								<input type="text" class="form-control" placeholder="Location" name="location">
+							</div>
+							<div class="form-group">
+								<input type="text" class="form-control" placeholder="Directory Name" name="namadir"  required="">
+							</div>
+							<div class="radio">
+								<label>
+									<input type="radio" name="basedir" class ="nobasedir" value="optionno">
+										Not Use Base Directory
+								  </label>
+							</div>
+							<div class="radio">
+								<label>
+									<input type="radio" name="basedir" class ="defaultbasedir" value="optiondefault" checked>
+										Use Default Base Directory
+								  </label>
+							</div>
+							<div class="radio">
+								<label>
+									<input type="radio" name="basedir"  class ="custombasedir" value="optioncustom">
+									<input type ="text" name = "inputbasedir" class="inputtext" placeholder = "Use Custom Base Directory">
+								</label>
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+						<button class="btn btn-primary" type="submit">Save</button>
+					</div>
+				</div> 
+			</div>
+		</div>
+		<!-- end modal create directory-->
+		<!--modal upload file-->
+		<form role="form" method = "post" id ="formuploadfile" action = "/uploadfile/"> {% csrf_token %}
+		<div id="uploadfile" class="modal fade"  role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+							<h3 id="Label">Upload File</h3>
+					</div>
+					<div class="modal-body">
+						<form role="form" method = "post" id ="uploadfile">{% csrf_token %}
+							<div class="form-group">
+								<input type="text" class="form-control" placeholder="Local Basepath" name="localbasepath"  required="">
+							</div>
+							<div class="form-group">
+								<input type="text" class="form-control" placeholder="File to be uploaded" name="namadokumen"  required="">
+							</div>
+							<div class="form-group">
+								<input type="text" class="form-control" placeholder="Destination " name="destination"  required="">
+							</div>
+							<div class="radio">
+								<label>
+									<input type="radio" name="basedir" class ="nobasedir" value="optionno">
+										Not Use Base Directory
+								  </label>
+							</div>
+							<div class="radio">
+								<label>
+									<input type="radio" name="basedir" class ="defaultbasedir" value="optiondefault" checked>
+										Use Default Base Directory
+								  </label>
+							</div>
+							<div class="radio">
+								<label>
+									<input type="radio" name="basedir"  class ="custombasedir" value="optioncustom">
+									<input type ="text" name = "inputbasedir" class="inputtext" placeholder = "Use Custom Base Directory">
+								</label>
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+						<button class="btn btn-primary" type="submit">Save</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!--end modal upload file-->
+
+		<!--modal basktotasklist-->
+		<div class = "modal fade" id = "modalbacktotasklist" aria-hidden="true">
+			<div class="modal-dialog modal-sm">
+				<div class="modal-body">
+					<div class="panel panel-warning">
+						<div class="panel-heading">
+							<h3 class="panel-title">Warning</h3>
+						</div>
+						<div class="panel-body">
+							<div class = "col-md-12 style = text-align : center; margin-bottom : 5px; "><h3>Are you sure want to back to task list?</h3></div>
+							<div class="clearfix"></div>
+							<div class="clearfix"></div>
+							<div style = "float : center">
+								<div class = "col-md-6"><a role="button" class="btn btn-default btn-block" href = "/tasklist/">Yes</a> </div>
+								<div class = "col-md-6"><button type="button" class="btn btn-default btn-block">No</button> </div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!--end modal basktotasklist-->
+		<!--modal deleteall-->
+		<div class = "modal fade" id = "modaldeleteall" aria-hidden="true">
+			<div class="modal-dialog modal-sm">
+				<div class="modal-body">
+					<div class="panel panel-danger">
+						<div class="panel-heading">
+							<h3 class="panel-title">Warning</h3>
+						</div>
+						<div class="panel-body">
+							<div class="col-sm-12"><h3>Are you sure want to delete all command?</h3></div>
+							<div style = "float : center">
+								<div class = "col-md-6"><a role="button" class="btn btn-default btn-block" href = "/tasklist/">Yes</a> </div>
+								<div class = "col-md-6"><button type="button" class="btn btn-default btn-block">No</button> </div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!--end modal deleteall-->
+		<!--modal execute-->
+		<div class = "modal fade" id = "modalexecute" aria-hidden="true">
+			<div class="modal-dialog modal-sm">
+				<div class="modal-body">
+					<div class="panel panel-primary">
+						<div class="panel-heading">
+							<h3 class="panel-title">Execute</h3>
+						</div>
+						<div class="panel-body">
+							<div class="col-sm-12"><h3>Are you sure want to execute this task?</h3></div>
+							<div style = "float : center">
+								<div class = "col-md-6"><a role="button" class="btn btn-default btn-block" href = "/executetask/">Yes</a> </div>
+								<div class = "col-md-6"><button type="button" class="btn btn-default btn-block">No</button> </div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!--end modal execute-->
+		<!-- end modal group -->
+		<footer>
+		</footer>
+	</body>
+</html>
