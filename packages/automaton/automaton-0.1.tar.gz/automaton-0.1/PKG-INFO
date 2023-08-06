@@ -1,0 +1,54 @@
+Metadata-Version: 1.1
+Name: automaton
+Version: 0.1
+Summary: Friendly state machines for python.
+Home-page: https://github.com/harlowja/automaton
+Author: Joshua Harlow
+Author-email: harlowja@gmail.com
+License: UNKNOWN
+Description: =========
+        Automaton
+        =========
+        
+        .. image:: https://travis-ci.org/harlowja/automaton.png?branch=master
+           :target: https://travis-ci.org/harlowja/automaton
+        
+        Friendly state machines for python.
+        
+        Examples
+        ~~~~~~~~
+        
+        **Squirrel**::
+        
+            >>> from automaton import machines
+            >>> f = machines.FiniteMachine("sits")
+            >>> f.add_state("sits")
+            >>> f.add_state("barks")
+            >>> f.add_state("wags tail")
+            >>> f.add_transition("sits", "barks", "squirrel!")
+            >>> f.add_transition("barks", "wags tail", "gets petted")
+            >>> f.add_transition("wags tail", "sits", "gets petted")
+            >>> f.add_transition("wags tail", "barks", "squirrel!")
+            >>> print(f.pformat())
+            +-----------+-------------+-----------+----------+---------+
+            |   Start   |    Event    |    End    | On Enter | On Exit |
+            +-----------+-------------+-----------+----------+---------+
+            |   barks   | gets petted | wags tail |    .     |    .    |
+            |  sits[^]  |  squirrel!  |   barks   |    .     |    .    |
+            | wags tail | gets petted |    sits   |    .     |    .    |
+            | wags tail |  squirrel!  |   barks   |    .     |    .    |
+            +-----------+-------------+-----------+----------+---------+
+        
+        
+Platform: UNKNOWN
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: Apache Software License
+Classifier: Operating System :: POSIX
+Classifier: Programming Language :: Python :: 2
+Classifier: Programming Language :: Python :: 2.6
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.3
+Classifier: Programming Language :: Python :: 3.4
+Classifier: Topic :: Software Development :: Libraries
