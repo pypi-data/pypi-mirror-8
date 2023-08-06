@@ -1,0 +1,20 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:five="http://namespaces.zope.org/five"
+    xmlns:browser="http://namespaces.zope.org/browser">
+
+    <browser:viewlet
+        name="pythonscript-viewlet"
+        manager="plone.app.layout.viewlets.interfaces.IBelowContent"
+        class=".viewlet.PythonScriptViewlet"
+        permission="zope2.View"
+        />
+
+    <adapter
+        for="* *"
+        provides="collective.viewlet.pythonscript.interfaces.IViewletResultsRenderer"
+        name="default_listing"
+        factory=".default_listing.DefaultListing"
+        />
+
+</configure>
