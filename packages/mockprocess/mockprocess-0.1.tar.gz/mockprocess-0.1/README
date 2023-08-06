@@ -1,0 +1,32 @@
+MockProcess is a mock for the subprocess module to be used in your unit tests.
+Right now it only supports the check_output method, but eventually popen will
+be supported as well.
+
+It is used via a context manager.  Here's a basic example
+
+>>> import subprocess
+>>> import unittest
+>>> from mockprocess import MockCheckOutput
+>>> class Test(unittest.TestCase):
+...     def test_simple(self):
+...         with MockCheckOutput('hello\n'):
+...             output = subprocess.check_output(['/bin/echo', 'hello'])
+...         self.assertEqual(output, 'hello\n')
+...
+
+If you need to test how you handle errors, you can set an exit code as well.
+
+>>> import subprocess
+>>> import unittest
+>>> from mockprocess import MockCheckoutput
+>>> class Test(unittest.TestCase):
+...     def test_exception(self):
+...         try:
+...             with MockCheckOutput('hello\n', exit_code=127):
+...                 subprocess.check_output(['/bin/false'])
+...         except subprocess.CalledProcessError as exp:
+...             pass
+...         else:
+...             self.fail('exception was not raised')
+
+
