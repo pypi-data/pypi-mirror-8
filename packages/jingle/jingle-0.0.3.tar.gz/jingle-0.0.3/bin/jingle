@@ -1,0 +1,17 @@
+#!/usr/bin/env python
+
+import os
+import sys
+
+try:
+    from jingle import CLI
+except ImportError:
+    sys.path.insert(0, os.path.abspath(os.path.dirname(__file__) + "/.."))
+    from jingle import CLI
+
+if __name__ == "__main__":
+    try:
+        CLI(sys.argv[1:]).run()
+    except KeyboardInterrupt:
+        sys.stderr.write("Interrupted...\n")
+        exit(130)
