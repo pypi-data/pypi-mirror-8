@@ -1,0 +1,139 @@
+#!/usr/bin/env python
+#
+# A simple urlview replacement that handles things like quoted-printable
+# properly.  aka "urlview minus teh suck"
+#
+#   Copyright (C) 2006-2007 Daniel Burrows
+#   Copyright (C) 2014 Scott Hansen
+#
+#   This program is free software; you can redistribute it and/or
+#   modify it under the terms of the GNU General Public License as
+#   published by the Free Software Foundation; either version 2 of the
+#   License, or (at your option) any later version.
+#
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+#   General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with this program; see the file COPYING.  If not, write to
+#   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+#   Boston, MA 02111-1307, USA.
+
+from __future__ import unicode_literals
+import argparse
+import io
+import locale
+import os
+import sys
+from urlscan import urlchoose, urlscan
+try:
+    from email.Parser import Parser as parser
+except ImportError:
+    from email.parser import Parser as parser
+
+
+def parse_arguments():
+    """Parse command line options.
+
+    Returns: args
+
+    """
+    arg_parse = argparse.ArgumentParser(description="Parse and display URLs")
+    arg_parse.add_argument('--compact', '-c',
+                           action='store_true', default=False,
+                           help="Don't display the context of each URL.")
+    arg_parse.add_argument('--no-browser', '-n', dest="nobrowser",
+                           action='store_true', default=False,
+                           help="Pipe URLs to stdout")
+    arg_parse.add_argument('message', nargs='?', default=sys.stdin,
+                           help="Filename of the message to parse")
+    args = arg_parse.parse_args()
+    return args
+
+
+def close_stdin():
+    """This section closes out sys.stdin if necessary so as not to block curses
+    keyboard inputs
+
+    """
+    if not os.isatty(0):
+        fd = os.open('/dev/tty', os.O_RDONLY)
+        if fd < 0:
+            sys.stderr.write('Unable to open an input tty.\n')
+            sys.exit(-1)
+        else:
+            os.dup2(fd, 0)
+            os.close(fd)
+
+
+def process_input(fn):
+    """Return the parsed text of stdin or the message. Accounts for possible
+    file encoding differences.
+
+        Args: fn - filename or sys.stdin
+        Returns: msg - parsed (email parser) text of the message with the
+            correct encoding set
+
+    """
+    enc_list = ['UTF-8', 'LATIN-1', 'iso8859-1', 'iso8859-2',
+                'UTF-16', 'CP720', 'CP437']
+    locale.setlocale(locale.LC_ALL, '')
+    code = locale.getpreferredencoding()
+    if code not in enc_list:
+        enc_list.insert(0, code)
+    if fn is sys.stdin:
+        try:
+            stdin_file = fn.buffer.read()
+        except AttributeError:
+            stdin_file = fn.read()
+    else:
+        stdin_file = None
+    for c in enc_list:
+        try:
+            if stdin_file is not None:
+                f = io.StringIO(stdin_file.decode(c))
+            else:
+                f = io.open(fn, mode='r', encoding=(c))
+            msg = parser().parse(f)
+        except (UnicodeDecodeError, UnicodeError):
+            continue
+        else:
+            break
+        finally:
+            try:
+                fi.close()
+            except NameError:
+                pass
+        print("Encoding not detected. Please pass encoding value manually")
+        raise
+    close_stdin()
+    # Handle multiple nested message parts
+    _msg_set_charset(msg, c)
+    return msg
+
+
+def _msg_set_charset(msg, encoding):
+    """Recursive function to set the charset of nested message parts.
+
+    """
+    encoding = msg.get_content_charset() or encoding
+    try:
+        msg.set_charset(encoding)
+    except (AttributeError, TypeError):
+        for part in msg.get_payload():
+            _msg_set_charset(part, encoding)
+
+
+if __name__ == "__main__":
+    args = parse_arguments()
+    msg = process_input(args.message)
+    if args.nobrowser is False:
+        ui = urlchoose.URLChooser(urlscan.msgurls(msg),
+                                  compact_mode=args.compact)
+        ui.main()
+    else:
+        out = urlchoose.process_urls(urlscan.msgurls(msg),
+                                     nobrowser=True)
+        print("\n".join(out))
