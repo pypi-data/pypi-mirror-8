@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grammar xmlns:MAF="http://maf.mozdev.org/metadata/rdf#" xmlns:RDF="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+  <start>
+    <element name="RDF:RDF">
+      <oneOrMore>
+        <element name="RDF:Description">
+          <attribute name="RDF:about">
+            <data type="NMTOKEN"/>
+          </attribute>
+          <oneOrMore>
+            <element name="MAF:originalurl">
+              <attribute name="RDF:resource">
+                <data type="anyURI"/>
+              </attribute>
+            </element>
+          </oneOrMore>
+          <oneOrMore>
+            <element name="MAF:title">
+              <attribute name="RDF:resource"/>
+            </element>
+          </oneOrMore>
+          <element name="MAF:archivetime">
+            <attribute name="RDF:resource"/>
+          </element>
+          <element name="MAF:indexfilename">
+            <attribute name="RDF:resource">
+              <data type="NCName"/>
+            </attribute>
+          </element>
+          <oneOrMore>
+            <element name="MAF:charset">
+              <attribute name="RDF:resource">
+                <data type="NCName"/>
+              </attribute>
+            </element>
+          </oneOrMore>
+        </element>
+      </oneOrMore>
+    </element>
+  </start>
+</grammar>
