@@ -1,0 +1,113 @@
+Metadata-Version: 1.1
+Name: cubicweb-wsme
+Version: 0.1.2
+Summary: Easily build a webservice API on top of a cubic web database"
+Home-page: http://www.cubicweb.org/project/cubicweb-wsme
+Author: Christophe de Vienne
+Author-email: christophe@unlish.com
+License: LGPL
+Description: Summary
+        -------
+        
+        Easily build a webservice API on top of a cubic web database
+        
+        
+        Types
+        -----
+        
+        To build a wsme structure type that match an entity type::
+        
+            from cubes.wsme.types import Base, wsattr
+        
+            class CWUser(Base):
+                login = wsattr('login', datatype=wsme.types.text)
+                password = wsattr('upassword', datatype=wsme.types.text)
+        
+                in_group = wsattr('in_group', datatype=['CWGroup'])
+        
+            class CWGroup(Base):
+                name = wsattr('name', datatype=wsme.types.text)
+        
+                users = wsattr('in_group', role='subject', datatype=[CWUser])
+        
+            
+            def register_callback(vreg):
+                CWUser.reginit(vreg)
+                CWGroup.reginit(vreg)
+        
+            # ...
+            user = req.find('CWUser', login=u"admin")
+            ws_user = CWUser(user, fetch=['in_group'])
+        
+            assert ws_user.in_group[0].name == user.in_group[0].name
+        
+        
+        Query
+        -----
+        
+        Filter format
+        ~~~~~~~~~~~~~
+        
+        The filter format is partially inspired by https://www.parse.com/docs/rest#queries
+        
+        operators
+        '''''''''
+        
+        Key 	Operation
+        $lt 	Less Than
+        $lte 	Less Than Or Equal To
+        $gt 	Greater Than
+        $gte 	Greater Than Or Equal To
+        $ne 	Not Equal To
+        $in 	Contained In
+        $nin 	Not Contained in
+        $or     Or
+        $and    And
+            
+        
+        Filter attribute
+        ''''''''''''''''
+        
+        Exact match::
+        
+            {'attrname': value}
+        
+        
+        Other comparisons::
+        
+            {'attrname': {'$op': value, '$op2': othervalue}}
+        
+        Use and/or::
+        
+            {'$or': {'attrname': value, 'attr2name': value}}
+            {'$or': [
+                {'attrname': value},
+                {'attrname': {
+                    '$in': [1, 2, 3]}}]}
+        
+        Filter relations
+        ''''''''''''''''
+        
+        If comparing by eid, same as attribute
+        
+        Exact match::
+            
+            {'relname': eid}
+        
+        Other::
+        
+            {"relname": {"$op": eid}}
+        
+        Filter on relation target attributes/relations::
+        
+            {"relname": <entity filter>}
+        
+            {"relname": {"attrname": value}}
+        
+            {"relname": {"$or": {"attrname": value, "attr2name": ovalue}}}
+        
+Platform: UNKNOWN
+Classifier: Environment :: Web Environment
+Classifier: Framework :: CubicWeb
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: JavaScript
