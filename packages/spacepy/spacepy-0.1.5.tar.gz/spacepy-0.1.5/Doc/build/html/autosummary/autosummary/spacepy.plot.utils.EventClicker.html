@@ -1,0 +1,345 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>spacepy.plot.utils.EventClicker &mdash; SpacePy v0.1.5 Manual</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/copybutton.js"></script>
+    <link rel="shortcut icon" href="../../_static/lanl_favicon.ico"/>
+    <link rel="top" title="SpacePy v0.1.5 Manual" href="../../index.html" />
+    <link rel="up" title="spacepy.plot.utils" href="../spacepy.plot.utils.html" />
+    <link rel="next" title="spacepy.plot.utils.add_logo" href="spacepy.plot.utils.add_logo.html" />
+    <link rel="prev" title="spacepy.plot.utils.timestamp" href="spacepy.plot.utils.timestamp.html" /> 
+  </head>
+  <body>
+
+<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../../index.html"><img src="../../_static/spacepy_logo.jpg" border="0" alt="spacepy_logo"/></a>
+</div>
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="spacepy.plot.utils.add_logo.html" title="spacepy.plot.utils.add_logo"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="spacepy.plot.utils.timestamp.html" title="spacepy.plot.utils.timestamp"
+             accesskey="P">previous</a> |</li>
+        <li><a href="http://spacepy.lanl.gov/index.shtml">homepage</a>|&nbsp;</li>
+        <li><a href="../../search.html">search</a>|&nbsp;</li>
+       <li><a href="../../index.html">documentation </a> &raquo;</li>
+
+          <li><a href="../../plot.html" >plot - Plot, various specialized plotting functions and associated utilities</a> &raquo;</li>
+          <li><a href="../spacepy.plot.utils.html" accesskey="U">spacepy.plot.utils</a> &raquo;</li> 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="spacepy.plot.utils.timestamp.html"
+                        title="previous chapter">spacepy.plot.utils.timestamp</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="spacepy.plot.utils.add_logo.html"
+                        title="next chapter">spacepy.plot.utils.add_logo</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../_sources/autosummary/autosummary/spacepy.plot.utils.EventClicker.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="spacepy-plot-utils-eventclicker">
+<h1>spacepy.plot.utils.EventClicker<a class="headerlink" href="#spacepy-plot-utils-eventclicker" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="spacepy.plot.utils.EventClicker">
+<em class="property">class </em><tt class="descclassname">spacepy.plot.utils.</tt><tt class="descname">EventClicker</tt><big>(</big><em>ax=None</em>, <em>n_phases=1</em>, <em>interval=None</em>, <em>auto_interval=None</em>, <em>auto_scale=True</em>, <em>ymin=None</em>, <em>ymax=None</em>, <em>line=None</em><big>)</big><a class="reference internal" href="../../_modules/spacepy/plot/utils.html#EventClicker"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spacepy.plot.utils.EventClicker" title="Permalink to this definition">¶</a></dt>
+<dd><p>Presents a provided figure (normally a time series) and provides
+an interface to mark events shown in the plot. The user interface
+is explained in <a class="reference internal" href="#spacepy.plot.utils.EventClicker.analyze" title="spacepy.plot.utils.EventClicker.analyze"><tt class="xref py py-meth docutils literal"><span class="pre">analyze()</span></tt></a> and results are returned
+by <a class="reference internal" href="#spacepy.plot.utils.EventClicker.get_events" title="spacepy.plot.utils.EventClicker.get_events"><tt class="xref py py-meth docutils literal"><span class="pre">get_events()</span></tt></a></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">Other Parameters:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body"><p class="first"><strong>ax</strong> : maplotlib.axes.AxesSubplot</p>
+<blockquote>
+<div><p>The subplot to display and grab data from. If not provided, the
+current subplot is grabbed from gca() (Lookup of the current
+subplot is done when <a class="reference internal" href="#spacepy.plot.utils.EventClicker.analyze" title="spacepy.plot.utils.EventClicker.analyze"><tt class="xref py py-meth docutils literal"><span class="pre">analyze()</span></tt></a> is called.)</p>
+</div></blockquote>
+<p><strong>n_phases</strong> : int (optional, default 1)</p>
+<blockquote>
+<div><p>number of phases to an event, i.e. number of subevents to mark.
+E.g. for a storm where one wants the onset and the minimum, set
+n_phases to 2 and double click on the onset, then minimum, and
+then the next double-click will be onset of the next storm.</p>
+</div></blockquote>
+<p><strong>interval</strong> : (optional)</p>
+<blockquote>
+<div><p>Size of the X window to show. This should be in units that can
+be added to/subtracted from individual elements of x (e.g.
+timedelta if x is a series of datetime.) Defaults to showing
+the entire plot.</p>
+</div></blockquote>
+<p><strong>auto_interval</strong> : boolean (optional)</p>
+<blockquote>
+<div><p>Automatically adjust interval based on the average distance
+between selected events. Default is True if interval is not
+specified; False if interval is specified.</p>
+</div></blockquote>
+<p><strong>auto_scale</strong> : boolean (optional, default True):</p>
+<blockquote>
+<div><p>Automatically adjust the Y axis to match the data as the X
+axis is panned.</p>
+</div></blockquote>
+<p><strong>ymin</strong> : (optional, default None)</p>
+<blockquote>
+<div><p>If auto_scale is True, the bottom of the autoscaled Y axis will
+never be above ymin (i.e. ymin will always be shown on the plot).
+This prevents the autoscaling from blowing up very small features
+in mostly flat portions of the plot. The user can still manually
+zoom in past this point. The autoscaler will always zoom out to
+show the data.</p>
+</div></blockquote>
+<p><strong>ymax</strong> : (optional, default None)</p>
+<blockquote>
+<div><p>Similar to ymin, but the top of the Y axis will never be below ymax.</p>
+</div></blockquote>
+<p><strong>line</strong> : matplotlib.lines.Line2D (optional)</p>
+<blockquote class="last">
+<div><p>Specify the matplotlib line object to use for autoscaling the
+Y axis. If this is not specified, the first line object on the
+provided subplot will be used. This should usually be correct.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">spacepy.plot.utils</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">630</span><span class="p">)</span> <span class="o">/</span> <span class="mf">100.0</span> <span class="o">*</span> <span class="n">numpy</span><span class="o">.</span><span class="n">pi</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">clicker</span> <span class="o">=</span> <span class="n">spacepy</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">EventClicker</span><span class="p">(</span>
+<span class="gp">... </span><span class="n">n_phases</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="c">#Two picks per event</span>
+<span class="gp">... </span><span class="n">interval</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span> <span class="c">#Display one cycle at a time</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">clicker</span><span class="o">.</span><span class="n">analyze</span><span class="p">()</span> <span class="c">#Double-click on max and min of each cycle; close</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">e</span> <span class="o">=</span> <span class="n">clicker</span><span class="o">.</span><span class="n">get_events</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">peaks</span> <span class="o">=</span> <span class="n">e</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="c">#x value of event starts</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">peaks</span> <span class="o">-=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">numpy</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">numpy</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">peaks</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">numpy</span><span class="o">.</span><span class="n">pi</span><span class="p">))</span> <span class="c">#mod 2pi</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">max</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">peaks</span> <span class="o">-</span> <span class="n">numpy</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">2</span><span class="p">))</span> <span class="o">&lt;</span> <span class="mf">0.2</span> <span class="c">#Peaks should be near pi/2</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">troughs</span> <span class="o">=</span> <span class="n">e</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="c">#x value of event ends</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">troughs</span> <span class="o">-=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">numpy</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">numpy</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">troughs</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">numpy</span><span class="o">.</span><span class="n">pi</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">max</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">peaks</span> <span class="o">-</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">numpy</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">2</span><span class="p">))</span> <span class="o">&lt;</span> <span class="mf">0.2</span> <span class="c">#troughs near 3pi/2</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d</span> <span class="o">=</span> <span class="n">clicker</span><span class="o">.</span><span class="n">get_events_data</span><span class="p">()</span> <span class="c">#snap-to-data of events</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">peakvals</span> <span class="o">=</span> <span class="n">d</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="c">#y value, snapped near peaks</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">max</span><span class="p">(</span><span class="n">peakvals</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mf">1.0</span> <span class="c">#should peak at 1</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">min</span><span class="p">(</span><span class="n">peakvals</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">0.9</span> <span class="c">#should click near 1</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">troughvals</span> <span class="o">=</span> <span class="n">d</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="c">#y value, snapped near peaks</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">max</span><span class="p">(</span><span class="n">troughvals</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="o">-</span><span class="mf">0.9</span> <span class="c">#should click near -1</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">min</span><span class="p">(</span><span class="n">troughvals</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="o">-</span><span class="mf">1.0</span> <span class="c">#should bottom-out at -1</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#spacepy.plot.utils.EventClicker.analyze" title="spacepy.plot.utils.EventClicker.analyze"><tt class="xref py py-obj docutils literal"><span class="pre">analyze</span></tt></a>()</td>
+<td>Displays the figure provided and allows the user to select events.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#spacepy.plot.utils.EventClicker.get_events" title="spacepy.plot.utils.EventClicker.get_events"><tt class="xref py py-obj docutils literal"><span class="pre">get_events</span></tt></a>()</td>
+<td>Get back the list of events.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#spacepy.plot.utils.EventClicker.get_events_data" title="spacepy.plot.utils.EventClicker.get_events_data"><tt class="xref py py-obj docutils literal"><span class="pre">get_events_data</span></tt></a>()</td>
+<td>Get a list of events, &#8220;snapped&#8221; to the data.</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="spacepy.plot.utils.EventClicker.analyze">
+<tt class="descname">analyze</tt><big>(</big><big>)</big><a class="reference internal" href="../../_modules/spacepy/plot/utils.html#EventClicker.analyze"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spacepy.plot.utils.EventClicker.analyze" title="Permalink to this definition">¶</a></dt>
+<dd><p>Displays the figure provided and allows the user to select events.</p>
+<p>All matplot lib controls for zooming, panning, etc. the figure
+remain active.</p>
+<dl class="docutils">
+<dt>Double left click</dt>
+<dd><p class="first">Mark this point as an event phase. One-phase events are the
+simplest: they occur at a particular time. Two-phase events
+have two times associated with them; an example is any event
+with a distinct start and stop time. In that case, the first
+double-click would mark the beginning, the second one, the end;
+the next double-click would mark the beginning of the next event.
+Each phase of an event is annotated with a vertical line on the
+plot; the color and line style is the same for all events, but
+different for each phase.</p>
+<p class="last">After marking the final phase of an event, the X axis will scroll
+and zoom to place that phase near the left of the screeen and
+include one full interval of data (as defined in the constructor).
+The Y axis will be scaled to cover the data in that X range.</p>
+</dd>
+<dt>Double right click or delete button</dt>
+<dd>Remove the last marked event phase. If an entire event (i.e., the
+first phase of an event) is removed, the X axis will be scrolled
+left to the previous event and the Y axis will be scaled to cover
+the data in the new range.</dd>
+<dt>Space bar</dt>
+<dd>Scroll the X axis by one interval. Y axis will be scaled to cover
+the data.</dd>
+</dl>
+<p>When finished, close the figure window (if necessary) and call
+<a class="reference internal" href="#spacepy.plot.utils.EventClicker.get_events" title="spacepy.plot.utils.EventClicker.get_events"><tt class="xref py py-meth docutils literal"><span class="pre">get_events()</span></tt></a> to get the list of events.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="spacepy.plot.utils.EventClicker.get_events">
+<tt class="descname">get_events</tt><big>(</big><big>)</big><a class="reference internal" href="../../_modules/spacepy/plot/utils.html#EventClicker.get_events"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spacepy.plot.utils.EventClicker.get_events" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get back the list of events.</p>
+<p>Call after <a class="reference internal" href="#spacepy.plot.utils.EventClicker.analyze" title="spacepy.plot.utils.EventClicker.analyze"><tt class="xref py py-meth docutils literal"><span class="pre">analyze()</span></tt></a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>out</strong> : array</p>
+<blockquote class="last">
+<div><p>3-D array of (x, y) values clicked on.
+Shape is (n_events, n_phases, 2), i.e. indexed by event
+number, then phase of the event, then (x, y).</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="spacepy.plot.utils.EventClicker.get_events_data">
+<tt class="descname">get_events_data</tt><big>(</big><big>)</big><a class="reference internal" href="../../_modules/spacepy/plot/utils.html#EventClicker.get_events_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spacepy.plot.utils.EventClicker.get_events_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a list of events, &#8220;snapped&#8221; to the data.</p>
+<p>For each point selected as a phase of an event, selects the point
+from the original data which is closest to the clicked point. Distance
+from point to data is calculated based on the screen distance, not
+in data coordinates.</p>
+<p>Note that this snaps to data points, not to the closest point on the
+line between points.</p>
+<p>Call after <a class="reference internal" href="#spacepy.plot.utils.EventClicker.analyze" title="spacepy.plot.utils.EventClicker.analyze"><tt class="xref py py-meth docutils literal"><span class="pre">analyze()</span></tt></a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>out</strong> : array</p>
+<blockquote class="last">
+<div><p>3-D array of (x, y) values in the data which are closest to each
+point clicked on. Shape is (n_events, n_phases, 2), i.e. indexed
+by event number, then phase of the event, then (x, y).</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="spacepy.plot.utils.add_logo.html" title="spacepy.plot.utils.add_logo"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="spacepy.plot.utils.timestamp.html" title="spacepy.plot.utils.timestamp"
+             >previous</a> |</li>
+        <li><a href="http://spacepy.lanl.gov/index.shtml">homepage</a>|&nbsp;</li>
+        <li><a href="../../search.html">search</a>|&nbsp;</li>
+       <li><a href="../../index.html">documentation </a> &raquo;</li>
+
+          <li><a href="../../plot.html" >plot - Plot, various specialized plotting functions and associated utilities</a> &raquo;</li>
+          <li><a href="../spacepy.plot.utils.html" >spacepy.plot.utils</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011-2014, The SpacePy Team.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>
