@@ -1,0 +1,54 @@
+{% extends "./_base.html" %}
+
+{% block block %}
+<h3>Projects</h3>
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Last build</th>
+      <th>Status</th>
+      <th>Duration</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for project in projects %}
+      <tr>
+        <td>{{ project.name }}</td>
+        <td>
+          {% if project.last_non_running_build %}
+            <a class="badge" href="{{ reverse_url('ProjectLog', project.project_id, project.last_non_running_build.build_id) }}">{{ project.last_non_running_build.build_id }}</a>
+          {% end %}
+        </td>
+        <td>
+          {% if project.last_build %}
+            <span class="label label-{{ project.last_build.bootstrap_status }}">{{ project.last_build.status.title() }}</span>
+          {% else %}
+            <span class="label label-info">New</span>
+          {% end %}
+        </td>
+        <td>
+          {% if project.last_non_running_build %}
+            <abbr title="{{ utils.pretty_duration(project.last_non_running_build.duration) }}">{{ utils.pretty_duration_round(project.last_non_running_build.duration) }}</abbr>
+          {% end %}
+        </td>
+        <td>
+          <div class="btn-group">
+            <a class="btn btn-default" href="{{ reverse_url('ProjectView', project.project_id) }}">View</a>
+            <a class="btn btn-default" href="{{ reverse_url('ProjectBuild', project.project_id) }}">Build</a>
+            <a class="btn btn-default" href="{{ reverse_url('ProjectBrowseLast', project.project_id) }}">Browse</a>
+            <a class="btn btn-default" href="{{ reverse_url('ProjectLogLast', project.project_id) }}">Log</a>
+            <a class="btn btn-default" href="{{ reverse_url('ProjectEdit', project.project_id) }}">Edit</a>
+            <a class="btn btn-default" href="{{ reverse_url('ProjectDelete', project.project_id) }}">Delete</a>
+
+            {% for route in server.components.project_links %}
+              <a class="btn btn-default" href="{{ reverse_url(route['route'], project.project_id) }}">{{ route['label'] }}</a>
+            {% end %}
+          </div>
+        </td>
+      </tr>
+    {% end %}
+  </tbody>
+</table>
+{% end %}
