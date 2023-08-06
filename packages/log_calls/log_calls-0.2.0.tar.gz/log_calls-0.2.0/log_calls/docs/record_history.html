@@ -1,0 +1,439 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<style>
+/* Customized "Clearness.css" (.TOC) */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote {
+    margin: 0;
+    padding: 0;
+}
+body {
+    font-family: "Helvetica Neue", Helvetica, "Hiragino Sans GB", Arial, sans-serif;
+    font-size: 13px;
+    line-height: 18px;
+    color: black;
+    background-color: white;
+    margin: 10px 13px 10px 13px;
+}
+table {
+	margin: 10px 0 15px 0;
+	border-collapse: collapse;
+}
+td,th {	
+	border: 1px solid #ddd;
+	padding: 3px 10px;
+}
+th {
+	padding: 5px 10px;	
+}
+
+a {
+    color: #0069d6;
+}
+a:hover {
+    color: #0050a3;
+    text-decoration: none;
+}
+a img {
+    border: none;
+}
+p {
+    margin-bottom: 9px;
+    color: black;
+    font-size: 13px;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    color: #404040;
+    line-height: 36px;
+}
+h1 {
+    margin-bottom: 18px;
+    font-size: 30px;
+}
+h2 {
+    font-size: 24px;
+}
+h3 {
+    font-size: 18px;
+}
+h4 {
+    font-size: 16px;
+}
+h5 {
+    font-size: 14px;
+}
+h6 {
+    font-size: 13px;
+}
+hr {
+    margin: 0 0 19px;
+    border: 0;
+    border-bottom: 1px solid #ccc;
+}
+
+div.TOC {
+    background-color: rgba(232, 232, 232, 0.81);    /*#fee9cc;*/
+}
+div.TOC h5 {
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+div.TOC > ul, div.TOC > ul + li {
+    margin-top: 0px;
+}
+
+blockquote {
+    padding: 13px 13px 21px 15px;
+    margin-bottom: 18px;
+    font-family:georgia,serif;
+    font-style: italic;
+}
+blockquote:before {
+    content:"\201C";
+    font-size:40px;
+    margin-left:-10px;
+    font-family:georgia,serif;
+    color:#eee;
+}
+blockquote p {
+    font-size: 14px;
+    font-weight: 300;
+    line-height: 18px;
+    margin-bottom: 0;
+    font-style: italic;
+}
+code, pre {
+    font-family: Monaco, Andale Mono, Courier New, monospace;
+}
+code {
+    background-color: rgba(232, 232, 232, 0.81);    // #fee9cc;
+    color: rgba(0, 0, 0, 0.95);
+    padding: 1px 3px;
+    font-size: 12px;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+}
+pre {
+    background-color: #e8e8e8;
+
+    display: block;
+    padding: 14px;
+    margin: 0 0 18px;
+    line-height: 16px;
+    font-size: 11px;
+    border: 1px solid #d9d9d9;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+pre code {
+    background-color: #e8e8e8;  // #fff;
+    color:#101010;              // #737373
+    font-size: 11px;
+    padding: 0;
+}
+sup {
+    font-size: 0.83em;
+    vertical-align: super;
+    line-height: 0;
+}
+* {
+	-webkit-print-color-adjust: exact;
+}
+@media screen and (min-width: 914px) {
+    body {
+        width: 854px;
+        margin:10px auto;
+    }
+}
+@media print {
+	body,code,pre code,h1,h2,h3,h4,h5,h6 {
+		color: black;
+	}
+	table, pre {
+		page-break-inside: avoid;
+	}
+}
+
+</style>
+<title>The *record_history* decorator</title>
+
+</head>
+<body>
+<h1>The <em>record_history</em> decorator</h1>
+
+<hr />
+
+<p>The <code>record_history</code> decorator is a stripped-down version of <code>log_calls</code> which
+records calls to a decorated function but writes no messages. You can think
+of it as <code>log_calls</code> with the <code>record_history</code> and <code>log_call_numbers</code> settings
+always true, and without any of the message-logging apparatus.</p>
+
+<p>Just as the settings of <code>log_calls</code> for a decorated function are accessible
+dynamically through the <code>log_calls_settings</code> attribute, the settings of
+<code>record_history</code> are exposed via a <code>record_history_settings</code> attribute.
+<code>record_history_settings</code> is an object of the same type as <code>log_calls_settings</code>,
+so it has the same methods and behaviors described in the <a href="./log_calls.html#Dynamic-control-log_calls_settings"><code>log_calls_settings</code>
+section</a> of the <code>log_calls</code>
+documentation.</p>
+
+<p>Functions decorated by <code>record_history</code> have a full-featured <code>stats</code> attribute,
+as described in the <a href="./log_calls.html#call-history-and-statistics">Call history and statistics</a>
+section of the <code>log_calls</code> documentation.</p>
+
+<h2><span id="usage">Usage</span></h2>
+
+<p>Import <code>record_history</code> just as you would <code>log_calls</code>:</p>
+
+<pre><code>&gt;&gt;&gt; from log_calls import record_history
+</code></pre>
+
+<p>We'll use the following function in our examples:</p>
+
+<pre><code>&gt;&gt;&gt; @record_history()
+... def record_me(a, b, x):
+...     return a * x + b
+</code></pre>
+
+<h2><span id="parameters">Keyword Parameters</span></h2>
+
+<p><code>record_history</code> has only three keyword parameters:</p>
+
+<table>
+<thead>
+<tr>
+<th align="right">Keyword parameter </th>
+<th align="left"> Default value </th>
+<th align="left"> Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="right"><code>enabled</code>    </td>
+<td align="left"> <code>True</code>          </td>
+<td align="left"> When true, call history will be recorded</td>
+</tr>
+<tr>
+<td align="right"><code>prefix</code>     </td>
+<td align="left"> ``              </td>
+<td align="left"> A <code>str</code> to prefix the function name with in call records</td>
+</tr>
+<tr>
+<td align="right"><code>max_history</code>    </td>
+<td align="left"> 0           </td>
+<td align="left"> An <code>int</code>. <em>value</em> > 0 --> store at most <em>value</em>-many records, oldest records overwritten; <em>value</em> ≤ 0 --> store unboundedly many records.</td>
+</tr>
+</tbody>
+</table>
+
+
+<p>Setting <code>enabled</code> to true in <code>record_history</code> is like setting both <code>enabled</code>
+and <code>record_history</code> to true in <code>log_calls</code>.</p>
+
+<p>You can supply an <a href="./log_calls.html#Indirect-values"><em>indirect value</em></a> for the <code>enabled</code> parameter, as described
+in the log_calls documentation.</p>
+
+<h2><span id="record_history_settings-attribute">The <em>record_history_settings</em> attribute</span></h2>
+
+<p>These settings are accessible dynamically through the <code>record_history_settings</code>
+attribute of a decorated function.</p>
+
+<pre><code>&gt;&gt;&gt; len(record_me.record_history_settings)
+3
+&gt;&gt;&gt; list(record_me.record_history_settings)
+['enabled', 'prefix', 'max_history']
+&gt;&gt;&gt; list(record_me.record_history_settings.items())
+[('enabled', True), ('prefix', ''), ('max_history', 0)]
+&gt;&gt;&gt; record_me.record_history_settings.as_OrderedDict()  # doctest: +NORMALIZE_WHITESPACE
+OrderedDict([('enabled', True), ('prefix', ''), ('max_history', 0)])
+</code></pre>
+
+<p>Let's finally call the function defined above:</p>
+
+<pre><code>&gt;&gt;&gt; for x in range(15):
+...     _ = record_me(3, 5, x)      # "_ = " for doctest
+
+&gt;&gt;&gt; import pprint
+&gt;&gt;&gt; len(record_me.stats.history)
+15
+</code></pre>
+
+<p>The tallies:</p>
+
+<pre><code>&gt;&gt;&gt; record_me.stats.num_calls_logged
+15
+&gt;&gt;&gt; record_me.stats.num_calls_total
+15
+&gt;&gt;&gt; record_me.stats.elapsed_secs_logged          # doctest: +SKIP
+2.2172927856445312e-05
+</code></pre>
+
+<p>Call history in CSV format, with ellipses for 'elapsed_secs' and 'timestamp' columns:</p>
+
+<pre><code>&gt;&gt;&gt; print(record_me.stats.history_as_csv)         # doctest: +ELLIPSIS
+'call_num'|'a'|'b'|'x'|'retval'|'elapsed_secs'|'timestamp'|'prefixed_fname'|'caller_chain'
+1|3|5|0|5|...|...|'record_me'|['&lt;module&gt;']
+2|3|5|1|8|...|...|'record_me'|['&lt;module&gt;']
+3|3|5|2|11|...|...|'record_me'|['&lt;module&gt;']
+4|3|5|3|14|...|...|'record_me'|['&lt;module&gt;']
+5|3|5|4|17|...|...|'record_me'|['&lt;module&gt;']
+6|3|5|5|20|...|...|'record_me'|['&lt;module&gt;']
+7|3|5|6|23|...|...|'record_me'|['&lt;module&gt;']
+8|3|5|7|26|...|...|'record_me'|['&lt;module&gt;']
+9|3|5|8|29|...|...|'record_me'|['&lt;module&gt;']
+10|3|5|9|32|...|...|'record_me'|['&lt;module&gt;']
+11|3|5|10|35|...|...|'record_me'|['&lt;module&gt;']
+12|3|5|11|38|...|...|'record_me'|['&lt;module&gt;']
+13|3|5|12|41|...|...|'record_me'|['&lt;module&gt;']
+14|3|5|13|44|...|...|'record_me'|['&lt;module&gt;']
+15|3|5|14|47|...|...|'record_me'|['&lt;module&gt;']
+&lt;BLANKLINE&gt;
+</code></pre>
+
+<p>Disable recording, call the function again:</p>
+
+<pre><code>&gt;&gt;&gt; record_me.record_history_settings.enabled = False
+&gt;&gt;&gt; _ = record_me(583, 298, 1000)
+</code></pre>
+
+<p>Call numbers of last 2 calls to <code>record_me</code>:</p>
+
+<pre><code>&gt;&gt;&gt; list(map(lambda rec: rec.call_num, record_me.stats.history[-2:]))
+[14, 15]
+</code></pre>
+
+<p>and here are the call counters:</p>
+
+<pre><code>&gt;&gt;&gt; record_me.stats.num_calls_logged
+15
+&gt;&gt;&gt; record_me.stats.num_calls_total
+16
+</code></pre>
+
+<p>Re-enable recording and call the function again:</p>
+
+<pre><code>&gt;&gt;&gt; record_me.record_history_settings.enabled = True
+&gt;&gt;&gt; _ = record_me(1900, 2000, 20)
+</code></pre>
+
+<p>Here are the last 3 lines of the CSV call history:</p>
+
+<pre><code>&gt;&gt;&gt; lines = record_me.stats.history_as_csv.strip().split('\\n')
+&gt;&gt;&gt; # Have to skip next test in .md
+&gt;&gt;&gt; #  because doctest doesn't split it at all: len(lines) == 1
+&gt;&gt;&gt; for line in lines[-3:]:                   # doctest: +ELLIPSIS, +SKIP
+...     print(line)
+14|3|5|13|44|...|...|'record_me'|['&lt;module&gt;']
+15|3|5|14|47|...|...|'record_me'|['&lt;module&gt;']
+16|1900|2000|20|40000|...|...|'record_me'|['&lt;module&gt;']
+</code></pre>
+
+<p>and here are the call updated counters:</p>
+
+<pre><code>&gt;&gt;&gt; record_me.stats.num_calls_logged
+16
+&gt;&gt;&gt; record_me.stats.num_calls_total
+17
+</code></pre>
+
+<p>Finally, let's call <code>stats.clear_history</code>, setting <code>max_history</code> to 3,
+and examine the call history again:</p>
+
+<pre><code>&gt;&gt;&gt; record_me.stats.clear_history(max_history=3)
+&gt;&gt;&gt; for x in range(15):
+...     _ = record_me(3, 5, x)
+&gt;&gt;&gt; print(record_me.stats.history_as_csv)      # doctest: +ELLIPSIS
+'call_num'|'a'|'b'|'x'|'retval'|'elapsed_secs'|'timestamp'|'prefixed_fname'|'caller_chain'
+13|3|5|12|41|...|...|'record_me'|['&lt;module&gt;']
+14|3|5|13|44|...|...|'record_me'|['&lt;module&gt;']
+15|3|5|14|47|...|...|'record_me'|['&lt;module&gt;']
+&lt;BLANKLINE&gt;
+</code></pre>
+
+<h2><span id="Call-history-and-call-chains">Call history and call chains</span></h2>
+
+<p>An example showing a longer call chain, and call numbers of a decorated
+caller appearing in the call chain:</p>
+
+<pre><code>&gt;&gt;&gt; record_me.stats.clear_history()
+
+&gt;&gt;&gt; class Base():
+...     def call_record_me(self, a, b, n):
+...         nth = 2**n
+...         for k in range(nth, 2 * nth):
+...             record_me(a, b, k)
+&gt;&gt;&gt; class Even(Base):
+...     @record_history(prefix='Even.')
+...     def call_it(self, n):
+...         self.call_record_me(2*n + 1, 3*n + 1, n)
+&gt;&gt;&gt; class Odd(Base):
+...     @record_history(prefix='Odd.')
+...     def call_it(self, n):
+...         self.call_record_me(5*n + 1, 7*n + 1, n)
+&gt;&gt;&gt; even = Even()
+&gt;&gt;&gt; odd = Odd()
+&gt;&gt;&gt; for i in range(3):
+...     (even, odd)[i%2].call_it(i)
+
+&gt;&gt;&gt; even.call_it.stats.num_calls_logged, odd.call_it.stats.num_calls_logged
+(2, 1)
+&gt;&gt;&gt; record_me.stats.num_calls_logged
+7
+
+&gt;&gt;&gt; print(even.call_it.stats.history_as_csv)        # doctest: +ELLIPSIS
+'call_num'|'self'|'n'|'retval'|'elapsed_secs'|'timestamp'|'prefixed_fname'|'caller_chain'
+1|&lt;__main__.Even object at ...&gt;|0|None|...|...|'Even.call_it'|['&lt;module&gt;']
+2|&lt;__main__.Even object at ...&gt;|2|None|...|...|'Even.call_it'|['&lt;module&gt;']
+&lt;BLANKLINE&gt;
+
+&gt;&gt;&gt; print(odd.call_it.stats.history_as_csv)        # doctest: +ELLIPSIS
+'call_num'|'self'|'n'|'retval'|'elapsed_secs'|'timestamp'|'prefixed_fname'|'caller_chain'
+1|&lt;__main__.Odd object at ...&gt;|1|None|...|...|'Odd.call_it'|['&lt;module&gt;']
+&lt;BLANKLINE&gt;
+
+&gt;&gt;&gt; print(record_me.stats.history_as_csv)     # doctest: +ELLIPSIS
+'call_num'|'a'|'b'|'x'|'retval'|'elapsed_secs'|'timestamp'|'prefixed_fname'|'caller_chain'
+1|1|1|1|2|...|...|'record_me'|['call_record_me', 'Even.call_it [1]']
+2|6|8|2|20|...|...|'record_me'|['call_record_me', 'Odd.call_it [1]']
+3|6|8|3|26|...|...|'record_me'|['call_record_me', 'Odd.call_it [1]']
+4|5|7|4|27|...|...|'record_me'|['call_record_me', 'Even.call_it [2]']
+5|5|7|5|32|...|...|'record_me'|['call_record_me', 'Even.call_it [2]']
+6|5|7|6|37|...|...|'record_me'|['call_record_me', 'Even.call_it [2]']
+7|5|7|7|42|...|...|'record_me'|['call_record_me', 'Even.call_it [2]']
+&lt;BLANKLINE&gt;
+</code></pre>
+
+<h2><span id="elapsed_secs_logged-equal-sum-etc"><em>stats.elapsed_secs_logged</em> == sum of <em>elapsed_secs</em> column of call history</span></h2>
+
+<p>Equal "to within an epsilon", anyway, allowing for some very small
+numerical inaccuracy:</p>
+
+<pre><code>&gt;&gt;&gt; @record_history()
+... def slow(n):
+...     val = []
+...     for i in range(n):
+...         val.append("a" * i)
+&gt;&gt;&gt; for i in range(100):
+...     slow(i)
+&gt;&gt;&gt; elapsed_col = list(map(lambda rec: getattr(rec, 'elapsed_secs'),
+...                        slow.stats.history))
+&gt;&gt;&gt; abs(sum(elapsed_col) - slow.stats.elapsed_secs_logged) &lt; 1.0e-15
+True
+</code></pre>
+</body>
+</html>
