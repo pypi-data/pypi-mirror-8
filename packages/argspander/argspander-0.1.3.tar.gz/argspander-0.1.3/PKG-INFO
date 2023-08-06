@@ -1,0 +1,39 @@
+Metadata-Version: 1.1
+Name: argspander
+Version: 0.1.3
+Summary: Argument expansion of objects
+Home-page: UNKNOWN
+Author: Richard Lancaster
+Author-email: lancasterrich@gmail.com
+License: MIT
+Description: argspander
+        ====
+        Python package that provides argument expansion of objects.
+        
+        Why:
+        ----
+        It was created to enable a sane way of entering arguments gathered from
+        argparse into your program, without the need to pass round an arguments object.
+        
+        Usage:
+        ----
+        >>> import argspander
+        >>> @argspander.expand
+        ... def f(a, b, c):
+        ...     print "a: %s, b: %s, c: %s" % (a, b, c)
+        >>> f(3, 2, 1)
+        a: 3, b: 2, c: 1
+        >>> class Args():  # similar to the object return by argparse
+        ...     a = 3
+        ...     b = 2
+        ...     c = 1
+        >>>  f(Args(), expand=True)
+        a: 3, b: 2, c: 1
+        
+Keywords: expansion splat argument unpacking
+Platform: UNKNOWN
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Programming Language :: Python :: 3.4
