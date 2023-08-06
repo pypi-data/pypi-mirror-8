@@ -1,0 +1,19 @@
+logging:
+  level: DEBUG
+  file: ''
+
+plugins:
+  - name: dummy
+    entrypoint: taskforge.plugin:DummyPlugin
+    module: taskforge
+    weight: 0
+    enabled: false
+    options:
+      some: thing
+  - name: shortener
+    entrypoint: taskforge.plugins.shorten:Shortener
+    module: taskforge
+    weight: 0
+    enabled: false
+    options:
+      max_length: 24
