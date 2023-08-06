@@ -1,0 +1,237 @@
+/* Overlay style */
+.menu {
+	position: fixed;
+	width: 100%;
+	height: 100%;
+	top: 0;
+	left: 0;
+	background: rgba(0, 0, 0, 0.90);
+}
+
+/* Overlay closing cross */
+.menu .overlay-close {
+	width: 16px;
+	height: 16px;
+	position: absolute;
+	right: 50px;
+	top: 50px;
+	overflow: hidden;
+	border: none;
+	background: url(++resource++plonetheme.bootstrapModern.css/cross_white.png) no-repeat center center;
+	background-size: 16px 16px;
+	text-indent: 200%;
+	color: transparent;
+	outline: none;
+	z-index: 1;
+}
+
+#trigger-overlay {
+	position: absolute;
+	top: 50px;
+	right: 20px;
+	cursor: pointer;
+}
+
+/* Menu style */
+.menu .menu-content {
+	text-align: center;
+	position: relative;
+	top: 50%;
+	height: 60%;
+	font-size: 24px;
+	-webkit-transform: translateY(-50%);
+	transform: translateY(-50%);
+}
+
+.menu ul {
+	list-style: none;
+	padding: 0;
+	margin: 0 auto;
+	display: inline-block;
+	height: 100%;
+	position: relative;
+	width: 100%;
+}
+
+.menu ul li {
+	display: block;
+	height: 20%;
+	min-height: 54px;
+	width: 100%;
+	font-weight: 700;
+}
+
+.menu ul li a {
+	display: block;
+	color: #ffffff;
+	text-transform: uppercase;
+	font-family: 'Montserrat', sans-serif;
+	font-size: 24px;
+	font-weight: 700;
+	-webkit-transition: color 0.2s;
+	transition: color 0.2s;
+}
+
+.menu ul li a:hover,
+.menu ul li a:focus {
+	color: #747474;
+	text-decoration: none;
+}
+
+
+/* Effects */
+.overlay-hugeinc {
+	opacity: 0;
+	visibility: hidden;
+	-webkit-transition: opacity 0.5s, visibility 0s 0.5s;
+	transition: opacity 0.5s, visibility 0s 0.5s;
+}
+
+.overlay-hugeinc.open {
+	opacity: 1;
+	visibility: visible;
+	-webkit-transition: opacity 0.5s;
+	transition: opacity 0.5s;
+	z-index: 1000;
+}
+
+.overlay-hugeinc.close {
+	z-index: 100;
+}
+
+.overlay-hugeinc .menu-content {
+	-webkit-perspective: 1200px;
+	perspective: 1200px;
+}
+
+.overlay-hugeinc .menu-content ul {
+	opacity: 0.4;
+	-webkit-transform: translateY(-25%) rotateX(35deg);
+	transform: translateY(-25%) rotateX(35deg);
+	-webkit-transition: -webkit-transform 0.5s, opacity 0.5s;
+	transition: transform 0.5s, opacity 0.5s;
+}
+
+.overlay-hugeinc.open .menu-content ul {
+	opacity: 1;
+	-webkit-transform: rotateX(0deg);
+	transform: rotateX(0deg);
+	z-index: 10000;
+}
+
+.overlay-hugeinc.close .menu-content ul {
+	-webkit-transform: translateY(25%) rotateX(-35deg);
+	transform: translateY(25%) rotateX(-35deg);
+}
+
+#trigger-overlay {
+	z-index: 10000;
+}
+
+@media screen and (max-height: 30.5em) {
+	.menu .menu-content {
+		height: 70%;
+		font-size: 24px;
+	}
+	.menu ul li {
+		min-height: 24px;
+	}
+}
+
+.main_menu {
+  width: 40px;
+  height: 50px;
+  position: absolute;
+  top: 50px;
+  right: 50px;
+  z-index: 10000;
+}
+
+.main_menu:hover {
+	cursor: pointer
+}
+
+.main_menu.open .menu-item {
+      background: #ffffff;
+}
+
+.main_menu.open .menu-item:first-child {
+	-ms-transform: rotate(45deg);
+    -webkit-transform: rotate(45deg);
+    transform: rotate(45deg);
+    -ms-transform-origin: 10px; 
+    -webkit-transform-origin: 10px;
+    transform-origin: 10px;
+}
+
+.main_menu.open .menu-item:nth-child(2) {
+	opacity: 0;
+}
+
+.main_menu.open .menu-item:nth-child(3) {
+	-ms-transform: rotate(-45deg);
+    -webkit-transform: rotate(-45deg);
+    transform: rotate(-45deg);
+    -ms-transform-origin: 8px; 
+    -webkit-transform-origin: 8px;
+    transform-origin: 8px;
+}
+
+.menu-item {
+	-webkit-transition-property: all;
+	transition-property: all;
+	-webkit-transition-duration: 0.5s;
+	transition-duration: 0.5s;  
+  	display: block;
+  	width: 40px;
+  	height: 3px;
+  	margin: 0 0 5px;
+  	background: #000000;
+}
+
+@media (max-width: 480px) {
+    .main_menu {
+    	top: 20px;
+    	right: 20px;
+    }
+}
+
+@media (min-width: 481px) and (max-width: 767px) {
+   .main_menu {
+    	top: 40px;
+    	right: 40px;
+    } 
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+    .main_menu {
+    	top: 40px;
+    	right: 40px;
+    }
+}
+
+@media (min-width: 992px) and (max-width: 1199px) {
+    .main_menu {
+    	top: 50px;
+    	right: 50px;
+    }
+}
+
+@media (min-width: 1200px) {
+	.main_menu {
+    	top: 50px;
+    	right: 50px;
+    }
+}
+
+.main_menu.open {
+	position: fixed;
+}
+
+.main_menu.trans {
+	position: fixed;
+}
+
+
+
+
