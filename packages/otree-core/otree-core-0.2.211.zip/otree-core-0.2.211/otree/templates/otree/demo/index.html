@@ -1,0 +1,26 @@
+{% extends "otree/BaseBuiltIn.html" %}
+
+{% block title %}
+    Sample games
+{% endblock %}
+
+{% block content %}
+
+<p><i>(To login to the admin page, click <a href="/admin" target="_blank">here</a>.)</i></p>
+
+<div>
+    {{ intro_text|safe }}
+</div>
+
+
+{% for s in session_info %}
+
+        <h4><a href="{{ s.url }}" target="_blank">{{ s.display_name }}</a></h4>
+
+{% endfor %}
+
+    {% if debug %}
+        <p>You can add entries to this list in <code>sessions.py</code>.</p>
+    {% endif %}
+
+{% endblock %}
