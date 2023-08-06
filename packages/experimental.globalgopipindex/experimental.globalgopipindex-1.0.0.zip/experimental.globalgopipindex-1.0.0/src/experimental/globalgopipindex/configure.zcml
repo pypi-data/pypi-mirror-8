@@ -1,0 +1,15 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:monkey="http://namespaces.plone.org/monkey">
+
+  <include package="collective.monkeypatcher" />
+
+  <monkey:patch
+      description="Patch GopipIndex to sort objects by 'global' position"
+      class="plone.app.folder.nogopip.GopipIndex"
+      original="documentToKeyMap"
+      replacement=".catalog.documentToKeyMap"
+      />
+
+</configure>
+
